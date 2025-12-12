@@ -7,7 +7,7 @@
   &nbsp;&nbsp;|&nbsp;&nbsp;
   <a href="https://www.figma.com/board/AZlRmfD1liRtDK41pwLJeK/%ED%8F%B4-%ED%8F%AC%EC%A7%80%EC%85%98-%ED%8C%80-BoostUs-%F0%9F%9A%80?node-id=0-1&t=VDqpRXD7pJhBLJk6-1"><b>🎨 피그잼</b></a>
   &nbsp;&nbsp;|&nbsp;&nbsp;
-  <a href="https://github.com/boostcampwm2025/web01-pole-position/wiki/%EA%B7%B8%EB%9D%BC%EC%9A%B4%EB%93%9C-%EB%A3%B0"><b>🤝 그라운드룰</b></a>
+  <a href="https://future-notion-45558920.figma.site/"><b>⭐️ 데모 사이트</b></a>
 </p>
 
 ## 🏁 폴포지션 팀원 소개
@@ -46,4 +46,5 @@
     <td align="center"><a href="https://github.com/DevJunz">J273_최준환</a></td>
   </tr>
 </table>
+
 
