@@ -1,4 +1,6 @@
-# BoostUs
+<div align="center">
+  <img src="https://capsule-render.vercel.app/api?type=venom&theme=tokyonight&height=300&section=header&text=BoostUs&fontSize=90" />
+</div>
 
 <p align="center">
   <a href="https://www.notion.so/Pole-Position-2c3d4705e03f80f7bba0c5264dc7be36?source=copy_link"><b>📑 팀 노션</b></a>
@@ -10,7 +12,19 @@
   <a href="https://future-notion-45558920.figma.site/"><b>⭐️ 데모 사이트</b></a>
 </p>
 
-## 🏁 폴포지션 팀원 소개
+<br>
+
+## 🔹 BoostUs는 무슨 서비스인가요?
+
+- **BoostUs**는 부스트캠프에서 만들어진 수많은 프로젝트, 회고, 학습 경험들을 **하나로 모아주는 커뮤니티·아카이빙 플랫폼**입니다.
+
+- 지금까지 부스트캠프의 **값진 경험**들은 개인 블로그, 깃허브, 슬랙 등 **여러 곳에 분산되어 있다는 문제점**이 있었습니다.
+
+- BoostUs는 이 **모든 경험을 하나로 연결**해, **기록이 자산이 되고 성장이 다음 도전으로 이어지도록** 돕습니다.
+
+<br>
+
+## 🏁 폴 포지션 팀원들
 > 폴포지션은 레이싱에서 출발선 맨 앞자리를 의미해요.
 <table>
   <!-- 사진 + 영어이름 -->
@@ -46,5 +60,6 @@
     <td align="center"><a href="https://github.com/DevJunz">J273_최준환</a></td>
   </tr>
 </table>
+
 
 
