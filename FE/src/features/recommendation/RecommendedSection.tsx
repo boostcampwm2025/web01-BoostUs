@@ -1,9 +1,13 @@
+import paint from "../../../public/assets/paint.png";
+import Image from "next/image";
+
 const RecommendedSection = () => {
   return (
     <>
       <h1 className="font-bold text-2xl">오늘의 추천</h1>
       <section className="flex flex-row gap-4 mt-4 w-full h-130">
-        <article className="flex flex-col justify-end gap-2 bg-white shadow px-6 py-6 rounded-xl w-[70%]">
+        <article className="flex flex-col justify-center gap-2 bg-white shadow px-6 rounded-xl w-[70%]">
+          <Image src={paint} alt="프로젝트 이미지" style={{ display: "block" }} />
           <div className="flex flex-col justify-center items-center bg-blue-600 px-2 py-1 rounded-full w-fit">
             <span className="font-bold text-white text-xs">메인 추천</span>
           </div>

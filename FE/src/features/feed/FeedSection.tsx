@@ -5,7 +5,7 @@ const FeedSection = () => {
   return (
     <>
       <FeedHeader />
-      <section className="flex flex-row gap-4 mt-4 w-full h-130">
+      <section className="flex flex-row gap-4 mt-4 mb-8 w-full">
         <div className="flex flex-col gap-4 w-[25%]">
           <FeedCard feedType="blog" />
           <FeedCard feedType="notice" />
