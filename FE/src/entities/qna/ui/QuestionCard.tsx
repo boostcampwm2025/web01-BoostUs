@@ -26,7 +26,7 @@ interface Props {
 export const QuestionCard = ({ data }: Props) => {
   return (
     <Link
-      href={`/qna/${data.id}`}
+      href={`/question/${data.id}`}
       className="block bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer overflow-hidden"
     >
       <div className="flex">

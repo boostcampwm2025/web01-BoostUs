@@ -7,7 +7,7 @@ import { Home, HelpCircle, Trees, GitPullRequest, Lock } from 'lucide-react';
 // 탭 설정 (URL과 아이콘 매핑)
 const TABS = [
   { href: '/lounge', label: '라운지 홈', icon: Home, exact: true },
-  { href: '/lounge/qna', label: '질문 & 답변', icon: HelpCircle },
+  { href: '/lounge/question', label: '질문 & 답변', icon: HelpCircle },
   { href: '/lounge/bamboo', label: '익명 대나무숲', icon: Trees },
   { href: '/lounge/open-source', label: '오픈소스 기여', icon: GitPullRequest },
   { href: '/lounge/camper', label: '캠퍼 공간', icon: Lock },
