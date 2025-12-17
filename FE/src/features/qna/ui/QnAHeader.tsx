@@ -11,7 +11,7 @@ export default function QnAHeader() {
 
   const handleFilterChange = (filter: string) => {
     // URL을 변경하여 페이지 이동 (실제로는 같은 페이지 내에서 파라미터만 변경됨)
-    router.push(`/lounge?filter=${filter}`);
+    router.push(`/lounge/qna?filter=${filter}`);
   };
 
   return (

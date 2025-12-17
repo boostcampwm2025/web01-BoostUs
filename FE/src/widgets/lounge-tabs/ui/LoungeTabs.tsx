@@ -19,12 +19,10 @@ export const LoungeTabs = () => {
   return (
     <div className="bg-[#F0F4FA]">
       <div className="mb-8">
-        <h2 className="text-2xl font-bold">라운지</h2>
-        <p className="text-gray-600">
-          기술, 커뮤니티, 오픈소스 기여를 위한 공간
-        </p>
+        <h2 className="text-3xl font-bold mb-4">라운지</h2>
+        <p className="text-gray-600">BoostUS 커뮤니티 공간</p>
       </div>
-      <div className="flex gap-2 mb-8 border-b overflow-x-auto">
+      <div className="flex gap-2 mb-8 border-b border-b-gray-300 overflow-x-auto">
         {TABS.map((tab) => {
           // 현재 활성화 여부 체크
           const isActive = tab.exact
@@ -37,8 +35,8 @@ export const LoungeTabs = () => {
               href={tab.href}
               className={`px-6 py-3 font-medium transition-colors whitespace-nowrap flex items-center gap-2 ${
                 isActive
-                  ? 'text-[#005CFD] border-b-2 border-[#005CFD]'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'text-[#005CFD] border-b-2  border-[#005CFD]'
+                  : 'text-gray-600 hover:text-gray-900 '
               }`}
             >
               <tab.icon className="w-4 h-4" />
