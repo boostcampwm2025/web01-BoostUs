@@ -6,7 +6,8 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
+  output   = "../src/generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
@@ -14,7 +15,7 @@ datasource db {
 }
 
 model User {
-  id        BigInt    @id @default(autoincrement())
+  id        Int    @id @default(autoincrement())
   user_id   String    @unique
   password  String
   nickname  String
@@ -30,9 +31,9 @@ model User {
 }
 
 model Question {
-  id                 BigInt    @id @default(autoincrement())
-  user_id            BigInt
-  accepted_answer_id BigInt?    @unique
+  id                 Int    @id @default(autoincrement())
+  user_id            Int
+  accepted_answer_id Int?    @unique
   title              String
   contents           String
   hashtags           String?
@@ -50,9 +51,9 @@ model Question {
 }
 
 model Answer {
-  id          BigInt    @id @default(autoincrement())
-  question_id BigInt
-  user_id     BigInt
+  id          Int    @id @default(autoincrement())
+  question_id Int
+  user_id     Int
   contents    String
   like_count  Int       @default(0)
   is_accepted Boolean   @default(false)
