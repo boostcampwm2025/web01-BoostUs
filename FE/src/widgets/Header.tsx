@@ -7,7 +7,7 @@ const Header = () => {
         <Link href="/">로고</Link>
         <div className="flex flex-row gap-4">
           <Link href="/">메인</Link>
-          <Link href="/">프로젝트</Link>
+          <Link href="/project">프로젝트</Link>
           <Link href="/">캠퍼들의 이야기</Link>
           <Link href="/">라운지</Link>
           <Link href="/">마이페이지</Link>
