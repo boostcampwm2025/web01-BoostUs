@@ -6,9 +6,11 @@
     "dev": "next dev -p 5173",
     "build": "next build",
     "start": "next start -p 5173",
-    "lint": "eslint"
+    "lint": "next lint",
+    "format": "prettier --write ."
   },
   "dependencies": {
+    "lucide-react": "^0.561.0",
     "next": "16.0.10",
     "react": "19.2.1",
     "react-dom": "19.2.1"
@@ -21,6 +23,9 @@
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.0.10",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "prettier": "^3.7.4",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
