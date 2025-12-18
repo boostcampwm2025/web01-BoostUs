@@ -23,13 +23,13 @@ services:
     volumes:
       - ./BE:/app
       - /app/node_modules
-    command: sh -c "npm install && npm run start:dev"
+    command: sh -c "npm install && npm run prisma:generate && npm run start:dev"
     #be는 api 테스트를 위햐서 개발 단계에서는 외부에 포트가 열려있어야한다.
     ports:
       - "3000:3000"
     environment:
       - DB_HOST=db
-      - DB_USER=test
+      - DB_USER=root
       - DB_PASSWORD=test
       - DB_NAME=boostus
     depends_on:
