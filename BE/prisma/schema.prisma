@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id        Int    @id @default(autoincrement())
+  user_id   String    @unique
+  password  String
+  nickname  String
+  avatar_url String?
+  cohort    Int?      @db.TinyInt
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+
+  questions Question[]
+  answers   Answer[]
+
+  @@map("users")
+}
+
+model Question {
+  id                 Int    @id @default(autoincrement())
+  user_id            Int
+  accepted_answer_id Int?    @unique
+  title              String
+  contents           String
+  hashtags           String?
+  like_count         Int       @default(0)
+  view_count         Int       @default(0)
+  answer_count       Int       @default(0)
+  created_at         DateTime  @default(now())
+  updated_at         DateTime  @default(now()) @updatedAt
+
+  user    User      @relation(fields: [user_id], references: [id])
+  answers Answer[]  @relation("QuestionAnswers")
+  accepted_answer Answer? @relation("AcceptedAnswer", fields: [accepted_answer_id], references: [id])
+
+  @@map("questions")
+}
+
+model Answer {
+  id          Int    @id @default(autoincrement())
+  question_id Int
+  user_id     Int
+  contents    String
+  like_count  Int       @default(0)
+  is_accepted Boolean   @default(false)
+  view_count  Int       @default(0)
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @default(now()) @updatedAt
+
+  question      Question @relation("QuestionAnswers", fields: [question_id], references: [id])
+  user     User     @relation(fields: [user_id], references: [id])
+  accepted_in Question? @relation("AcceptedAnswer")
+
+  @@map("answers")
+}
