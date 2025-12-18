@@ -25,6 +25,8 @@ model User {
 
   questions Question[]
   answers   Answer[]
+
+  @@map("users")
 }
 
 model Question {
@@ -43,6 +45,8 @@ model Question {
   user    User      @relation(fields: [user_id], references: [id])
   answers Answer[]  @relation("QuestionAnswers")
   accepted_answer Answer? @relation("AcceptedAnswer", fields: [accepted_answer_id], references: [id])
+
+  @@map("questions")
 }
 
 model Answer {
@@ -59,4 +63,6 @@ model Answer {
   question      Question @relation("QuestionAnswers", fields: [question_id], references: [id])
   user     User     @relation(fields: [user_id], references: [id])
   accepted_in Question? @relation("AcceptedAnswer")
+
+  @@map("answers")
 }
