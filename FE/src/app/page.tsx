@@ -1,11 +1,15 @@
-import Image from 'next/image';
+import FeedSection from "@/features/mainpage/feed/FeedSection";
+import QuickMenuSection from "@/features/mainpage/quickmenu/QuickMenuSection";
+import RecommendedSection from "@/features/mainpage/recommendation/RecommendedSection";
 
-const test = 'hello';
-
-export default function Home() {
+const Home = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans ">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start"></main>
+    <div className="flex flex-col w-full max-w-7xl font-sans">
+      <RecommendedSection />
+      <FeedSection />
+      <QuickMenuSection />
     </div>
   );
-}
+};
+
+export default Home;
