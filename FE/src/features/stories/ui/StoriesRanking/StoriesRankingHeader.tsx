@@ -1,8 +1,8 @@
 'use client';
 
 import { StoriesRankingPeriodState } from '@/features/stories/model/types';
-import StoriesRankingDropdown from '../StoriesRankingDropdown/StoriesRankingDropdown';
-import StoriesRankingToggle from '../StoriesRankingToggle.tsx/StoriesRankingToggle';
+import StoriesRankingDropdown from '@/features/stories/ui/StoriesRanking/StoriesRankingDropdown';
+import StoriesRankingToggle from '@/features/stories/ui/StoriesRanking/StoriesRankingToggle';
 
 interface StoriesRankingHeaderProps extends StoriesRankingPeriodState {
   isRankingOpen: boolean;

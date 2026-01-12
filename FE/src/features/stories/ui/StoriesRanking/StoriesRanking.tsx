@@ -1,9 +1,9 @@
 'use client';
 
-import { useStoriesRankingPeriod } from '../../model/useStoriesRanking';
-import { useStoriesRankingToggle } from '../../model/useStoriesRankingToggle';
-import StoriesRankingCard from './StoriesRankingCard/StoriesRankingCard';
-import StoriesRankingHeader from './StoriesRankingHeader/StoriesRankingHeader';
+import { useStoriesRankingPeriod } from '@/features/stories/model/useStoriesRanking';
+import { useStoriesRankingToggle } from '@/features/stories/model/useStoriesRankingToggle';
+import StoriesRankingCard from '@/features/stories/ui/StoriesRanking/StoriesRankingCard';
+import StoriesRankingHeader from '@/features/stories/ui/StoriesRanking/StoriesRankingHeader';
 
 const StoriesRanking = () => {
   const { isDropdownOpen, toggleDropdown, selected, selectOption, options } =
