@@ -14,10 +14,8 @@ datasource db {
   provider = "mysql"
 }
 
-model User {
-  id        Int    @id @default(autoincrement())
-  userId   String    @unique @map("user_id")
-  password  String
+model Member {
+  id        BigInt    @id @default(autoincrement())
   nickname  String
   avatarUrl String? @map("avatar_url")
   cohort    Int?      @db.TinyInt
@@ -27,33 +25,32 @@ model User {
   questions Question[]
   answers   Answer[]
 
-  @@map("users")
+  @@map("members")
 }
 
 model Question {
-  id                 Int    @id @default(autoincrement())
-  userId            Int @map("user_id")
-  acceptedAnswerId Int?    @unique @map("accepted_answer_id")
+  id                 BigInt    @id @default(autoincrement())
+  memberId            BigInt @map("member_id")
   title              String
   contents           String
   hashtags           String?
   likeCount         Int       @default(0) @map("like_count")
   viewCount         Int       @default(0) @map("view_count")
   answerCount       Int       @default(0) @map("answer_count")
+  isResolved        Boolean   @default(false) @map("is_resolved")
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at")
 
-  user    User      @relation(fields: [userId], references: [id])
+  member    Member      @relation(fields: [memberId], references: [id])
   answers Answer[]  @relation("QuestionAnswers")
-  acceptedAnswer Answer? @relation("AcceptedAnswer", fields: [acceptedAnswerId], references: [id])
 
   @@map("questions")
 }
 
 model Answer {
-  id          Int    @id @default(autoincrement())
-  questionId Int @map("question_id")
-  userId     Int @map("user_id")
+  id          BigInt    @id @default(autoincrement())
+  questionId BigInt @map("question_id")
+  memberId     BigInt @map("member_id")
   contents    String
   likeCount  Int       @default(0) @map("like_count")
   isAccepted Boolean   @default(false) @map("is_accepted")
@@ -62,8 +59,7 @@ model Answer {
   updatedAt  DateTime  @default(now()) @updatedAt @map("updated_at")
 
   question      Question @relation("QuestionAnswers", fields: [questionId], references: [id])
-  user     User     @relation(fields: [userId], references: [id])
-  acceptedIn Question? @relation("AcceptedAnswer")
+  member     Member     @relation(fields: [memberId], references: [id])
 
   @@map("answers")
 }
