@@ -39,6 +39,69 @@
   --font-sans: var(--font-pretendard), ui-sans-serif, system-ui, sans-serif;
 }
 
+@layer utilities {
+  /* Display (Bold) */
+  .text-display-32 {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+  .text-display-24 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+  .text-display-20 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+  .text-display-16 {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  /* String (Medium) */
+  .text-string-20 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  .text-string-16 {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  .text-string-14 {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  .text-string-12 {
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  /* Body (Regular) */
+  .text-body-16 {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+  .text-body-14 {
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+  .text-body-12 {
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+}
+
 body {
   background-color: var(--color-grayscale-200);
 }
