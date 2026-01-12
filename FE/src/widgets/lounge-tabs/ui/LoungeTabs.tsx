@@ -17,12 +17,12 @@ export const LoungeTabs = () => {
   const pathname = usePathname();
 
   return (
-    <div className="bg-[#F0F4FA]">
+    <div className="bg-[#F0F4FA] w-full">
       <div className="mb-8">
-        <h2 className="text-3xl font-bold mb-4">라운지</h2>
+        <h2 className="mb-4 font-bold text-3xl">라운지</h2>
         <p className="text-gray-600">BoostUS 커뮤니티 공간</p>
       </div>
-      <div className="flex gap-2 mb-8 border-b border-b-gray-300 overflow-x-auto">
+      <div className="flex gap-2 mb-8 border-b border-b-gray-300 w-full overflow-x-auto">
         {TABS.map((tab) => {
           // 현재 활성화 여부 체크
           const isActive = tab.exact

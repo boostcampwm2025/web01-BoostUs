@@ -6,7 +6,7 @@ export default function LoungeLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="w-full max-w-7xl">
       <LoungeTabs />
       {children}
     </div>

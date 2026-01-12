@@ -12,10 +12,13 @@ const tagColors = [
 ];
 
 const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+  // Handle ISO date strings properly to avoid timezone issues
+  const date = new Date(
+    dateString.includes('T') ? dateString : dateString + 'T00:00:00Z'
+  );
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(date.getUTCDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 };
 
@@ -27,16 +30,16 @@ export const QuestionCard = ({ data }: Props) => {
   return (
     <Link
       href={`/question/${data.id}`}
-      className="block bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer overflow-hidden"
+      className="block bg-white shadow-sm hover:shadow-md border border-gray-100 rounded-xl overflow-hidden transition-all cursor-pointer"
     >
       <div className="flex">
         {/* 왼쪽: 통계 */}
-        <div className="w-24 sm:w-32 bg-gray-50 p-4 flex flex-col items-center justify-center gap-4 border-r border-r-gray-200 shrink-0">
+        <div className="flex flex-col justify-center items-center gap-4 bg-gray-50 p-4 border-r border-r-gray-200 w-24 sm:w-32 shrink-0">
           <div className="text-center">
-            <div className="text-xl sm:text-2xl font-bold text-gray-900">
+            <div className="font-bold text-gray-900 text-xl sm:text-2xl">
               {data.likeCount}
             </div>
-            <div className="text-xs text-gray-500">추천</div>
+            <div className="text-gray-500 text-xs">추천</div>
           </div>
           <div className="text-center">
             <div
@@ -44,20 +47,20 @@ export const QuestionCard = ({ data }: Props) => {
             >
               {data.answerCount}
             </div>
-            <div className="text-xs text-gray-500">답변</div>
+            <div className="text-gray-500 text-xs">답변</div>
           </div>
-          <div className="text-center hidden sm:block">
-            <div className="text-lg font-medium text-gray-600">
+          <div className="hidden sm:block text-center">
+            <div className="font-medium text-gray-600 text-lg">
               {data.viewCount}
             </div>
-            <div className="text-xs text-gray-500">조회</div>
+            <div className="text-gray-500 text-xs">조회</div>
           </div>
         </div>
 
         {/* 오른쪽: 내용 */}
         <div className="flex-1 p-4 sm:p-6 min-w-0">
-          <div className="flex items-start justify-between mb-3">
-            <h2 className="text-lg sm:text-xl font-semibold hover:text-[#005CFD] transition-colors flex-1 flex items-center gap-2 pr-2 min-w-0">
+          <div className="flex justify-between items-start mb-3">
+            <h2 className="flex flex-1 items-center gap-2 pr-2 min-w-0 font-semibold hover:text-[#005CFD] text-lg sm:text-xl transition-colors">
               <span className="truncate">{data.title}</span>
               {data.isResolved && (
                 <Check className="w-5 h-5 text-green-600 shrink-0" />
@@ -65,11 +68,11 @@ export const QuestionCard = ({ data }: Props) => {
             </h2>
           </div>
 
-          <p className="text-gray-600 mb-4 line-clamp-2 text-sm sm:text-base">
+          <p className="mb-4 text-gray-600 text-sm sm:text-base line-clamp-2">
             {data.summary}
           </p>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex sm:flex-row flex-col justify-between sm:items-center gap-4">
             <div className="flex flex-wrap gap-2">
               {data.hashtags.map((tag, i) => (
                 <span
@@ -82,18 +85,18 @@ export const QuestionCard = ({ data }: Props) => {
               ))}
             </div>
 
-            <div className="flex items-center gap-3 text-sm text-gray-500">
+            <div className="flex items-center gap-3 text-gray-500 text-sm">
               <div className="flex items-center gap-2">
                 <img
                   src={data.user.avatarUrl}
                   alt={data.user.nickname}
-                  className="w-6 h-6 rounded-full"
+                  className="rounded-full w-6 h-6"
                 />
                 <div>
-                  <span className="font-medium text-gray-700 mr-1">
+                  <span className="mr-1 font-medium text-gray-700">
                     {data.user.nickname}
                   </span>
-                  <span className="text-xs text-gray-400">
+                  <span className="text-gray-400 text-xs">
                     ({data.user.cohort}pt)
                   </span>
                 </div>

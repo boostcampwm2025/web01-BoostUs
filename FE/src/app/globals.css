@@ -10,3 +10,12 @@ html {
   /* 스크롤바 자리를 미리 확보 */
   scrollbar-gutter: stable;
 }
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
