@@ -1,7 +1,7 @@
-import StoriesHeader from '@/features/stories/ui/StoriesHeader';
-import StoriesList from '@/features/stories/ui/StoriesList/StoriesList';
+import StoriesHeader from '@/features/stories/ui/Header';
+import StoriesSearchBar from '@/features/stories/ui/SearchBar';
+import StoriesList from '@/features/stories/ui/StoriesList';
 import StoriesRanking from '@/features/stories/ui/StoriesRanking/StoriesRanking';
-import StoriesSearchBar from '@/features/stories/ui/StoriesSearchBar/StoriesSearchBar';
 
 const StoriesPage = () => {
   return (

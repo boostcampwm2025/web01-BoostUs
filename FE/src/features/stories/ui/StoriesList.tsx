@@ -1,6 +1,6 @@
-import StoriesCard from '../StoriesCard/StoriesCard';
-import StoriesListDropdown from '../StoriesListDropdown/StoriesListDropdown';
-import storiesMockData from '../../api/storiesMock.json';
+import StoriesCard from '@/features/stories/ui/StoriesCard';
+import StoriesListDropdown from '@/features/stories/ui/StoriesListDropdown';
+import storiesMockData from '@/features/stories/api/storiesMock.json';
 
 const StoriesList = () => {
   const stories = storiesMockData.data.items;
