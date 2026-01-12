@@ -14,56 +14,52 @@ datasource db {
   provider = "mysql"
 }
 
-model User {
-  id        Int    @id @default(autoincrement())
-  user_id   String    @unique
-  password  String
+model Member {
+  id        BigInt    @id @default(autoincrement())
   nickname  String
-  avatar_url String?
+  avatarUrl String? @map("avatar_url")
   cohort    Int?      @db.TinyInt
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now()) @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
   questions Question[]
   answers   Answer[]
 
-  @@map("users")
+  @@map("members")
 }
 
 model Question {
-  id                 Int    @id @default(autoincrement())
-  user_id            Int
-  accepted_answer_id Int?    @unique
+  id                 BigInt    @id @default(autoincrement())
+  memberId            BigInt @map("member_id")
   title              String
   contents           String
   hashtags           String?
-  like_count         Int       @default(0)
-  view_count         Int       @default(0)
-  answer_count       Int       @default(0)
-  created_at         DateTime  @default(now())
-  updated_at         DateTime  @default(now()) @updatedAt
+  likeCount         Int       @default(0) @map("like_count")
+  viewCount         Int       @default(0) @map("view_count")
+  answerCount       Int       @default(0) @map("answer_count")
+  isResolved        Boolean   @default(false) @map("is_resolved")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at")
 
-  user    User      @relation(fields: [user_id], references: [id])
+  member    Member      @relation(fields: [memberId], references: [id])
   answers Answer[]  @relation("QuestionAnswers")
-  accepted_answer Answer? @relation("AcceptedAnswer", fields: [accepted_answer_id], references: [id])
 
   @@map("questions")
 }
 
 model Answer {
-  id          Int    @id @default(autoincrement())
-  question_id Int
-  user_id     Int
+  id          BigInt    @id @default(autoincrement())
+  questionId BigInt @map("question_id")
+  memberId     BigInt @map("member_id")
   contents    String
-  like_count  Int       @default(0)
-  is_accepted Boolean   @default(false)
-  view_count  Int       @default(0)
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @default(now()) @updatedAt
+  likeCount  Int       @default(0) @map("like_count")
+  isAccepted Boolean   @default(false) @map("is_accepted")
+  viewCount  Int       @default(0) @map("view_count")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @default(now()) @updatedAt @map("updated_at")
 
-  question      Question @relation("QuestionAnswers", fields: [question_id], references: [id])
-  user     User     @relation(fields: [user_id], references: [id])
-  accepted_in Question? @relation("AcceptedAnswer")
+  question      Question @relation("QuestionAnswers", fields: [questionId], references: [id])
+  member     Member     @relation(fields: [memberId], references: [id])
 
   @@map("answers")
 }
