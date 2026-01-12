@@ -1,18 +1,23 @@
 'use client';
 
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { useStoriesRankingToggle } from '../../model/useStoriesRankingToggle';
 
-const StoriesRankingToggle = () => {
-  const { isOpen, rankingToggle } = useStoriesRankingToggle();
+interface StoriesRankingToggleProps {
+  isRankingOpen: boolean;
+  rankingToggle: () => void;
+}
 
+const StoriesRankingToggle = ({
+  isRankingOpen,
+  rankingToggle,
+}: StoriesRankingToggleProps) => {
   return (
     <button
       onClick={rankingToggle}
       type="button"
       className="flex flex-row items-center cursor-pointer"
     >
-      {isOpen ? (
+      {isRankingOpen ? (
         <>
           <span className="text-neutral-text-strong text-string-16">
             랭킹 닫기

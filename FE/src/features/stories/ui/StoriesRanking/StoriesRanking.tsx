@@ -1,22 +1,34 @@
 'use client';
 
-import { useStoriesRanking } from '../../model/useStoriesRanking';
-import StoriesRankingDropdown from '../StoriesRankingDropdown/StoriesRankingDropdown';
-import StoriesRankingToggle from '../StoriesRankingToggle.tsx/StoriesRankingToggle';
+import { useStoriesRankingPeriod } from '../../model/useStoriesRanking';
+import { useStoriesRankingToggle } from '../../model/useStoriesRankingToggle';
+import StoriesRankingCard from './StoriesRankingCard/StoriesRankingCard';
+import StoriesRankingHeader from './StoriesRankingHeader/StoriesRankingHeader';
 
 const StoriesRanking = () => {
-  const { isOpen, selected, toggleDropdown, options } = useStoriesRanking();
+  const { isDropdownOpen, toggleDropdown, selected, selectOption, options } =
+    useStoriesRankingPeriod();
+  const { isRankingOpen, rankingToggle } = useStoriesRankingToggle();
+
+  // TODO: 실제 데이터로 교체 필요
+  const cards = Array.from({ length: 5 }, (_, index) => index);
 
   return (
-    <div className="flex flex-col w-full px-2 py-4 border border-neutral-border-default rounded-2xl bg-neutral-surface-bold">
-      <div className="flex flex-row items-center justify-between">
-        <StoriesRankingDropdown
-          selected={selected}
-          toggleDropdown={toggleDropdown}
-        />
-        <StoriesRankingToggle />
-      </div>
-    </div>
+    <section className="h-fit flex flex-col w-full border border-neutral-border-default rounded-2xl bg-neutral-surface-bold">
+      <StoriesRankingHeader
+        isDropdownOpen={isDropdownOpen}
+        toggleDropdown={toggleDropdown}
+        selected={selected}
+        selectOption={selectOption}
+        options={options}
+        isRankingOpen={isRankingOpen}
+        rankingToggle={rankingToggle}
+      />
+      {isRankingOpen &&
+        cards.map((index) => (
+          <StoriesRankingCard key={index} hasBorder={index !== 4} />
+        ))}
+    </section>
   );
 };
 

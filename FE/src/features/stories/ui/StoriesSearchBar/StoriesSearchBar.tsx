@@ -7,7 +7,7 @@ const StoriesSearchBar = () => {
       <input
         type="text"
         placeholder="글 검색..."
-        className="w-full ml-2 text-regular-16 text-neutral-text-default focus:outline-none placeholder:text-neutral-text-weak bg-neutral-surface-bold"
+        className="w-full ml-2 text-body-16 text-neutral-text-default focus:outline-none placeholder:text-neutral-text-weak bg-neutral-surface-bold"
       />
     </div>
   );

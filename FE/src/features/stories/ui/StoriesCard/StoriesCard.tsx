@@ -18,7 +18,7 @@ const StoriesCard = ({ story }: StoriesCardProps) => {
         <div className="flex flex-row items-center justify-start gap-2">
           <div className="w-8 h-8 rounded-full bg-grayscale-300" />
           <div className="flex flex-col">
-            <span className="text-body-14 text-neutral-text-strong">
+            <span className="text-body-14 text-neutral-text-default">
               {story.member.nickname}
             </span>
             <span className="text-body-12 text-neutral-text-weak">

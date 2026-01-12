@@ -3,8 +3,8 @@
 import { useState } from 'react';
 
 export const useStoriesRankingToggle = () => {
-  const [isOpen, setIsOpen] = useState<boolean>(true);
-  const rankingToggle = () => setIsOpen(!isOpen);
+  const [isRankingOpen, setIsRankingOpen] = useState<boolean>(true);
+  const rankingToggle = () => setIsRankingOpen(!isRankingOpen);
 
-  return { isOpen, rankingToggle };
+  return { isRankingOpen, rankingToggle };
 };

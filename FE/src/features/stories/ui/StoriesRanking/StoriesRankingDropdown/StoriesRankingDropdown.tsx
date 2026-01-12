@@ -1,16 +1,22 @@
 'use client';
 
+import { StoriesRankingPeriods } from '@/features/stories/model/types';
 import { ChevronDown } from 'lucide-react';
-import type { StoriesRankingPeriod } from '../../model/types';
 
 interface StoriesRankingDropdownProps {
-  selected: StoriesRankingPeriod;
-  toggleDropdown: () => void;
+  isDropdownOpen: boolean;
+  selected: StoriesRankingPeriods;
+  options: StoriesRankingPeriods[];
+  onToggleDropdown: () => void;
+  onSelectOption: (option: StoriesRankingPeriods) => void;
 }
 
 const StoriesRankingDropdown = ({
+  isDropdownOpen,
   selected,
-  toggleDropdown,
+  options,
+  onToggleDropdown: toggleDropdown,
+  onSelectOption: onSelectOption,
 }: StoriesRankingDropdownProps) => {
   return (
     <div className="flex flex-row gap-1">
