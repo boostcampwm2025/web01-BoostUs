@@ -34,6 +34,9 @@
   --color-danger-text-default: var(--color-accent-red);
   --color-danger-surface-default: var(--color-accent-red);
   --color-danger-border-default: var(--color-accent-red);
+
+  --font-pretendard: var(--font-pretendard);
+  --font-sans: var(--font-pretendard), ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
