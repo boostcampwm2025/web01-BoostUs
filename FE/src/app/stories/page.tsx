@@ -1,21 +1,7 @@
-import StoriesHeader from '@/features/stories/ui/Header';
-import StoriesSearchBar from '@/features/stories/ui/SearchBar';
-import StoriesList from '@/features/stories/ui/List';
-import StoriesRanking from '@/features/stories/ui/StoriesRanking/Ranking';
+import StoriesPageContent from '@/features/stories/ui/StoriesPageContent';
 
 const StoriesPage = () => {
-  return (
-    <div className="flex flex-col w-full font-sans max-w-7xl">
-      <StoriesHeader />
-      <div className="grid grid-cols-[7fr_3fr] gap-8 mt-8">
-        <div className="flex flex-col w-full gap-8">
-          <StoriesSearchBar />
-          <StoriesList />
-        </div>
-        <StoriesRanking />
-      </div>
-    </div>
-  );
+  return <StoriesPageContent />;
 };
 
 export default StoriesPage;

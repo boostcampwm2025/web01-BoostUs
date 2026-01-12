@@ -1,14 +1,20 @@
 'use client';
 
 import { useStoriesRankingPeriod } from '@/features/stories/model/useStoriesRanking';
-import { useStoriesRankingToggle } from '@/features/stories/model/useStoriesRankingToggle';
 import StoriesRankingCard from '@/features/stories/ui/StoriesRanking/RankingCard';
 import StoriesRankingHeader from '@/features/stories/ui/StoriesRanking/RankingHeader';
 
-const StoriesRanking = () => {
+interface StoriesRankingProps {
+  isRankingOpen: boolean;
+  rankingToggle: () => void;
+}
+
+const StoriesRanking = ({
+  isRankingOpen,
+  rankingToggle,
+}: StoriesRankingProps) => {
   const { isDropdownOpen, toggleDropdown, selected, selectOption, options } =
     useStoriesRankingPeriod();
-  const { isRankingOpen, rankingToggle } = useStoriesRankingToggle();
 
   // TODO: 실제 데이터로 교체 필요
   const cards = Array.from({ length: 5 }, (_, index) => index);
