@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 const NAV_ITEMS = [
   { href: '/', label: '서비스 소개' },
   { href: '/project', label: '프로젝트' },
-  { href: '/blog', label: '캠퍼들의 이야기' },
+  { href: '/stories', label: '캠퍼들의 이야기' },
   { href: '/qna', label: '질문 & 답변' },
 ];
 
