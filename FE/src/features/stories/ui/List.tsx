@@ -1,5 +1,5 @@
-import StoriesCard from '@/features/stories/ui/StoriesCard';
-import StoriesListDropdown from '@/features/stories/ui/StoriesListDropdown';
+import StoriesCard from '@/features/stories/ui/Card';
+import StoriesListDropdown from '@/features/stories/ui/ListDropdown';
 import storiesMockData from '@/features/stories/api/storiesMock.json';
 
 const StoriesList = () => {

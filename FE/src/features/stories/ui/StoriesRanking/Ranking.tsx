@@ -2,8 +2,8 @@
 
 import { useStoriesRankingPeriod } from '@/features/stories/model/useStoriesRanking';
 import { useStoriesRankingToggle } from '@/features/stories/model/useStoriesRankingToggle';
-import StoriesRankingCard from '@/features/stories/ui/StoriesRanking/StoriesRankingCard';
-import StoriesRankingHeader from '@/features/stories/ui/StoriesRanking/StoriesRankingHeader';
+import StoriesRankingCard from '@/features/stories/ui/StoriesRanking/RankingCard';
+import StoriesRankingHeader from '@/features/stories/ui/StoriesRanking/RankingHeader';
 
 const StoriesRanking = () => {
   const { isDropdownOpen, toggleDropdown, selected, selectOption, options } =
