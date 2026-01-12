@@ -21,5 +21,6 @@ module.exports = {
     // footer: "해결된 이슈가 있다면 입력하세요 (예: #123, 선택 사항):\n",
     confirmCommit: "이대로 커밋하시겠습니까?",
   },
+  skipQuestions: ['scope', 'customScope', 'breaking', 'footer'], // scope, breaking, footer 등 불필요한 질문은 건너뜁니다.
   subjectLimit: 100,
 };
