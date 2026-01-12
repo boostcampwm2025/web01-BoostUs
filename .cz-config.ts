@@ -13,11 +13,9 @@ module.exports = {
   ],
   messages: {
     type: "커밋 타입을 선택하세요:",
-    scope: "\n커밋의 범위(scope)를 입력하세요 (선택 사항):",
     customScope: "커밋의 범위(scope)를 직접 입력하세요:",
     subject: "커밋 제목을 입력하세요 (짧고 간결하게):",
     body: '커밋 본문을 입력하세요 (줄바꿈은 "|" 사용, 선택 사항):\n',
-    breaking: "Breaking Changes가 있다면 입력하세요 (선택 사항):\n",
     footer: "해결된 이슈가 있다면 입력하세요 (예: #123, 선택 사항):\n",
     confirmCommit: "이대로 커밋하시겠습니까?",
   },
