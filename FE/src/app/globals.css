@@ -37,6 +37,8 @@
 
   --font-pretendard: var(--font-pretendard);
   --font-sans: var(--font-pretendard), ui-sans-serif, system-ui, sans-serif;
+
+  --shadow-default: 0 0 8px 0 rgba(20, 20, 43, 0.08);
 }
 
 @layer utilities {
