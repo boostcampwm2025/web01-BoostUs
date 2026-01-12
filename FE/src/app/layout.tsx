@@ -25,7 +25,7 @@ export default function RootLayout({
     <html lang="en" className={`${pretendard.variable}`}>
       <body className="flex flex-col min-h-screen font-sans antialiased">
         <Header />
-        <main className="flex flex-col items-center flex-1 w-full px-4 pt-32 bg-neutral-surface-default">
+        <main className="flex flex-col items-center flex-1 w-full px-4 py-32 bg-neutral-surface-default">
           {children}
         </main>
         <Footer />
