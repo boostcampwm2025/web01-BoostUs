@@ -1,4 +1,4 @@
-import ProjectDetailModal from '@/widgets/modal/ProjectDetailModal';
+import ProjectDetailModal from '@/widgets/Modal/ProjectDetailModal';
 
 export default function ProjectDetailModalPage() {
   return (

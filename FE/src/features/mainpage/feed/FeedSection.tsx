@@ -1,5 +1,5 @@
-import FeedCard from "./FeedCard";
-import FeedHeader from "./FeedHeader";
+import FeedCard from './FeedCard';
+import FeedHeader from './FeedHeader';
 
 const FeedSection = () => {
   return (
