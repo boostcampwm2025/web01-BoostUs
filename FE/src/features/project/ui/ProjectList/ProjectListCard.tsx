@@ -3,6 +3,7 @@ import paint from '../../../../../public/assets/paint.png';
 import Link from 'next/link';
 import TogglePill from '@/shared/ui/TogglePill';
 import { Eye } from 'lucide-react';
+import TechList from '@/features/project/ui/ProjectList/TechList';
 
 interface ProjectCardProps {
   project: {
@@ -22,17 +23,17 @@ const ProjectListCard = ({ project }: ProjectCardProps) => {
   return (
     <Link
       href={`/project/${project.id.toString()}`}
-      className="rounded-xl bg-white shadow"
+      className="block h-full rounded-xl bg-white shadow"
       scroll={false}
     >
-      <article className="h-full overflow-hidden rounded-xl bg-white shadow">
-        <div className="relative w-full">
+      <article className="flex h-full flex-col overflow-hidden rounded-xl bg-white shadow">
+        <div className="relative w-full shrink-0">
+          {' '}
           <Image
-            src={paint} // 실제로는 project.thumbnailUrl ?? paint 처럼 처리 필요할 수 있음
+            src={paint}
             alt={project.title}
             className="w-full object-cover"
           />
-
           <div className="absolute top-2 right-4 z-10">
             <TogglePill
               title={project.cohort.toString() + '기'}
@@ -41,14 +42,23 @@ const ProjectListCard = ({ project }: ProjectCardProps) => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 px-4 py-4">
-          <span className="text-xl font-bold">{project.title}</span>
-          <span className="text-md line-clamp-2 text-gray-600">
+        <div className="flex flex-1 flex-col gap-2 px-4 pt-4 pb-2">
+          <span className="text-display-bold20 text-neutral-text-strong font-bold">
+            {project.title}
+          </span>
+          <span className="text-body-regular14 text-neutral-text-weak line-clamp-2 pb-2">
             {project.description}
           </span>
-          <div className="flex flex-row items-center justify-end gap-2">
-            <span className="flex flex-row items-center gap-1 text-sm font-light text-gray-500">
-              {project.views} <Eye size={16} className="text-gray-500" />
+
+          <div className="mb- mt-auto mb-2 flex flex-row justify-between gap-2">
+            <div className="flex flex-row flex-wrap gap-2">
+              {project.techStack.map((tech, index) => (
+                <TechList key={index} title={tech} />
+              ))}
+            </div>
+            <span className="text-neutral-text-weak flex shrink-0 flex-row items-center gap-1 self-end text-sm font-light">
+              {project.views}{' '}
+              <Eye size={16} className="text-neutral-text-weak" />
             </span>
           </div>
         </div>
