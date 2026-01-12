@@ -27,6 +27,8 @@ async function main() {
     where: { id: 1n },
     update: {},
     create: {
+      githubUniqueId: '29221823',
+      githubLogin: 'JangDongHo',
       nickname: 'willy',
       avatarUrl: 'https://avatars.githubusercontent.com/u/29221823?v=4',
       cohort: 10,
