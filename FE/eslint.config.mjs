@@ -2,6 +2,7 @@ import js from '@eslint/js';
 import ts from 'typescript-eslint';
 import react from 'eslint-plugin-react';
 import hooks from 'eslint-plugin-react-hooks';
+import nextConfig from 'eslint-config-next';
 import prettier from 'eslint-plugin-prettier/recommended';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -53,7 +54,7 @@ export default ts.config(
     rules: {
       // --- React & Next.js 필수 규칙 ---
       ...hooks.configs.recommended.rules,
-      ...next.configs.recommended.rules,
+      ...nextConfig.rules,
       'react/jsx-key': 'error',
 
       // --- Rush Stack 스타일의 엄격한 규칙 (커스텀) ---
