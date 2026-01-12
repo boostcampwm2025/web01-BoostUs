@@ -1,10 +1,22 @@
 import TogglePill from '@/shared/ui/TogglePill';
 
-export default function TogglePills({ sort }: { sort: string[] }) {
+interface TogglePillsProps {
+  sort: string[];
+  onChange: (value: string) => void;
+  selected: string;
+}
+
+export default function TogglePills({
+  sort,
+  selected,
+  onChange,
+}: TogglePillsProps) {
   return (
     <div className="flex flex-wrap gap-2">
       {sort.map((item) => (
-        <TogglePill key={item} title={item} />
+        <div key={item} onClick={() => onChange(item)}>
+          <TogglePill title={item} isSelected={item === selected} />
+        </div>
       ))}
     </div>
   );

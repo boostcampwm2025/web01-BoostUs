@@ -1,4 +1,4 @@
-const generations = [
+const cohort = [
   '전체',
   '10기',
   '9기',
@@ -13,4 +13,4 @@ const generations = [
 ];
 const field = ['전체', 'Web', 'IOS', 'Android'];
 
-export { generations, field };
+export { cohort, field };
