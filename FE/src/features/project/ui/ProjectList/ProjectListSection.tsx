@@ -58,15 +58,15 @@ const mockProjects: ProjectData[] = [
 
 const ProjectListSection = () => {
   return (
-    <section className="flex flex-col gap-4 mt-8 mb-20 w-full">
-      <span className="text-black text-sm">
+    <section className="mt-8 mb-20 flex w-full flex-col gap-4">
+      <span className="text-sm text-black">
         총{' '}
-        <span className="font-semibold text-blue-700 text-sm">
+        <span className="text-sm font-semibold text-blue-700">
           {mockProjects.length}
         </span>
         개의 프로젝트
       </span>
-      <div className="gap-4 grid grid-cols-4 w-full">
+      <div className="grid w-full grid-cols-4 gap-4">
         {mockProjects.map((project) => (
           <ProjectListCard key={project.id} project={project} />
         ))}
