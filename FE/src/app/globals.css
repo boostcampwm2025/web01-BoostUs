@@ -1,9 +1,43 @@
 @import 'tailwindcss';
 
+@theme {
+  --color-grayscale-50: #fefefe;
+  --color-grayscale-100: #f9fafb;
+  --color-grayscale-200: #f0f4fa;
+  --color-grayscale-300: #e5e7eb;
+  --color-grayscale-400: #bec1d5;
+  --color-grayscale-500: #a0a3bd;
+  --color-grayscale-600: #6e7191;
+  --color-grayscale-700: #4e4b66;
+  --color-grayscale-800: #2a2a44;
+  --color-grayscale-900: #14142b;
 
+  --color-accent-blue: #005cfd;
+  --color-accent-red: #ff3b30;
+
+  --color-neutral-text-weak: var(--color-grayscale-600);
+  --color-neutral-text-default: var(--color-grayscale-700);
+  --color-neutral-text-strong: var(--color-grayscale-900);
+
+  --color-neutral-surface-default: var(--color-grayscale-200);
+  --color-neutral-surface-bold: var(--color-grayscale-100);
+  --color-neutral-surface-strong: var(--color-grayscale-50);
+
+  --color-neutral-border-default: var(--color-grayscale-300);
+  --color-neutral-border-active: var(--color-grayscale-900);
+
+  --color-brand-surface-weak: var(--color-grayscale-200);
+  --color-brand-surface-default: var(--color-accent-blue);
+
+  --color-brand-border-default: var(--color-accent-blue);
+
+  --color-danger-text-default: var(--color-accent-red);
+  --color-danger-surface-default: var(--color-accent-red);
+  --color-danger-border-default: var(--color-accent-red);
+}
 
 body {
-  background-color: #F0F4FA;
+  background-color: var(--color-grayscale-200);
 }
 
 html {
