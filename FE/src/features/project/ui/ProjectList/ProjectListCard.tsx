@@ -2,6 +2,7 @@ import Image from 'next/image';
 import paint from '../../../../../public/assets/paint.png';
 import Link from 'next/link';
 import TogglePill from '@/shared/ui/TogglePill';
+import { Eye } from 'lucide-react';
 
 interface ProjectCardProps {
   project: {
@@ -13,6 +14,7 @@ interface ProjectCardProps {
     techStack: string[];
     createdAt: string;
     updatedAt: string;
+    views: number;
   };
 }
 
@@ -44,6 +46,11 @@ const ProjectListCard = ({ project }: ProjectCardProps) => {
           <span className="text-md line-clamp-2 text-gray-600">
             {project.description}
           </span>
+          <div className="flex flex-row items-center justify-end gap-2">
+            <span className="flex flex-row items-center gap-1 text-sm font-light text-gray-500">
+              {project.views} <Eye size={16} className="text-gray-500" />
+            </span>
+          </div>
         </div>
       </article>
     </Link>

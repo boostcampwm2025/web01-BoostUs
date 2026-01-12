@@ -13,6 +13,7 @@ interface ProjectData {
   createdAt: string;
   updatedAt: string;
   field: string;
+  views: number;
 }
 
 const mockProjects: ProjectData[] = [
@@ -27,6 +28,7 @@ const mockProjects: ProjectData[] = [
     createdAt: '2024-07-01T10:00:00',
     updatedAt: '2024-08-20T15:30:00',
     field: 'Web',
+    views: 123,
   },
   {
     id: 2,
@@ -39,6 +41,7 @@ const mockProjects: ProjectData[] = [
     createdAt: '2024-09-01T09:00:00',
     updatedAt: '2024-10-01T12:00:00',
     field: 'IOS',
+    views: 456,
   },
   {
     id: 3,
@@ -50,6 +53,7 @@ const mockProjects: ProjectData[] = [
     createdAt: '2024-06-15T14:20:00',
     updatedAt: '2024-09-10T08:45:00',
     field: 'Web',
+    views: 789,
   },
   {
     id: 4,
@@ -61,6 +65,7 @@ const mockProjects: ProjectData[] = [
     createdAt: '2024-08-05T11:30:00',
     updatedAt: '2024-09-20T16:15:00',
     field: 'Android',
+    views: 100,
   },
 ];
 
