@@ -2,6 +2,8 @@
 import { useSearchParams } from 'next/navigation';
 
 import ProjectListCard from './ProjectListCard';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import { useState } from 'react';
 
 interface ProjectData {
   id: number;
@@ -70,25 +72,49 @@ const mockProjects: ProjectData[] = [
 ];
 
 const ProjectListSection = () => {
+  const [sortOrder, setSortOrder] = useState<'팀 번호 순' | '조회수 순'>(
+    '팀 번호 순'
+  );
   const searchParams = useSearchParams();
   const field = searchParams.get('field') ?? '전체';
   const cohort = searchParams.get('cohort') ?? '전체';
 
-  const filteredProjects = mockProjects.filter((project) => {
-    if (field !== '전체' && project.field !== field) return false;
-    if (cohort !== '전체' && project.cohort !== parseInt(cohort)) return false;
-    return true;
-  });
+  const filteredProjects = mockProjects
+    .filter((project) => {
+      if (field !== '전체' && project.field !== field) return false;
+      return !(cohort !== '전체' && project.cohort !== parseInt(cohort));
+    })
+    .sort((a, b) => {
+      if (sortOrder === '팀 번호 순') {
+        return a.cohort - b.cohort;
+      } else {
+        return b.views - a.views;
+      }
+    });
 
   return (
     <section className="mt-8 mb-20 flex w-full flex-col gap-4">
-      <span className="text-sm text-black">
-        총{' '}
-        <span className="text-sm font-semibold text-blue-700">
-          {mockProjects.length}
+      <div className="flex flex-row justify-between">
+        <span className="text-strong-medium16 text-black">
+          총{' '}
+          <span className="text-strong-medium16 font-semibold text-blue-700">
+            {filteredProjects.length}
+          </span>
+          개의 프로젝트
         </span>
-        개의 프로젝트
-      </span>
+        <div className="flex flex-wrap gap-2">
+          <button
+            className="text-neutral-text-default text-strong-medium16 flex flex-row items-center gap-1"
+            onClick={() =>
+              setSortOrder(
+                sortOrder === '팀 번호 순' ? '조회수 순' : '팀 번호 순'
+              )
+            }
+          >
+            {sortOrder} <ChevronDown />
+          </button>
+        </div>
+      </div>
       <div className="grid w-full grid-cols-4 gap-8">
         {filteredProjects.map((project) => (
           <ProjectListCard key={project.id} project={project} />
