@@ -10,9 +10,9 @@ const StoriesPageContent = () => {
   const { isRankingOpen, rankingToggle } = useStoriesRankingToggle();
 
   return (
-    <div className="flex flex-col w-full font-sans max-w-7xl">
+    <div className="flex w-full max-w-7xl flex-col font-sans">
       <StoriesHeader />
-      <div className="grid grid-cols-[7fr_3fr] gap-8 mt-8 items-start">
+      <div className="mt-8 grid grid-cols-[7fr_3fr] items-start gap-8">
         <div className="col-span-1">
           <StoriesSearchBar />
         </div>

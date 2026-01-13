@@ -23,3 +23,20 @@ export interface StoriesCard {
 export interface StoriesCardProps {
   story: StoriesCard;
 }
+
+export interface Story {
+  id: string;
+  title: string;
+  summary: string;
+  thumbnailUrl: string;
+  likeCount: number;
+  viewCount: number;
+  originalUrl: string;
+  createdAt: string;
+  member: {
+    id: string;
+    nickname: string;
+    cohort: number;
+    avatarUrl: string;
+  };
+}
