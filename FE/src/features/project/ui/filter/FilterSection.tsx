@@ -43,7 +43,7 @@ const FilterSection = () => {
   return isOpen ? (
     <section className="mt-8 flex w-full flex-col rounded-xl bg-white px-4 py-4 shadow">
       <div className="mb-4 flex flex-col gap-2">
-        <span className={'text-string-medium16'}>기수</span>
+        <span className={'text-string-16'}>기수</span>
         <TogglePills
           sort={data.cohort}
           onChange={handleCohortChange}
@@ -51,7 +51,7 @@ const FilterSection = () => {
         />
       </div>
       <div className="mb-10 flex flex-col gap-2">
-        <span className={'text-string-medium16 text-black'}>분야</span>
+        <span className={'text-string-16 text-black'}>분야</span>
         <TogglePills
           sort={data.field}
           onChange={handleFieldChange}
