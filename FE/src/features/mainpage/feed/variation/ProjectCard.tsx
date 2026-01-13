@@ -1,5 +1,5 @@
-import paint from "../../../../../public/assets/paint.png";
-import Image from "next/image";
+import paint from '../../../../../public/assets/paint.png';
+import Image from 'next/image';
 
 const ProjectCard = () => {
   return (
@@ -11,7 +11,9 @@ const ProjectCard = () => {
         </div>
       </div>
       <span className="font-bold text-lg">실시간 협업 화이트보드</span>
-      <span className="font-light text-gray-700 text-sm">WebSocket 기반 멀티플레이어 드로잉 앱</span>
+      <span className="font-light text-gray-700 text-sm">
+        WebSocket 기반 멀티플레이어 드로잉 앱
+      </span>
     </>
   );
 };

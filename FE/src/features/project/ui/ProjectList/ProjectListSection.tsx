@@ -1,4 +1,7 @@
+'use client';
+
 import ProjectListCard from '@/features/project/ui/ProjectList/ProjectListCard';
+import { useSearchParams } from 'next/navigation';
 
 interface ProjectData {
   id: number;
@@ -9,6 +12,8 @@ interface ProjectData {
   techStack: string[];
   createdAt: string;
   updatedAt: string;
+  field: string;
+  views: number;
 }
 
 const mockProjects: ProjectData[] = [
@@ -22,6 +27,12 @@ const mockProjects: ProjectData[] = [
     techStack: ['NestJS', 'Prisma', 'Next'],
     createdAt: '2024-07-01T10:00:00',
     updatedAt: '2024-08-20T15:30:00',
+    cohort: 10,
+    techStack: ['NestJS', 'Prisma', 'Next'],
+    createdAt: '2024-07-01T10:00:00',
+    updatedAt: '2024-08-20T15:30:00',
+    field: 'Web',
+    views: 123,
   },
   {
     id: 2,
@@ -33,6 +44,8 @@ const mockProjects: ProjectData[] = [
     techStack: ['React', 'NestJS', 'MySQL'],
     createdAt: '2024-09-01T09:00:00',
     updatedAt: '2024-10-01T12:00:00',
+    field: 'IOS',
+    views: 456,
   },
   {
     id: 3,
@@ -43,6 +56,8 @@ const mockProjects: ProjectData[] = [
     techStack: ['Next.js', 'Node.js', 'Socket.io'],
     createdAt: '2024-06-15T14:20:00',
     updatedAt: '2024-09-10T08:45:00',
+    field: 'Web',
+    views: 789,
   },
   {
     id: 4,
@@ -53,21 +68,33 @@ const mockProjects: ProjectData[] = [
     techStack: ['TypeScript', 'FastAPI', 'PostgreSQL'],
     createdAt: '2024-08-05T11:30:00',
     updatedAt: '2024-09-20T16:15:00',
+    field: 'Android',
+    views: 100,
   },
 ];
 
 const ProjectListSection = () => {
+  const searchParams = useSearchParams();
+  const field = searchParams.get('field') ?? '전체';
+  const cohort = searchParams.get('cohort') ?? '전체';
+
+  const filteredProjects = mockProjects.filter((project) => {
+    if (field !== '전체' && project.field !== field) return false;
+    if (cohort !== '전체' && project.cohort !== parseInt(cohort)) return false;
+    return true;
+  });
+
   return (
-    <section className="flex flex-col gap-4 mt-8 mb-20 w-full">
-      <span className="text-black text-sm">
+    <section className="mt-8 mb-20 flex w-full flex-col gap-4">
+      <span className="text-sm text-black">
         총{' '}
-        <span className="font-semibold text-blue-700 text-sm">
+        <span className="text-sm font-semibold text-blue-700">
           {mockProjects.length}
         </span>
         개의 프로젝트
       </span>
-      <div className="gap-4 grid grid-cols-3 w-full">
-        {mockProjects.map((project) => (
+      <div className="grid w-full grid-cols-4 gap-8">
+        {filteredProjects.map((project) => (
           <ProjectListCard key={project.id} project={project} />
         ))}
       </div>
