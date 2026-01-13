@@ -21,7 +21,7 @@ export class ProjectController {
   // 전체조회/조건조회
   @Get()
   findAll(@Query() query: ProjectListQueryDto) {
-    return this.projectService.findAll();
+    return this.projectService.findAll(query);
   }
 
   // 단일조회

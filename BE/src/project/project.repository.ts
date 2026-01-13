@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from 'src/generated/prisma/client';
+import { ProjectListQueryDto } from './dto/project-list-query.dto';
 
 @Injectable()
 export class ProjectRepository {
@@ -11,8 +13,9 @@ export class ProjectRepository {
     });
   }
 
-  async findAll() {
+  async findAll(where?: Prisma.ProjectWhereInput) {
     return this.prisma.project.findMany({
+      where,
       orderBy: { createdAt: 'desc' },
     });
   }

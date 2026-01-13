@@ -131,7 +131,42 @@ async function main() {
     },
   });
 
-  console.log('✅ Created project:', project);
+  const project2 = await prisma.project.upsert({
+    where: { id: 2n },
+    update: {},
+    create: {
+      // 핵심 프로젝트 정보
+      name: '9기의 프로젝트',
+      repoUrl: 'https://github.com/dummy/dummy',
+      oneLineIntro: '부스트캠프 참가자들을 위한 커뮤니티 서비스',
+      thumbnailUrl: 'https://placehold.co/600x400',
+
+      // 프로젝트 기간
+      startDate: new Date('2025-01-01'),
+      endDate: new Date('2025-06-30'),
+
+      // 팀 정보
+      teamNumber: 1,
+      teamName: 'dummy',
+      cohort: 9,
+      field: 'Web',
+
+      // 서비스 정보
+      demoUrl: 'https://dummy.dev',
+      contents: `
+# dummy
+    `,
+
+      // 작성자 연결
+      member: {
+        connect: {
+          id: 1n,
+        },
+      },
+    },
+  });
+
+  console.log('✅ Created project:', project2);
 
   // projectParticipant 생성
   const projectParticipant = await prisma.projectParticipant.upsert({

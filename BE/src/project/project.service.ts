@@ -8,8 +8,9 @@ import { ProjectRepository } from './project.repository';
 export class ProjectService {
   constructor(private readonly projectRepository: ProjectRepository) {}
 
-  async findAll() {
-    return this.projectRepository.findAll();
+  async findAll(query: ProjectListQueryDto) {
+    const where = query.cohort ? { cohort: query.cohort } : undefined;
+    return this.projectRepository.findAll(where);
   }
 
   async findOne(id: number) {
