@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { fetchMockProjectDetail } from '@/entities/projectDetail/api/projectDetailAPI';
 import { Github, ExternalLink, Users, Calendar, X } from 'lucide-react';
-import CloseButton from '@/entities/projectDetail/ui/CloseButton';
+import CloseButton from '@/shared/ui/CloseButton';
 
 export default async function ProjectDetail() {
   const response = await fetchMockProjectDetail();
