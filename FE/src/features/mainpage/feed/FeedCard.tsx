@@ -1,19 +1,20 @@
-import BambooCard from "./variation/BambooCard";
-import BlogCard from "./variation/BlogCard";
-import NoticeCard from "./variation/NoticeCard";
-import ProjectCard from "./variation/ProjectCard";
-import QnaCard from "./variation/QnaCard";
+import BambooCard from './variation/BambooCard';
+import BlogCard from './variation/BlogCard';
+import NoticeCard from './variation/NoticeCard';
+import ProjectCard from './variation/ProjectCard';
+import QnaCard from './variation/QnaCard';
 
-export type FeedType = "blog" | "notice" | "bamboo" | "project" | "qna";
+export type FeedType = 'blog' | 'notice' | 'bamboo' | 'project' | 'qna';
 
 interface FeedTypeProps {
   feedType: FeedType;
 }
 
 const FeedCard = ({ feedType }: FeedTypeProps) => {
-  const commonClasses = "flex flex-col gap-2 shadow px-4 py-4 rounded-xl w-full h-fit break-inside-avoid mb-4";
+  const commonClasses =
+    'flex flex-col gap-2 shadow px-4 py-4 rounded-xl w-full h-fit break-inside-avoid mb-4';
 
-  if (feedType === "blog") {
+  if (feedType === 'blog') {
     return (
       <div className={`${commonClasses} bg-white`}>
         <BlogCard />
@@ -21,7 +22,7 @@ const FeedCard = ({ feedType }: FeedTypeProps) => {
     );
   }
 
-  if (feedType === "notice") {
+  if (feedType === 'notice') {
     return (
       <div className={`${commonClasses} bg-blue-600`}>
         <NoticeCard />
@@ -29,7 +30,7 @@ const FeedCard = ({ feedType }: FeedTypeProps) => {
     );
   }
 
-  if (feedType === "bamboo") {
+  if (feedType === 'bamboo') {
     return (
       <div className={`${commonClasses} bg-green-100`}>
         <BambooCard />
@@ -37,7 +38,7 @@ const FeedCard = ({ feedType }: FeedTypeProps) => {
     );
   }
 
-  if (feedType === "project") {
+  if (feedType === 'project') {
     return (
       <div className={`${commonClasses} bg-white`}>
         <ProjectCard />
@@ -45,7 +46,7 @@ const FeedCard = ({ feedType }: FeedTypeProps) => {
     );
   }
 
-  if (feedType === "qna") {
+  if (feedType === 'qna') {
     return (
       <div className={`${commonClasses} bg-white`}>
         <QnaCard />
