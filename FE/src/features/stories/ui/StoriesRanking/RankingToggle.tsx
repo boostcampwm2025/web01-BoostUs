@@ -4,16 +4,16 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface StoriesRankingToggleProps {
   isRankingOpen: boolean;
-  rankingToggle: () => void;
+  onRankingToggle: () => void;
 }
 
 const StoriesRankingToggle = ({
   isRankingOpen,
-  rankingToggle,
+  onRankingToggle,
 }: StoriesRankingToggleProps) => {
   return (
     <button
-      onClick={rankingToggle}
+      onClick={onRankingToggle}
       type="button"
       className="flex flex-row items-center cursor-pointer"
     >

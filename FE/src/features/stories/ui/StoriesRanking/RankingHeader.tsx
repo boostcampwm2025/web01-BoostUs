@@ -31,7 +31,7 @@ const StoriesRankingHeader = ({
       />
       <StoriesRankingToggle
         isRankingOpen={isRankingOpen}
-        rankingToggle={rankingToggle}
+        onRankingToggle={rankingToggle}
       />
     </div>
   );
