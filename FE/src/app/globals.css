@@ -1,7 +1,117 @@
 @import 'tailwindcss';
+<<<<<<< HEAD
 @config "../../tailwind.config.ts";
 body {
   background-color: #f0f4fa;
+=======
+
+@theme {
+  --color-grayscale-50: #fefefe;
+  --color-grayscale-100: #f9fafb;
+  --color-grayscale-200: #f0f4fa;
+  --color-grayscale-300: #e5e7eb;
+  --color-grayscale-400: #bec1d5;
+  --color-grayscale-500: #a0a3bd;
+  --color-grayscale-600: #6e7191;
+  --color-grayscale-700: #4e4b66;
+  --color-grayscale-800: #2a2a44;
+  --color-grayscale-900: #14142b;
+
+  --color-accent-blue: #005cfd;
+  --color-accent-red: #ff3b30;
+
+  --color-neutral-text-weak: var(--color-grayscale-600);
+  --color-neutral-text-default: var(--color-grayscale-700);
+  --color-neutral-text-strong: var(--color-grayscale-900);
+
+  --color-neutral-surface-default: var(--color-grayscale-200);
+  --color-neutral-surface-bold: var(--color-grayscale-100);
+  --color-neutral-surface-strong: var(--color-grayscale-50);
+
+  --color-neutral-border-default: var(--color-grayscale-300);
+  --color-neutral-border-active: var(--color-grayscale-900);
+
+  --color-brand-surface-weak: var(--color-grayscale-200);
+  --color-brand-surface-default: var(--color-accent-blue);
+
+  --color-brand-border-default: var(--color-accent-blue);
+
+  --color-danger-text-default: var(--color-accent-red);
+  --color-danger-surface-default: var(--color-accent-red);
+  --color-danger-border-default: var(--color-accent-red);
+
+  --font-pretendard: var(--font-pretendard);
+  --font-sans: var(--font-pretendard), ui-sans-serif, system-ui, sans-serif;
+
+  --shadow-default: 0 0 8px 0 rgba(20, 20, 43, 0.08);
+}
+
+@layer utilities {
+  /* Display (Bold) */
+  .text-display-32 {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+  .text-display-24 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+  .text-display-20 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+  .text-display-16 {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  /* String (Medium) */
+  .text-string-20 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  .text-string-16 {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  .text-string-14 {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  .text-string-12 {
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  /* Body (Regular) */
+  .text-body-16 {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+  .text-body-14 {
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+  .text-body-12 {
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+}
+
+body {
+  background-color: var(--color-grayscale-200);
+>>>>>>> b0b0a9b5acc5e6d930c5aa256016eb1aee0deb4e
 }
 
 html {
