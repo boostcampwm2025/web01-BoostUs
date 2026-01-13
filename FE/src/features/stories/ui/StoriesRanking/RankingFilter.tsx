@@ -1,29 +1,20 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useStoriesRankingPeriod } from '@/features/stories/model/useStoriesRanking';
 
 const RankingFilter = () => {
-  const [selectedFilter, setSelectedFilter] = useState<
-    '오늘' | '주간' | '월간' | '전체'
-  >('오늘');
-
-  const filters: ('오늘' | '주간' | '월간' | '전체')[] = [
-    '오늘',
-    '주간',
-    '월간',
-    '전체',
-  ];
+  const { selected, selectOption, options } = useStoriesRankingPeriod();
 
   return (
     <div className="bg-neutral-surface-default flex h-10 w-full flex-row justify-between gap-2 rounded-lg px-1 py-1">
-      {filters.map((filter) => (
+      {options.map((option) => (
         <button
-          key={filter}
-          onClick={() => setSelectedFilter(filter)}
+          key={option}
+          onClick={() => selectOption(option)}
           className="relative flex w-full cursor-pointer items-center justify-center rounded-lg transition-colors duration-300"
         >
-          {selectedFilter === filter && (
+          {selected === option && (
             <motion.div
               layoutId="active-pill"
               className="bg-neutral-surface-bold shadow-default absolute inset-0 rounded-lg"
@@ -32,12 +23,12 @@ const RankingFilter = () => {
           )}
           <span
             className={`relative z-10 ${
-              selectedFilter === filter
+              selected === option
                 ? 'text-string-14 text-neutral-text-strong'
                 : 'text-body-14 text-neutral-text-weak'
             }`}
           >
-            {filter}
+            {option}
           </span>
         </button>
       ))}
