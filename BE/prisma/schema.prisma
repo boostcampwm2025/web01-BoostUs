@@ -14,56 +14,298 @@ datasource db {
   provider = "mysql"
 }
 
-model User {
-  id        Int    @id @default(autoincrement())
-  user_id   String    @unique
-  password  String
-  nickname  String
-  avatar_url String?
-  cohort    Int?      @db.TinyInt
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now()) @updatedAt
-
-  questions Question[]
-  answers   Answer[]
-
-  @@map("users")
+/**
+ * 상태/투표 타입
+ */
+enum State {
+  ACTIVE
+  INACTIVE
 }
 
-model Question {
-  id                 Int    @id @default(autoincrement())
-  user_id            Int
-  accepted_answer_id Int?    @unique
-  title              String
-  contents           String
-  hashtags           String?
-  like_count         Int       @default(0)
-  view_count         Int       @default(0)
-  answer_count       Int       @default(0)
-  created_at         DateTime  @default(now())
-  updated_at         DateTime  @default(now()) @updatedAt
+enum ContentState {
+  PUBLISHED
+  DELETED
+}
 
-  user    User      @relation(fields: [user_id], references: [id])
-  answers Answer[]  @relation("QuestionAnswers")
-  accepted_answer Answer? @relation("AcceptedAnswer", fields: [accepted_answer_id], references: [id])
+enum VoteType {
+  UP
+  DOWN
+}
+
+/**
+ * 사용자
+ * - 깃허브 고유 식별자 id [UQ]  -> githubUniqueId
+ * - 닉네임 [UQ]
+ */
+model Member {
+  id              BigInt  @id @default(autoincrement())
+  githubUniqueId  String  @unique @map("github_unique_id")
+  nickname        String  @unique
+  avatarUrl       String? @map("avatar_url")
+  cohort          Int?    @db.TinyInt
+  state           State   @default(ACTIVE) @map("state")
+  githubLogin     String? @map("github_login") // ERD의 '깃허브id' 용도(로그인 아이디)로 보관
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  // relations
+  projects          Project[]
+  rssFeed           RssFeed?
+  stories           Story[]
+  storyLikes        StoryLike[]
+  questions         Question[]
+  answers           Answer[]
+  questionVotes     QuestionVote[]
+  answerVotes       AnswerVote[]
+
+  @@map("members")
+}
+
+/**
+ * 프로젝트
+ * - 프로젝트명 [UQ]
+ * - 깃허브 레포지토리 URL [UQ]
+ * - 데모 페이지 URL [UQ] (ERD에 UQ 표기)
+ */
+model Project {
+  id             BigInt  @id @default(autoincrement())
+  memberId       BigInt  @map("member_id") // 프로젝트 등록자
+  name           String  @unique @map("name")
+  repoUrl        String  @unique @map("repo_url")
+  oneLineIntro   String? @map("one_line_intro")
+  thumbnailUrl   String? @map("thumbnail_url")
+
+  startDate DateTime? @map("start_date")
+  endDate   DateTime? @map("end_date")
+
+  teamNumber Int?    @map("team_number")
+  teamName   String? @map("team_name")
+  cohort     Int?    @db.TinyInt
+  field      String? @map("field") // Web/iOS/Android
+  demoUrl    String? @unique @map("demo_url")
+
+  contents String? @map("contents") // 마크다운
+  viewCount Int    @default(0) @map("view_count")
+  state     ContentState @default(PUBLISHED) @map("state")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  // relations
+  member         Member                 @relation(fields: [memberId], references: [id])
+  participants   ProjectParticipant[]
+  techStacks     ProjectTechStack[]
+
+  @@map("projects")
+}
+
+/**
+ * 프로젝트 참여 팀원
+ * (ERD: 프로젝트 참여 팀원id, 프로젝트id, 깃허브id, 아바타 이미지 URL)
+ */
+model ProjectParticipant {
+  id         BigInt  @id @default(autoincrement())
+  projectId  BigInt  @map("project_id")
+  githubId   String  @map("github_id")
+  avatarUrl  String? @map("avatar_url")
+
+  project Project @relation(fields: [projectId], references: [id])
+
+  // 한 프로젝트 내 동일 githubId 중복 방지(ERD에는 명시 UQ가 없지만 실무적으로 필요)
+  @@unique([projectId, githubId])
+  @@map("project_participants")
+}
+
+/**
+ * 기술 스택
+ * - 기술 스택명 [UQ]
+ */
+model TechStack {
+  id   BigInt @id @default(autoincrement())
+  name String @unique @map("name")
+
+  projects ProjectTechStack[]
+
+  @@map("tech_stacks")
+}
+
+/**
+ * 프로젝트 기술 스택 (N:M)
+ * - (project_id, tech_stack_id) 유니크
+ */
+model ProjectTechStack {
+  id          BigInt @id @default(autoincrement())
+  projectId   BigInt @map("project_id")
+  techStackId BigInt @map("tech_stack_id")
+
+  project   Project   @relation(fields: [projectId], references: [id])
+  techStack TechStack @relation(fields: [techStackId], references: [id])
+
+  @@unique([projectId, techStackId])
+  @@map("project_tech_stacks")
+}
+
+/**
+ * RSS 피드
+ * ERD: 사용자 1:1 RSS 피드, RSS 피드 URL [UQ]
+ * -> memberId도 유니크로 만들어 1:1 강제
+ */
+model RssFeed {
+  id       BigInt @id @default(autoincrement())
+  memberId BigInt @unique @map("member_id")
+  rssUrl   String @unique @map("rss_url")
+  state    State  @default(ACTIVE) @map("state")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  member  Member @relation(fields: [memberId], references: [id])
+  stories Story[]
+
+  @@map("rss_feeds")
+}
+
+/**
+ * 캠퍼들의 이야기 (Story)
+ * ERD: 사용자id(FK), RSS피드id(FK), 글 제목/요약/내용/썸네일/원본URL, 좋아요 수, 조회수, 상태
+ */
+model Story {
+  id          BigInt @id @default(autoincrement())
+  memberId    BigInt @map("member_id")
+  rssFeedId   BigInt @map("rss_feed_id")
+
+  title       String  @map("title")
+  summary     String? @map("summary")
+  contents    String  @map("contents")
+  thumbnailUrl String? @map("thumbnail_url")
+  originalUrl String? @map("original_url")
+
+  likeCount Int @default(0) @map("like_count")
+  viewCount Int @default(0) @map("view_count")
+
+  state ContentState @default(PUBLISHED) @map("state")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  member  Member  @relation(fields: [memberId], references: [id])
+  rssFeed RssFeed @relation(fields: [rssFeedId], references: [id])
+  likes   StoryLike[]
+
+  @@map("stories")
+}
+
+/**
+ * 캠퍼들의 이야기 좋아요
+ * ERD: 사용자id(FK)[UQ1], 이야기id(FK)[UQ1] => (memberId, storyId) 유니크
+ */
+model StoryLike {
+  id        BigInt   @id @default(autoincrement())
+  memberId  BigInt   @map("member_id")
+  storyId   BigInt   @map("story_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  member Member @relation(fields: [memberId], references: [id])
+  story  Story  @relation(fields: [storyId], references: [id])
+
+  @@unique([memberId, storyId])
+  @@map("story_likes")
+}
+
+/**
+ * 질문
+ * ERD: 사용자id(FK), 제목, 내용(마크다운), 조회수, 추천/비추천 수, 해시태그(콤마구분), 답변 채택 여부, 상태
+ */
+model Question {
+  id           BigInt @id @default(autoincrement())
+  memberId     BigInt @map("member_id")
+
+  title        String @map("title")
+  contents     String @map("contents") // markdown
+  hashtags     String? @map("hashtags") // comma-separated
+
+  viewCount    Int @default(0) @map("view_count")
+  upCount      Int @default(0) @map("up_count")
+  downCount    Int @default(0) @map("down_count")
+
+  isResolved   Boolean @default(false) @map("is_resolved")
+  state        ContentState @default(PUBLISHED) @map("state")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  member Member @relation(fields: [memberId], references: [id])
+
+  answers Answer[]
+  votes   QuestionVote[]
 
   @@map("questions")
 }
 
-model Answer {
-  id          Int    @id @default(autoincrement())
-  question_id Int
-  user_id     Int
-  contents    String
-  like_count  Int       @default(0)
-  is_accepted Boolean   @default(false)
-  view_count  Int       @default(0)
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @default(now()) @updatedAt
+/**
+ * 질문 투표
+ * ERD: 사용자id(FK)[UQ1], 질문id[UQ1], 투표 타입(Up/Down)
+ * => (memberId, questionId) 유니크
+ */
+model QuestionVote {
+  id         BigInt  @id @default(autoincrement())
+  memberId   BigInt  @map("member_id")
+  questionId BigInt  @map("question_id")
+  voteType   VoteType @map("vote_type")
 
-  question      Question @relation("QuestionAnswers", fields: [question_id], references: [id])
-  user     User     @relation(fields: [user_id], references: [id])
-  accepted_in Question? @relation("AcceptedAnswer")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  member   Member   @relation(fields: [memberId], references: [id])
+  question Question @relation(fields: [questionId], references: [id])
+
+  @@unique([memberId, questionId])
+  @@map("question_votes")
+}
+
+/**
+ * 답변
+ * ERD: 질문id(FK), 사용자id(FK), 답변 내용, 채택 여부, 추천/비추천 수, 상태
+ */
+model Answer {
+  id         BigInt @id @default(autoincrement())
+  questionId BigInt @map("question_id")
+  memberId   BigInt @map("member_id")
+
+  contents   String  @map("contents")
+  isAccepted Boolean @default(false) @map("is_accepted")
+
+  upCount    Int @default(0) @map("up_count")
+  downCount  Int @default(0) @map("down_count")
+
+  state      ContentState @default(PUBLISHED) @map("state")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  question Question @relation(fields: [questionId], references: [id])
+  member   Member   @relation(fields: [memberId], references: [id])
+
+  votes AnswerVote[]
 
   @@map("answers")
+}
+
+/**
+ * 답변 투표
+ * ERD: 사용자id(FK)[UQ1], 답변id[UQ1], 투표 타입(Up/Down)
+ * => (memberId, answerId) 유니크
+ */
+model AnswerVote {
+  id       BigInt   @id @default(autoincrement())
+  memberId BigInt   @map("member_id")
+  answerId BigInt   @map("answer_id")
+  voteType VoteType @map("vote_type")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  member Member @relation(fields: [memberId], references: [id])
+  answer Answer @relation(fields: [answerId], references: [id])
+
+  @@unique([memberId, answerId])
+  @@map("answer_votes")
 }
