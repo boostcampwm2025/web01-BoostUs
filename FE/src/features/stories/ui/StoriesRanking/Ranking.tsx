@@ -32,7 +32,10 @@ const StoriesRanking = ({
       />
       {isRankingOpen &&
         cards.map((index) => (
-          <StoriesRankingCard key={index} hasBorder={index !== 4} />
+          <StoriesRankingCard
+            key={index}
+            hasBorder={index !== cards.length - 1}
+          />
         ))}
     </section>
   );
