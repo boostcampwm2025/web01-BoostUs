@@ -5,7 +5,8 @@
     "cz-customizable": "^7.5.1"
   },
   "scripts": {
-    "commit": "cz"
+    "commit": "cz",
+    "commit:push": "git add . && npm run commit && git push"
   },
   "config": {
     "commitizen": {

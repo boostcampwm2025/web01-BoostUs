@@ -1,6 +1,9 @@
 import Image from 'next/image';
 import paint from '../../../../../public/assets/paint.png';
 import Link from 'next/link';
+import TogglePill from '@/shared/ui/TogglePill';
+import { Eye } from 'lucide-react';
+import TechList from '@/features/project/ui/ProjectList/TechList';
 
 interface ProjectCardProps {
   project: {
@@ -12,25 +15,53 @@ interface ProjectCardProps {
     techStack: string[];
     createdAt: string;
     updatedAt: string;
+    views: number;
   };
 }
 
 const ProjectListCard = ({ project }: ProjectCardProps) => {
   return (
     <Link
-      href={`/project/${project.id}`}
-      className="bg-white shadow rounded-xl"
+      href={`/project/${project.id.toString()}`}
+      className="block h-full rounded-xl bg-white shadow"
       scroll={false}
     >
-      <article className="bg-white shadow rounded-xl">
-        <Image
-          src={paint}
-          alt={project.title}
-          className="mb-4 rounded-tl-xl rounded-tr-xl"
-        />
-        <div className="flex flex-col gap-2 px-4 pb-2">
-          <span className="font-bold text-xl">{project.title}</span>
-          <span className="text-gray-600 text-md">{project.description}</span>
+      <article className="flex h-full flex-col overflow-hidden rounded-xl bg-white shadow">
+        <div className="relative w-full shrink-0">
+          {' '}
+          <Image
+            src={paint}
+            alt={project.title}
+            className="w-full object-cover"
+          />
+          <div className="absolute top-2 right-4 z-10">
+            <TogglePill
+              title={project.cohort.toString() + '기'}
+              isSelected={true}
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-1 flex-col gap-2 px-4 pt-4 pb-2">
+          <span className="text-display-bold20 text-neutral-text-strong font-bold">
+            {project.title}
+          </span>
+          <span className="text-body-regular14 text-neutral-text-weak line-clamp-2 pb-2">
+            {project.description}
+          </span>
+
+          <div className="mb- mt-auto mb-2 flex flex-row justify-between gap-2">
+            <div className="flex flex-row flex-wrap gap-2">
+              {project.techStack.map((tech, index) => (
+                <TechList key={index} title={tech} />
+              ))}
+            </div>
+            <span className="text-neutral-text-weak flex shrink-0 flex-row items-center gap-1 self-end text-sm font-light">
+              {project.views}
+              {'  '}
+              <Eye size={16} className="text-neutral-text-weak" />
+            </span>
+          </div>
         </div>
       </article>
     </Link>
