@@ -1,6 +1,6 @@
 import type { Member } from '@/shared/types/MemberType';
 
-export type StoriesRankingPeriods = '오늘' | '주간' | '월간' | '전체';
+export type StoriesRankingPeriods = 'daily' | 'weekly' | 'monthly' | 'all';
 
 export interface StoriesRankingPeriodState {
   selected: StoriesRankingPeriods;

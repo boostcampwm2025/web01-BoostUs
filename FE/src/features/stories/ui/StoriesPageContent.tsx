@@ -1,13 +1,13 @@
 'use client';
 
-import { useStoriesRankingToggle } from '@/features/stories/model/useStoriesRankingToggle';
+import { StoriesProvider, useStoriesContext } from '@/features/stories/model';
 import StoriesHeader from '@/features/stories/ui/Header';
 import StoriesList from '@/features/stories/ui/List';
 import StoriesSearchBar from '@/features/stories/ui/SearchBar';
 import StoriesRanking from '@/features/stories/ui/StoriesRanking/Ranking';
 
-const StoriesPageContent = () => {
-  const { isRankingOpen, rankingToggle } = useStoriesRankingToggle();
+const StoriesLayout = () => {
+  const { isRankingOpen } = useStoriesContext();
 
   return (
     <div className="flex w-full max-w-7xl flex-col font-sans">
@@ -22,10 +22,7 @@ const StoriesPageContent = () => {
           }`}
         >
           <div className="sticky top-8 z-10">
-            <StoriesRanking
-              isRankingOpen={isRankingOpen}
-              rankingToggle={rankingToggle}
-            />
+            <StoriesRanking />
           </div>
         </div>
 
@@ -34,10 +31,18 @@ const StoriesPageContent = () => {
             isRankingOpen ? 'col-span-1' : 'col-span-2'
           }`}
         >
-          <StoriesList isExpanded={!isRankingOpen} />
+          <StoriesList />
         </div>
       </div>
     </div>
+  );
+};
+
+const StoriesPageContent = () => {
+  return (
+    <StoriesProvider>
+      <StoriesLayout />
+    </StoriesProvider>
   );
 };
 
