@@ -1,15 +1,4 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-node_modules/
-.idea/
-.vscode/
-=======
-.DS_Store
-node_modules/
->>>>>>> b0b0a9b5acc5e6d930c5aa256016eb1aee0deb4e
-=======
-node_modules/
 .idea/
 .vscode/
 .DS_Store
->>>>>>> 1165342de305c3b9c50dce2b59bd06d6e25473f1
+node_modules/
