@@ -12,28 +12,32 @@ const StoriesLayout = () => {
   return (
     <div className="flex w-full max-w-7xl flex-col font-sans">
       <StoriesHeader />
-      <div className="mt-8 grid grid-cols-[7fr_3fr] items-start gap-8">
-        <div className="col-span-1">
-          <StoriesSearchBar />
-        </div>
-        <div
-          className={`col-start-2 ${
-            isRankingOpen ? 'row-span-2' : 'row-span-1'
-          }`}
-        >
-          <div className="sticky top-8 z-10">
+
+      {isRankingOpen ? (
+        <div className="mt-8 grid grid-cols-[7fr_3fr] items-start gap-8">
+          <div className="flex flex-col gap-8">
+            <StoriesSearchBar />
+            <StoriesList />
+          </div>
+          <div className="z-10">
             <StoriesRanking />
           </div>
         </div>
-
-        <div
-          className={`row-start-2 ${
-            isRankingOpen ? 'col-span-1' : 'col-span-2'
-          }`}
-        >
-          <StoriesList />
+      ) : (
+        <div className="mt-8 grid grid-cols-[7fr_3fr] items-start gap-8">
+          <div className="col-span-1">
+            <StoriesSearchBar />
+          </div>
+          <div className="col-start-2 row-span-1">
+            <div className="z-10">
+              <StoriesRanking />
+            </div>
+          </div>
+          <div className="col-span-2 row-start-2">
+            <StoriesList />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
