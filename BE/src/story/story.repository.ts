@@ -1,12 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ContentState, Story } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import {
-  STORY_PERIOD,
-  STORY_SORT_BY,
-  type StoryPeriod,
-  type StorySortBy,
-} from './type/story-query.type';
+import { StoryPeriod, StorySortBy } from './type/story-query.type';
 
 @Injectable()
 export class StoryRepository {
@@ -32,13 +27,13 @@ export class StoryRepository {
    * 기간 필터 생성
    */
   private getPeriodFilter(period: StoryPeriod) {
-    if (period === STORY_PERIOD.ALL) return {};
+    if (period === StoryPeriod.ALL) return {};
 
     const now = new Date();
     const periodDays = {
-      [STORY_PERIOD.DAILY]: 1,
-      [STORY_PERIOD.WEEKLY]: 7,
-      [STORY_PERIOD.MONTHLY]: 30,
+      [StoryPeriod.DAILY]: 1,
+      [StoryPeriod.WEEKLY]: 7,
+      [StoryPeriod.MONTHLY]: 30,
     };
 
     const days = periodDays[period];
@@ -56,9 +51,9 @@ export class StoryRepository {
    */
   private getOrderBy(sortBy: StorySortBy) {
     const orderByMap = {
-      [STORY_SORT_BY.LATEST]: { createdAt: 'desc' as const },
-      [STORY_SORT_BY.VIEWS]: { viewCount: 'desc' as const },
-      [STORY_SORT_BY.LIKES]: { likeCount: 'desc' as const },
+      [StorySortBy.LATEST]: { createdAt: 'desc' as const },
+      [StorySortBy.VIEWS]: { viewCount: 'desc' as const },
+      [StorySortBy.LIKES]: { likeCount: 'desc' as const },
     };
 
     return orderByMap[sortBy];
