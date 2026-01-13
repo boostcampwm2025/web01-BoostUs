@@ -1,39 +1,30 @@
 'use client';
 
-import { StoriesRankingPeriodState } from '@/features/stories/model/types';
-import StoriesRankingDropdown from '@/features/stories/ui/StoriesRanking/RankingDropdown';
+import RankingFilter from '@/features/stories/ui/StoriesRanking/RankingFilter';
 import StoriesRankingToggle from '@/features/stories/ui/StoriesRanking/RankingToggle';
 
-interface StoriesRankingHeaderProps extends StoriesRankingPeriodState {
+interface StoriesRankingHeaderProps {
   isRankingOpen: boolean;
   rankingToggle: () => void;
 }
 
 const StoriesRankingHeader = ({
-  isDropdownOpen,
-  toggleDropdown,
-  selected,
-  selectOption,
-  options,
   isRankingOpen,
   rankingToggle,
 }: StoriesRankingHeaderProps) => {
   return (
-    <div
-      className={`h-15 ${isRankingOpen ? 'border-b' : ''} border-b-neutral-border-default flex px-2 py-4 flex-row items-center justify-between`}
+    <header
+      className={`${isRankingOpen ? 'h-auto gap-4 border-b pt-3 pb-4' : 'h-15'} border-b-neutral-border-default flex flex-col items-center justify-center gap-4 px-3`}
     >
-      <StoriesRankingDropdown
-        isDropdownOpen={isDropdownOpen}
-        selected={selected}
-        options={options}
-        onToggleDropdown={toggleDropdown}
-        onSelectOption={selectOption}
-      />
-      <StoriesRankingToggle
-        isRankingOpen={isRankingOpen}
-        onRankingToggle={rankingToggle}
-      />
-    </div>
+      <div className="flex w-full flex-row justify-between">
+        <h2 className="text-neutral-text-strong text-display-24">인기글</h2>
+        <StoriesRankingToggle
+          isRankingOpen={isRankingOpen}
+          onRankingToggle={rankingToggle}
+        />
+      </div>
+      {isRankingOpen && <RankingFilter />}
+    </header>
   );
 };
 

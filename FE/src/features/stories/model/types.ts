@@ -1,10 +1,8 @@
 import type { Member } from '@/shared/types/MemberType';
 
-export type StoriesRankingPeriods = '전체' | '이번 달' | '이번 주' | '오늘';
+export type StoriesRankingPeriods = '오늘' | '주간' | '월간' | '전체';
 
 export interface StoriesRankingPeriodState {
-  isDropdownOpen: boolean;
-  toggleDropdown: () => void;
   selected: StoriesRankingPeriods;
   selectOption: (option: StoriesRankingPeriods) => void;
   options: StoriesRankingPeriods[];

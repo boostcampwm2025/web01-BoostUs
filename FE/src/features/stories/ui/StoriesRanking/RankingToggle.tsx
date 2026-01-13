@@ -15,7 +15,7 @@ const StoriesRankingToggle = ({
     <button
       onClick={onRankingToggle}
       type="button"
-      className="flex flex-row items-center cursor-pointer"
+      className="flex cursor-pointer flex-row items-center"
     >
       {isRankingOpen ? (
         <>
