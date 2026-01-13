@@ -57,7 +57,8 @@ const ProjectListCard = ({ project }: ProjectCardProps) => {
               ))}
             </div>
             <span className="text-neutral-text-weak flex shrink-0 flex-row items-center gap-1 self-end text-sm font-light">
-              {project.views}{' '}
+              {project.views}
+              {'  '}
               <Eye size={16} className="text-neutral-text-weak" />
             </span>
           </div>
