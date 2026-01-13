@@ -4,7 +4,7 @@ import { StoriesCardProps } from '@/features/stories/model/types';
 
 const StoriesCard = ({ story }: StoriesCardProps) => {
   return (
-    <div className="w-full bg-neutral-surface-bold rounded-2xl shadow-default grid grid-rows-[4fr_6fr] overflow-hidden">
+    <div className="w-full bg-neutral-surface-bold rounded-2xl border border-neutral-border-default transition-shadow duration-150 cursor-pointer hover:shadow-default grid grid-rows-[4fr_6fr] overflow-hidden">
       <div className="relative w-full">
         <Image
           src={story.thumbnailUrl}
