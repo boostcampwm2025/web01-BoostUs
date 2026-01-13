@@ -1,4 +1,7 @@
 @import 'tailwindcss';
+body {
+  background-color: #f0f4fa;
+
 
 @theme {
   --color-grayscale-50: #fefefe;
@@ -111,6 +114,7 @@
 
 body {
   background-color: var(--color-grayscale-200);
+
 }
 
 html {
@@ -125,4 +129,4 @@ html {
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
-}
+}}

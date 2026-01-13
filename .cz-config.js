@@ -19,6 +19,11 @@ module.exports = {
     body: '커밋 본문을 입력하세요 (줄바꿈은 "|" 사용, 선택 사항):\n',
     // breaking: "Breaking Changes가 있다면 입력하세요 (선택 사항):\n",
     // footer: "해결된 이슈가 있다면 입력하세요 (예: #123, 선택 사항):\n",
+    customScope: "커밋의 범위(scope)를 직접 입력하세요:",
+    subject: "커밋 제목을 입력하세요 (짧고 간결하게):",
+    body: '커밋 본문을 입력하세요 (줄바꿈은 "|" 사용, 선택 사항):\n',
+    footer: "해결된 이슈가 있다면 입력하세요 (예: #123, 선택 사항):\n",
+
     confirmCommit: "이대로 커밋하시겠습니까?",
   },
   skipQuestions: ['scope', 'customScope', 'breaking', 'footer'], // scope, breaking, footer 등 불필요한 질문은 건너뜁니다.

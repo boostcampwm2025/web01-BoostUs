@@ -50,10 +50,10 @@ const ProjectListCard = ({ project }: ProjectCardProps) => {
             {project.description}
           </span>
 
-          <div className="mb- mt-auto mb-2 flex flex-row justify-between gap-2">
+          <div className="mt-auto mb-2 flex flex-row justify-between gap-2">
             <div className="flex flex-row flex-wrap gap-2">
-              {project.techStack.map((tech, index) => (
-                <TechList key={index} title={tech} />
+              {project.techStack.map((tech) => (
+                <TechList key={tech} title={tech} />
               ))}
             </div>
             <span className="text-neutral-text-weak flex shrink-0 flex-row items-center gap-1 self-end text-sm font-light">
