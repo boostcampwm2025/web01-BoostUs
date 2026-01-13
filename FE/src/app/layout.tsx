@@ -1,25 +1,8 @@
 import type { Metadata } from 'next';
-<<<<<<< HEAD
-import { Geist, Geist_Mono } from 'next/font/google';
-import './globals.css';
-import Header from '@/widgets/Header';
-import Footer from '@/widgets/Footer';
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
-=======
-import './globals.css';
-import Header from '@/widgets/Header';
-import Footer from '@/widgets/Footer';
 import localFont from 'next/font/local';
->>>>>>> b0b0a9b5acc5e6d930c5aa256016eb1aee0deb4e
+import './globals.css';
+import Header from '@/widgets/Header';
+import Footer from '@/widgets/Footer';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -39,17 +22,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-<<<<<<< HEAD
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
-      >
-=======
     <html lang="en" className={`${pretendard.variable}`}>
-      <body className="font-sans antialiased flex flex-col min-h-screen">
->>>>>>> b0b0a9b5acc5e6d930c5aa256016eb1aee0deb4e
+      <body className="flex min-h-screen flex-col font-sans antialiased">
         <Header />
-        <main className="flex flex-col flex-1 items-center bg-[#F0F4FA] px-4 pt-24 w-full">
+        <main className="flex w-full flex-1 flex-col items-center bg-[#F0F4FA] px-4 pt-24">
           {children}
         </main>
         <Footer />

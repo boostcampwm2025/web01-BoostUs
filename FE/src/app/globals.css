@@ -1,9 +1,7 @@
 @import 'tailwindcss';
-<<<<<<< HEAD
-@config "../../tailwind.config.ts";
 body {
   background-color: #f0f4fa;
-=======
+
 
 @theme {
   --color-grayscale-50: #fefefe;
@@ -111,7 +109,7 @@ body {
 
 body {
   background-color: var(--color-grayscale-200);
->>>>>>> b0b0a9b5acc5e6d930c5aa256016eb1aee0deb4e
+
 }
 
 html {
@@ -126,4 +124,4 @@ html {
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
-}
+}}
