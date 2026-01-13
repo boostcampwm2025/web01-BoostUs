@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { Eye, Heart } from 'lucide-react';
-import { StoriesCardProps } from '../../model/types';
+import { StoriesCardProps } from '@/features/stories/model/types';
 
 const StoriesCard = ({ story }: StoriesCardProps) => {
   return (
