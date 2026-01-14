@@ -1,8 +1,8 @@
-import BambooCard from './variation/BambooCard';
-import BlogCard from './variation/BlogCard';
-import NoticeCard from './variation/NoticeCard';
-import ProjectCard from './variation/ProjectCard';
-import QnaCard from './variation/QnaCard';
+import BambooCard from '@/features/mainpage/feed/variation/BambooCard';
+import BlogCard from '@/features/mainpage/feed/variation/BlogCard';
+import NoticeCard from '@/features/mainpage/feed/variation/NoticeCard';
+import ProjectCard from '@/features/mainpage/feed/variation/ProjectCard';
+import QnaCard from '@/features/mainpage/feed/variation/QnaCard';
 
 export type FeedType = 'blog' | 'notice' | 'bamboo' | 'project' | 'qna';
 

@@ -5,6 +5,8 @@ import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './common/filter/exception.filter';
+import { StoryModule } from './story/story.module';
+import { QuestionModule } from './question/question.module';
 
 @Module({
   imports: [
@@ -12,6 +14,8 @@ import { HttpExceptionFilter } from './common/filter/exception.filter';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    StoryModule,
+    QuestionModule,
   ],
   controllers: [AppController],
   providers: [

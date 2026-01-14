@@ -1,4 +1,9 @@
 @import 'tailwindcss';
+html {
+  /* 스크롤바 트랙을 항상 강제로 표시 */
+  overflow-y: scroll;
+}
+
 body {
   background-color: #f0f4fa;
 
@@ -102,6 +107,11 @@ body {
   }
   .text-body-12 {
     font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+  .text-body-10 {
+    font-size: 0.625rem;
     font-weight: 400;
     line-height: 1.5;
   }
