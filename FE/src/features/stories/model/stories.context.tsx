@@ -119,7 +119,21 @@ export const StoriesProvider = ({
       searchQuery,
       setSearchQuery: (query: string) => updateUrl('q', query),
       sortBy,
-      setSortBy: (option: string) => updateUrl('sortBy', option),
+      setSortBy: (option: StoriesSortOption['sortBy']) => {
+        const newParams = new URLSearchParams(searchParams.toString());
+
+        if (option) {
+          newParams.set('sortBy', option);
+        } else {
+          newParams.delete('sortBy');
+        }
+
+        if (option === 'latest') {
+          newParams.delete('period');
+        }
+
+        router.push(`?${newParams.toString()}`, { scroll: false });
+      },
       rankingPeriod,
       setRankingPeriod: (period: StoriesRankingPeriods) =>
         updateUrl('rankingPeriod', period),
