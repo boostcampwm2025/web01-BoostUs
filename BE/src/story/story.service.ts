@@ -42,7 +42,8 @@ export class StoryService {
     const story = await this.storyRepository.findStoryById(id);
 
     // 글이 없거나 삭제된 상태인 경우 404 에러 발생
-    if (!story || story.state === ContentState.DELETED) {
+    // TODO: 작성자 본인은 비공개 상태의 글도 조회 가능하도록 수정 필요 (state가 PRIVATE인 경우)
+    if (!story || story.state !== ContentState.PUBLISHED) {
       throw new NotFoundException(`글을 찾을 수 없습니다. id: ${id}`);
     }
 

@@ -24,6 +24,7 @@ enum State {
 
 enum ContentState {
   PUBLISHED
+  PRIVATE
   DELETED
 }
 
