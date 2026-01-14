@@ -95,9 +95,9 @@ async function main() {
     update: {},
     create: {
       // 핵심 프로젝트 정보
-      name: 'BoostUs 커뮤니티 플랫폼',
+      title: 'BoostUs 커뮤니티 플랫폼',
       repoUrl: 'https://github.com/boostcampwm2025/web01-BoostUs',
-      oneLineIntro: '부스트캠프 참가자들을 위한 커뮤니티 서비스',
+      description: '부스트캠프 참가자들을 위한 커뮤니티 서비스',
       thumbnailUrl: 'https://placehold.co/600x400',
 
       // 프로젝트 기간
@@ -136,9 +136,9 @@ async function main() {
     update: {},
     create: {
       // 핵심 프로젝트 정보
-      name: '9기의 프로젝트',
+      title: '9기의 프로젝트',
       repoUrl: 'https://github.com/dummy/dummy',
-      oneLineIntro: '부스트캠프 참가자들을 위한 커뮤니티 서비스',
+      description: '부스트캠프 참가자들을 위한 커뮤니티 서비스',
       thumbnailUrl: 'https://placehold.co/600x400',
 
       // 프로젝트 기간
