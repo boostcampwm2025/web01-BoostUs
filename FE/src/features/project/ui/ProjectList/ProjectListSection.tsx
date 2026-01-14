@@ -49,12 +49,18 @@ const ProjectListSection = () => {
             className="text-neutral-text-default text-strong-medium16 flex flex-row items-center gap-1"
             onClick={() =>
               setSortOrder(
-                sortOrder === '팀 번호 순' ? '조회수 순' : '팀 번호 순'
+                sortOrder === SORT_ORDER.TEAM_NUM
+                  ? SORT_ORDER.VIEW_COUNT
+                  : SORT_ORDER.TEAM_NUM
               )
             }
           >
             {sortOrder}{' '}
-            {sortOrder === '팀 번호 순' ? <ChevronDown /> : <ChevronUp />}
+            {sortOrder === SORT_ORDER.TEAM_NUM ? (
+              <ChevronDown />
+            ) : (
+              <ChevronUp />
+            )}
           </button>
         </div>
       </div>
