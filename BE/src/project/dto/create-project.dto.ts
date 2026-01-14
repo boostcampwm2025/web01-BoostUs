@@ -51,8 +51,8 @@ export class CreateProjectDto {
   cohort?: number;
 
   @IsArray()
-  @IsString({ each: true })
-  techStack: string[];
+  @IsInt({ each: true })
+  techStack: number[];
 
   @IsOptional()
   @IsDateString()
