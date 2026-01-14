@@ -23,7 +23,7 @@ export default function ModalOverlay({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 "
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
       onClick={() => router.back()} // 배경 클릭 시 닫기
     >
       <div

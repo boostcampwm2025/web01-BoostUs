@@ -6,6 +6,7 @@ import TogglePills from '@/features/project/ui/filter/TogglePills';
 import Image from 'next/image';
 import open from '@/assets/weui_arrow-outlined.svg';
 import * as data from '@/features/project/ui/filter/data';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const FilterSection = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -40,46 +41,82 @@ const FilterSection = () => {
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  return isOpen ? (
-    <section className="mt-8 flex w-full flex-col rounded-xl bg-white px-4 py-4 shadow">
-      <div className="mb-4 flex flex-col gap-2">
-        <span className={'text-string-16'}>기수</span>
-        <TogglePills
-          sort={data.cohort}
-          onChange={handleCohortChange}
-          selected={selectedCohort}
-        />
-      </div>
-      <div className="mb-10 flex flex-col gap-2">
-        <span className={'text-string-16 text-black'}>분야</span>
-        <TogglePills
-          sort={data.field}
-          onChange={handleFieldChange}
-          selected={selectedField}
-        />
-      </div>
-      <div className="">
+  const filterVariants = {
+    collapsed: {
+      height: 0,
+      opacity: 0,
+      marginBottom: 0, // 닫힐 때 하단 여백 제거
+      transition: { duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }, // 부드러운 커브
+    },
+    open: {
+      height: 'auto',
+      opacity: 1,
+      marginBottom: 16, // 펼쳐졌을 때 내부 요소 간 간격 확보
+      transition: { duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] },
+    },
+  };
+
+  return (
+    <motion.div
+      layout // 부모 컨테이너가 자식의 변화에 따라 자연스럽게 늘어남
+      className="mt-8 flex w-full flex-col overflow-hidden rounded-xl bg-white shadow"
+    >
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            key="content"
+            initial="collapsed"
+            animate="open"
+            exit="collapsed"
+            variants={filterVariants}
+            className="overflow-hidden px-4" // 좌우 패딩만 줌 (상하 패딩은 내부에서 처리하거나 variants로 조절)
+          >
+            {/* 내용물을 감싸는 div에 상단 패딩을 줘서 같이 밀려 내려오게 함 */}
+            <div className="flex flex-col pt-4">
+              <div className="mb-4 flex flex-col gap-2">
+                <span className={'text-string-medium16'}>기수</span>
+                <TogglePills
+                  sort={data.cohort}
+                  onChange={handleCohortChange}
+                  selected={selectedCohort}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <span className={'text-string-medium16 text-black'}>분야</span>
+                <TogglePills
+                  sort={data.field}
+                  onChange={handleFieldChange}
+                  selected={selectedField}
+                />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 버튼 영역: 항상 존재, 패딩 고정 */}
+      <div className="relative z-10 bg-white p-4">
         <button
-          className="text-neutral-text-weak text-string-medium16 flex flex-row items-center gap-2"
+          className="text-neutral-text-weak text-string-medium16 flex w-full flex-row items-center gap-2"
           onClick={() => setIsOpen(!isOpen)}
         >
-          <>
-            필터 접기 <Image src={open} alt="open" />
-          </>
+          {isOpen ? (
+            <>
+              필터 접기 <Image src={open} alt="open" />
+            </>
+          ) : (
+            <>
+              필터 펼치기{' '}
+              <Image
+                src={open}
+                className="rotate-180 transition-transform duration-300"
+                alt="open"
+              />
+            </>
+          )}
         </button>
       </div>
-    </section>
-  ) : (
-    <div className="flex flex-row items-center gap-2">
-      <button
-        className="text-neutral-text-weak text-string-medium16 mt-8 flex w-full flex-col flex-row items-center gap-2 rounded-xl bg-white px-4 py-4 shadow"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <>
-          필터 펼치기 <Image src={open} alt="open" />
-        </>
-      </button>
-    </div>
+    </motion.div>
   );
 };
 

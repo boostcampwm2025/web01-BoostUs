@@ -1,4 +1,9 @@
 @import 'tailwindcss';
+html {
+  /* 스크롤바 트랙을 항상 강제로 표시 */
+  overflow-y: scroll;
+}
+
 body {
   background-color: #f0f4fa;
 
