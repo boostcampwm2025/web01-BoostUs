@@ -182,6 +182,58 @@ async function main() {
       },
     },
   });
+  const projectParticipant1 = await prisma.projectParticipant.upsert({
+    where: { id: 2n },
+    update: {},
+    create: {
+      githubId: 'whateveriiwant',
+      avatarUrl: 'https://avatars.githubusercontent.com/u/80333011?v=4',
+      project: {
+        connect: {
+          id: 1n,
+        },
+      },
+    },
+  });
+  const projectParticipant2 = await prisma.projectParticipant.upsert({
+    where: { id: 3n },
+    update: {},
+    create: {
+      githubId: 'leeHB-1007',
+      avatarUrl: 'https://avatars.githubusercontent.com/u/176555595?v=4',
+      project: {
+        connect: {
+          id: 1n,
+        },
+      },
+    },
+  });
+  const projectParticipant3 = await prisma.projectParticipant.upsert({
+    where: { id: 4n },
+    update: {},
+    create: {
+      githubId: 'JangDongHo',
+      avatarUrl: 'https://avatars.githubusercontent.com/u/29221823?v=4',
+      project: {
+        connect: {
+          id: 1n,
+        },
+      },
+    },
+  });
+  const projectParticipant4 = await prisma.projectParticipant.upsert({
+    where: { id: 5n },
+    update: {},
+    create: {
+      githubId: 'DevJunz',
+      avatarUrl: 'https://avatars.githubusercontent.com/u/143408530?v=4',
+      project: {
+        connect: {
+          id: 1n,
+        },
+      },
+    },
+  });
   console.log('✅ Created projectParticipant:', projectParticipant);
 
   // teckStacks 생성
