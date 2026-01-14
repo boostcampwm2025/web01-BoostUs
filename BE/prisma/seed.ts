@@ -36,6 +36,19 @@ async function main() {
   });
   console.log('✅ Created member:', willy);
 
+  const jack = await prisma.member.upsert({
+    where: { id: 2n },
+    update: {},
+    create: {
+      githubUniqueId: '141974597',
+      githubLogin: 'LimSR12',
+      nickname: 'Jack',
+      avatarUrl: 'https://avatars.githubusercontent.com/u/141974597?v=4',
+      cohort: 10,
+    },
+  });
+  console.log('✅ Created member:', jack);
+
   // RSS Feed 데이터 생성
   const rssFeed = await prisma.rssFeed.upsert({
     where: { id: 1n },
@@ -59,7 +72,8 @@ async function main() {
       title: 'NestJS로 블로그 만들기',
       summary: 'NestJS를 사용해 블로그 API를 설계해봅니다.',
       contents: 'test',
-      thumbnailUrl: 'https://images.velog.io/images/dongho18/post/74f5f82d-1a30-4f46-869c-392b2dc78475/flexbox-example4.png',
+      thumbnailUrl:
+        'https://images.velog.io/images/dongho18/post/74f5f82d-1a30-4f46-869c-392b2dc78475/flexbox-example4.png',
       originalUrl: 'https://dongho18.velog.io/post/nestjs-blog',
       member: {
         connect: {
@@ -74,16 +88,217 @@ async function main() {
     },
   });
   console.log('✅ Created story:', story);
-  
+
+  // Project 데이터 생성
+  const project = await prisma.project.upsert({
+    where: { id: 1n },
+    update: {},
+    create: {
+      // 핵심 프로젝트 정보
+      title: 'BoostUs 커뮤니티 플랫폼',
+      repoUrl: 'https://github.com/boostcampwm2025/web01-BoostUs',
+      description: '부스트캠프 참가자들을 위한 커뮤니티 서비스',
+      thumbnailUrl: 'https://placehold.co/600x400',
+
+      // 프로젝트 기간
+      startDate: new Date('2025-01-01'),
+      endDate: new Date('2025-06-30'),
+
+      // 팀 정보
+      teamNumber: 1,
+      teamName: 'BoostUs',
+      cohort: 10,
+      field: 'Web',
+
+      // 서비스 정보
+      demoUrl: 'https://boostus.dev',
+      contents: `
+# BoostUs
+
+부스트캠프 참가자들을 위한 아카이빙 & 커뮤니티 플랫폼입니다.
+
+- 프로젝트 공유
+- 회고 기록
+- 기술 스택 관리
+    `,
+
+      // 작성자 연결
+      member: {
+        connect: {
+          id: 1n,
+        },
+      },
+    },
+  });
+
+  const project2 = await prisma.project.upsert({
+    where: { id: 2n },
+    update: {},
+    create: {
+      // 핵심 프로젝트 정보
+      title: '9기의 프로젝트',
+      repoUrl: 'https://github.com/dummy/dummy',
+      description: '부스트캠프 참가자들을 위한 커뮤니티 서비스',
+      thumbnailUrl: 'https://placehold.co/600x400',
+
+      // 프로젝트 기간
+      startDate: new Date('2025-01-01'),
+      endDate: new Date('2025-06-30'),
+
+      // 팀 정보
+      teamNumber: 1,
+      teamName: 'dummy',
+      cohort: 9,
+      field: 'Web',
+
+      // 서비스 정보
+      demoUrl: 'https://dummy.dev',
+      contents: `
+# dummy
+    `,
+
+      // 작성자 연결
+      member: {
+        connect: {
+          id: 1n,
+        },
+      },
+    },
+  });
+
+  console.log('✅ Created project:', project2);
+
+  // projectParticipant 생성
+  const projectParticipant = await prisma.projectParticipant.upsert({
+    where: { id: 1n },
+    update: {},
+    create: {
+      githubId: 'LimSR12',
+      avatarUrl: 'https://avatars.githubusercontent.com/u/141974597?v=4',
+      project: {
+        connect: {
+          id: 1n,
+        },
+      },
+    },
+  });
+  const projectParticipant1 = await prisma.projectParticipant.upsert({
+    where: { id: 2n },
+    update: {},
+    create: {
+      githubId: 'whateveriiwant',
+      avatarUrl: 'https://avatars.githubusercontent.com/u/80333011?v=4',
+      project: {
+        connect: {
+          id: 1n,
+        },
+      },
+    },
+  });
+  const projectParticipant2 = await prisma.projectParticipant.upsert({
+    where: { id: 3n },
+    update: {},
+    create: {
+      githubId: 'leeHB-1007',
+      avatarUrl: 'https://avatars.githubusercontent.com/u/176555595?v=4',
+      project: {
+        connect: {
+          id: 1n,
+        },
+      },
+    },
+  });
+  const projectParticipant3 = await prisma.projectParticipant.upsert({
+    where: { id: 4n },
+    update: {},
+    create: {
+      githubId: 'JangDongHo',
+      avatarUrl: 'https://avatars.githubusercontent.com/u/29221823?v=4',
+      project: {
+        connect: {
+          id: 1n,
+        },
+      },
+    },
+  });
+  const projectParticipant4 = await prisma.projectParticipant.upsert({
+    where: { id: 5n },
+    update: {},
+    create: {
+      githubId: 'DevJunz',
+      avatarUrl: 'https://avatars.githubusercontent.com/u/143408530?v=4',
+      project: {
+        connect: {
+          id: 1n,
+        },
+      },
+    },
+  });
+  console.log('✅ Created projectParticipant:', projectParticipant);
+
+  // teckStacks 생성
+  const teckStacks = await prisma.techStack.upsert({
+    where: { id: 1n },
+    update: {},
+    create: {
+      name: 'NestJS',
+    },
+  });
+  const teckStacks2 = await prisma.techStack.upsert({
+    where: { id: 2n },
+    update: {},
+    create: {
+      name: 'React',
+    },
+  });
+  console.log('✅ Created teckStacks:', teckStacks);
+
+  // projectTechStacks 생성
+
+  const projectTechStacks = await prisma.projectTechStack.upsert({
+    where: { id: 1n },
+    update: {},
+    create: {
+      project: {
+        connect: {
+          id: 1n,
+        },
+      },
+      techStack: {
+        connect: {
+          id: 1n,
+        },
+      },
+    },
+  });
+
+  const projectTechStacks2 = await prisma.projectTechStack.upsert({
+    where: { id: 2n },
+    update: {},
+    create: {
+      project: {
+        connect: {
+          id: 1n,
+        },
+      },
+      techStack: {
+        connect: {
+          id: 2n,
+        },
+      },
+    },
+  });
+  console.log('✅ Created projectTechStacks:', projectTechStacks);
+
   console.log('🎉 Seeding completed!');
 }
 
 main()
   .then(async () => {
-    await prisma.$disconnect()
+    await prisma.$disconnect();
   })
   .catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });

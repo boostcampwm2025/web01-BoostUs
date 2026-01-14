@@ -70,10 +70,10 @@ model Member {
  */
 model Project {
   id             BigInt  @id @default(autoincrement())
+  title          String?  @unique @map("title")
+  description    String? @map("description")
   memberId       BigInt  @map("member_id") // 프로젝트 등록자
-  name           String  @unique @map("name")
   repoUrl        String  @unique @map("repo_url")
-  oneLineIntro   String? @map("one_line_intro")
   thumbnailUrl   String? @map("thumbnail_url")
 
   startDate DateTime? @map("start_date")
