@@ -21,7 +21,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         code: exceptionResponse['code'] || 'UNKNOWN_ERROR',
         message: exceptionResponse['message'] || '알 수 없는 오류가 발생했습니다.',
         status,
-        details: process.env.NODE_ENV === 'development' ? exception.stack : undefined,
+        details: exceptionResponse['details'] || undefined,
       },
       data: null,
     });
