@@ -1,12 +1,14 @@
 'use client';
-import { useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+
+import { useState, useEffect, DragEvent } from 'react'; // DragEvent 추가
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import ModalOverlay from '@/shared/ui/ModalOverlay';
+import { ImageUp } from 'lucide-react';
 
-// 파일 유효성 검사 상수. -> 이후 논의 필요
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+// --- Zod Schema (기존 유지) ---
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = [
   'image/jpeg',
   'image/jpg',
@@ -26,7 +28,7 @@ const projectSchema = z.object({
         files instanceof FileList &&
         files.length > 0 &&
         files[0].size <= MAX_FILE_SIZE,
-      '최대 5MB까지 업로드 가능합니다.'
+      '최대 10MB까지 업로드 가능합니다.'
     )
     .refine(
       (files) =>
@@ -58,42 +60,25 @@ const projectSchema = z.object({
     '9기',
     '10기',
   ]),
-  startDate: z.preprocess(
-    (arg) => {
-      // 값이 비어있거나, Invalid Date(유효하지 않은 날짜)라면 null로 변환
-      if (arg instanceof Date && !isNaN(arg.getTime())) {
-        return arg;
-      }
-      return null;
-    },
-    z
-      .date()
-      .nullable() // null 허용
-      .refine((date) => date !== null, {
-        message: '시작 날짜를 입력해주세요.', // null일 때 (선택 안 했을 때)
-      })
-      .refine((date) => date <= new Date(), {
-        message: '시작 날짜는 현재 날짜 이전이어야 합니다.',
-      })
-  ),
+  startDate: z.coerce
+    .date()
+    // 1. 빈 값이거나 유효하지 않은 날짜인 경우 체크
+    .refine((date) => !isNaN(date.getTime()), {
+      message: '시작 날짜를 입력해주세요.',
+    })
+    // 2. 미래 날짜 체크
+    .refine((date) => date <= new Date(), {
+      message: '시작 날짜는 현재 날짜 이전이어야 합니다.',
+    }),
 
-  endDate: z.preprocess(
-    (arg) => {
-      if (arg instanceof Date && !isNaN(arg.getTime())) {
-        return arg;
-      }
-      return null;
-    },
-    z
-      .date()
-      .nullable()
-      .refine((date) => date !== null, {
-        message: '종료 날짜를 입력해주세요.',
-      })
-      .refine((date) => date >= new Date(), {
-        message: '종료 날짜는 현재 날짜 이후이어야 합니다.',
-      })
-  ),
+  endDate: z.coerce
+    .date()
+    .refine((date) => !isNaN(date.getTime()), {
+      message: '종료 날짜를 입력해주세요.',
+    })
+    .refine((date) => date >= new Date(), {
+      message: '종료 날짜는 현재 날짜 이후이어야 합니다.',
+    }),
   members: z.array(z.string()).min(1, '팀원을 선택해주세요.'),
 });
 
@@ -101,80 +86,151 @@ type ProjectFormValues = z.infer<typeof projectSchema>;
 
 export default function RegisterModalPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false); // 드래그 상태
+
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
+    clearErrors,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(projectSchema),
+    mode: 'onChange',
   });
 
   const thumbnailList = watch('thumbnail');
-  if (
-    thumbnailList instanceof FileList &&
-    thumbnailList.length > 0 &&
-    !previewUrl
-  ) {
-    const file = thumbnailList[0];
-    const url = URL.createObjectURL(file);
-    setPreviewUrl(url);
-  }
+  useEffect(() => {
+    if (thumbnailList && thumbnailList.length > 0) {
+      const file = thumbnailList[0];
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+
+      // 메모리 누수 방지
+      return () => URL.revokeObjectURL(url);
+    } else {
+      setPreviewUrl(null);
+    }
+  }, [thumbnailList]);
+
+  // --- 드래그 앤 드롭 핸들러 ---
+  const onDragEnter = (e: DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const onDragOver = (e: DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = 'copy';
+    }
+  };
+
+  const onDragLeave = (e: DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const onDrop = (e: DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const droppedFiles = e.dataTransfer.files;
+      // React Hook Form에 값 수동 주입 및 검증 트리거
+      setValue('thumbnail', droppedFiles, { shouldValidate: true });
+      clearErrors('thumbnail');
+    }
+  };
 
   const onSubmit = async (data: ProjectFormValues) => {
-    //TODO: API 호출 로직 등을 여기에 작성
     console.log('Form Data:', data);
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // 모의 지연
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     alert('프로젝트가 등록되었습니다.');
   };
 
   return (
     <ModalOverlay>
-      <div className="w-full rounded-lg bg-white p-6">
+      <div className="w-full rounded-lg bg-white">
         <h2 className="mb-4 text-xl font-bold">프로젝트 등록</h2>
-        <form
-          onSubmit={(e) => {
-            void handleSubmit(onSubmit)(e);
-          }}
-          className="space-y-4"
-        >
-          {/*썸네일 업로드*/}
-          <div>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* --- 썸네일 업로드 --- */}
+          <div className="flex flex-col gap-2">
             <label
               htmlFor="thumbnail"
-              className="block text-sm font-medium text-gray-700"
+              onDragEnter={onDragEnter}
+              onDragLeave={onDragLeave}
+              onDragOver={onDragOver}
+              onDrop={onDrop}
+              className={`relative flex aspect-video w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border transition-all duration-200 ${
+                isDragging
+                  ? 'scale-[0.99] border-blue-500 bg-blue-50 ring-2 ring-blue-200'
+                  : errors.thumbnail
+                    ? 'border-red-500 bg-red-50'
+                    : 'border-gray-300 bg-gray-100 hover:bg-gray-200'
+              } `}
             >
-              썸네일 이미지
-            </label>
-            <div className="mt-1 flex items-center gap-4">
-              <div className="relative h-24 w-36 overflow-hidden rounded-md border border-gray-300 bg-gray-100">
-                {previewUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
+              {previewUrl ? (
+                <div className="relative h-full w-full">
                   <img
                     src={previewUrl}
                     alt="Thumbnail Preview"
                     className="h-full w-full object-cover"
                   />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center text-xs text-gray-400">
-                    이미지 없음
+                  {isDragging && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 font-bold text-white">
+                      이미지 변경하기
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="pointer-events-none flex flex-col items-center gap-4 p-4 text-center">
+                  <div
+                    className={`flex h-20 w-20 items-center justify-center rounded-2xl transition-colors ${isDragging ? 'bg-blue-200 text-blue-600' : 'bg-gray-300 text-gray-500'}`}
+                  >
+                    {/* 기존 ImageUp 컴포넌트 사용 */}
+                    <ImageUp size={48} />
                   </div>
-                )}
-              </div>
+                  <div className="flex flex-col gap-1">
+                    <span
+                      className={`text-lg font-bold transition-colors ${isDragging ? 'text-blue-600' : 'text-gray-800'}`}
+                    >
+                      {isDragging
+                        ? '여기에 놓으세요!'
+                        : '이미지를 여기로 드래그하여 업로드 하세요'}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      PNG, JPG, JPEG, GIF 파일 형식을 여러 개 업로드 할 수
+                      있어요
+                    </span>
+                  </div>
+                  <div className="mt-2 rounded-lg bg-blue-100 px-6 py-2.5 text-sm font-semibold text-blue-600">
+                    파일 또는 폴더 선택
+                  </div>
+                </div>
+              )}
+
               <input
                 id="thumbnail"
                 type="file"
                 accept="image/*"
+                className="hidden" // 화면에서 숨김 처리
                 {...register('thumbnail')}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
               />
-            </div>
+            </label>
+
             {errors.thumbnail && (
-              <p className="mt-1 text-xs text-red-500">
-                {errors.thumbnail.message}
+              <p className="mt-1 text-sm text-red-500">
+                {errors.thumbnail?.message?.toString()}
               </p>
             )}
           </div>
+          {/* ---------------------------------- */}
 
           {/* 기수 선택 필드 */}
           <div>
@@ -212,7 +268,7 @@ export default function RegisterModalPage() {
               <input
                 id="startDate"
                 type="date"
-                {...register('startDate', { valueAsDate: true })}
+                {...register('startDate')}
                 className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
               {errors.startDate && (
@@ -233,7 +289,7 @@ export default function RegisterModalPage() {
               <input
                 id="endDate"
                 type="date"
-                {...register('endDate', { valueAsDate: true })}
+                {...register('endDate')}
                 className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
               {errors.endDate && (
@@ -331,7 +387,8 @@ export default function RegisterModalPage() {
               </p>
             )}
           </div>
-          {/*프로젝트 상세내용*/}
+
+          {/* 프로젝트 상세내용 */}
           <div>
             <label
               htmlFor="contents"
