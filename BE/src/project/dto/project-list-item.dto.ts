@@ -29,4 +29,7 @@ export class ProjectListItemDto {
 
   @Expose()
   viewCount: number;
+
+  @Expose()
+  field: string;
 }

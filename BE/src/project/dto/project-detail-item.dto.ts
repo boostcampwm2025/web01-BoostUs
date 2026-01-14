@@ -1,4 +1,4 @@
-import { Expose, Transform } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
 import { ProjectParticipantDto } from './project-participant.dto';
 
 export class ProjectDetailItemDto {
@@ -43,6 +43,9 @@ export class ProjectDetailItemDto {
   viewCount: number;
 
   @Expose()
-  @Transform(({ obj }) => obj.participants ?? [])
+  field: string;
+
+  @Expose()
+  @Type(() => ProjectParticipantDto)
   participants: ProjectParticipantDto[];
 }
