@@ -20,10 +20,14 @@ export const fetchStories = async (
     queryParams.append('period', params.period);
   }
 
+  const isServerComponent = typeof window === 'undefined';
+
+  const baseUrl = isServerComponent
+    ? (process.env.INTERNAL_API_URL ?? 'http://backend:3000') // 서버 환경 (Docker 내부)
+    : (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000'); // 클라이언트 환경 (브라우저)
+
   const queryString = queryParams.toString();
-  const url = `${process.env.INTERNAL_API_URL ?? 'http://backend:3000'}/stories${
-    queryString ? `?${queryString}` : ''
-  }`;
+  const url = `${baseUrl}/stories${queryString ? `?${queryString}` : ''}`;
 
   const response = await fetch(url, {
     cache: 'no-store',

@@ -4,6 +4,7 @@ import {
   StoriesRankingPeriods,
   StoriesSortOption,
 } from '@/features/stories/model/stories.type';
+import { fetchStories } from '@/features/stories/api/stories.api';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
   createContext,
@@ -26,9 +27,10 @@ import {
  * @property {(period: StoriesRankingPeriods) => void} setRankingPeriod - 랭킹 기간 설정 함수
  * @property {string} searchQuery - 검색 쿼리 파라미터 (URL의 q 파라미터)
  * @property {(query: string) => void} setSearchQuery - 검색 쿼리 설정 함수
- * @property {string} sortOption - 정렬 옵션 파라미터 (URL의 sort 파라미터)
- * @property {(option: string) => void} setSortOption - 정렬 옵션 설정 함수
-
+ * @property {StoriesSortOption['sortBy']} sortBy - 정렬 옵션 파라미터 (기본값: 'latest')
+ * @property {(option: StoriesSortOption['sortBy']) => void} setSortBy - 정렬 옵션 설정 함수
+ * @property {StoriesSortOption['period']} period - 시간 기간 필터 파라미터 (기본값: 'all')
+ * @property {(period: StoriesSortOption['period']) => void} setPeriod - 시간 기간 설정 함수
  */
 interface StoriesContextType {
   isRankingOpen: boolean;
@@ -106,6 +108,17 @@ export const StoriesProvider = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // period와 sortBy 변경 시 백엔드에 요청
+  useEffect(() => {
+    fetchStories({
+      sortBy,
+      period,
+    }).catch((error: unknown) => {
+      if (error instanceof Error)
+        console.error('Failed to fetch stories:', error);
+    });
+  }, [sortBy, period]);
 
   /**
    * URL의 쿼리 파라미터를 업데이트하는 헬퍼 함수
