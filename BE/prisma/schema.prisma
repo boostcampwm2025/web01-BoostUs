@@ -85,7 +85,7 @@ model Project {
   field      String? @map("field") // Web/iOS/Android
   demoUrl    String? @unique @map("demo_url")
 
-  contents String? @map("contents") // 마크다운
+  contents String? @db.Text @map("contents") // 마크다운
   viewCount Int    @default(0) @map("view_count")
   state     ContentState @default(PUBLISHED) @map("state")
 
@@ -177,7 +177,7 @@ model Story {
 
   title       String  @map("title")
   summary     String? @map("summary")
-  contents    String  @map("contents")
+  contents    String  @db.Text @map("contents")
   thumbnailUrl String? @map("thumbnail_url")
   originalUrl String? @map("original_url")
 
@@ -221,7 +221,7 @@ model Question {
   memberId     BigInt @map("member_id")
 
   title        String @map("title")
-  contents     String @map("contents") // markdown
+  contents     String  @db.Text @map("contents") // markdown
   hashtags     String? @map("hashtags") // comma-separated
 
   viewCount    Int @default(0) @map("view_count")
@@ -271,7 +271,7 @@ model Answer {
   questionId BigInt @map("question_id")
   memberId   BigInt @map("member_id")
 
-  contents   String  @map("contents")
+  contents   String  @db.Text @map("contents")
   isAccepted Boolean @default(false) @map("is_accepted")
 
   upCount    Int @default(0) @map("up_count")
