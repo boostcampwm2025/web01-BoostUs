@@ -62,6 +62,7 @@ export class CreateProjectDto {
   @IsDateString()
   endDate?: string;
 
+  @IsOptional()
   @IsString()
   field: string;
 
