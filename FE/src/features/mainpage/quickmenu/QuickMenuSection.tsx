@@ -1,4 +1,4 @@
-import QuickMenuCard from './QuickMenuCard';
+import QuickMenuCard from '@/features/mainpage/quickmenu/QuickMenuCard';
 
 const QuickMenuSection = () => {
   return (
