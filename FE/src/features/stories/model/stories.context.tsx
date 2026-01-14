@@ -1,6 +1,9 @@
 'use client';
 
-import { StoriesRankingPeriods } from '@/features/stories/model/stories.type';
+import {
+  StoriesRankingPeriods,
+  StoriesSortOption,
+} from '@/features/stories/model/stories.type';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
   createContext,
@@ -8,6 +11,7 @@ import {
   ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -33,8 +37,10 @@ interface StoriesContextType {
   setRankingPeriod: (period: StoriesRankingPeriods) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  sortOption: string;
-  setSortOption: (option: string) => void;
+  sortBy: StoriesSortOption['sortBy'];
+  setSortBy: (option: StoriesSortOption['sortBy']) => void;
+  period?: StoriesSortOption['period'];
+  setPeriod: (period: StoriesSortOption['period']) => void;
 }
 
 const StoriesContext = createContext<StoriesContextType | null>(null);
@@ -66,11 +72,40 @@ export const StoriesProvider = ({
 
   const [isRankingOpen, setIsRankingOpen] = useState(true);
   const toggleRanking = () => setIsRankingOpen((prev) => !prev);
-  const [rankingPeriod, setRankingPeriodState] =
-    useState<StoriesRankingPeriods>('weekly');
 
+  const rankingPeriod = (searchParams.get('rankingPeriod') ??
+    'weekly') as StoriesRankingPeriods;
   const searchQuery = searchParams.get('q') ?? '';
-  const sortOption = searchParams.get('sortBy') ?? 'latest';
+  const sortBy = (searchParams.get('sortBy') ??
+    'latest') as StoriesSortOption['sortBy'];
+
+  const period = (searchParams.get('period') ??
+    'all') as StoriesSortOption['period'];
+
+  // 초기 로드 시 URL에 기본값 설정
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    let hasChanges = false;
+
+    if (!searchParams.has('sortBy')) {
+      params.set('sortBy', 'latest');
+      hasChanges = true;
+    }
+    if (!searchParams.has('period')) {
+      params.set('period', 'all');
+      hasChanges = true;
+    }
+    // TODO: 랭킹 기간 기능 추가 시 활성화
+    // if (!searchParams.has('rankingPeriod')) {
+    //   params.set('rankingPeriod', 'weekly');
+    //   hasChanges = true;
+    // }
+
+    if (hasChanges) {
+      router.push(`?${params.toString()}`, { scroll: false });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /**
    * URL의 쿼리 파라미터를 업데이트하는 헬퍼 함수
@@ -108,13 +143,16 @@ export const StoriesProvider = ({
       toggleRanking,
       searchQuery,
       setSearchQuery: (query: string) => updateUrl('q', query),
-      sortOption,
-      setSortOption: (option: string) => updateUrl('sort', option),
+      sortBy,
+      setSortBy: (option: string) => updateUrl('sortBy', option),
       rankingPeriod,
-      setRankingPeriod: (period: string) =>
-        setRankingPeriodState(period as StoriesRankingPeriods),
+      setRankingPeriod: (period: StoriesRankingPeriods) =>
+        updateUrl('rankingPeriod', period),
+      period,
+      setPeriod: (period: StoriesSortOption['period']) =>
+        updateUrl('period', period),
     }),
-    [isRankingOpen, searchQuery, sortOption, rankingPeriod, updateUrl]
+    [isRankingOpen, searchQuery, sortBy, rankingPeriod, period, updateUrl]
   );
 
   return (

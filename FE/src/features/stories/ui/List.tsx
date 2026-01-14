@@ -11,7 +11,7 @@ interface StoriesListProps {
 }
 
 const StoriesList = ({ initialStories }: StoriesListProps) => {
-  const { isRankingOpen, searchQuery, sortOption } = useStoriesContext();
+  const { isRankingOpen, searchQuery } = useStoriesContext();
 
   const filteredAndSortedStories = useMemo(() => {
     // TODO: API 연결할 때 대응 필요
@@ -24,17 +24,8 @@ const StoriesList = ({ initialStories }: StoriesListProps) => {
       );
     }
 
-    // 정렬
-    // TODO: 다른 정렬 옵션도 구현 필요
-    if (sortOption === 'latest') {
-      result.sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-    }
-
     return result;
-  }, [initialStories, searchQuery, sortOption]);
+  }, [initialStories, searchQuery]);
 
   return (
     <section className="flex w-full flex-col items-end gap-4">
