@@ -3,6 +3,8 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectListQueryDto } from './dto/project-list-query.dto';
 import { ProjectListItemDto } from './dto/project-list-item.dto';
+import { ProjectParticipantDto } from './dto/project-participant.dto';
+import { ProjectDetailItemDto } from './dto/project-detail-item.dto';
 import { ProjectRepository } from './project.repository';
 import { plainToInstance } from 'class-transformer';
 
@@ -40,11 +42,12 @@ export class ProjectService {
     const projectId = BigInt(id);
 
     const project = await this.projectRepository.findById(projectId);
-    if (!project) {
-      throw new NotFoundException('프로젝트를 찾을 수 없습니다.');
-    }
 
-    return project;
+    const data = plainToInstance(ProjectDetailItemDto, project, {
+      excludeExtraneousValues: true,
+    });
+
+    return data;
   }
 
   // async create(dto: CreateProjectDto) {

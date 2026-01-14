@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from 'src/generated/prisma/client';
-import { ProjectListQueryDto } from './dto/project-list-query.dto';
 
 @Injectable()
 export class ProjectRepository {
@@ -10,6 +9,14 @@ export class ProjectRepository {
   async findById(id: bigint) {
     return this.prisma.project.findUnique({
       where: { id },
+      include: {
+        participants: {
+          select: {
+            githubId: true,
+            avatarUrl: true,
+          },
+        },
+      },
     });
   }
 
@@ -18,10 +25,7 @@ export class ProjectRepository {
       this.prisma.project.count({ where }),
       this.prisma.project.findMany({
         where: {
-          AND: [
-            { state: 'PUBLISHED' }, // 핵심 로직: 기본 state 필터
-            ...(where ? [where] : []),
-          ],
+          AND: [{ state: 'PUBLISHED' }, ...(where ? [where] : [])],
         },
         orderBy: { id: 'desc' },
         select: {
