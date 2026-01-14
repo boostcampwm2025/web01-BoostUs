@@ -4,7 +4,6 @@ import {
   StoriesRankingPeriods,
   StoriesSortOption,
 } from '@/features/stories/model/stories.type';
-import { fetchStories } from '@/features/stories/api/stories.api';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
   createContext,
@@ -12,7 +11,6 @@ import {
   ReactNode,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -84,54 +82,18 @@ export const StoriesProvider = ({
   const period = (searchParams.get('period') ??
     'all') as StoriesSortOption['period'];
 
-  // 초기 로드 시 URL에 기본값 설정
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    let hasChanges = false;
-
-    if (!searchParams.has('sortBy')) {
-      params.set('sortBy', 'latest');
-      hasChanges = true;
-    }
-    if (!searchParams.has('period')) {
-      params.set('period', 'all');
-      hasChanges = true;
-    }
-    // TODO: 랭킹 기간 기능 추가 시 활성화
-    // if (!searchParams.has('rankingPeriod')) {
-    //   params.set('rankingPeriod', 'weekly');
-    //   hasChanges = true;
-    // }
-
-    if (hasChanges) {
-      router.push(`?${params.toString()}`, { scroll: false });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // period와 sortBy 변경 시 백엔드에 요청
-  useEffect(() => {
-    fetchStories({
-      sortBy,
-      period,
-    }).catch((error: unknown) => {
-      if (error instanceof Error)
-        console.error('Failed to fetch stories:', error);
-    });
-  }, [sortBy, period]);
-
   /**
    * URL의 쿼리 파라미터를 업데이트하는 헬퍼 함수
    *
    * 주어진 key-value 쌍으로 URL 파라미터를 업데이트하고,
    * 값이 빈 문자열인 경우 해당 파라미터를 제거합니다.
    *
-   * @param {string} key - URL 파라미터의 키 (예: 'q', 'sort', 'period')
+   * @param {string} key - URL 파라미터의 키 (예: 'q', 'sortBy', 'period')
    * @param {string} value - URL 파라미터의 값
    *
    * @example
    * updateUrl('q', 'typescript'); // URL을 ?q=typescript로 업데이트
-   * updateUrl('sort', '');        // sort 파라미터 제거
+   * updateUrl('sortBy', '');        // sortBy 파라미터 제거
    */
   const updateUrl = useCallback(
     (key: string, value: string) => {

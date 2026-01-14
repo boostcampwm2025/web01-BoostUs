@@ -4,16 +4,16 @@ import { StoriesSortOption } from '@/features/stories/model/stories.type';
 
 interface StoriesPageProps {
   searchParams: Promise<{
-    sortBy?: string;
-    period?: string;
+    sortBy?: StoriesSortOption['sortBy'];
+    period?: StoriesSortOption['period'];
   }>;
 }
 
 const StoriesPage = async ({ searchParams }: StoriesPageProps) => {
   const params = await searchParams;
   const response = await fetchStories({
-    sortBy: params.sortBy as StoriesSortOption['sortBy'],
-    period: params.period as StoriesSortOption['period'],
+    sortBy: params.sortBy ?? 'latest',
+    period: params.period ?? 'all',
   });
   const initialStories = response.data.items;
 
