@@ -7,7 +7,7 @@ export default function TechList({ title }: { title: string }) {
         'flex items-center justify-center',
         'border-neutral-border-default border',
         'bg-brand-surface-weak text-neutral-text-default',
-        'text-string-medium14',
+        'text-string-14',
         'cursor-pointer transition-colors duration-200',
       ].join(' ')}
     >
