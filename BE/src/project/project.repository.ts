@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from 'src/generated/prisma/client';
 import { CreateProjectDto } from './dto/create-project.dto';
+import { BadRequestException } from '@nestjs/common';
 
 @Injectable()
 export class ProjectRepository {
@@ -86,6 +87,14 @@ export class ProjectRepository {
       const techStackIds = [...new Set(dto.techStack ?? [])];
 
       if (techStackIds.length) {
+        const ids = techStackIds.map((id) => BigInt(id));
+        const foundCount = await tx.techStack.count({
+          where: { id: { in: ids } },
+        });
+        if (foundCount !== ids.length) {
+          throw new BadRequestException();
+        }
+
         await tx.projectTechStack.createMany({
           data: techStackIds.map((id) => ({
             projectId: project.id,
