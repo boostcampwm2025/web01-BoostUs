@@ -3,36 +3,19 @@
 import StoriesCard from '@/features/stories/ui/Card';
 import StoriesListDropdown from '@/features/stories/ui/ListDropdown';
 import { useStoriesContext } from '@/features/stories/model';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Story } from '@/features/stories/model/stories.type';
-import { fetchStories } from '@/features/stories/api/stories.api';
 
-const StoriesList = () => {
+interface StoriesListProps {
+  initialStories: Story[];
+}
+
+const StoriesList = ({ initialStories }: StoriesListProps) => {
   const { isRankingOpen, searchQuery, sortOption } = useStoriesContext();
-
-  const [stories, setStories] = useState<Story[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    const loadStories = async () => {
-      setIsLoading(true);
-
-      try {
-        const response = await fetchStories();
-        setStories(response.data.items);
-      } catch (error) {
-        console.error('Error fetching stories:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    void loadStories();
-  }, []);
 
   const filteredAndSortedStories = useMemo(() => {
     // TODO: API 연결할 때 대응 필요
-    let result = [...stories];
+    let result = [...initialStories];
 
     // 검색어 필터링
     if (searchQuery) {
@@ -51,7 +34,7 @@ const StoriesList = () => {
     }
 
     return result;
-  }, [stories, searchQuery, sortOption]);
+  }, [initialStories, searchQuery, sortOption]);
 
   return (
     <section className="flex w-full flex-col items-end gap-4">

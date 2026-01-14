@@ -2,7 +2,7 @@ import { StoriesResponse } from '@/features/stories/model/stories.type';
 
 export const fetchStories = async (): Promise<StoriesResponse> => {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000'}/stories`,
+    `${process.env.INTERNAL_API_URL ?? 'http://backend:3000'}/stories`,
     {
       cache: 'no-store',
     }

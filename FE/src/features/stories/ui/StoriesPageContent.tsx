@@ -1,12 +1,21 @@
 'use client';
 
 import { StoriesProvider, useStoriesContext } from '@/features/stories/model';
+import { Story } from '@/features/stories/model/stories.type';
 import StoriesHeader from '@/features/stories/ui/Header';
 import StoriesList from '@/features/stories/ui/List';
 import StoriesSearchBar from '@/features/stories/ui/SearchBar';
 import StoriesRanking from '@/features/stories/ui/StoriesRanking/Ranking';
 
-const StoriesLayout = () => {
+interface StoriesPageContentProps {
+  initialStories: Story[];
+}
+
+interface StoriesLayoutProps {
+  initialStories: Story[];
+}
+
+const StoriesLayout = ({ initialStories }: StoriesLayoutProps) => {
   const { isRankingOpen } = useStoriesContext();
 
   return (
@@ -17,7 +26,7 @@ const StoriesLayout = () => {
         <div className="mt-8 grid grid-cols-[7fr_3fr] items-start gap-8">
           <div className="flex flex-col gap-8">
             <StoriesSearchBar />
-            <StoriesList />
+            <StoriesList initialStories={initialStories} />
           </div>
           <div className="z-10">
             <StoriesRanking />
@@ -34,7 +43,7 @@ const StoriesLayout = () => {
             </div>
           </div>
           <div className="col-span-2 row-start-2">
-            <StoriesList />
+            <StoriesList initialStories={initialStories} />
           </div>
         </div>
       )}
@@ -42,10 +51,10 @@ const StoriesLayout = () => {
   );
 };
 
-const StoriesPageContent = () => {
+const StoriesPageContent = ({ initialStories }: StoriesPageContentProps) => {
   return (
     <StoriesProvider>
-      <StoriesLayout />
+      <StoriesLayout initialStories={initialStories} />
     </StoriesProvider>
   );
 };

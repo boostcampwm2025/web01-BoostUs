@@ -51,6 +51,8 @@ services:
       - backend
     networks:
       - boostus_network
+    environment:
+      - INTERNAL_API_URL=http://backend:3000
 
 networks:
   boostus_network:
