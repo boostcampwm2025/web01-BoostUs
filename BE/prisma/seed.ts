@@ -192,6 +192,13 @@ async function main() {
       name: 'NestJS',
     },
   });
+  const teckStacks2 = await prisma.techStack.upsert({
+    where: { id: 2n },
+    update: {},
+    create: {
+      name: 'React',
+    },
+  });
   console.log('✅ Created teckStacks:', teckStacks);
 
   // projectTechStacks 생성
@@ -208,6 +215,23 @@ async function main() {
       techStack: {
         connect: {
           id: 1n,
+        },
+      },
+    },
+  });
+
+  const projectTechStacks2 = await prisma.projectTechStack.upsert({
+    where: { id: 2n },
+    update: {},
+    create: {
+      project: {
+        connect: {
+          id: 1n,
+        },
+      },
+      techStack: {
+        connect: {
+          id: 2n,
         },
       },
     },
