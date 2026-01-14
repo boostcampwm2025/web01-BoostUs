@@ -1,6 +1,5 @@
+import { StoriesPageContent, StoriesSortOption } from '@/features/stories';
 import { fetchStories } from '@/features/stories/api/stories.api';
-import StoriesPageContent from '@/features/stories/ui/StoriesPageContent';
-import { StoriesSortOption } from '@/features/stories/model/stories.type';
 
 interface StoriesPageProps {
   searchParams: Promise<{
