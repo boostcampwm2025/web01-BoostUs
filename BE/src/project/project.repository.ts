@@ -28,15 +28,7 @@ export class ProjectRepository {
           AND: [{ state: 'PUBLISHED' }, ...(where ? [where] : [])],
         },
         orderBy: { id: 'desc' },
-        select: {
-          id: true,
-          thumbnailUrl: true,
-          title: true,
-          description: true,
-          cohort: true,
-          createdAt: true,
-          updatedAt: true,
-          viewCount: true,
+        include: {
           techStacks: {
             select: {
               techStack: {
