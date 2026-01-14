@@ -5,7 +5,7 @@ import DropdownChip from '@/features/stories/ui/ListDropdown/DropdownChip';
 import DropdownTitle from '@/features/stories/ui/ListDropdown/DropdownTitle';
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 const PERIOD_OPTIONS = [
   { key: 'daily', label: '오늘' },
@@ -24,12 +24,29 @@ const StoriesListDropdown = () => {
   const { sortBy, setSortBy, period, setPeriod } = useStoriesContext();
 
   const [isOpen, setIsOpen] = useState(false);
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        isOpen &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   return (
-    <div className="relative">
+    <div className="relative" ref={dropdownRef}>
       <button
-        ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
         className="text-neutral-text-default flex cursor-pointer flex-row"
       >
