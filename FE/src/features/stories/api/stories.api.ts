@@ -1,12 +1,33 @@
-import { StoriesResponse } from '@/features/stories/model/stories.type';
+import {
+  StoriesResponse,
+  StoriesSortOption,
+} from '@/features/stories/model/stories.type';
 
-export const fetchStories = async (): Promise<StoriesResponse> => {
-  const response = await fetch(
-    `${process.env.INTERNAL_API_URL ?? 'http://backend:3000'}/stories`,
-    {
-      cache: 'no-store',
-    }
-  );
+interface FetchStoriesParams {
+  sortBy?: StoriesSortOption['sortBy'];
+  period?: StoriesSortOption['period'];
+}
+
+export const fetchStories = async (
+  params?: FetchStoriesParams
+): Promise<StoriesResponse> => {
+  const queryParams = new URLSearchParams();
+
+  if (params?.sortBy) {
+    queryParams.append('sortBy', params.sortBy);
+  }
+  if (params?.period) {
+    queryParams.append('period', params.period);
+  }
+
+  const queryString = queryParams.toString();
+  const url = `${process.env.INTERNAL_API_URL ?? 'http://backend:3000'}/stories${
+    queryString ? `?${queryString}` : ''
+  }`;
+
+  const response = await fetch(url, {
+    cache: 'no-store',
+  });
 
   if (!response.ok) {
     throw new Error('Failed to fetch stories');
