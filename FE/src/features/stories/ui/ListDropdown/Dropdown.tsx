@@ -73,7 +73,7 @@ const StoriesListDropdown = () => {
             className="bg-neutral-surface-strong shadow-default absolute right-0 z-20 mt-1 flex w-58 origin-top flex-col overflow-hidden rounded-2xl"
           >
             <DropdownTitle />
-            <div className="flex flex-col gap-2 px-3 py-2">
+            <div className="flex flex-col px-3 py-2">
               <motion.div
                 layout="position"
                 className="flex w-full flex-row gap-2"
