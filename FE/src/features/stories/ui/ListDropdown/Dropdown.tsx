@@ -59,44 +59,46 @@ const StoriesListDropdown = () => {
                 label="좋아요 순"
               />
             </div>
-            <div className="bg-neutral-surface-default flex h-8 w-full flex-row justify-between gap-2 rounded-lg px-1 py-1">
-              {PERIOD_OPTIONS.map((option) => {
-                const isSelected = period === option.key;
+            {sortBy !== 'latest' && (
+              <div className="bg-neutral-surface-default flex h-8 w-full flex-row justify-between gap-2 rounded-lg px-1 py-1">
+                {PERIOD_OPTIONS.map((option) => {
+                  const isSelected = period === option.key;
 
-                return (
-                  <button
-                    key={option.key}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setPeriod(option.key);
-                    }}
-                    className="relative flex w-full cursor-pointer items-center justify-center rounded-lg transition-colors duration-300"
-                  >
-                    {isSelected && (
-                      <motion.div
-                        layoutId="dropdown-active-pill"
-                        className="bg-neutral-surface-bold shadow-default absolute inset-0 rounded-lg"
-                        transition={{
-                          type: 'spring',
-                          stiffness: 300,
-                          damping: 30,
-                        }}
-                      />
-                    )}
-                    <span
-                      className={`relative z-10 ${
-                        isSelected
-                          ? 'text-string-14 text-neutral-text-strong'
-                          : 'text-body-14 text-neutral-text-weak'
-                      }`}
+                  return (
+                    <button
+                      key={option.key}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setPeriod(option.key);
+                      }}
+                      className="relative flex w-full cursor-pointer items-center justify-center rounded-lg transition-colors duration-300"
                     >
-                      {option.label}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+                      {isSelected && (
+                        <motion.div
+                          layoutId="dropdown-active-pill"
+                          className="bg-neutral-surface-bold shadow-default absolute inset-0 rounded-lg"
+                          transition={{
+                            type: 'spring',
+                            stiffness: 300,
+                            damping: 30,
+                          }}
+                        />
+                      )}
+                      <span
+                        className={`relative z-10 ${
+                          isSelected
+                            ? 'text-string-14 text-neutral-text-strong'
+                            : 'text-body-14 text-neutral-text-weak'
+                        }`}
+                      >
+                        {option.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       )}
