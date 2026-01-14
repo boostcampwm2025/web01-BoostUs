@@ -1,7 +1,7 @@
 'use client';
 
 import StoriesCard from '@/features/stories/ui/Card';
-import StoriesListDropdown from '@/features/stories/ui/ListDropdown';
+import StoriesListDropdown from '@/features/stories/ui/ListDropdown/Dropdown';
 import { useStoriesContext } from '@/features/stories/model';
 import { useMemo } from 'react';
 import { Story } from '@/features/stories/model/stories.type';

@@ -50,3 +50,8 @@ export interface StoriesResponse {
     meta: object; // 우선 제외
   };
 }
+
+export interface StoriesSortOption {
+  sortBy: 'latest' | 'views' | 'likes';
+  period: 'all' | 'daily' | 'weekly' | 'monthly';
+}
