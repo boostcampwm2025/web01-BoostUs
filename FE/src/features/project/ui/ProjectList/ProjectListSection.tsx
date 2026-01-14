@@ -1,7 +1,7 @@
 'use client';
-import { useSearchParams } from 'next/navigation';
 
-import ProjectListCard from './ProjectListCard';
+import ProjectListCard from '@/features/project/ui/ProjectList/ProjectListCard';
+import { useSearchParams } from 'next/navigation';
 
 interface ProjectData {
   id: number;
@@ -23,6 +23,10 @@ const mockProjects: ProjectData[] = [
     title: 'BoostUs 커뮤니티 서비스',
     description:
       '부스트캠프 수료생과 예비 지원자를 위한 커뮤니티 서비스입니다.',
+    cohort: 9,
+    techStack: ['NestJS', 'Prisma', 'Next'],
+    createdAt: '2024-07-01T10:00:00',
+    updatedAt: '2024-08-20T15:30:00',
     cohort: 10,
     techStack: ['NestJS', 'Prisma', 'Next'],
     createdAt: '2024-07-01T10:00:00',

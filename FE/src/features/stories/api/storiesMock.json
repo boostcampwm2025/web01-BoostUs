@@ -1,0 +1,145 @@
+{
+  "success": true,
+  "message": "성공적으로 응답되었습니다",
+  "error": null,
+  "data": {
+    "items": [
+      {
+        "id": "1",
+        "title": "NestJS로 블로그 만들기",
+        "summary": "NestJS를 사용해 블로그 API를 설계해봅니다. NestJS를 사용해 블로그 API를 설계해봅니다.NestJS를 사용해 블로그 API를 설계해봅니다.",
+        "thumbnailUrl": "https://i.ibb.co/dsfkYw1h/download.jpg",
+        "likeCount": 12,
+        "viewCount": 340,
+        "originalUrl": "https://origin.com/123",
+        "createdAt": "2025-12-01T10:00:00",
+        "member": {
+          "id": "1",
+          "nickname": "Jack",
+          "cohort": 10,
+          "avatarUrl": "https://i.ibb.co/dsfkYw1h/download.jpg"
+        }
+      },
+      {
+        "id": "2",
+        "title": "React Query를 사용한 상태관리 최적화",
+        "summary": "React Query의 캐싱 전략으로 불필요한 네트워크 요청을 줄여봅시다.",
+        "thumbnailUrl": "https://i.ibb.co/dsfkYw1h/download.jpg",
+        "likeCount": 28,
+        "viewCount": 512,
+        "originalUrl": "https://origin.com/124",
+        "createdAt": "2025-12-02T14:30:00",
+        "member": {
+          "id": "2",
+          "nickname": "Sarah",
+          "cohort": 11,
+          "avatarUrl": "https://i.ibb.co/dsfkYw1h/download.jpg"
+        }
+      },
+      {
+        "id": "3",
+        "title": "TypeScript 제네릭 완벽 가이드",
+        "summary": "제네릭을 이용한 재사용 가능하고 타입 안전한 코드 작성법",
+        "thumbnailUrl": "https://i.ibb.co/dsfkYw1h/download.jpg",
+        "likeCount": 35,
+        "viewCount": 678,
+        "originalUrl": "https://origin.com/125",
+        "createdAt": "2025-12-03T09:15:00",
+        "member": {
+          "id": "3",
+          "nickname": "Mike",
+          "cohort": 10,
+          "avatarUrl": "https://i.ibb.co/dsfkYw1h/download.jpg"
+        }
+      },
+      {
+        "id": "4",
+        "title": "Next.js 13 앱 라우터 마이그레이션",
+        "summary": "Pages 라우터에서 앱 라우터로 전환하는 단계별 가이드",
+        "thumbnailUrl": "https://i.ibb.co/dsfkYw1h/download.jpg",
+        "likeCount": 42,
+        "viewCount": 821,
+        "originalUrl": "https://origin.com/126",
+        "createdAt": "2025-12-04T16:45:00",
+        "member": {
+          "id": "4",
+          "nickname": "Emma",
+          "cohort": 12,
+          "avatarUrl": "https://i.ibb.co/dsfkYw1h/download.jpg"
+        }
+      },
+      {
+        "id": "5",
+        "title": "Docker와 Docker Compose로 개발 환경 구축",
+        "summary": "프론트엔드와 백엔드를 한번에 실행하는 개발 환경 세팅",
+        "thumbnailUrl": "https://i.ibb.co/dsfkYw1h/download.jpg",
+        "likeCount": 18,
+        "viewCount": 445,
+        "originalUrl": "https://origin.com/127",
+        "createdAt": "2025-12-05T11:20:00",
+        "member": {
+          "id": "5",
+          "nickname": "David",
+          "cohort": 11,
+          "avatarUrl": "https://i.ibb.co/dsfkYw1h/download.jpg"
+        }
+      },
+      {
+        "id": "6",
+        "title": "Prisma ORM을 사용한 데이터베이스 관리",
+        "summary": "마이그레이션, 스키마 설계, 쿼리 최적화 실전 팁",
+        "thumbnailUrl": "https://i.ibb.co/dsfkYw1h/download.jpg",
+        "likeCount": 31,
+        "viewCount": 756,
+        "originalUrl": "https://origin.com/128",
+        "createdAt": "2025-12-06T13:55:00",
+        "member": {
+          "id": "6",
+          "nickname": "Lisa",
+          "cohort": 9,
+          "avatarUrl": "https://i.ibb.co/dsfkYw1h/download.jpg"
+        }
+      },
+      {
+        "id": "7",
+        "title": "CSS-in-JS vs Tailwind: 장단점 비교",
+        "summary": "다양한 스타일링 라이브러리의 성능과 개발 경험 비교분석",
+        "thumbnailUrl": "https://i.ibb.co/dsfkYw1h/download.jpg",
+        "likeCount": 24,
+        "viewCount": 589,
+        "originalUrl": "https://origin.com/129",
+        "createdAt": "2025-12-07T10:30:00",
+        "member": {
+          "id": "7",
+          "nickname": "John",
+          "cohort": 10,
+          "avatarUrl": "https://i.ibb.co/dsfkYw1h/download.jpg"
+        }
+      },
+      {
+        "id": "8",
+        "title": "웹 성능 최적화: Core Web Vitals 개선기",
+        "summary": "Lighthouse 스코어를 100점으로 올리기 위한 실전 최적화 기법",
+        "thumbnailUrl": "https://i.ibb.co/dsfkYw1h/download.jpg",
+        "likeCount": 56,
+        "viewCount": 1024,
+        "originalUrl": "https://origin.com/130",
+        "createdAt": "2025-12-08T15:20:00",
+        "member": {
+          "id": "8",
+          "nickname": "Sophie",
+          "cohort": 12,
+          "avatarUrl": "https://i.ibb.co/dsfkYw1h/download.jpg"
+        }
+      }
+    ],
+    "meta": {
+      "page": 1,
+      "size": 10,
+      "totalItems": 53,
+      "totalPages": 6,
+      "hasPrev": false,
+      "hasNext": true
+    }
+  }
+}
