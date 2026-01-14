@@ -74,7 +74,10 @@ const StoriesListDropdown = () => {
           >
             <DropdownTitle />
             <div className="flex flex-col gap-2 px-3 py-2">
-              <div className="flex w-full flex-row gap-2">
+              <motion.div
+                layout="position"
+                className="flex w-full flex-row gap-2"
+              >
                 <DropdownChip
                   onClick={() => setSortBy('latest')}
                   isActive={sortBy === 'latest'}
@@ -90,7 +93,7 @@ const StoriesListDropdown = () => {
                   isActive={sortBy === 'likes'}
                   label="좋아요 순"
                 />
-              </div>
+              </motion.div>
               <AnimatePresence mode="popLayout">
                 {sortBy !== 'latest' && (
                   <motion.div
