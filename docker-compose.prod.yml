@@ -1,0 +1,88 @@
+services:
+  reverse-proxy:
+    image: nginx:1.27-alpine
+    container_name: boostus_proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - frontend
+      - backend
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - boostus_network
+
+  db:
+    image: mysql:8.0.44
+    container_name: boostus_db
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    # 운영에서는 보통 DB 포트 미노출한다고 함 (필요 시 임시로만 열기)
+    # ports:
+    #   - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - boostus_network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "127.0.0.1",
+          "-u${MYSQL_USER}",
+          "-p${MYSQL_PASSWORD}",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    # CI에서 빌드한 백엔드 이미지 사용
+    image: ${BE_IMAGE}
+    container_name: boostus_backend
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    expose:
+      - "3000"
+    environment:
+      # 기존 dev compose와 동일하게
+      - DB_HOST=db
+      - DB_USER=${MYSQL_USER}
+      - DB_PASSWORD=${MYSQL_PASSWORD}
+      - DB_NAME=${MYSQL_DATABASE}
+      # Prisma schema 의 datasource 에서 사용
+      - DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}
+    depends_on:
+      # db 미기동 상태에서 뜨지 않도록
+      db:
+        condition: service_healthy
+    networks:
+      - boostus_network
+
+  # frontend:
+  #   # CI에서 빌드한 프론트엔드 이미지 사용
+  #   image: ${FE_IMAGE}
+  #   container_name: boostus_frontend
+  #   restart: unless-stopped
+  #   env_file:
+  #     - .env.prod
+  #   expose:
+  #     - "5173"
+  #   depends_on:
+  #     - backend
+  #   networks:
+  #     - boostus_network
+
+networks:
+  boostus_network:
+    driver: bridge
+
+volumes:
+  db_data:
