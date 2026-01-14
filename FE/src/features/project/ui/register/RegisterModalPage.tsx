@@ -1,172 +1,35 @@
 'use client';
 
-import { useState, useEffect, DragEvent } from 'react'; // DragEvent 추가
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import ModalOverlay from '@/shared/ui/ModalOverlay';
 import { ImageUp } from 'lucide-react';
-
-// --- Zod Schema (기존 유지) ---
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
-const ACCEPTED_IMAGE_TYPES = [
-  'image/jpeg',
-  'image/jpg',
-  'image/png',
-  'image/webp',
-];
-
-const projectSchema = z.object({
-  thumbnail: z
-    .custom<FileList>()
-    .refine(
-      (files) => files instanceof FileList && files.length > 0,
-      '썸네일 이미지를 업로드해주세요.'
-    )
-    .refine(
-      (files) =>
-        files instanceof FileList &&
-        files.length > 0 &&
-        files[0].size <= MAX_FILE_SIZE,
-      '최대 10MB까지 업로드 가능합니다.'
-    )
-    .refine(
-      (files) =>
-        files instanceof FileList &&
-        files.length > 0 &&
-        ACCEPTED_IMAGE_TYPES.includes(files[0].type),
-      '.jpg, .jpeg, .png, .webp 파일만 업로드 가능합니다.'
-    ),
-  title: z
-    .string()
-    .min(1, '프로젝트 이름을 입력해주세요.')
-    .max(50, '프로젝트 이름은 50자 이하로 입력해주세요.'),
-  description: z
-    .string()
-    .min(1, '프로젝트 설명을 입력해주세요.')
-    .max(200, '프로젝트 설명은 200자 이하로 입력해주세요.'),
-  contents: z.array(z.string()).min(1, '프로젝트 상세내용을 입력해주세요.'),
-  repositoryUrl: z.url('유효한 GitHub Repository URL을 입력해주세요.'),
-  demoUrl: z.url('유효한 데모 URL을 입력해주세요.'),
-  cohort: z.enum([
-    '1기',
-    '2기',
-    '3기',
-    '4기',
-    '5기',
-    '6기',
-    '7기',
-    '8기',
-    '9기',
-    '10기',
-  ]),
-  startDate: z.coerce
-    .date()
-    // 1. 빈 값이거나 유효하지 않은 날짜인 경우 체크
-    .refine((date) => !isNaN(date.getTime()), {
-      message: '시작 날짜를 입력해주세요.',
-    })
-    // 2. 미래 날짜 체크
-    .refine((date) => date <= new Date(), {
-      message: '시작 날짜는 현재 날짜 이전이어야 합니다.',
-    }),
-
-  endDate: z.coerce
-    .date()
-    .refine((date) => !isNaN(date.getTime()), {
-      message: '종료 날짜를 입력해주세요.',
-    })
-    .refine((date) => date >= new Date(), {
-      message: '종료 날짜는 현재 날짜 이후이어야 합니다.',
-    }),
-  members: z.array(z.string()).min(1, '팀원을 선택해주세요.'),
-});
-
-type ProjectFormValues = z.infer<typeof projectSchema>;
+import { useProjectRegister } from '@/features/project/hook/useProjectRegister';
 
 export default function RegisterModalPage() {
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [isDragging, setIsDragging] = useState(false); // 드래그 상태
-
   const {
     register,
     handleSubmit,
-    watch,
-    setValue,
-    clearErrors,
     formState: { errors, isSubmitting },
-  } = useForm({
-    resolver: zodResolver(projectSchema),
-    mode: 'onChange',
-  });
-
-  const thumbnailList = watch('thumbnail');
-  useEffect(() => {
-    if (thumbnailList && thumbnailList.length > 0) {
-      const file = thumbnailList[0];
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-
-      // 메모리 누수 방지
-      return () => URL.revokeObjectURL(url);
-    } else {
-      setPreviewUrl(null);
-    }
-  }, [thumbnailList]);
-
-  // --- 드래그 앤 드롭 핸들러 ---
-  const onDragEnter = (e: DragEvent<HTMLLabelElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  };
-
-  const onDragOver = (e: DragEvent<HTMLLabelElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.dataTransfer) {
-      e.dataTransfer.dropEffect = 'copy';
-    }
-  };
-
-  const onDragLeave = (e: DragEvent<HTMLLabelElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-  };
-
-  const onDrop = (e: DragEvent<HTMLLabelElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const droppedFiles = e.dataTransfer.files;
-      // React Hook Form에 값 수동 주입 및 검증 트리거
-      setValue('thumbnail', droppedFiles, { shouldValidate: true });
-      clearErrors('thumbnail');
-    }
-  };
-
-  const onSubmit = async (data: ProjectFormValues) => {
-    console.log('Form Data:', data);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    alert('프로젝트가 등록되었습니다.');
-  };
+    previewUrl,
+    isDragging,
+    dragHandlers, // 드래그 관련 핸들러 묶음
+    onSubmit,
+  } = useProjectRegister();
 
   return (
     <ModalOverlay>
       <div className="w-full rounded-lg bg-white">
         <h2 className="mb-4 text-xl font-bold">프로젝트 등록</h2>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={(e) => {
+            void handleSubmit(onSubmit)(e);
+          }}
+          className="space-y-4"
+        >
           {/* --- 썸네일 업로드 --- */}
           <div className="flex flex-col gap-2">
             <label
               htmlFor="thumbnail"
-              onDragEnter={onDragEnter}
-              onDragLeave={onDragLeave}
-              onDragOver={onDragOver}
-              onDrop={onDrop}
+              {...dragHandlers} // 핸들러를 Spread로 한 번에 적용
               className={`relative flex aspect-video w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border transition-all duration-200 ${
                 isDragging
                   ? 'scale-[0.99] border-blue-500 bg-blue-50 ring-2 ring-blue-200'
@@ -193,7 +56,6 @@ export default function RegisterModalPage() {
                   <div
                     className={`flex h-20 w-20 items-center justify-center rounded-2xl transition-colors ${isDragging ? 'bg-blue-200 text-blue-600' : 'bg-gray-300 text-gray-500'}`}
                   >
-                    {/* 기존 ImageUp 컴포넌트 사용 */}
                     <ImageUp size={48} />
                   </div>
                   <div className="flex flex-col gap-1">
@@ -219,18 +81,17 @@ export default function RegisterModalPage() {
                 id="thumbnail"
                 type="file"
                 accept="image/*"
-                className="hidden" // 화면에서 숨김 처리
+                className="hidden"
                 {...register('thumbnail')}
               />
             </label>
 
             {errors.thumbnail && (
               <p className="mt-1 text-sm text-red-500">
-                {errors.thumbnail?.message?.toString()}
+                {errors.thumbnail.message}
               </p>
             )}
           </div>
-          {/* ---------------------------------- */}
 
           {/* 기수 선택 필드 */}
           <div>
@@ -268,7 +129,7 @@ export default function RegisterModalPage() {
               <input
                 id="startDate"
                 type="date"
-                {...register('startDate')}
+                {...register('startDate', { valueAsDate: true })}
                 className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
               {errors.startDate && (
@@ -289,7 +150,7 @@ export default function RegisterModalPage() {
               <input
                 id="endDate"
                 type="date"
-                {...register('endDate')}
+                {...register('endDate', { valueAsDate: true })}
                 className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
               {errors.endDate && (
@@ -300,8 +161,8 @@ export default function RegisterModalPage() {
             </div>
           </div>
 
+          {/* URL 필드 영역 (생략 없이 기존과 동일하게 유지) */}
           <div className={'flex flex-row gap-4'}>
-            {/* 깃허브 Repository URL 필드 */}
             <div className="flex-1">
               <label
                 htmlFor="repositoryUrl"
@@ -322,7 +183,6 @@ export default function RegisterModalPage() {
                 </p>
               )}
             </div>
-            {/* 데모 URL 필드 */}
             <div className="flex-1">
               <label
                 htmlFor="demoUrl"
@@ -345,7 +205,7 @@ export default function RegisterModalPage() {
             </div>
           </div>
 
-          {/* 제목 필드 */}
+          {/* 제목, 설명, 상세내용 필드들... (구조 동일) */}
           <div>
             <label
               htmlFor="title"
@@ -367,7 +227,6 @@ export default function RegisterModalPage() {
             )}
           </div>
 
-          {/* 설명 필드 */}
           <div>
             <label
               htmlFor="description"
@@ -388,7 +247,6 @@ export default function RegisterModalPage() {
             )}
           </div>
 
-          {/* 프로젝트 상세내용 */}
           <div>
             <label
               htmlFor="contents"
@@ -410,7 +268,6 @@ export default function RegisterModalPage() {
             )}
           </div>
 
-          {/* 제출 버튼 */}
           <button
             type="submit"
             disabled={isSubmitting}
