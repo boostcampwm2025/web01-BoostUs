@@ -1,3 +1,5 @@
+'use client';
+
 import StoriesCard from '@/features/stories/ui/Card';
 import StoriesListDropdown from '@/features/stories/ui/ListDropdown';
 import { useStoriesContext } from '@/features/stories/model';
