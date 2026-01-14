@@ -1,7 +1,7 @@
 'use client';
 
-import { MOCK_QUESTIONS } from '../config/mockData';
-import { QuestionCard } from './QuestionCard';
+import { MOCK_QUESTIONS } from '@/entities/qna/config/mockData';
+import { QuestionCard } from '@/entities/qna/ui/QuestionCard';
 import { useSearchParams } from 'next/navigation';
 
 export default function QuestionList() {
