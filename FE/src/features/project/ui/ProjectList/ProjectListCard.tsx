@@ -50,8 +50,8 @@ const ProjectListCard = ({ project }: ProjectCardProps) => {
             {project.description}
           </span>
 
-          <div className="mt-auto mb-2 flex flex-row justify-between gap-2">
-            <div className="flex flex-row flex-wrap gap-2">
+          <div className="mt-auto flex flex-row justify-between gap-2">
+            <div className="flex h-14 flex-row flex-wrap content-start gap-2 overflow-hidden">
               {project.techStack.map((tech) => (
                 <TechList key={tech} title={tech} />
               ))}
