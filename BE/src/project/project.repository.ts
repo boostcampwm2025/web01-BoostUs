@@ -14,10 +14,38 @@ export class ProjectRepository {
   }
 
   async findAll(where?: Prisma.ProjectWhereInput) {
-    return this.prisma.project.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-    });
+    const [totalItems, projects] = await this.prisma.$transaction([
+      this.prisma.project.count({ where }),
+      this.prisma.project.findMany({
+        where: {
+          AND: [
+            { state: 'PUBLISHED' }, // 핵심 로직: 기본 state 필터
+            ...(where ? [where] : []),
+          ],
+        },
+        orderBy: { id: 'desc' },
+        select: {
+          id: true,
+          thumbnailUrl: true,
+          title: true,
+          description: true,
+          cohort: true,
+          createdAt: true,
+          updatedAt: true,
+          viewCount: true,
+          techStacks: {
+            select: {
+              techStack: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      }),
+    ]);
+    return { totalItems, projects };
   }
 
   async deleteById(id: bigint) {

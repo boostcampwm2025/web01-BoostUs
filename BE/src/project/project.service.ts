@@ -2,15 +2,38 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectListQueryDto } from './dto/project-list-query.dto';
+import { ProjectListItemDto } from './dto/project-list-item.dto';
 import { ProjectRepository } from './project.repository';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class ProjectService {
   constructor(private readonly projectRepository: ProjectRepository) {}
 
   async findAll(query: ProjectListQueryDto) {
+    const page = query.page ?? 1;
+    const size = query.size ?? 10;
     const where = query.cohort ? { cohort: query.cohort } : undefined;
-    return this.projectRepository.findAll(where);
+
+    const { totalItems, projects } = await this.projectRepository.findAll(where);
+
+    const items = plainToInstance(ProjectListItemDto, projects, {
+      excludeExtraneousValues: true,
+    });
+
+    const totalPages = Math.ceil(totalItems / size);
+
+    return {
+      items,
+      meta: {
+        page,
+        size,
+        totalItems,
+        totalPages,
+        hasPrev: false,
+        hasNext: true,
+      },
+    };
   }
 
   async findOne(id: number) {
