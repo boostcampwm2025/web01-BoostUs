@@ -1,14 +1,32 @@
 import StoriesCard from '@/features/stories/ui/Card';
 import StoriesListDropdown from '@/features/stories/ui/ListDropdown';
-import storiesMock from '@/features/stories/api/storiesMock.json';
 import { useStoriesContext } from '@/features/stories/model';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { Story } from '@/features/stories/model/stories.type';
+import { fetchStories } from '@/features/stories/api/stories.api';
 
 const StoriesList = () => {
   const { isRankingOpen, searchQuery, sortOption } = useStoriesContext();
 
-  // TODO: API 연결에 대응 필요
-  const stories = storiesMock.data.items;
+  const [stories, setStories] = useState<Story[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const loadStories = async () => {
+      setIsLoading(true);
+
+      try {
+        const response = await fetchStories();
+        setStories(response.data.items);
+      } catch (error) {
+        console.error('Error fetching stories:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void loadStories();
+  }, []);
 
   const filteredAndSortedStories = useMemo(() => {
     // TODO: API 연결할 때 대응 필요

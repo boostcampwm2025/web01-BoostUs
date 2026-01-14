@@ -40,3 +40,13 @@ export interface Story {
     avatarUrl: string;
   };
 }
+
+export interface StoriesResponse {
+  success: boolean;
+  message: string;
+  error: string | null;
+  data: {
+    items: Story[];
+    meta: object; // 우선 제외
+  };
+}

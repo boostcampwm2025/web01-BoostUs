@@ -1,6 +1,6 @@
 'use client';
 
-import { StoriesRankingPeriods } from '@/features/stories/model/types';
+import { StoriesRankingPeriods } from '@/features/stories/model/stories.type';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
   createContext,
@@ -70,7 +70,7 @@ export const StoriesProvider = ({
     useState<StoriesRankingPeriods>('weekly');
 
   const searchQuery = searchParams.get('q') ?? '';
-  const sortOption = searchParams.get('sort') ?? 'latest';
+  const sortOption = searchParams.get('sortBy') ?? 'latest';
 
   /**
    * URL의 쿼리 파라미터를 업데이트하는 헬퍼 함수
