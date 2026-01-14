@@ -7,6 +7,12 @@ import { StoryPeriod, StorySortBy } from './type/story-query.type';
 export class StoryRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  /**
+   * 모든 공개된 캠퍼들의 이야기 목록 조회
+   * @param sortBy StorySortBy
+   * @param period StoryPeriod
+   * @returns Story[]
+   */
   async findAllPublishedStories(sortBy: StorySortBy, period: StoryPeriod): Promise<Story[]> {
     const periodFilter = this.getPeriodFilter(period);
     const orderBy = this.getOrderBy(sortBy);
@@ -20,6 +26,20 @@ export class StoryRepository {
         member: true,
       },
       orderBy,
+    });
+  }
+
+  /**
+   * ID로 Story 단건 조회
+   * @param id bigint
+   * @returns Story | null
+   */
+  async findStoryById(id: bigint): Promise<Story | null> {
+    return this.prisma.story.findUnique({
+      where: { id },
+      include: {
+        member: true,
+      },
     });
   }
 
