@@ -34,7 +34,9 @@ const StoriesListDropdown = () => {
         className="text-neutral-text-default flex cursor-pointer flex-row"
       >
         <span className="text-string-16">
-          {SORT_BY_OPTIONS.find((option) => option.key === sortBy)?.label}
+          {sortBy === 'latest'
+            ? SORT_BY_OPTIONS.find((option) => option.key === sortBy)?.label
+            : `${SORT_BY_OPTIONS.find((option) => option.key === sortBy)?.label ?? ''} (${PERIOD_OPTIONS.find((option) => option.key === period)?.label ?? ''})`}
         </span>
         <ChevronDown strokeWidth={1} />
       </button>
