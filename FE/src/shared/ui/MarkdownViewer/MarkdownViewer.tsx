@@ -87,7 +87,7 @@ export const MarkdownViewer = ({ content }: { content: string }) => {
         // 인용문 (blockquote) 스타일
         blockquote: ({ ...props }) => (
           <blockquote
-            className="text-neutral-text-default border-accent-blue bg-grayscale-300 my-4 border-l-4 py-1 pl-4"
+            className="text-neutral-text-default border-accent-blue bg-grayscale-300 my-4 flex items-center justify-center border-l-4 py-4 pr-12 pl-4 [&_p]:mb-0"
             {...props}
           />
         ),
