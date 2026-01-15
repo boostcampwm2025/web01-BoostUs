@@ -2,7 +2,7 @@ name: CD - Deploy via SSH
 
 on:
   push:
-    branches: ["main", "dev"]
+    branches: ["main", "dev", "chore/121-cicd"]
   workflow_dispatch:
 
 permissions:
