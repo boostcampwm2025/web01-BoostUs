@@ -7,6 +7,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './common/filter/exception.filter';
 import { StoryModule } from './story/story.module';
 import { QuestionModule } from './question/question.module';
+import { ProjectModule } from './project/project.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { QuestionModule } from './question/question.module';
     }),
     StoryModule,
     QuestionModule,
+    ProjectModule,
   ],
   controllers: [AppController],
   providers: [
