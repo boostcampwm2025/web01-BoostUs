@@ -7,7 +7,7 @@ services:
       - "80:80"
       - "443:443"
     depends_on:
-      # - frontend
+      - frontend
       - backend
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
@@ -66,19 +66,19 @@ services:
     networks:
       - boostus_network
 
-  # frontend:
-  #   # CI에서 빌드한 프론트엔드 이미지 사용
-  #   image: ${FE_IMAGE}
-  #   container_name: boostus_frontend
-  #   restart: unless-stopped
-  #   env_file:
-  #     - .env.prod
-  #   expose:
-  #     - "5173"
-  #   depends_on:
-  #     - backend
-  #   networks:
-  #     - boostus_network
+  frontend:
+    # CI에서 빌드한 프론트엔드 이미지 사용
+    image: ${FE_IMAGE}
+    container_name: boostus_frontend
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    expose:
+      - "5173"
+    depends_on:
+      - backend
+    networks:
+      - boostus_network
 
 networks:
   boostus_network:
