@@ -103,7 +103,12 @@ export const MarkdownViewer = ({ content }: { content: string }) => {
         ),
 
         // 이미지 (img) 스타일
-        img: ({ ...props }) => <img className="mb-8" {...props} />,
+        img: (props) => (
+          <img
+            className="mx-auto mb-8 block h-auto max-w-full rounded-lg shadow-sm"
+            {...props}
+          />
+        ),
 
         // 인라인 코드 (`code`) 및 코드 블록 스타일
         code: ({ className, children, ...props }) => {
