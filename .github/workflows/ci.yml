@@ -2,6 +2,7 @@ name: CI - Build & Push Images
 
 on:
   pull_request:
+  push:
     branches: ["main", "dev"]
 
 permissions:
