@@ -15,7 +15,7 @@ interface ProjectCardProps {
     techStack: string[];
     createdAt: string;
     updatedAt: string;
-    views: number;
+    viewCount: number;
   };
 }
 
@@ -30,9 +30,12 @@ const ProjectListCard = ({ project }: ProjectCardProps) => {
         <div className="relative w-full shrink-0">
           {' '}
           <Image
-            src={paint}
+            src={project.thumbnailUrl ?? paint}
             alt={project.title}
-            className="w-full object-cover"
+            className="aspect-video w-full object-cover"
+            width={300}
+            height={160}
+            unoptimized
           />
           <div className="absolute top-2 right-4 z-10">
             <TogglePill
@@ -57,7 +60,7 @@ const ProjectListCard = ({ project }: ProjectCardProps) => {
               ))}
             </div>
             <span className="text-neutral-text-weak flex shrink-0 flex-row items-center gap-1 self-end text-sm font-light">
-              {project.views}
+              {project.viewCount}
               {'  '}
               <Eye size={16} className="text-neutral-text-weak" />
             </span>

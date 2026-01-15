@@ -18,6 +18,10 @@ export default function RegisterModalPage() {
     participants,
     addParticipant,
     removeParticipant,
+
+    techStack,
+    addTechStack,
+    removeTechStack,
   } = useProjectRegister();
 
   const [isComposing, setIsComposing] = useState(false);
@@ -123,6 +127,27 @@ export default function RegisterModalPage() {
             </select>
           </div>
 
+          {/* 분야 선택 필드 */}
+          <div>
+            <label
+              htmlFor="field"
+              className="block text-sm font-medium text-gray-700"
+            >
+              분야
+            </label>
+            <select
+              id="field"
+              {...register('field')}
+              className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            >
+              {['Web', 'IOS', 'Android'].map((field) => (
+                <option key={field} value={field}>
+                  {field}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div className="flex flex-row gap-4">
             {/* 시작 날짜 */}
             <div className="flex-1">
@@ -171,21 +196,21 @@ export default function RegisterModalPage() {
           <div className={'flex flex-row gap-4'}>
             <div className="flex-1">
               <label
-                htmlFor="repositoryUrl"
+                htmlFor="repoUrl"
                 className="block text-sm font-medium text-gray-700"
               >
                 깃허브 Repository
               </label>
               <input
-                id="repositoryUrl"
+                id="repoUrl"
                 type="url"
-                {...register('repositoryUrl')}
+                {...register('repoUrl')}
                 className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 placeholder="GitHub Repository URL을 입력하세요"
               />
-              {errors.repositoryUrl && (
+              {errors.repoUrl && (
                 <p className="mt-1 text-xs text-red-500">
-                  {errors.repositoryUrl.message}
+                  {errors.repoUrl.message}
                 </p>
               )}
             </div>
@@ -325,6 +350,66 @@ export default function RegisterModalPage() {
                   <button
                     type="button"
                     onClick={() => removeParticipant(index)}
+                    className="text-sm text-red-600 hover:underline"
+                  >
+                    X
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 기술 스택: 입력 + 등록 버튼 + 리스트 */}
+          <div>
+            <label
+              htmlFor="techStackInput"
+              className="block text-sm font-medium text-gray-700"
+            >
+              기술 스택
+            </label>
+
+            <div className="mt-1 flex gap-2">
+              <input
+                id="techStackInput"
+                type="text"
+                {...register('techStackInput')}
+                className="block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                placeholder="기술 스택을 입력하세요"
+                onCompositionStart={() => setIsComposing(true)}
+                onCompositionEnd={() => setIsComposing(false)}
+                onKeyDown={(e) => {
+                  if (e.key !== 'Enter') return;
+                  if (isComposing || e.nativeEvent.isComposing) return;
+
+                  e.preventDefault();
+                  addTechStack();
+                }}
+              />
+              <button
+                type="button"
+                onClick={addTechStack}
+                className="shrink-0 rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+              >
+                등록
+              </button>
+            </div>
+
+            {errors.techStack && (
+              <p className="mt-1 text-xs text-red-500">
+                {errors.techStack.message!}
+              </p>
+            )}
+
+            <div className="mt-3 flex flex-row gap-2">
+              {techStack.map((tech, index) => (
+                <div
+                  key={`${tech}-${index}`}
+                  className="flex items-center justify-between gap-2 rounded-md border border-gray-200 bg-gray-50 px-3 py-2"
+                >
+                  <span className="text-sm text-gray-800">{tech}</span>
+                  <button
+                    type="button"
+                    onClick={() => removeTechStack(index)}
                     className="text-sm text-red-600 hover:underline"
                   >
                     X

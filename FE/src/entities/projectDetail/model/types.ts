@@ -1,7 +1,6 @@
-export interface Member {
-  id: number;
-  nickname: string;
-  avatarUrl: string;
+export interface  Participant {
+  githubId: string;
+  avatarUrl?: string;
 }
 
 export interface ProjectData {
@@ -9,17 +8,17 @@ export interface ProjectData {
   thumbnailUrl: string;
   title: string;
   description: string;
-  stacks: string[];
   summary: string;
+  techStacks: string[];
   contents: string; // Markdown 텍스트
-  repositoryUrl: string;
+  repoUrl: string;
   demoUrl: string;
   cohort: number;
   startDate: string;
   endDate: string;
   createdAt: string;
   updatedAt: string;
-  members: Member[];
+  participants: Participant[];
 }
 
 export interface ProjectResponse {
