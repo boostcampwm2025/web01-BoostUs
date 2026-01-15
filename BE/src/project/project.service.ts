@@ -50,12 +50,12 @@ export class ProjectService {
     return data;
   }
 
-  // async create(dto: CreateProjectDto) {
-  //   // 프로젝트 등록자 memberId는 인증 사용자에서 주입해야 함 -> 커스텀 데코레이터?
-  //   const memberId = BigInt(1); // 임시 값
+  async create(dto: CreateProjectDto) {
+    // 프로젝트 등록자 memberId는 인증 사용자에서 주입해야 함 -> 커스텀 데코레이터?
+    const memberId = BigInt(1); // 임시 값
 
-  //   return this.projectRepository.create(memberId, dto);
-  // }
+    return await this.projectRepository.create(memberId, dto);
+  }
 
   // async update(id: number, dto: UpdateProjectDto) {
   //   const projectId = BigInt(id);
