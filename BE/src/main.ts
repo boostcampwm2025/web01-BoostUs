@@ -11,7 +11,7 @@ import { ResponseInterceptor } from './common/interceptor/response.interceptor';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api');
 
   // 응답 인터셉터 적용
   app.useGlobalInterceptors(new ResponseInterceptor());
