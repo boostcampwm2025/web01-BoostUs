@@ -4,6 +4,9 @@ on:
   workflow_run:
     workflows: ["CI - Build & Push Images"]
     types: [completed]
+  push:
+    branches: ["chore/121-cicd"] # 테스트용
+  workflow_dispatch:
 
 permissions:
   contents: read
