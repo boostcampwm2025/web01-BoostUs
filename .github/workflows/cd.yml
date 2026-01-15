@@ -4,8 +4,7 @@ on:
   workflow_run:
     workflows: ["CI - Build & Push Images"]
     types: [completed]
-  push:
-    branches: ["chore/121-cicd"] # 테스트용
+    branches: ["dev", "main"]
   workflow_dispatch:
 
 permissions:
@@ -18,6 +17,7 @@ env:
 
 jobs:
   deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: NCP 서버에 SSH 접속하여 배포 진행
