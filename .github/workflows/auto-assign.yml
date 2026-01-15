@@ -21,15 +21,15 @@ jobs:
             const pr = context.payload.pull_request;
 
             const reviewersMap = {
-              'leeHB-1007': ['LimSR12', 'Dongho Jang', 'Seungjun Jeong' 'DevJunz'],
-              'LimSR12': ['leeHB-1007', 'Dongho Jang', 'Seungjun Jeong' 'DevJunz'],
-              'Dongho Jang': ['LimSR12', 'leeHB-1007', 'Seungjun Jeong' 'DevJunz'],
-              'Seungjun Jeong': ['LimSR12', 'Dongho Jang', 'leeHB-1007' 'DevJunz'],
-              'DevJunz': ['LimSR12', 'Dongho Jang', 'Seungjun Jeong' 'leeHB-1007'],
+              'leeHB-1007': ['LimSR12', 'JangDongHo', 'whateveriiwant' 'DevJunz'],
+              'LimSR12': ['leeHB-1007', 'JangDongHo', 'whateveriiwant' 'DevJunz'],
+              'JangDongHo': ['LimSR12', 'leeHB-1007', 'whateveriiwant' 'DevJunz'],
+              'whateveriiwant': ['LimSR12', 'JangDongHo', 'leeHB-1007' 'DevJunz'],
+              'DevJunz': ['LimSR12', 'JangDongHo', 'whateveriiwant' 'leeHB-1007'],
             };
 
             // 리뷰어 로직
-            const reviewers = reviewersMap[prAuthor] || ['leeHB-1007', 'LimSR12', 'Dongho Jang', 'Seungjun Jeong' 'DevJunz'].filter(r => r !== prAuthor);
+            const reviewers = reviewersMap[prAuthor] || ['leeHB-1007', 'LimSR12', 'JangDongHo', 'whateveriiwant' 'DevJunz'].filter(r => r !== prAuthor);
             console.log(`PR Author: ${prAuthor}`);
             console.log(`Assigned reviewers: ${reviewers.join(', ')}`);
 
