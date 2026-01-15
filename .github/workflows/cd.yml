@@ -1,9 +1,9 @@
 name: CD - Deploy via SSH
 
 on:
-  push:
-    branches: ["main", "dev", "chore/121-cicd"]
-  workflow_dispatch:
+  workflow_run:
+    workflows: ["CI - Build & Push Images"]
+    types: [completed]
 
 permissions:
   contents: read
@@ -15,6 +15,7 @@ env:
 
 jobs:
   deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -39,8 +40,8 @@ jobs:
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ${{ env.REGISTRY }} -u "${{ secrets.GHCR_USERNAME }}" --password-stdin
 
             # 2) pull 받을 이미지 태그
-            FE_IMAGE="${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.FE_IMAGE_NAME }}:${{ github.sha }}"
-            BE_IMAGE="${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.BE_IMAGE_NAME }}:${{ github.sha }}"
+            FE_IMAGE="${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.FE_IMAGE_NAME }}:${{ github.event.workflow_run.head_sha }}"
+            BE_IMAGE="${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.BE_IMAGE_NAME }}:${{ github.event.workflow_run.head_sha }}"
 
             # 3) compose 가 참조할 .env.prod의 이미지 변수 업데이트 
             if grep -q '^FE_IMAGE=' .env.prod; then
