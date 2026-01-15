@@ -143,7 +143,7 @@ export async function seedProjects(prisma: PrismaClient) {
       thumbnailUrl: metadata.thumbnailUrl,
       startDate: new Date('2025-12-08'),
       endDate: null,
-      teamNumber: i + 1,
+      teamNumber: parseInt(filename.split('.')[0], 10),
       teamName: metadata.teamName || `Team ${i + 1}`,
       cohort: 10,
       field: 'WEB',
