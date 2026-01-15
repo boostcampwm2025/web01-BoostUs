@@ -1,5 +1,5 @@
 import { useState, useEffect, DragEvent } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   projectSchema,
@@ -8,14 +8,20 @@ import {
 
 export const useProjectRegister = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [participants, setParticipants] = useState<string[]>([]);
   const [isDragging, setIsDragging] = useState(false);
 
   const formMethods = useForm({
     resolver: zodResolver(projectSchema),
     mode: 'onChange',
+    defaultValues: {
+      contents: [''],
+      participants: [],
+      participantsInput: '',
+    },
   });
 
-  const { watch, setValue, clearErrors } = formMethods;
+  const { watch, setValue } = formMethods;
   const thumbnailList = watch('thumbnail') as FileList | undefined;
 
   // 썸네일 미리보기 URL 생성 및 정리
@@ -48,6 +54,17 @@ export const useProjectRegister = () => {
   const handleDragLeave = (e: DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     e.stopPropagation();
+
+    const currentTarget = e.currentTarget;
+    const relatedTarget = e.relatedTarget;
+
+    // If the drag is moving into a child of the label, do not reset the dragging state
+    if (
+      relatedTarget instanceof Node &&
+      currentTarget.contains(relatedTarget)
+    ) {
+      return;
+    }
     setIsDragging(false);
   };
 
@@ -59,11 +76,20 @@ export const useProjectRegister = () => {
     const files = e.dataTransfer?.files;
     if (files && files.length > 0) {
       setValue('thumbnail', files, { shouldValidate: true });
-      clearErrors('thumbnail');
     }
   };
+  const handleParticipantsAdd = () => {
+    const raw = watch('participantsInput'); // string | undefined 일 수 있음
+    const name = (raw ?? '').trim(); // 항상 string
 
-  // 실제 제출 로직
+    if (name !== '') {
+      setParticipants((prev) => [...prev, name]);
+      setValue('participantsInput', '');
+    }
+  };
+  const handleParticipantsRemove = (index: number) => {
+    setParticipants((prev) => prev.filter((_, i) => i !== index));
+  };
   const submitValidForm = async (data: ProjectFormValues) => {
     console.log('Form Data:', data);
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -81,5 +107,9 @@ export const useProjectRegister = () => {
       onDrop: handleDrop,
     },
     onSubmit: submitValidForm,
+
+    participants,
+    addParticipant: handleParticipantsAdd,
+    removeParticipant: handleParticipantsRemove,
   };
 };

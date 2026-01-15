@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import ModalOverlay from '@/shared/ui/ModalOverlay';
 import { ImageUp } from 'lucide-react';
 import { useProjectRegister } from '@/features/project/hook/useProjectRegister';
@@ -13,7 +14,13 @@ export default function RegisterModalPage() {
     isDragging,
     dragHandlers, // 드래그 관련 핸들러 묶음
     onSubmit,
+
+    participants,
+    addParticipant,
+    removeParticipant,
   } = useProjectRegister();
+
+  const [isComposing, setIsComposing] = useState(false);
 
   return (
     <ModalOverlay>
@@ -67,8 +74,7 @@ export default function RegisterModalPage() {
                         : '이미지를 여기로 드래그하여 업로드 하세요'}
                     </span>
                     <span className="text-sm text-gray-500">
-                      PNG, JPG, JPEG, GIF 파일 형식을 여러 개 업로드 할 수
-                      있어요
+                      PNG, JPG, JPEG, GIF 형식의 이미지를 1개 업로드할 수 있어요
                     </span>
                   </div>
                   <div className="mt-2 rounded-lg bg-blue-100 px-6 py-2.5 text-sm font-semibold text-blue-600">
@@ -266,6 +272,66 @@ export default function RegisterModalPage() {
                 {errors.contents.message}
               </p>
             )}
+          </div>
+
+          {/* 프로젝트 참여자: 입력 + 등록 버튼 + 리스트 */}
+          <div>
+            <label
+              htmlFor="participantsInput"
+              className="block text-sm font-medium text-gray-700"
+            >
+              프로젝트 참여자
+            </label>
+
+            <div className="mt-1 flex gap-2">
+              <input
+                id="participantsInput"
+                type="text"
+                {...register('participantsInput')}
+                className="block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                placeholder="이름을 입력하세요"
+                onCompositionStart={() => setIsComposing(true)}
+                onCompositionEnd={() => setIsComposing(false)}
+                onKeyDown={(e) => {
+                  if (e.key !== 'Enter') return;
+                  if (isComposing || e.nativeEvent.isComposing) return;
+
+                  e.preventDefault();
+                  addParticipant();
+                }}
+              />
+              <button
+                type="button"
+                onClick={addParticipant}
+                className="shrink-0 rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+              >
+                등록
+              </button>
+            </div>
+
+            {errors.participants && (
+              <p className="mt-1 text-xs text-red-500">
+                {errors.participants.message!}
+              </p>
+            )}
+
+            <div className="mt-3 flex flex-row gap-2">
+              {participants.map((name, index) => (
+                <div
+                  key={`${name}-${index}`}
+                  className="flex items-center justify-between gap-2 rounded-md border border-gray-200 bg-gray-50 px-3 py-2"
+                >
+                  <span className="text-sm text-gray-800">{name}</span>
+                  <button
+                    type="button"
+                    onClick={() => removeParticipant(index)}
+                    className="text-sm text-red-600 hover:underline"
+                  >
+                    X
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
 
           <button
