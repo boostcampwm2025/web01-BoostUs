@@ -9,6 +9,13 @@ export type CreateQuestionInput = {
   hashtags: string | null;
 };
 
+export type SearchParams = {
+  where?: Prisma.QuestionWhereInput;
+  orderBy?: Prisma.QuestionOrderByWithRelationInput;
+  skip?: number;
+  take?: number;
+};
+
 @Injectable()
 export class QuestionRepository {
   constructor(private readonly prisma: PrismaService) {}
@@ -24,13 +31,40 @@ export class QuestionRepository {
       },
       include: {
         member: {
-          select: {
-            id: true,
-            nickname: true,
-            avatarUrl: true,
-            cohort: true,
-          },
+          select: { id: true, nickname: true, avatarUrl: true, cohort: true },
         },
+      },
+    });
+  }
+
+  async findAllWithCount(params: SearchParams) {
+    const { where, orderBy, skip, take } = params;
+
+    const [items, totalItems] = await Promise.all([
+      this.prisma.question.findMany({
+        where,
+        orderBy,
+        skip,
+        take,
+        include: {
+          member: {
+            select: { id: true, nickname: true, avatarUrl: true, cohort: true },
+          },
+          _count: { select: { answers: true } },
+        },
+      }),
+      this.prisma.question.count({ where }),
+    ]);
+
+    return { items, totalItems };
+  }
+
+  async findOne(id: bigint) {
+    return this.prisma.question.findUnique({
+      where: { id },
+      include: {
+        member: { select: { id: true, nickname: true, avatarUrl: true, cohort: true } },
+        _count: { select: { answers: true } },
       },
     });
   }
