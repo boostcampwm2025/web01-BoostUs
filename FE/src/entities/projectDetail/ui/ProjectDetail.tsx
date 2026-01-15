@@ -55,10 +55,11 @@ export default function ProjectDetail() {
         <div className="relative aspect-video max-h-[600px] w-full overflow-hidden rounded-md bg-gray-100">
           <Image
             // Todo: data.thumbnailUrl은 없어서 이후에 지정되면 넣기
-            src={'/assets/paint.png'}
+            src={data.thumbnailUrl ?? '/assets/paint.png'}
             alt={data.title}
             fill
             className="rounded-md object-cover"
+            unoptimized
           />
         </div>
 
