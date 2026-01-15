@@ -30,9 +30,12 @@ const ProjectListCard = ({ project }: ProjectCardProps) => {
         <div className="relative w-full shrink-0">
           {' '}
           <Image
-            src={paint}
+            src={project.thumbnailUrl ?? paint}
             alt={project.title}
-            className="w-full object-cover"
+            className="aspect-video w-full object-cover"
+            width={300}
+            height={160}
+            unoptimized
           />
           <div className="absolute top-2 right-4 z-10">
             <TogglePill

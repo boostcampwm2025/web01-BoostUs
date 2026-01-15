@@ -11,7 +11,7 @@ export interface ProjectData {
   summary: string;
   techStacks: string[];
   contents: string; // Markdown 텍스트
-  repositoryUrl: string;
+  repoUrl: string;
   demoUrl: string;
   cohort: number;
   startDate: string;

@@ -101,7 +101,7 @@ export default function ProjectDetail() {
         {/* 버튼 그룹 */}
         <div className="mt-4 flex gap-2">
           <a
-            href={data.repositoryUrl}
+            href={data.repoUrl}
             target="_blank"
             className="flex items-center gap-2 rounded-xl border bg-black px-5 py-3 text-lg text-white hover:bg-gray-800"
           >
