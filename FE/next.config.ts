@@ -1,10 +1,13 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  // --- 기존 설정 유지 ---
   turbopack: {
     root: __dirname,
   },
-  reactCompiler: true,
+  experimental: {
+    reactCompiler: true,
+  },
 
   images: {
     remotePatterns: [
@@ -15,6 +18,16 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
+  },
+  // --------------------
+
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://backend:3000/:path*',
+      },
+    ];
   },
 };
 

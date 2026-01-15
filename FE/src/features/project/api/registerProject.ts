@@ -11,7 +11,7 @@ interface RegisterProjectRequest {
   repoUrl: string;
   demoUrl: string;
   cohort: number;
-  techStack: string[];
+  techStack: number[];
   startDate: string;
   endDate: string;
   field: string;
@@ -26,7 +26,7 @@ interface APiResponse<T> {
 }
 
 export async function registerProject(data: RegisterProjectRequest) {
-  const res = await fetch(`http://localhost:3000/projects`, {
+  const res = await fetch(`/api/projects`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),

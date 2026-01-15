@@ -35,7 +35,7 @@ export interface ApiResponse<T> {
 }
 
 export async function fetchProjects(): Promise<ProjectsData> {
-  const res = await fetch(`http://localhost:3000/projects`, { method: 'GET' });
+  const res = await fetch('/api/projects');
   if (!res.ok) throw new Error('프로젝트 조회 실패');
 
   const json = (await res.json()) as ApiResponse<ProjectsData>;

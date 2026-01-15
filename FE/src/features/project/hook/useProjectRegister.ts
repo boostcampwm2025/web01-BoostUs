@@ -1,5 +1,5 @@
 import { useState, useEffect, DragEvent } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   projectSchema,
@@ -9,24 +9,34 @@ import { registerProject } from '@/features/project/api/registerProject';
 
 export const useProjectRegister = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
   const [participants, setParticipants] = useState<string[]>([]);
-  const [techStack, setTechStack] = useState<string[]>([]);
+
+  const [techStack, setTechStack] = useState<number[]>([]);
+
   const [isDragging, setIsDragging] = useState(false);
 
   const formMethods = useForm({
     resolver: zodResolver(projectSchema),
     mode: 'onChange',
     defaultValues: {
+      title: '',
+      description: '',
       contents: [''],
-      participants: [],
+      repoUrl: '',
+      demoUrl: '',
+      cohort: '10기', // 초기값 빈 문자열
       participantsInput: '',
+      techStackInput: '',
+      field: 'Web',
+      startDate: new Date(),
+      endDate: new Date(),
     },
   });
 
   const { watch, setValue } = formMethods;
   const thumbnailList = watch('thumbnail') as FileList | undefined;
 
-  // 썸네일 미리보기 URL 생성 및 정리
   useEffect(() => {
     if (thumbnailList && thumbnailList.length > 0) {
       const file = thumbnailList[0];
@@ -37,149 +47,125 @@ export const useProjectRegister = () => {
     setPreviewUrl(null);
   }, [thumbnailList]);
 
-  // 드래그 앤 드롭 핸들러
   const handleDragEnter = (e: DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(true);
   };
-
   const handleDragOver = (e: DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.dataTransfer) {
-      e.dataTransfer.dropEffect = 'copy';
-    }
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
   };
-
   const handleDragLeave = (e: DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     e.stopPropagation();
-
     const currentTarget = e.currentTarget;
     const relatedTarget = e.relatedTarget;
-
-    // If the drag is moving into a child of the label, do not reset the dragging state
-    if (
-      relatedTarget instanceof Node &&
-      currentTarget.contains(relatedTarget)
-    ) {
+    if (relatedTarget instanceof Node && currentTarget.contains(relatedTarget))
       return;
-    }
     setIsDragging(false);
   };
-
   const handleDrop = (e: DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
-
     const files = e.dataTransfer?.files;
-    if (files && files.length > 0) {
+    if (files && files.length > 0)
       setValue('thumbnail', files, { shouldValidate: true });
-    }
   };
+
   const handleParticipantsAdd = () => {
     const raw = watch('participantsInput');
     const name = (raw ?? '').trim();
-
     if (name === '') return;
 
     setParticipants((prev) => {
+      // 중복 추가 방지 (선택 사항)
+      if (prev.includes(name)) return prev;
       const next = [...prev, name];
-      setValue('participants', next, {
-        shouldValidate: true,
-        shouldDirty: true,
-      });
       return next;
     });
-
     setValue('participantsInput', '', { shouldDirty: true });
   };
 
   const handleParticipantsRemove = (index: number) => {
-    setParticipants((prev) => {
-      const next = prev.filter((_, i) => i !== index);
-      setValue('participants', next, {
-        shouldValidate: true,
-        shouldDirty: true,
-      });
-      return next;
-    });
+    setParticipants((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleTechStackAdd = () => {
     const raw = watch('techStackInput');
-    const tech = (raw ?? '').trim();
+    const techStr = (raw ?? '').trim();
+    if (techStr === '') return;
 
-    if (tech === '') return;
+    const techId = parseInt(techStr, 10);
+
+    if (isNaN(techId)) {
+      alert('기술 스택은 현재 ID(숫자)로만 입력 가능합니다.'); // 임시 경고
+      setValue('techStackInput', '');
+      return;
+    }
 
     setTechStack((prev) => {
-      const next = [...prev, tech];
-      setValue('techStack', next, {
-        shouldValidate: true,
-        shouldDirty: true,
-      });
+      if (prev.includes(techId)) return prev;
+      const next = [...prev, techId];
       return next;
     });
-
     setValue('techStackInput', '', { shouldDirty: true });
   };
 
   const handleTechStackRemove = (index: number) => {
-    setTechStack((prev) => {
-      const next = prev.filter((_, i) => i !== index);
-      setValue('techStack', next, {
-        shouldValidate: true,
-        shouldDirty: true,
-      });
-      return next;
-    });
+    setTechStack((prev) => prev.filter((_, i) => i !== index));
   };
 
   const submitValidForm = async (data: ProjectFormValues) => {
     try {
-      // 이미지 업로드 처리 (S3)
+      // S3 이미지 업로드 로직
       let uploadedThumbnailUrl: string | null = null;
-
       if (data.thumbnail && data.thumbnail.length > 0) {
-        const file = data.thumbnail[0];
-        // TODO: 여기서 실제 이미지 업로드 API를 호출하고 URL을 받아와야 합니다.
-        // 예: uploadedThumbnailUrl = await uploadImageToS3(file);
-        console.log('이미지 업로드 필요:', file.name);
-        uploadedThumbnailUrl = 'https://임시-이미지-주소.com/image.png'; // 테스트용 더미
+        console.log('이미지 업로드 필요:', data.thumbnail[0].name);
+        uploadedThumbnailUrl = 'https://임시-이미지-주소.com/image.png';
       }
 
-      // 2. API 요청 데이터 형태에 맞게 변환 (Mapping)
+      // 기수 처리 (1기 -> 1)
+      const cohortStr = data.cohort
+        ? (data.cohort as string).replace('기', '')
+        : '0';
+      const parsedCohort = parseInt(cohortStr, 10);
+
       const requestBody = {
-        thumbnailUrl: uploadedThumbnailUrl, // FileList -> string 변환
+        thumbnailUrl: uploadedThumbnailUrl,
         title: data.title,
         description: data.description,
-        contents: data.contents.join('\n'), // string[] -> string (필요시)
+        contents: Array.isArray(data.contents)
+          ? data.contents.join('\n')
+          : data.contents,
         repoUrl: data.repoUrl,
         demoUrl: data.demoUrl,
-        cohort: parseInt(data.cohort.replace('기', '')),
-        startDate: data.startDate.toISOString().split('T')[0],
-        endDate: data.endDate.toISOString().split('T')[0],
+        cohort: isNaN(parsedCohort) ? 0 : parsedCohort,
 
-        techStack: data.techStack, // FormValues에 이 필드가 있는지 확인 필요
-        field: data.field, // FormValues에 이 필드가 있는지 확인 필요
+        // 날짜 처리 (YYYY-MM-DD)
+        startDate: new Date(data.startDate).toISOString().split('T')[0],
+        endDate: new Date(data.endDate).toISOString().split('T')[0],
 
-        // 참여자 매핑
+        techStack: techStack,
+
+        field: data.field,
+
         participants: participants.map((name) => ({
           githubId: name,
-          avatarUrl: '', // API 스펙에 있다면 빈 문자열이라도 넣어줘야 함
+          avatarUrl: undefined,
         })),
       };
 
-      console.log('Payload:', requestBody);
+      console.log('전송할 데이터:', requestBody);
 
-      // 3. API 호출
-      const projectId = await registerProject(requestBody);
+      await registerProject(requestBody);
       alert('프로젝트가 등록되었습니다.');
-    } catch (error) {
+      // 성공 후 페이지 이동이나 폼 초기화 로직 추가 가능
+    } catch (error: any) {
       console.error(error);
-      alert('등록 중 오류가 발생했습니다.');
+      alert(`등록 실패: ${error.message}`);
     }
   };
 
@@ -193,7 +179,7 @@ export const useProjectRegister = () => {
       onDragLeave: handleDragLeave,
       onDrop: handleDrop,
     },
-    onSubmit: submitValidForm,
+    onSubmit: formMethods.handleSubmit(submitValidForm), // handleSubmit으로 감싸야 함
 
     participants,
     addParticipant: handleParticipantsAdd,
