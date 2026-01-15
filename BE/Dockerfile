@@ -13,9 +13,9 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN --mount=type=secret,id=DB_URL \
-    export DB_URL="$(cat /run/secrets/DB_URL)" && \
-    npx prisma generate
+# RUN --mount=type=secret,id=DB_URL \
+#     export DB_URL="$(cat /run/secrets/DB_URL)" && \
+#     npx prisma generate
 RUN npm run build
 
 
