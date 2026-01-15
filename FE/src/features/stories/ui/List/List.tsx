@@ -35,7 +35,7 @@ const StoriesList = ({ initialStories }: StoriesListProps) => {
       >
         {filteredAndSortedStories.length > 0 ? (
           filteredAndSortedStories.map((story) => (
-            <StoriesCard key={story.id} story={story} />
+            <StoriesCard id={story.id} key={story.id} story={story} />
           ))
         ) : (
           <div className="text-neutral-text-weak col-span-full py-10 text-center">

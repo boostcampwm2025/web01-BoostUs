@@ -21,6 +21,7 @@ export interface StoriesCard {
 }
 
 export interface StoriesCardProps {
+  id: string;
   story: StoriesCard;
 }
 
