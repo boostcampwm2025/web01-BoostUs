@@ -11,6 +11,6 @@ const cohort = [
   '2기',
   '1기',
 ];
-const field = ['전체', 'Web', 'IOS', 'Android'];
+const field = ['전체', 'WEB', 'IOS', 'ANDROID'];
 
 export { cohort, field };
