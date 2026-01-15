@@ -12,6 +12,8 @@ export class PrismaService extends PrismaClient {
       password: configService.get<string>('DB_PASSWORD'),
       database: configService.get<string>('DB_NAME'),
       connectionLimit: 5,
+      allowPublicKeyRetrieval: true,
+      ssl: false,
     });
     super({ adapter });
   }
