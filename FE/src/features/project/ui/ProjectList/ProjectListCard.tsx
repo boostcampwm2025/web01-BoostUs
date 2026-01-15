@@ -15,7 +15,7 @@ interface ProjectCardProps {
     techStack: string[];
     createdAt: string;
     updatedAt: string;
-    views: number;
+    viewCount: number;
   };
 }
 
@@ -57,7 +57,7 @@ const ProjectListCard = ({ project }: ProjectCardProps) => {
               ))}
             </div>
             <span className="text-neutral-text-weak flex shrink-0 flex-row items-center gap-1 self-end text-sm font-light">
-              {project.views}
+              {project.viewCount}
               {'  '}
               <Eye size={16} className="text-neutral-text-weak" />
             </span>
