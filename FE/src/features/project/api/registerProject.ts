@@ -18,7 +18,7 @@ interface RegisterProjectRequest {
   participants: ParticipantInfo[];
 }
 
-interface APiResponse<T> {
+interface APIResponse<T> {
   success: boolean;
   message: string;
   error: unknown;
@@ -32,6 +32,6 @@ export async function registerProject(data: RegisterProjectRequest) {
     body: JSON.stringify(data),
   });
   if (!res.ok) throw new Error('프로젝트 등록 실패');
-  const json = (await res.json()) as APiResponse<{ id: number }>;
+  const json = (await res.json()) as APIResponse<{ id: number }>;
   return json.data.id;
 }
