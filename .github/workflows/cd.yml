@@ -1,0 +1,68 @@
+name: CD - Deploy via SSH
+
+on:
+  workflow_run:
+    workflows: ["CI - Build & Push Images"]
+    types: [completed]
+    branches: ["dev", "main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  REGISTRY: ghcr.io
+  FE_IMAGE_NAME: boostus-fe
+  BE_IMAGE_NAME: boostus-be
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: NCP 서버에 SSH 접속하여 배포 진행
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          script: |
+            set -e
+
+            DEPLOY_DIR="${{ secrets.DEPLOY_DIR }}"
+            if [ -z "$DEPLOY_DIR" ]; then
+              DEPLOY_DIR="/srv/boostus"
+            fi
+
+            cd "$DEPLOY_DIR"
+
+            # 1) GHCR 로그인 
+            echo "${{ secrets.GHCR_TOKEN }}" | docker login ${{ env.REGISTRY }} -u "${{ secrets.GHCR_USERNAME }}" --password-stdin
+
+            # 2) pull 받을 이미지 태그
+            FE_IMAGE="${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.FE_IMAGE_NAME }}:latest"
+            BE_IMAGE="${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.BE_IMAGE_NAME }}:latest"
+
+            # 3) compose 가 참조할 .env.prod의 이미지 변수 업데이트 
+            if grep -q '^FE_IMAGE=' .env.prod; then
+              sed -i "s|^FE_IMAGE=.*|FE_IMAGE=${FE_IMAGE}|" .env.prod
+            else
+              echo "FE_IMAGE=${FE_IMAGE}" >> .env.prod
+            fi
+
+            if grep -q '^BE_IMAGE=' .env.prod; then
+              sed -i "s|^BE_IMAGE=.*|BE_IMAGE=${BE_IMAGE}|" .env.prod
+            else
+              echo "BE_IMAGE=${BE_IMAGE}" >> .env.prod
+            fi
+
+            # 4) 최신 이미지 pull
+            docker pull "$FE_IMAGE" || true
+            docker pull "$BE_IMAGE"
+
+            # 5) 컨테이너 재기동
+            docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --remove-orphans
+
+            # 6) 사용하지 않는 이미지 정리
+            docker image prune -f

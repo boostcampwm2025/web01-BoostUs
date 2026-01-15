@@ -7,7 +7,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=test
       - MYSQL_DATABASE=boostus
-      - MYSQL_USER=test
+      - MYSQL_USER=root
       - MYSQL_PASSWORD=test
     #개발 단계에서 db 접속을 위해 포트를 노출한다.
     ports:
@@ -16,6 +16,11 @@ services:
       - db_data:/var/lib/mysql
     networks:
       - boostus_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-ptest"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
   backend:
     image: node:24.11.0-alpine
     container_name: boostus_backend
