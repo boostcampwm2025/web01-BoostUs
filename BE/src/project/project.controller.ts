@@ -30,11 +30,11 @@ export class ProjectController {
     return this.projectService.findOne(id);
   }
 
-  // // 생성
-  // @Post()
-  // create(@Body() dto: CreateProjectDto) {
-  //   return this.projectService.create(dto);
-  // }
+  // 생성
+  @Post()
+  create(@Body() dto: CreateProjectDto) {
+    return this.projectService.create(dto);
+  }
 
   // // 수정
   // @Patch(':id')

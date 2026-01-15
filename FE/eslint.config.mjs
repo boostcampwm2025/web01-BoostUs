@@ -66,7 +66,14 @@ export default ts.config(
       // 2. Promise 처리 강제 (비동기 함수 에러 방지)
       // await 없이 Promise를 호출하면 에러를 발생시킵니다.
       '@typescript-eslint/no-floating-promises': 'error',
-      '@typescript-eslint/no-misused-promises': 'error',
+      '@typescript-eslint/no-misused-promises': [
+        'error',
+        {
+          checksVoidReturn: {
+            attributes: false, // JSX 속성(onClick 등)에 전달되는 함수는 반환 타입 체크 제외
+          },
+        },
+      ],
 
       // 3. any 사용 금지 (엄격 모드)
       '@typescript-eslint/no-explicit-any': 'warn',
@@ -85,6 +92,7 @@ export default ts.config(
       ],
 
       '@typescript-eslint/no-confusing-void-expression': 'off',
+      '@typescript-eslint/no-unnecessary-condition': 'off',
     },
   },
 
