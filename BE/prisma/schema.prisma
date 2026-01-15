@@ -75,7 +75,7 @@ model Project {
   description    String? @map("description")
   memberId       BigInt  @map("member_id") // 프로젝트 등록자
   repoUrl        String  @db.VarChar(768) @unique @map("repo_url")
-  thumbnailUrl   String? @db.VarChar(768) @map("thumbnail_url")
+  thumbnailUrl   String? @db.Text @map("thumbnail_url")
 
   startDate DateTime? @map("start_date")
   endDate   DateTime? @map("end_date")
@@ -179,7 +179,7 @@ model Story {
   title       String  @map("title")
   summary     String? @map("summary")
   contents    String  @db.Text @map("contents")
-  thumbnailUrl String? @db.VarChar(768) @map("thumbnail_url")
+  thumbnailUrl String? @db.Text @map("thumbnail_url")
   originalUrl String? @db.VarChar(768) @map("original_url")
 
   likeCount Int @default(0) @map("like_count")
