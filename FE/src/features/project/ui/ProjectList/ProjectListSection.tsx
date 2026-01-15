@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ProjectListCard from '@/features/project/ui/ProjectList/ProjectListCard';
 import { useSearchParams } from 'next/navigation';
 import { ChevronDown, ChevronUp } from 'lucide-react';
@@ -35,8 +35,6 @@ const ProjectListSection = () => {
 
     void loadData();
   }, []); // 빈 배열: 마운트 시 1회만 실행
-
-  console.log(projects);
 
   const searchParams = useSearchParams();
   const field = searchParams.get('field') ?? '전체';

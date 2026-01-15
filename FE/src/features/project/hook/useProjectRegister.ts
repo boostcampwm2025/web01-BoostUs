@@ -31,11 +31,23 @@ export const useProjectRegister = () => {
       field: 'Web',
       startDate: new Date(),
       endDate: new Date(),
+      participants: [],
+      techStack: [],
     },
   });
 
-  const { watch, setValue } = formMethods;
+  const { watch, setValue, trigger } = formMethods;
   const thumbnailList = watch('thumbnail') as FileList | undefined;
+
+  // 1. 참여자 목록이 바뀌면 폼 데이터에 반영
+  useEffect(() => {
+    setValue('participants', participants, { shouldValidate: true });
+  }, [participants, setValue]);
+
+  // 2. 기술 스택이 바뀌면 폼 데이터에 반영
+  useEffect(() => {
+    setValue('techStack', techStack, { shouldValidate: true });
+  }, [techStack, setValue]);
 
   useEffect(() => {
     if (thumbnailList && thumbnailList.length > 0) {
@@ -120,7 +132,7 @@ export const useProjectRegister = () => {
 
   const submitValidForm = async (data: ProjectFormValues) => {
     try {
-      // S3 이미지 업로드 로직
+      //TODO: S3 이미지 업로드 로직
       let uploadedThumbnailUrl: string | null = null;
       if (data.thumbnail && data.thumbnail.length > 0) {
         console.log('이미지 업로드 필요:', data.thumbnail[0].name);
@@ -148,8 +160,7 @@ export const useProjectRegister = () => {
         startDate: new Date(data.startDate).toISOString().split('T')[0],
         endDate: new Date(data.endDate).toISOString().split('T')[0],
 
-        techStack: techStack,
-
+        techStack: data.techStack,
         field: data.field,
 
         participants: participants.map((name) => ({
@@ -157,8 +168,6 @@ export const useProjectRegister = () => {
           avatarUrl: undefined,
         })),
       };
-
-      console.log('전송할 데이터:', requestBody);
 
       await registerProject(requestBody);
       alert('프로젝트가 등록되었습니다.');
@@ -189,4 +198,4 @@ export const useProjectRegister = () => {
     addTechStack: handleTechStackAdd,
     removeTechStack: handleTechStackRemove,
   };
-};
+};;

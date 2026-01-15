@@ -1,11 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import { fetchMockProjectDetail } from '@/entities/projectDetail/api/projectDetailAPI';
+import { fetchProjectDetail } from '@/entities/projectDetail/api/projectDetailAPI';
 import { Github, ExternalLink, Users, Calendar, X } from 'lucide-react';
 import CloseButton from '@/shared/ui/CloseButton';
 import { useParams } from 'next/navigation';
-import { participant, ProjectData } from '@/entities/projectDetail/model/types';
+import { Participant, ProjectData } from '@/entities/projectDetail/model/types';
 import { useEffect, useState } from 'react';
 
 export default function ProjectDetail() {
@@ -19,15 +19,18 @@ export default function ProjectDetail() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!isValidId) {
+      setError('유효하지 않은 프로젝트 ID입니다.');
+      return;
+    }
     let alive = true;
 
     void (async () => {
       try {
-        const response = await fetchMockProjectDetail({ id });
+        const response = await fetchProjectDetail({ id });
         if (!alive) return;
         setData(response.data);
         setError(null);
-        console.log(response.data);
       } catch {
         if (!alive) return;
         setError('프로젝트 상세 조회 실패');
@@ -134,7 +137,7 @@ export default function ProjectDetail() {
             <h4 className="mb-4 text-lg font-bold text-gray-800">팀원</h4>
 
             <div className="grid grid-cols-4 gap-4">
-              {data.participants.map((participant: participant) => (
+              {data.participants.map((participant: Participant) => (
                 <div
                   key={participant.githubId}
                   className="group flex cursor-default flex-col items-center text-center"

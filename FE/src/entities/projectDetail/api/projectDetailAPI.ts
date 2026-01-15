@@ -1,12 +1,15 @@
 import { ProjectResponse } from '@/entities/projectDetail/model/types';
 
-// 1초 뒤에 데이터를 반환하는 가짜 비동기 함수
-export const fetchMockProjectDetail = ({
+export const fetchProjectDetail = async ({
   id,
 }: {
   id: number;
 }): Promise<ProjectResponse> => {
-  return fetch(`/api/projects/${String(id)}`, { cache: 'no-cache' }).then(
-    (res) => res.json()
-  );
+  const res = await fetch(`/api/projects/${String(id)}`, { cache: 'no-cache' });
+
+  if (!res.ok) {
+    throw new Error('프로젝트 조회 실패');
+  }
+
+  return (await res.json()) as ProjectResponse;
 };

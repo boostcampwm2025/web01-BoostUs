@@ -196,13 +196,13 @@ export default function RegisterModalPage() {
           <div className={'flex flex-row gap-4'}>
             <div className="flex-1">
               <label
-                htmlFor="repositoryUrl"
+                htmlFor="repoUrl"
                 className="block text-sm font-medium text-gray-700"
               >
                 깃허브 Repository
               </label>
               <input
-                id="repositoryUrl"
+                id="repoUrl"
                 type="url"
                 {...register('repoUrl')}
                 className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"

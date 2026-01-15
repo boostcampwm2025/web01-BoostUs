@@ -1,4 +1,4 @@
-export interface participant {
+export interface  Participant {
   githubId: string;
   avatarUrl?: string;
 }
@@ -18,7 +18,7 @@ export interface ProjectData {
   endDate: string;
   createdAt: string;
   updatedAt: string;
-  participants: participant[];
+  participants: Participant[];
 }
 
 export interface ProjectResponse {
