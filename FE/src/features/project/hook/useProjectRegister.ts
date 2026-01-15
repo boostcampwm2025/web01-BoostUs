@@ -31,12 +31,11 @@ export const useProjectRegister = () => {
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
       return () => URL.revokeObjectURL(url);
-    } else {
-      setPreviewUrl(null);
     }
+    setPreviewUrl(null);
   }, [thumbnailList]);
 
-  // --- 드래그 앤 드롭 핸들러 ---
+  // 드래그 앤 드롭 핸들러
   const handleDragEnter = (e: DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -79,16 +78,32 @@ export const useProjectRegister = () => {
     }
   };
   const handleParticipantsAdd = () => {
-    const raw = watch('participantsInput'); // string | undefined 일 수 있음
-    const name = (raw ?? '').trim(); // 항상 string
+    const raw = watch('participantsInput');
+    const name = (raw ?? '').trim();
 
-    if (name !== '') {
-      setParticipants((prev) => [...prev, name]);
-      setValue('participantsInput', '');
-    }
+    if (name === '') return;
+
+    setParticipants((prev) => {
+      const next = [...prev, name];
+      setValue('participants', next, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+      return next;
+    });
+
+    setValue('participantsInput', '', { shouldDirty: true });
   };
+
   const handleParticipantsRemove = (index: number) => {
-    setParticipants((prev) => prev.filter((_, i) => i !== index));
+    setParticipants((prev) => {
+      const next = prev.filter((_, i) => i !== index);
+      setValue('participants', next, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+      return next;
+    });
   };
   const submitValidForm = async (data: ProjectFormValues) => {
     console.log('Form Data:', data);

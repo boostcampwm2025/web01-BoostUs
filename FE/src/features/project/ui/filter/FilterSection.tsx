@@ -6,7 +6,9 @@ import TogglePills from '@/features/project/ui/filter/TogglePills';
 import Image from 'next/image';
 import open from '@/assets/weui_arrow-outlined.svg';
 import * as data from '@/features/project/ui/filter/data';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, type Variants } from 'framer-motion';
+
+const ease: [number, number, number, number] = [0.04, 0.62, 0.23, 0.98];
 
 const FilterSection = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -41,18 +43,18 @@ const FilterSection = () => {
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  const filterVariants = {
+  const filterVariants: Variants = {
     collapsed: {
       height: 0,
       opacity: 0,
-      marginBottom: 0, // 닫힐 때 하단 여백 제거
-      transition: { duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }, // 부드러운 커브
+      marginBottom: 0,
+      transition: { duration: 0.3, ease },
     },
     open: {
       height: 'auto',
       opacity: 1,
-      marginBottom: 16, // 펼쳐졌을 때 내부 요소 간 간격 확보
-      transition: { duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] },
+      marginBottom: 16,
+      transition: { duration: 0.3, ease },
     },
   };
 
