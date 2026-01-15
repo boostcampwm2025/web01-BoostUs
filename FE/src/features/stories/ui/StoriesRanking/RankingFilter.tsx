@@ -32,7 +32,7 @@ const RankingFilter = () => {
           >
             {isSelected && (
               <motion.div
-                layoutId="active-pill"
+                layoutId="ranking-active-pill"
                 className="bg-neutral-surface-bold shadow-default absolute inset-0 rounded-lg"
                 transition={{ type: 'spring', stiffness: 300, damping: 30 }}
               />

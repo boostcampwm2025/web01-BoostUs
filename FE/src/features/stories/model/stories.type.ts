@@ -40,3 +40,18 @@ export interface Story {
     avatarUrl: string;
   };
 }
+
+export interface StoriesResponse {
+  success: boolean;
+  message: string;
+  error: string | null;
+  data: {
+    items: Story[];
+    meta: object; // 우선 제외
+  };
+}
+
+export interface StoriesSortOption {
+  sortBy: 'latest' | 'views' | 'likes';
+  period: 'all' | 'daily' | 'weekly' | 'monthly';
+}
