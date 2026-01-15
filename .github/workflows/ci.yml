@@ -1,8 +1,6 @@
 name: CI - Build & Push Images
 
 on:
-  push:
-    branches: ["main", "dev", "chore/121-cicd"]
   pull_request:
     branches: ["main", "dev"]
 
