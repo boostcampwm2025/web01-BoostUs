@@ -1,4 +1,5 @@
 import type { StoryDetail } from '@/features/stories/model/stories.type';
+import MarkdownViewer from '@/shared/ui/MarkdownViewer';
 import { Calendar, Eye, Heart } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -52,16 +53,17 @@ const StoryDetail = ({ story }: { story: StoryDetail }) => {
           </span>
         </Link>
       </div>
-      <div className="mt-8 w-full">
+      <div className="my-8 w-full">
         <Image
           src={story.thumbnailUrl}
           alt={`${story.title} 글의 썸네일 이미지`}
           width={768}
           height={432}
-          className="w-full rounded-lg object-cover"
+          className="w-full object-cover"
           priority
         />
       </div>
+      <MarkdownViewer content={story.contents} />
     </article>
   );
 };
