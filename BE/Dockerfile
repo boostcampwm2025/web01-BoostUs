@@ -13,13 +13,9 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-ARG DB_URL
-ENV DB_URL=$DB_URL
-
-# 디버깅용 DB_URL 주입 여부 확인
-RUN if [ -z "$DB_URL" ]; then echo "DB_URL is EMPTY"; else echo "DB_URL is SET"; fi
-
-RUN npx prisma generate
+RUN --mount=type=secret,id=DB_URL \
+    export DB_URL="$(cat /run/secrets/DB_URL)" && \
+    npx prisma generate
 RUN npm run build
 
 
