@@ -1,11 +1,50 @@
+'use client';
+
 import Image from 'next/image';
-import { fetchMockProjectDetail } from '@/entities/projectDetail/api/projectDetailAPI';
+import { fetchProjectDetail } from '@/entities/projectDetail/api/projectDetailAPI';
 import { Github, ExternalLink, Users, Calendar, X } from 'lucide-react';
 import CloseButton from '@/shared/ui/CloseButton';
+import { useParams } from 'next/navigation';
+import { Participant, ProjectData } from '@/entities/projectDetail/model/types';
+import { useEffect, useState } from 'react';
 
-export default async function ProjectDetail() {
-  const response = await fetchMockProjectDetail();
-  const data = response.data;
+export default function ProjectDetail() {
+  const params = useParams<{ id: string }>();
+  const rawId = params?.id;
+
+  const id = typeof rawId === 'string' ? Number(rawId) : NaN;
+  const isValidId = Number.isFinite(id);
+
+  const [data, setData] = useState<ProjectData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isValidId) {
+      setError('유효하지 않은 프로젝트 ID입니다.');
+      return;
+    }
+    let alive = true;
+
+    void (async () => {
+      try {
+        const response = await fetchProjectDetail({ id });
+        if (!alive) return;
+        setData(response.data);
+        setError(null);
+      } catch {
+        if (!alive) return;
+        setError('프로젝트 상세 조회 실패');
+        setData(null);
+      }
+    })();
+
+    return () => {
+      alive = false;
+    };
+  }, [id]);
+
+  if (error) return <div>{error}</div>;
+  if (!data) return <div>로딩 중...</div>;
 
   return (
     <div>
@@ -19,10 +58,11 @@ export default async function ProjectDetail() {
         <div className="relative aspect-video max-h-[600px] w-full overflow-hidden rounded-md bg-gray-100">
           <Image
             // Todo: data.thumbnailUrl은 없어서 이후에 지정되면 넣기
-            src={'/assets/paint.png'}
+            src={data.thumbnailUrl ?? '/assets/paint.png'}
             alt={data.title}
             fill
             className="rounded-md object-cover"
+            unoptimized
           />
         </div>
 
@@ -49,22 +89,22 @@ export default async function ProjectDetail() {
             {data.startDate} ~ {data.endDate}
           </span>
           <Users size={20} className={'ml-2'} />
-          <span>{data.members.length}명</span>
+          <span>{data.participants.length}명</span>
         </div>
 
         {/* 스택 그룹 */}
-        <div className="mt-4 flex flex-wrap gap-2">
-          {data.stacks.map((stack) => (
-            <span key={stack} className="rounded bg-gray-200 px-5 py-2 text-lg">
-              {stack}
-            </span>
-          ))}
-        </div>
+        {/*<div className="mt-4 flex flex-wrap gap-2">*/}
+        {/*  {data.techStacks.map((stack) => (*/}
+        {/*    <span key={stack} className="rounded bg-gray-200 px-5 py-2 text-lg">*/}
+        {/*      {stack}*/}
+        {/*    </span>*/}
+        {/*  ))}*/}
+        {/*</div>*/}
 
         {/* 버튼 그룹 */}
         <div className="mt-4 flex gap-2">
           <a
-            href={data.repositoryUrl}
+            href={data.repoUrl}
             target="_blank"
             className="flex items-center gap-2 rounded-xl border bg-black px-5 py-3 text-lg text-white hover:bg-gray-800"
           >
@@ -91,36 +131,30 @@ export default async function ProjectDetail() {
           />
         </div>
         {/* 팀원 리스트*/}
-        {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */}
-        {data.members && data.members.length > 0 && (
+        {}
+        {data.participants && data.participants.length > 0 && (
           <div className="mt-4 border-t border-gray-100 pt-6">
             <h4 className="mb-4 text-lg font-bold text-gray-800">팀원</h4>
 
             <div className="grid grid-cols-4 gap-4">
-              {data.members.map(
-                (member: {
-                  id: number;
-                  nickname: string;
-                  avatarUrl: string;
-                }) => (
-                  <div
-                    key={member.id}
-                    className="group flex cursor-default flex-col items-center text-center"
-                  >
-                    {/* 아바타 영역*/}
-                    <div className="mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-50 ring-2 ring-gray-100 transition-all duration-200 group-hover:ring-blue-500">
-                      <span className="text-lg font-bold text-indigo-500 group-hover:text-blue-600">
-                        {member.nickname.charAt(0)}
-                      </span>
-                    </div>
-
-                    {/* 이름 영역 */}
-                    <div className="text-xs font-medium text-gray-700 transition-colors group-hover:text-blue-600">
-                      {member.nickname}
-                    </div>
+              {data.participants.map((participant: Participant) => (
+                <div
+                  key={participant.githubId}
+                  className="group flex cursor-default flex-col items-center text-center"
+                >
+                  {/* 아바타 영역*/}
+                  <div className="mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-50 ring-2 ring-gray-100 transition-all duration-200 group-hover:ring-blue-500">
+                    <span className="text-lg font-bold text-indigo-500 group-hover:text-blue-600">
+                      {participant.githubId.charAt(0)}
+                    </span>
                   </div>
-                )
-              )}
+
+                  {/* 이름 영역 */}
+                  <div className="text-xs font-medium text-gray-700 transition-colors group-hover:text-blue-600">
+                    {participant.githubId}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}

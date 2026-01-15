@@ -30,6 +30,7 @@ export const projectSchema = z
           ACCEPTED_IMAGE_TYPES.includes(files[0].type),
         '.jpg, .jpeg, .png, .webp 파일만 업로드 가능합니다.'
       ),
+    field: z.enum(['Web', 'IOS', 'Android']),
     title: z
       .string()
       .min(1, '프로젝트 이름을 입력해주세요.')
@@ -39,7 +40,7 @@ export const projectSchema = z
       .min(1, '프로젝트 설명을 입력해주세요.')
       .max(200, '프로젝트 설명은 200자 이하로 입력해주세요.'),
     contents: z.array(z.string()).min(1, '프로젝트 상세내용을 입력해주세요.'),
-    repositoryUrl: z.url('유효한 GitHub Repository URL을 입력해주세요.'),
+    repoUrl: z.url('유효한 GitHub Repository URL을 입력해주세요.'),
     demoUrl: z.url('유효한 데모 URL을 입력해주세요.'),
     cohort: z.enum([
       '1기',
@@ -65,11 +66,18 @@ export const projectSchema = z
     endDate: z.coerce.date().refine((date) => !isNaN(date.getTime()), {
       message: '종료 날짜를 입력해주세요.',
     }),
+    // 참여자
     // 화면 입력용 임시 필드(검증 제외)
     participantsInput: z.string().optional(),
 
     // 실제 제출 배열
     participants: z.array(z.string()).min(1, '팀원을 선택해주세요.'),
+    // 기술스택
+    // 화면 입력용 임시 필드(검증 제외)
+    techStackInput: z.string().optional(),
+
+    // 실제 제출 배열
+    techStack: z.array(z.number()).min(1, '기술 스택을 선택해주세요.'),
   })
   .refine((data) => data.endDate >= data.startDate, {
     message: '종료 날짜는 시작 날짜 이후이어야 합니다.',

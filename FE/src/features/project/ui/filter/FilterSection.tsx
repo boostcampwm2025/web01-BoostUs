@@ -26,7 +26,8 @@ const FilterSection = () => {
     if (cohort === '전체' || !cohort) {
       params.delete('cohort');
     } else {
-      params.set('cohort', cohort);
+      const value = cohort.replace(/[^0-9]/g, '');
+      params.set('cohort', value);
     }
     router.push(`${pathname}?${params.toString()}`);
   };
