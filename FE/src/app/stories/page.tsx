@@ -22,5 +22,6 @@ const StoriesPage = async ({ searchParams }: StoriesPageProps) => {
       <StoriesPageContent initialStories={initialStories} />
     </Suspense>
   );
+};
 
 export default StoriesPage;
