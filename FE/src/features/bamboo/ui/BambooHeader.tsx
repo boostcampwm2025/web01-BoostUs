@@ -1,6 +1,6 @@
 'use client';
 
-import Modal from '@/widgets/Modal/Modal';
+import Modal from '@/widgets/Modaltemp/Modal';
 import { useState } from 'react';
 
 const BambooHeader = () => {
