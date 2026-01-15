@@ -75,7 +75,7 @@ export const StoriesProvider = ({
 
   const rankingPeriod = (searchParams.get('rankingPeriod') ??
     'weekly') as StoriesRankingPeriods;
-  const searchQuery = searchParams.get('q') ?? '';
+  const searchQuery = searchParams.get('query') ?? '';
   const sortBy = (searchParams.get('sortBy') ??
     'latest') as StoriesSortOption['sortBy'];
 
@@ -88,11 +88,11 @@ export const StoriesProvider = ({
    * 주어진 key-value 쌍으로 URL 파라미터를 업데이트하고,
    * 값이 빈 문자열인 경우 해당 파라미터를 제거합니다.
    *
-   * @param {string} key - URL 파라미터의 키 (예: 'q', 'sortBy', 'period')
+   * @param {string} key - URL 파라미터의 키 (예: 'query', 'sortBy', 'period')
    * @param {string} value - URL 파라미터의 값
    *
    * @example
-   * updateUrl('q', 'typescript'); // URL을 ?q=typescript로 업데이트
+   * updateUrl('query', 'typescript'); // URL을 ?q=typescript로 업데이트
    * updateUrl('sortBy', '');        // sortBy 파라미터 제거
    */
   const updateUrl = useCallback(
@@ -117,16 +117,12 @@ export const StoriesProvider = ({
       isRankingOpen,
       toggleRanking,
       searchQuery,
-      setSearchQuery: (query: string) => updateUrl('q', query),
+      setSearchQuery: (query: string) => updateUrl('query', query),
       sortBy,
       setSortBy: (option: StoriesSortOption['sortBy']) => {
         const newParams = new URLSearchParams(searchParams.toString());
 
-        if (option) {
-          newParams.set('sortBy', option);
-        } else {
-          newParams.delete('sortBy');
-        }
+        newParams.set('sortBy', option);
 
         if (option === 'latest') {
           newParams.delete('period');
@@ -141,7 +137,16 @@ export const StoriesProvider = ({
       setPeriod: (period: StoriesSortOption['period']) =>
         updateUrl('period', period),
     }),
-    [isRankingOpen, searchQuery, sortBy, rankingPeriod, period, updateUrl]
+    [
+      isRankingOpen,
+      searchQuery,
+      sortBy,
+      rankingPeriod,
+      period,
+      updateUrl,
+      searchParams,
+      router,
+    ]
   );
 
   return (
