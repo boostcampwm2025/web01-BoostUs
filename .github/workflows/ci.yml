@@ -28,8 +28,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
-          # 이후에 팀 PAT 발급받으면 github.actor 로 수정해야 함
-          username: limsr12
+          username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       # FE
