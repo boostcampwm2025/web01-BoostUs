@@ -21,8 +21,8 @@ services:
     env_file:
       - .env.prod
     # 운영에서는 보통 DB 포트 미노출한다고 함 (필요 시 임시로만 열기)
-    # ports:
-    #   - "3306:3306"
+    ports:
+      - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
     networks:
