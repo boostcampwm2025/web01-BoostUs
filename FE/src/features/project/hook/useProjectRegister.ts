@@ -198,4 +198,4 @@ export const useProjectRegister = () => {
     addTechStack: handleTechStackAdd,
     removeTechStack: handleTechStackRemove,
   };
-};;
+};
