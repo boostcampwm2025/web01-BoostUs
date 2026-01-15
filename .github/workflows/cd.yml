@@ -4,9 +4,6 @@ on:
   workflow_run:
     workflows: ["CI - Build & Push Images"]
     types: [completed]
-  push:
-    branches: ["chore/121-cicd"] # 테스트용
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -18,9 +15,17 @@ env:
 
 jobs:
   deploy:
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    if: >
+      (
+        github.event_name == 'workflow_run' &&
+        github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.head_branch == 'chore/121-cicd'
+      )
+      ||
+      (
+        github.event_name == 'workflow_dispatch'
+      )
     runs-on: ubuntu-latest
-
     steps:
       - name: NCP 서버에 SSH 접속하여 배포 진행
         uses: appleboy/ssh-action@v1.0.3
