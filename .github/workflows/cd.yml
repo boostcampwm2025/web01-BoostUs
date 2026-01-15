@@ -57,6 +57,9 @@ jobs:
               echo "BE_IMAGE=${BE_IMAGE}" >> .env.prod
             fi
 
+            # 사용되지 않는 이미지 제거
+            docker system prune -af || true 
+
             # 4) 최신 이미지 pull
             docker pull "$FE_IMAGE" || true
             docker pull "$BE_IMAGE"
