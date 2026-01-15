@@ -28,7 +28,7 @@ export const fetchStories = async (
     : (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000'); // 클라이언트 환경 (브라우저)
 
   const queryString = queryParams.toString();
-  const url = `${baseUrl}/stories${queryString ? `?${queryString}` : ''}`;
+  const url = `${baseUrl}/api/stories${queryString ? `?${queryString}` : ''}`;
 
   const response = await fetch(url, {
     cache: 'no-store',
@@ -50,7 +50,7 @@ export const getStoryById = async (id: string) => {
     ? (process.env.INTERNAL_API_URL ?? 'http://backend:3000') // 서버 환경 (Docker 내부)
     : (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000'); // 클라이언트 환경 (브라우저)
 
-  const url = `${baseUrl}/stories/${id}`;
+  const url = `${baseUrl}/api/stories/${id}`;
 
   const response = await fetch(url, {
     cache: 'no-store',

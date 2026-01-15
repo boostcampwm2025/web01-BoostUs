@@ -5,9 +5,7 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
-  experimental: {
-    reactCompiler: true,
-  },
+  reactCompiler: true,
 
   // --------------------
 

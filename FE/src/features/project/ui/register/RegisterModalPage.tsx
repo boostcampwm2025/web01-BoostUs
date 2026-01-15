@@ -8,7 +8,6 @@ import { useProjectRegister } from '@/features/project/hook/useProjectRegister';
 export default function RegisterModalPage() {
   const {
     register,
-    handleSubmit,
     formState: { errors, isSubmitting },
     previewUrl,
     isDragging,
@@ -30,12 +29,7 @@ export default function RegisterModalPage() {
     <ModalOverlay>
       <div className="w-full rounded-lg bg-white">
         <h2 className="mb-4 text-xl font-bold">프로젝트 등록</h2>
-        <form
-          onSubmit={(e) => {
-            void handleSubmit(onSubmit)(e);
-          }}
-          className="space-y-4"
-        >
+        <form onSubmit={onSubmit} className="space-y-4">
           {/* --- 썸네일 업로드 --- */}
           <div className="flex flex-col gap-2">
             <label
