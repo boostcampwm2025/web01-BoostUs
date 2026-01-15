@@ -1,6 +1,5 @@
 export interface participant {
-  id: number;
-  nickname: string;
+  githubId: string;
   avatarUrl?: string;
 }
 

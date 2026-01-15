@@ -6,5 +6,7 @@ export const fetchMockProjectDetail = ({
 }: {
   id: number;
 }): Promise<ProjectResponse> => {
-  return fetch(`/api/projects/${String(id)}`).then((res) => res.json());
+  return fetch(`/api/projects/${String(id)}`, { cache: 'no-cache' }).then(
+    (res) => res.json()
+  );
 };

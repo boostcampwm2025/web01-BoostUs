@@ -27,6 +27,7 @@ export default function ProjectDetail() {
         if (!alive) return;
         setData(response.data);
         setError(null);
+        console.log(response.data);
       } catch {
         if (!alive) return;
         setError('프로젝트 상세 조회 실패');
@@ -88,13 +89,13 @@ export default function ProjectDetail() {
         </div>
 
         {/* 스택 그룹 */}
-        <div className="mt-4 flex flex-wrap gap-2">
-          {data.techStacks.map((stack) => (
-            <span key={stack} className="rounded bg-gray-200 px-5 py-2 text-lg">
-              {stack}
-            </span>
-          ))}
-        </div>
+        {/*<div className="mt-4 flex flex-wrap gap-2">*/}
+        {/*  {data.techStacks.map((stack) => (*/}
+        {/*    <span key={stack} className="rounded bg-gray-200 px-5 py-2 text-lg">*/}
+        {/*      {stack}*/}
+        {/*    </span>*/}
+        {/*  ))}*/}
+        {/*</div>*/}
 
         {/* 버튼 그룹 */}
         <div className="mt-4 flex gap-2">
@@ -134,19 +135,19 @@ export default function ProjectDetail() {
             <div className="grid grid-cols-4 gap-4">
               {data.participants.map((participant: participant) => (
                 <div
-                  key={participant.id}
+                  key={participant.githubId}
                   className="group flex cursor-default flex-col items-center text-center"
                 >
                   {/* 아바타 영역*/}
                   <div className="mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-50 ring-2 ring-gray-100 transition-all duration-200 group-hover:ring-blue-500">
                     <span className="text-lg font-bold text-indigo-500 group-hover:text-blue-600">
-                      {participant.nickname.charAt(0)}
+                      {participant.githubId.charAt(0)}
                     </span>
                   </div>
 
                   {/* 이름 영역 */}
                   <div className="text-xs font-medium text-gray-700 transition-colors group-hover:text-blue-600">
-                    {participant.nickname}
+                    {participant.githubId}
                   </div>
                 </div>
               ))}
