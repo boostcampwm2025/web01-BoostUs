@@ -18,6 +18,8 @@
     "react": "19.2.1",
     "react-dom": "19.2.1",
     "react-hook-form": "^7.71.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "zod": "^4.3.5"
   },
   "devDependencies": {
