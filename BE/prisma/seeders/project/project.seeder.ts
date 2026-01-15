@@ -140,7 +140,7 @@ export async function seedProjects(prisma: PrismaClient) {
       description: metadata.description || '',
       memberId: 1n, // willy
       repoUrl: `https://github.com/boostcampwm2025/${metadata.title}`,
-      thumbnailUrl: metadata.thumbnailUrl || '',
+      thumbnailUrl: metadata.thumbnailUrl,
       startDate: new Date('2025-12-08'),
       endDate: null,
       teamNumber: i + 1,
