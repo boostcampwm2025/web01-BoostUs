@@ -1,18 +1,21 @@
-import StoriesCard from '@/features/stories/ui/Card';
-import StoriesListDropdown from '@/features/stories/ui/ListDropdown';
-import storiesMock from '@/features/stories/api/storiesMock.json';
+'use client';
+
+import StoriesCard from '@/features/stories/ui/Card/Card';
+import StoriesListDropdown from '@/features/stories/ui/ListDropdown/Dropdown';
 import { useStoriesContext } from '@/features/stories/model';
 import { useMemo } from 'react';
+import { Story } from '@/features/stories/model/stories.type';
 
-const StoriesList = () => {
-  const { isRankingOpen, searchQuery, sortOption } = useStoriesContext();
+interface StoriesListProps {
+  initialStories: Story[];
+}
 
-  // TODO: API 연결에 대응 필요
-  const stories = storiesMock.data.items;
+const StoriesList = ({ initialStories }: StoriesListProps) => {
+  const { isRankingOpen, searchQuery } = useStoriesContext();
 
   const filteredAndSortedStories = useMemo(() => {
     // TODO: API 연결할 때 대응 필요
-    let result = [...stories];
+    let result = [...initialStories];
 
     // 검색어 필터링
     if (searchQuery) {
@@ -21,17 +24,8 @@ const StoriesList = () => {
       );
     }
 
-    // 정렬
-    // TODO: 다른 정렬 옵션도 구현 필요
-    if (sortOption === 'latest') {
-      result.sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-    }
-
     return result;
-  }, [stories, searchQuery, sortOption]);
+  }, [initialStories, searchQuery]);
 
   return (
     <section className="flex w-full flex-col items-end gap-4">
@@ -41,7 +35,7 @@ const StoriesList = () => {
       >
         {filteredAndSortedStories.length > 0 ? (
           filteredAndSortedStories.map((story) => (
-            <StoriesCard key={story.id} story={story} />
+            <StoriesCard id={story.id} key={story.id} story={story} />
           ))
         ) : (
           <div className="text-neutral-text-weak col-span-full py-10 text-center">

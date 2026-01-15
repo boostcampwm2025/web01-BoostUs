@@ -1,6 +1,9 @@
 'use client';
 
-import { StoriesRankingPeriods } from '@/features/stories/model/types';
+import {
+  StoriesRankingPeriods,
+  StoriesSortOption,
+} from '@/features/stories/model/stories.type';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
   createContext,
@@ -22,9 +25,10 @@ import {
  * @property {(period: StoriesRankingPeriods) => void} setRankingPeriod - 랭킹 기간 설정 함수
  * @property {string} searchQuery - 검색 쿼리 파라미터 (URL의 q 파라미터)
  * @property {(query: string) => void} setSearchQuery - 검색 쿼리 설정 함수
- * @property {string} sortOption - 정렬 옵션 파라미터 (URL의 sort 파라미터)
- * @property {(option: string) => void} setSortOption - 정렬 옵션 설정 함수
-
+ * @property {StoriesSortOption['sortBy']} sortBy - 정렬 옵션 파라미터 (기본값: 'latest')
+ * @property {(option: StoriesSortOption['sortBy']) => void} setSortBy - 정렬 옵션 설정 함수
+ * @property {StoriesSortOption['period']} period - 시간 기간 필터 파라미터 (기본값: 'all')
+ * @property {(period: StoriesSortOption['period']) => void} setPeriod - 시간 기간 설정 함수
  */
 interface StoriesContextType {
   isRankingOpen: boolean;
@@ -33,8 +37,10 @@ interface StoriesContextType {
   setRankingPeriod: (period: StoriesRankingPeriods) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  sortOption: string;
-  setSortOption: (option: string) => void;
+  sortBy: StoriesSortOption['sortBy'];
+  setSortBy: (option: StoriesSortOption['sortBy']) => void;
+  period?: StoriesSortOption['period'];
+  setPeriod: (period: StoriesSortOption['period']) => void;
 }
 
 const StoriesContext = createContext<StoriesContextType | null>(null);
@@ -66,11 +72,15 @@ export const StoriesProvider = ({
 
   const [isRankingOpen, setIsRankingOpen] = useState(true);
   const toggleRanking = () => setIsRankingOpen((prev) => !prev);
-  const [rankingPeriod, setRankingPeriodState] =
-    useState<StoriesRankingPeriods>('weekly');
 
-  const searchQuery = searchParams.get('q') ?? '';
-  const sortOption = searchParams.get('sort') ?? 'latest';
+  const rankingPeriod = (searchParams.get('rankingPeriod') ??
+    'weekly') as StoriesRankingPeriods;
+  const searchQuery = searchParams.get('query') ?? '';
+  const sortBy = (searchParams.get('sortBy') ??
+    'latest') as StoriesSortOption['sortBy'];
+
+  const period = (searchParams.get('period') ??
+    'all') as StoriesSortOption['period'];
 
   /**
    * URL의 쿼리 파라미터를 업데이트하는 헬퍼 함수
@@ -78,12 +88,12 @@ export const StoriesProvider = ({
    * 주어진 key-value 쌍으로 URL 파라미터를 업데이트하고,
    * 값이 빈 문자열인 경우 해당 파라미터를 제거합니다.
    *
-   * @param {string} key - URL 파라미터의 키 (예: 'q', 'sort', 'period')
+   * @param {string} key - URL 파라미터의 키 (예: 'query', 'sortBy', 'period')
    * @param {string} value - URL 파라미터의 값
    *
    * @example
-   * updateUrl('q', 'typescript'); // URL을 ?q=typescript로 업데이트
-   * updateUrl('sort', '');        // sort 파라미터 제거
+   * updateUrl('query', 'typescript'); // URL을 ?q=typescript로 업데이트
+   * updateUrl('sortBy', '');        // sortBy 파라미터 제거
    */
   const updateUrl = useCallback(
     (key: string, value: string) => {
@@ -107,14 +117,36 @@ export const StoriesProvider = ({
       isRankingOpen,
       toggleRanking,
       searchQuery,
-      setSearchQuery: (query: string) => updateUrl('q', query),
-      sortOption,
-      setSortOption: (option: string) => updateUrl('sort', option),
+      setSearchQuery: (query: string) => updateUrl('query', query),
+      sortBy,
+      setSortBy: (option: StoriesSortOption['sortBy']) => {
+        const newParams = new URLSearchParams(searchParams.toString());
+
+        newParams.set('sortBy', option);
+
+        if (option === 'latest') {
+          newParams.delete('period');
+        }
+
+        router.push(`?${newParams.toString()}`, { scroll: false });
+      },
       rankingPeriod,
-      setRankingPeriod: (period: string) =>
-        setRankingPeriodState(period as StoriesRankingPeriods),
+      setRankingPeriod: (period: StoriesRankingPeriods) =>
+        updateUrl('rankingPeriod', period),
+      period,
+      setPeriod: (period: StoriesSortOption['period']) =>
+        updateUrl('period', period),
     }),
-    [isRankingOpen, searchQuery, sortOption, rankingPeriod, updateUrl]
+    [
+      isRankingOpen,
+      searchQuery,
+      sortBy,
+      rankingPeriod,
+      period,
+      updateUrl,
+      searchParams,
+      router,
+    ]
   );
 
   return (

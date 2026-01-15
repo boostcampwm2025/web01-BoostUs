@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ProjectListCard from '@/features/project/ui/ProjectList/ProjectListCard';
 import { useSearchParams } from 'next/navigation';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { mockProjects } from '@/features/project/ui/ProjectList/data';
+import { fetchProjects, Project } from '@/features/project/api/getProjects';
 
 const SORT_ORDER = {
   TEAM_NUM: '팀 번호 순',
@@ -14,14 +14,33 @@ const SORT_ORDER = {
 type SortOrderType = (typeof SORT_ORDER)[keyof typeof SORT_ORDER];
 
 const ProjectListSection = () => {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [sortOrder, setSortOrder] = useState<SortOrderType>(
     SORT_ORDER.TEAM_NUM
   );
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchProjects();
+        setProjects(data.items); // 받아온 데이터의 items를 state에 저장
+      } catch (error) {
+        console.error('데이터 로드 실패:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void loadData();
+  }, []); // 빈 배열: 마운트 시 1회만 실행
+
   const searchParams = useSearchParams();
   const field = searchParams.get('field') ?? '전체';
   const cohort = searchParams.get('cohort') ?? '전체';
 
-  const filteredProjects = mockProjects
+  const filteredProjects = projects
     .filter((project) => {
       if (field !== '전체' && project.field !== field) return false;
       return !(cohort !== '전체' && project.cohort !== parseInt(cohort));
@@ -30,7 +49,7 @@ const ProjectListSection = () => {
       if (sortOrder === SORT_ORDER.TEAM_NUM) {
         return a.id - b.id;
       } else {
-        return b.views - a.views;
+        return b.viewCount - a.viewCount;
       }
     });
 

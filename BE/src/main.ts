@@ -13,6 +13,12 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
 
+  // CORS 설정
+  app.enableCors({
+    origin: ['http://localhost:5173'],
+    credentials: true,
+  });
+
   // 응답 인터셉터 적용
   app.useGlobalInterceptors(new ResponseInterceptor());
 

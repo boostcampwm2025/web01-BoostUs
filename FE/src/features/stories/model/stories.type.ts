@@ -21,6 +21,7 @@ export interface StoriesCard {
 }
 
 export interface StoriesCardProps {
+  id: string;
   story: StoriesCard;
 }
 
@@ -39,4 +40,43 @@ export interface Story {
     cohort: number;
     avatarUrl: string;
   };
+}
+
+export interface StoryDetail {
+  id: string;
+  title: string;
+  thumbnailUrl: string;
+  likeCount: number;
+  viewCount: number;
+  originalUrl: string;
+  createdAt: string;
+  contents: string;
+  member: {
+    id: string;
+    nickname: string;
+    cohort: number;
+    avatarUrl: string;
+  };
+}
+
+export interface StoriesResponse {
+  success: boolean;
+  message: string;
+  error: string | null;
+  data: {
+    items: Story[];
+    meta: object; // 우선 제외
+  };
+}
+
+export interface StoryDetailResponse {
+  success: boolean;
+  message: string;
+  error: string | null;
+  data: StoryDetail;
+}
+
+export interface StoriesSortOption {
+  sortBy: 'latest' | 'views' | 'likes';
+  period: 'all' | 'daily' | 'weekly' | 'monthly';
 }
