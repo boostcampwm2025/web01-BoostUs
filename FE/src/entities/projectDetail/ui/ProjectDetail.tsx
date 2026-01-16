@@ -7,6 +7,7 @@ import CloseButton from '@/shared/ui/CloseButton';
 import { useParams } from 'next/navigation';
 import { Participant, ProjectData } from '@/entities/projectDetail/model/types';
 import { useEffect, useState } from 'react';
+import paint from '@/assets/NoImage.png';
 
 export default function ProjectDetail() {
   const params = useParams<{ id: string }>();
@@ -58,7 +59,7 @@ export default function ProjectDetail() {
         <div className="relative aspect-video max-h-[600px] w-full overflow-hidden rounded-md bg-gray-100">
           <Image
             // Todo: data.thumbnailUrl은 없어서 이후에 지정되면 넣기
-            src={data.thumbnailUrl ?? '/assets/paint.png'}
+            src={data.thumbnailUrl ?? paint}
             alt={data.title}
             fill
             className="rounded-md object-cover"
