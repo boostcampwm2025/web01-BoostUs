@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import paint from '../../../../../public/assets/paint.png';
+import paint from '@/assets/NoImage.png';
 import Link from 'next/link';
 import TogglePill from '@/shared/ui/TogglePill';
 import { Eye } from 'lucide-react';
