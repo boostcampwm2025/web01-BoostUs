@@ -22,18 +22,22 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**',
+        hostname: 'blog.kakaocdn.net',
+        pathname: '/**',
       },
       {
         protocol: 'https',
-        hostname: 'github.com',
-        port: '',
+        hostname: 'velog.velcdn.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.velog.io',
         pathname: '/**',
       },
       {
         protocol: 'https',
         hostname: '*.githubusercontent.com',
-        port: '',
         pathname: '/**',
       },
     ],
