@@ -10,6 +10,6 @@ export default defineConfig({
     seed: 'tsx prisma/seed.ts',
   },
   datasource: {
-    url: env('DB_URL'),
+    url: env('DB_URL') ?? '', // npx prisma generate 시 환경변수가 없어도 에러를 발생하지 않도록 빈 문자열을 사용한다.
   },
 });
