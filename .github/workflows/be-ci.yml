@@ -11,6 +11,9 @@ on:
 jobs:
   ci-check:
     runs-on: ubuntu-latest
+    env:
+      DB_URL: "mysql://dummy:dummy@localhost:3306/dummy"
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
