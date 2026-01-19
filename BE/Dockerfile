@@ -13,8 +13,11 @@ FROM deps AS prisma
 WORKDIR /app
 
 COPY prisma ./prisma
-RUN npx prisma generate
 
+# DB_URL 환경변수 주입 후 Prisma 스키마 생성
+RUN --mount=type=secret,id=DB_URL \
+    export DB_URL="$(cat /run/secrets/DB_URL)" && \
+    npx prisma generate
 
 # ---------- build ----------
 FROM prisma AS build
