@@ -1,5 +1,7 @@
+import QuestionsPageContent from '@/features/questions/ui/QuestionsPageContent';
+
 const QuestionsPage = () => {
-  return <div>dd</div>;
+  return <QuestionsPageContent />;
 };
 
 export default QuestionsPage;
