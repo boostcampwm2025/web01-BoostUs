@@ -93,7 +93,7 @@ export const useProjectRegister = () => {
     if (name === '') return;
 
     setParticipants((prev) => {
-      // 중복 추가 방지 (선택 사항)
+      // 중복 추가 방지
       if (prev.includes(name)) return prev;
       const next = [...prev, name];
       return next;
@@ -139,7 +139,7 @@ export const useProjectRegister = () => {
         uploadedThumbnailUrl = 'https://임시-이미지-주소.com/image.png';
       }
 
-      // 기수 처리 (1기 -> 1)
+      // 기수 처리
       const cohortStr = data.cohort
         ? (data.cohort as string).replace('기', '')
         : '0';
@@ -172,7 +172,7 @@ export const useProjectRegister = () => {
       await registerProject(requestBody);
       alert('프로젝트가 등록되었습니다.');
       // 성공 후 페이지 이동이나 폼 초기화 로직 추가 가능
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
       alert(`등록 실패: ${error.message}`);
     }

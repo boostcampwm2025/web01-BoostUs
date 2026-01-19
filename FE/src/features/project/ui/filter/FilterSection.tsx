@@ -121,7 +121,7 @@ const FilterSection = () => {
         </button>
         <Link
           href="/project/register"
-          className="bg-accent-blue text-string-16 self-end rounded px-4 py-2 text-gray-50"
+          className="bg-accent-blue text-string-16 self-end rounded-xl px-4 py-2 text-gray-50"
         >
           등록하기
         </Link>
