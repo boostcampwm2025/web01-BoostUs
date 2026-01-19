@@ -97,51 +97,52 @@ export default function RegisterModalPage() {
             )}
           </div>
 
-          {/* 기수 선택 필드 */}
-          <div>
-            <label
-              htmlFor="cohort"
-              className="block text-sm font-medium text-gray-700"
-            >
-              기수
-            </label>
-            <select
-              id="cohort"
-              {...register('cohort')}
-              className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            >
-              {Array.from({ length: 10 }).map((_, i) => {
-                const generation = String(i + 1);
-                return (
-                  <option key={i} value={`${generation}기`}>
-                    {generation}기
+          {/* 기수 & 분야 선택 필드 */}
+          <div className="flex flex-row gap-4">
+            <div className="flex-1">
+              <label
+                htmlFor="cohort"
+                className="block text-sm font-medium text-gray-700"
+              >
+                기수
+              </label>
+              <select
+                id="cohort"
+                {...register('cohort')}
+                className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              >
+                {Array.from({ length: 10 }).map((_, i) => {
+                  const generation = String(i + 1);
+                  return (
+                    <option key={i} value={`${generation}기`}>
+                      {generation}기
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+
+            {/* 분야 선택 필드 */}
+            <div className="flex-1">
+              <label
+                htmlFor="field"
+                className="block text-sm font-medium text-gray-700"
+              >
+                분야
+              </label>
+              <select
+                id="field"
+                {...register('field')}
+                className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              >
+                {['WEB', 'IOS', 'ANDROID'].map((field) => (
+                  <option key={field} value={field}>
+                    {field}
                   </option>
-                );
-              })}
-            </select>
+                ))}
+              </select>
+            </div>
           </div>
-
-          {/* 분야 선택 필드 */}
-          <div>
-            <label
-              htmlFor="field"
-              className="block text-sm font-medium text-gray-700"
-            >
-              분야
-            </label>
-            <select
-              id="field"
-              {...register('field')}
-              className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            >
-              {['Web', 'IOS', 'Android'].map((field) => (
-                <option key={field} value={field}>
-                  {field}
-                </option>
-              ))}
-            </select>
-          </div>
-
           <div className="flex flex-row gap-4">
             {/* 시작 날짜 */}
             <div className="flex-1">

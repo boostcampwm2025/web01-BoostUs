@@ -7,6 +7,16 @@ import {
 } from '@/features/project/model/projectSchema';
 import { registerProject } from '@/features/project/api/registerProject';
 
+const getErrorMessage = (err: unknown): string => {
+  if (err instanceof Error) return err.message;
+  if (typeof err === 'string') return err;
+  try {
+    return JSON.stringify(err);
+  } catch {
+    return '알 수 없는 오류';
+  }
+};
+
 export const useProjectRegister = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -28,7 +38,7 @@ export const useProjectRegister = () => {
       cohort: '10기', // 초기값 빈 문자열
       participantsInput: '',
       techStackInput: '',
-      field: 'Web',
+      field: 'WEB',
       startDate: new Date(),
       endDate: new Date(),
       participants: [],
@@ -36,8 +46,8 @@ export const useProjectRegister = () => {
     },
   });
 
-  const { watch, setValue, trigger } = formMethods;
-  const thumbnailList = watch('thumbnail') as FileList | undefined;
+  const { watch, setValue } = formMethods;
+  const thumbnailList = watch('thumbnail');
 
   // 1. 참여자 목록이 바뀌면 폼 데이터에 반영
   useEffect(() => {
@@ -148,10 +158,10 @@ export const useProjectRegister = () => {
       const requestBody = {
         thumbnailUrl: uploadedThumbnailUrl,
         title: data.title,
-        description: data.description,
+        description: data.description ?? '',
         contents: Array.isArray(data.contents)
           ? data.contents.join('\n')
-          : data.contents,
+          : (data.contents ?? ''),
         repoUrl: data.repoUrl,
         demoUrl: data.demoUrl,
         cohort: isNaN(parsedCohort) ? 0 : parsedCohort,
@@ -174,7 +184,7 @@ export const useProjectRegister = () => {
       // 성공 후 페이지 이동이나 폼 초기화 로직 추가 가능
     } catch (error: unknown) {
       console.error(error);
-      alert(`등록 실패: ${error.message}`);
+      alert(`등록 실패: ${getErrorMessage(error)}`);
     }
   };
 

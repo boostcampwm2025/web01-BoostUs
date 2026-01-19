@@ -50,6 +50,7 @@ export class CreateProjectDto {
   @Max(100)
   cohort?: number;
 
+  @IsOptional()
   @IsArray()
   @IsInt({ each: true })
   techStack: number[];
