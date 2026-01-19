@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import ModalOverlay from '@/shared/ui/ModalOverlay';
 import { ImageUp } from 'lucide-react';
 import { useProjectRegister } from '@/features/project/hook/useProjectRegister';
@@ -8,6 +8,7 @@ import { useProjectRegister } from '@/features/project/hook/useProjectRegister';
 export default function RegisterModalPage() {
   const {
     register,
+    watch,
     formState: { errors, isSubmitting },
     previewUrl,
     isDragging,
@@ -24,17 +25,34 @@ export default function RegisterModalPage() {
   } = useProjectRegister();
 
   const [isComposing, setIsComposing] = useState(false);
+  const contentsValue = watch('contents.0');
+  const contentsRef = useRef<HTMLTextAreaElement | null>(null);
+
+  useLayoutEffect(() => {
+    const el = contentsRef.current;
+    if (!el) return;
+
+    // 줄어드는 것도 반영하려고 먼저 0으로 만든 뒤 scrollHeight로 설정
+    el.style.height = '0px';
+    el.style.height = `${el.scrollHeight}px`;
+  }, [contentsValue]);
+
+  const {
+    ref: contentsRHRef,
+    onChange: contentsOnChange,
+    ...contentsRest
+  } = register('contents.0');
 
   return (
     <ModalOverlay>
       <div className="w-full rounded-lg bg-white">
         <h2 className="mb-4 text-xl font-bold">프로젝트 등록</h2>
         <form onSubmit={onSubmit} className="space-y-4">
-          {/* --- 썸네일 업로드 --- */}
+          {/* 썸네일 업로드  */}
           <div className="flex flex-col gap-2">
             <label
               htmlFor="thumbnail"
-              {...dragHandlers} // 핸들러를 Spread로 한 번에 적용
+              {...dragHandlers}
               className={`relative flex aspect-video w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border transition-all duration-200 ${
                 isDragging
                   ? 'scale-[0.99] border-blue-500 bg-blue-50 ring-2 ring-blue-200'
@@ -187,7 +205,7 @@ export default function RegisterModalPage() {
             </div>
           </div>
 
-          {/* URL 필드 영역 (생략 없이 기존과 동일하게 유지) */}
+          {/* URL 필드 영역 */}
           <div className={'flex flex-row gap-4'}>
             <div className="flex-1">
               <label
@@ -231,7 +249,7 @@ export default function RegisterModalPage() {
             </div>
           </div>
 
-          {/* 제목, 설명, 상세내용 필드들... (구조 동일) */}
+          {/* 프로젝트 제목 */}
           <div>
             <label
               htmlFor="title"
@@ -253,6 +271,7 @@ export default function RegisterModalPage() {
             )}
           </div>
 
+          {/* 프로젝트 요약 내용 description */}
           <div>
             <label
               htmlFor="description"
@@ -273,6 +292,7 @@ export default function RegisterModalPage() {
             )}
           </div>
 
+          {/* 프로젝트 상세 내용 contents */}
           <div>
             <label
               htmlFor="contents"
@@ -284,8 +304,19 @@ export default function RegisterModalPage() {
               id="contents"
               {...register('contents.0')}
               rows={4}
-              className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full resize-none overflow-hidden rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               placeholder="프로젝트 내용을 입력하세요"
+              {...contentsRest}
+              ref={(el) => {
+                contentsRef.current = el;
+                contentsRHRef(el);
+              }}
+              onChange={(e) => {
+                contentsOnChange(e);
+                const el = e.currentTarget;
+                el.style.height = '0px';
+                el.style.height = `${el.scrollHeight}px`;
+              }}
             />
             {errors.contents && (
               <p className="mt-1 text-xs text-red-500">
