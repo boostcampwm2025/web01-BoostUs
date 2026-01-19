@@ -14,7 +14,7 @@ const QuestionsList = ({
   }, [initialQuestions]);
 
   return (
-    <div className="flex flex-col w-full mt-4 border border-neutral-border-default rounded-2xl">
+    <div className="flex flex-col w-full mt-4 overflow-hidden border border-neutral-border-default rounded-2xl">
       <ListHeader />
       {filteredAndSortedQuestions.map((question, index) => (
         <div
@@ -22,7 +22,7 @@ const QuestionsList = ({
           className={
             index !== filteredAndSortedQuestions.length - 1
               ? 'border-b border-neutral-border-default'
-              : 'rounded-b-2xl'
+              : ''
           }
         >
           <ListCard question={question} />
