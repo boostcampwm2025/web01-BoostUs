@@ -1,5 +1,11 @@
 import { Member } from '@/shared/types/MemberType';
 
+export type QuestionsStatusFilter =
+  | 'all'
+  | 'unanswered'
+  | 'unsolved'
+  | 'solved';
+
 export interface Question {
   id: number;
   title: string;

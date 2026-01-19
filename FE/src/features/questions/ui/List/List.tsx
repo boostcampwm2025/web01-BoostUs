@@ -15,7 +15,7 @@ const QuestionsList = ({
 
   return (
     <div className="flex flex-col w-full mt-4 overflow-hidden border divide-y border-neutral-border-default divide-neutral-border-default rounded-2xl">
-      <ListHeader />
+      <ListHeader questions={filteredAndSortedQuestions} />
       {filteredAndSortedQuestions.map((question) => (
         <ListCard key={question.id} question={question} />
       ))}
