@@ -14,19 +14,10 @@ const QuestionsList = ({
   }, [initialQuestions]);
 
   return (
-    <div className="flex flex-col w-full mt-4 overflow-hidden border border-neutral-border-default rounded-2xl">
+    <div className="flex flex-col w-full mt-4 overflow-hidden border divide-y border-neutral-border-default divide-neutral-border-default rounded-2xl">
       <ListHeader />
-      {filteredAndSortedQuestions.map((question, index) => (
-        <div
-          key={question.id}
-          className={
-            index !== filteredAndSortedQuestions.length - 1
-              ? 'border-b border-neutral-border-default'
-              : ''
-          }
-        >
-          <ListCard question={question} />
-        </div>
+      {filteredAndSortedQuestions.map((question) => (
+        <ListCard key={question.id} question={question} />
       ))}
     </div>
   );
