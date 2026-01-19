@@ -15,13 +15,27 @@ const Header = () => {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // 스크롤 이벤트 감지
   useEffect(() => {
+    let ticking = false;
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 0);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const nextIsScrolled = window.scrollY > 0;
+          setIsScrolled((prev) => {
+            return prev !== nextIsScrolled ? nextIsScrolled : prev;
+          });
+
+          ticking = false;
+        });
+
+        ticking = true;
+      }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
@@ -35,8 +49,8 @@ const Header = () => {
     <header
       className={`fixed top-0 z-50 flex h-20 w-full items-center justify-center px-4 transition-all duration-300 ${
         isScrolled
-          ? 'bg-neutral-surface-bold/80 shadow-lift backdrop-blur-sm' // 스크롤 시: 진한 배경(90% 불투명) + 그림자 + 블러
-          : 'bg-neutral-surface-default' // 최상단: 기본 배경
+          ? 'bg-neutral-surface-bold/80 shadow-lift backdrop-blur-sm'
+          : 'bg-neutral-surface-default'
       }`}
     >
       <div className="flex items-center justify-between w-full h-full max-w-7xl">
@@ -51,6 +65,7 @@ const Header = () => {
               className={`flex items-center h-full border-b-2 transition-colors hover:text-accent-blue ${
                 isActive(href) ? 'border-accent-blue' : 'border-transparent'
               }`}
+              aria-current={isActive(href) ? 'page' : undefined}
             >
               {label}
             </Link>
