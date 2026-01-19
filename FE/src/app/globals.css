@@ -1,4 +1,54 @@
 @import 'tailwindcss';
+
+@theme {
+  --color-grayscale-50: #fefefe;
+  --color-grayscale-100: #f9fafb;
+  --color-grayscale-200: #f0f4fa;
+  --color-grayscale-300: #e5e7eb;
+  --color-grayscale-400: #bec1d5;
+  --color-grayscale-500: #a0a3bd;
+  --color-grayscale-600: #6e7191;
+  --color-grayscale-700: #4e4b66;
+  --color-grayscale-800: #2a2a44;
+  --color-grayscale-900: #14142b;
+
+  --color-accent-blue: #005cfd;
+  --color-accent-red: #ff3b30;
+  --color-accent-green: #008a52;
+  --color-accent-lightgreen: #00f819;
+
+  --color-neutral-text-weak: var(--color-grayscale-600);
+  --color-neutral-text-default: var(--color-grayscale-700);
+  --color-neutral-text-strong: var(--color-grayscale-900);
+
+  --color-neutral-surface-default: var(--color-grayscale-100);
+  --color-neutral-surface-bold: var(--color-grayscale-50);
+  --color-neutral-surface-strong: var(--color-grayscale-200);
+
+  --color-neutral-border-default: var(--color-grayscale-300);
+  --color-neutral-border-active: var(--color-grayscale-900);
+
+  --color-brand-surface-weak: var(--color-grayscale-200);
+  --color-brand-surface-default: var(--color-accent-blue);
+  --color-brand-border-default: var(--color-accent-blue);
+  --color-brand-text-on-default: var(--color-grayscale-50);
+
+  --color-danger-text-default: var(--color-accent-red);
+  --color-danger-surface-default: #ff3b3026;
+  --color-danger-border-default: var(--color-accent-red);
+
+  --color-success-surface-default: #00f81980;
+  --color-success-text-default: var(--color-accent-green);
+
+  --font-pretendard:
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
+  --font-sans: var(--font-pretendard), ui-sans-serif, system-ui, sans-serif;
+
+  --shadow-default: 0 0 8px 0 rgba(20, 20, 43, 0.08);
+  --shadow-lift: 0 4 8px 0 rgba(20, 20, 43, 0.08);
+}
+
 html {
   /* 스크롤바 트랙을 항상 강제로 표시 */
   overflow-y: scroll;
@@ -6,53 +56,6 @@ html {
 
 body {
   background-color: var(--color-neutral-surface-default);
-
-  @theme {
-    --color-grayscale-50: #fefefe;
-    --color-grayscale-100: #f9fafb;
-    --color-grayscale-200: #f0f4fa;
-    --color-grayscale-300: #e5e7eb;
-    --color-grayscale-400: #bec1d5;
-    --color-grayscale-500: #a0a3bd;
-    --color-grayscale-600: #6e7191;
-    --color-grayscale-700: #4e4b66;
-    --color-grayscale-800: #2a2a44;
-    --color-grayscale-900: #14142b;
-
-    --color-accent-blue: #005cfd;
-    --color-accent-red: #ff3b30;
-    --color-accent-green: #008a52;
-    --color-accent-lightgreen: #00f819;
-
-    --color-neutral-text-weak: var(--color-grayscale-600);
-    --color-neutral-text-default: var(--color-grayscale-700);
-    --color-neutral-text-strong: var(--color-grayscale-900);
-
-    --color-neutral-surface-default: var(--color-grayscale-100);
-    --color-neutral-surface-bold: var(--color-grayscale-50);
-    --color-neutral-surface-strong: var(--color-grayscale-200);
-
-    --color-neutral-border-default: var(--color-grayscale-300);
-    --color-neutral-border-active: var(--color-grayscale-900);
-
-    --color-brand-surface-weak: var(--color-grayscale-200);
-    --color-brand-surface-default: var(--color-accent-blue);
-    --color-brand-border-default: var(--color-accent-blue);
-    --color-brand-text-on-default: var(--color-grayscale-50);
-
-    --color-danger-text-default: var(--color-accent-red);
-    --color-danger-surface-default: #ff3b3026;
-    --color-danger-border-default: var(--color-accent-red);
-
-    --color-success-surface-default: #00f81980;
-    --color-success-text-default: var(--color-accent-green);
-
-    --font-pretendard: var(--font-pretendard);
-    --font-sans: var(--font-pretendard), ui-sans-serif, system-ui, sans-serif;
-
-    --shadow-default: 0 0 8px 0 rgba(20, 20, 43, 0.08);
-    --shadow-lift: 0 4 8px 0 rgba(20, 20, 43, 0.08);
-  }
 
   @layer utilities {
     /* Display (Bold) */
