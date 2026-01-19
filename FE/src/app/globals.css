@@ -5,133 +5,134 @@ html {
 }
 
 body {
-  background-color: #f0f4fa;
+  background-color: var(--color-neutral-surface-default);
 
+  @theme {
+    --color-grayscale-50: #fefefe;
+    --color-grayscale-100: #f9fafb;
+    --color-grayscale-200: #f0f4fa;
+    --color-grayscale-300: #e5e7eb;
+    --color-grayscale-400: #bec1d5;
+    --color-grayscale-500: #a0a3bd;
+    --color-grayscale-600: #6e7191;
+    --color-grayscale-700: #4e4b66;
+    --color-grayscale-800: #2a2a44;
+    --color-grayscale-900: #14142b;
 
-@theme {
-  --color-grayscale-50: #fefefe;
-  --color-grayscale-100: #f9fafb;
-  --color-grayscale-200: #f0f4fa;
-  --color-grayscale-300: #e5e7eb;
-  --color-grayscale-400: #bec1d5;
-  --color-grayscale-500: #a0a3bd;
-  --color-grayscale-600: #6e7191;
-  --color-grayscale-700: #4e4b66;
-  --color-grayscale-800: #2a2a44;
-  --color-grayscale-900: #14142b;
+    --color-accent-blue: #005cfd;
+    --color-accent-red: #ff3b30;
+    --color-accent-green: #008a52;
+    --color-accent-lightgreen: #00f819;
 
-  --color-accent-blue: #005cfd;
-  --color-accent-red: #ff3b30;
+    --color-neutral-text-weak: var(--color-grayscale-600);
+    --color-neutral-text-default: var(--color-grayscale-700);
+    --color-neutral-text-strong: var(--color-grayscale-900);
 
-  --color-neutral-text-weak: var(--color-grayscale-600);
-  --color-neutral-text-default: var(--color-grayscale-700);
-  --color-neutral-text-strong: var(--color-grayscale-900);
+    --color-neutral-surface-default: var(--color-grayscale-100);
+    --color-neutral-surface-bold: var(--color-grayscale-50);
+    --color-neutral-surface-strong: var(--color-grayscale-200);
 
-  --color-neutral-surface-default: var(--color-grayscale-200);
-  --color-neutral-surface-bold: var(--color-grayscale-100);
-  --color-neutral-surface-strong: var(--color-grayscale-50);
+    --color-neutral-border-default: var(--color-grayscale-300);
+    --color-neutral-border-active: var(--color-grayscale-900);
 
-  --color-neutral-border-default: var(--color-grayscale-300);
-  --color-neutral-border-active: var(--color-grayscale-900);
+    --color-brand-surface-weak: var(--color-grayscale-200);
+    --color-brand-surface-default: var(--color-accent-blue);
+    --color-brand-border-default: var(--color-accent-blue);
+    --color-brand-text-on-default: var(--color-grayscale-50);
 
-  --color-brand-surface-weak: var(--color-grayscale-200);
-  --color-brand-surface-default: var(--color-accent-blue);
+    --color-danger-text-default: var(--color-accent-red);
+    --color-danger-surface-default: #ff3b3026;
+    --color-danger-border-default: var(--color-accent-red);
 
-  --color-brand-border-default: var(--color-accent-blue);
+    --success-surface-default: #00f81980;
+    --success-text-default: var(--color-accent-green);
 
-  --color-danger-text-default: var(--color-accent-red);
-  --color-danger-surface-default: var(--color-accent-red);
-  --color-danger-border-default: var(--color-accent-red);
+    --font-pretendard: var(--font-pretendard);
+    --font-sans: var(--font-pretendard), ui-sans-serif, system-ui, sans-serif;
 
-  --font-pretendard: var(--font-pretendard);
-  --font-sans: var(--font-pretendard), ui-sans-serif, system-ui, sans-serif;
+    --shadow-default: 0 0 8px 0 rgba(20, 20, 43, 0.08);
+    --shadow-lift: 0 4 8px 0 rgba(20, 20, 43, 0.08);
+  }
 
-  --shadow-default: 0 0 8px 0 rgba(20, 20, 43, 0.08);
+  @layer utilities {
+    /* Display (Bold) */
+    .text-display-32 {
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+    .text-display-24 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+    .text-display-20 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+    .text-display-16 {
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    /* String (Medium) */
+    .text-string-20 {
+      font-size: 1.25rem;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+    .text-string-16 {
+      font-size: 1rem;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+    .text-string-14 {
+      font-size: 0.875rem;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+    .text-string-12 {
+      font-size: 0.75rem;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    /* Body (Regular) */
+    .text-body-16 {
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.5;
+    }
+    .text-body-14 {
+      font-size: 0.875rem;
+      font-weight: 400;
+      line-height: 1.5;
+    }
+    .text-body-12 {
+      font-size: 0.75rem;
+      font-weight: 400;
+      line-height: 1.5;
+    }
+    .text-body-10 {
+      font-size: 0.625rem;
+      font-weight: 400;
+      line-height: 1.5;
+    }
+  }
+
+  html {
+    /* 스크롤바 자리를 미리 확보 */
+    scrollbar-gutter: stable;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
-
-@layer utilities {
-  /* Display (Bold) */
-  .text-display-32 {
-    font-size: 2rem;
-    font-weight: 700;
-    line-height: 1.5;
-  }
-  .text-display-24 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    line-height: 1.5;
-  }
-  .text-display-20 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    line-height: 1.5;
-  }
-  .text-display-16 {
-    font-size: 1rem;
-    font-weight: 700;
-    line-height: 1.5;
-  }
-
-  /* String (Medium) */
-  .text-string-20 {
-    font-size: 1.25rem;
-    font-weight: 500;
-    line-height: 1.5;
-  }
-  .text-string-16 {
-    font-size: 1rem;
-    font-weight: 500;
-    line-height: 1.5;
-  }
-  .text-string-14 {
-    font-size: 0.875rem;
-    font-weight: 500;
-    line-height: 1.5;
-  }
-  .text-string-12 {
-    font-size: 0.75rem;
-    font-weight: 500;
-    line-height: 1.5;
-  }
-
-  /* Body (Regular) */
-  .text-body-16 {
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-  }
-  .text-body-14 {
-    font-size: 0.875rem;
-    font-weight: 400;
-    line-height: 1.5;
-  }
-  .text-body-12 {
-    font-size: 0.75rem;
-    font-weight: 400;
-    line-height: 1.5;
-  }
-  .text-body-10 {
-    font-size: 0.625rem;
-    font-weight: 400;
-    line-height: 1.5;
-  }
-}
-
-body {
-  background-color: var(--color-grayscale-200);
-
-}
-
-html {
-  /* 스크롤바 자리를 미리 확보 */
-  scrollbar-gutter: stable;
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}}
