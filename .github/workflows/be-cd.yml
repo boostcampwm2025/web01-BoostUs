@@ -1,7 +1,7 @@
 name: CD - BE
 
 on:
-  push:
+  pull_request:
     branches: ["main"]
     paths:
       - "BE/**"
