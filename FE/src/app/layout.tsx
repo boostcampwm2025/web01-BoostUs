@@ -23,9 +23,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${pretendard.variable}`}>
-      <body className="flex flex-col min-h-screen font-sans antialiased">
+      <body className="flex min-h-screen flex-col font-sans antialiased">
         <Header />
-        <main className="flex flex-col items-center flex-1 w-full px-4 py-32 bg-neutral-surface-default">
+        <main className="bg-neutral-surface-default flex w-full flex-1 flex-col items-center px-4 py-32">
           {children}
         </main>
         <Footer />
