@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { X } from 'lucide-react';
 
 interface StoriesRankingToggleProps {
   isRankingOpen: boolean;
@@ -8,38 +8,16 @@ interface StoriesRankingToggleProps {
 }
 
 const StoriesRankingToggle = ({
-  isRankingOpen,
   onRankingToggle,
 }: StoriesRankingToggleProps) => {
   return (
     <button
       onClick={onRankingToggle}
       type="button"
-      className="flex cursor-pointer flex-row items-center"
+      className="flex cursor-pointer flex-row items-center text-neutral-text-weak hover:text-neutral-text-strong transition-colors duration-150"
     >
-      {isRankingOpen ? (
-        <>
-          <span className="text-neutral-text-strong text-string-16">
-            랭킹 닫기
-          </span>
-          <ChevronUp
-            className="text-neutral-text-strong"
-            strokeWidth={1}
-            size={24}
-          />
-        </>
-      ) : (
-        <>
-          <span className="text-neutral-text-strong text-string-16">
-            랭킹 열기
-          </span>
-          <ChevronDown
-            className="text-neutral-text-strong"
-            strokeWidth={1}
-            size={24}
-          />
-        </>
-      )}
+      <span className="text-string-16">랭킹 닫기</span>
+      <X strokeWidth={1} />
     </button>
   );
 };

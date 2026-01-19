@@ -48,7 +48,7 @@ const StoriesListDropdown = () => {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="text-neutral-text-default flex cursor-pointer flex-row"
+        className="text-neutral-text-default hover:text-neutral-text-strong transition-colors duration-150 flex cursor-pointer flex-row whitespace-nowrap"
       >
         <span className="text-string-16">
           {sortBy === 'latest'

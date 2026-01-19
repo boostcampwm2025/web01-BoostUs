@@ -24,10 +24,11 @@ const StoriesSearchBar = () => {
 
   return (
     <div className="w-full">
-      <div className="border-neutral-border-default bg-neutral-surface-bold flex h-15 w-full flex-row items-center rounded-2xl border px-2">
-        <Search className="text-neutral-text-weak" strokeWidth={1} />
+      <div className="border-neutral-border-default bg-neutral-surface-bold flex h-10 w-full flex-row items-center rounded-xl border px-3 py-2.5">
+        <Search className="text-neutral-text-weak" strokeWidth={1} size={20} />
         <input
           type="text"
+          aria-label="글 검색 바"
           placeholder="글 검색..."
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
