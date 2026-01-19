@@ -62,12 +62,6 @@ export class BeApiClient {
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        // 409 Conflict는 이미 존재하는 경우이므로 경고만 출력
-        if (error.response?.status === 409) {
-          console.warn(`⚠️  Story already exists: ${story.title}`);
-          return error.response.data;
-        }
-        
         console.error(`❌ Failed to create story: ${story.title}`, error.message);
         throw new Error(`Failed to create story: ${error.message}`);
       }

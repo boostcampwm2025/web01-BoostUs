@@ -64,17 +64,17 @@ export class StoryService {
    * @returns CreateStoryResponseDto
    */
   async createStory(dto: CreateStoryRequestDto): Promise<CreateStoryResponseDto> {
-    // feedsId로 Feed 조회하여 memberId 추출
-    const feed = await this.feedRepository.findFeedById(dto.feedsId);
+    // feedId로 Feed 조회하여 memberId 추출
+    const feed = await this.feedRepository.findFeedById(dto.feedId);
     if (!feed) {
-      throw new NotFoundException(`피드를 찾을 수 없습니다. feedsId: ${dto.feedsId}`);
+      throw new NotFoundException(`피드를 찾을 수 없습니다. feedId: ${dto.feedId}`);
     }
 
     // Story upsert (guid 기준)
     const story = await this.storyRepository.upsertStory({
       guid: dto.guid,
       memberId: feed.memberId,
-      feedsId: dto.feedsId,
+      feedId: feed.id,
       title: dto.title,
       summary: dto.summary,
       contents: dto.contents,
@@ -84,7 +84,7 @@ export class StoryService {
     });
 
     // Feed의 lastFetchedAt 업데이트
-    await this.feedRepository.updateLastFetchedAt(dto.feedsId);
+    await this.feedRepository.updateLastFetchedAt(feed.id);
 
     return plainToInstance(
       CreateStoryResponseDto,

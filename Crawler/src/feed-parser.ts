@@ -15,12 +15,12 @@ export class FeedParser {
   /**
    * RSS XML을 파싱하여 Story 생성 요청 데이터로 변환
    * @param xmlContent RSS XML 문자열
-   * @param feedsId 피드 ID
+   * @param feedId 피드 ID
    * @returns CreateStoryRequest 배열
    */
   async parse(
     xmlContent: string,
-    feedsId: string,
+    feedId: string,
   ): Promise<CreateStoryRequest[]> {
     try {
       console.log('🔍 Parsing RSS feed...');
@@ -36,7 +36,7 @@ export class FeedParser {
 
       // RSS 아이템을 Story 생성 요청 객체로 변환
       const convertedStories = feed.items.map((item) =>
-        this.convertToStory(item as RssItem, feedsId),
+        this.convertToStory(item as RssItem, feedId),
       );
 
       // 유효하지 않은 항목(null) 제거
@@ -54,12 +54,12 @@ export class FeedParser {
   /**
    * RSS Item을 Story 생성 요청 데이터로 변환
    * @param item RSS Item
-   * @param feedsId 피드 ID
+   * @param feedId 피드 ID
    * @returns CreateStoryRequest 또는 null
    */
   private convertToStory(
     item: RssItem,
-    feedsId: string,
+    feedId: string,
   ): CreateStoryRequest | null {
     // 필수 필드 검증
     if (!item.guid || !item.title) {
@@ -84,7 +84,7 @@ export class FeedParser {
       : new Date().toISOString();
 
     return {
-      feedsId,
+      feedId,
       guid: item.guid,
       title: item.title,
       summary,

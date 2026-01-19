@@ -52,7 +52,7 @@ model Member {
 
   // relations
   projects          Project[]
-  feeds           Feeds?
+  feed              Feed?
   stories           Story[]
   storyLikes        StoryLike[]
   questions         Question[]
@@ -152,10 +152,10 @@ model ProjectTechStack {
  * ERD: 사용자 1:1 RSS 피드, RSS 피드 URL [UQ]
  * -> memberId도 유니크로 만들어 1:1 강제
  */
-model Feeds {
+model Feed {
   id       BigInt @id @default(autoincrement())
   memberId BigInt @unique @map("member_id")
-  feedUrl   String @db.VarChar(768) @unique @map("feed_url")
+  feedUrl   String @db.VarChar(512) @unique @map("feed_url")
   state    State  @default(ACTIVE) @map("state")
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -173,9 +173,9 @@ model Feeds {
  */
 model Story {
   id          BigInt @id @default(autoincrement())
-  guid        String @db.VarChar(768) @unique @map("guid")
+  guid        String @db.VarChar(512) @map("guid")
   memberId    BigInt @map("member_id")
-  feedsId   BigInt @map("feeds_id")
+  feedId   BigInt @map("feed_id")
 
   title       String  @map("title")
   summary     String? @map("summary")
@@ -192,9 +192,10 @@ model Story {
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
   member  Member  @relation(fields: [memberId], references: [id])
-  feeds Feeds @relation(fields: [feedsId], references: [id])
+  feed Feed @relation(fields: [feedId], references: [id])
   likes   StoryLike[]
 
+  @@unique([feedId, guid])
   @@map("stories")
 }
 

@@ -44,17 +44,6 @@ export class StoryRepository {
   }
 
   /**
-   * GUID로 Story 조회
-   * @param guid string
-   * @returns Story | null
-   */
-  async findStoryByGuid(guid: string): Promise<Story | null> {
-    return this.prisma.story.findUnique({
-      where: { guid },
-    });
-  }
-
-  /**
    * Story 생성 (upsert)
    * @param data Story 생성 데이터
    * @returns Story
@@ -62,7 +51,7 @@ export class StoryRepository {
   async upsertStory(data: {
     guid: string;
     memberId: bigint;
-    feedsId: bigint;
+    feedId: bigint;
     title: string;
     summary?: string;
     contents: string;
@@ -71,7 +60,7 @@ export class StoryRepository {
     publishedAt: Date;
   }): Promise<Story> {
     return this.prisma.story.upsert({
-      where: { guid: data.guid },
+      where: { feedId_guid: { feedId: data.feedId, guid: data.guid } },
       update: {
         title: data.title,
         summary: data.summary,
@@ -83,7 +72,7 @@ export class StoryRepository {
       create: {
         guid: data.guid,
         memberId: data.memberId,
-        feedsId: data.feedsId,
+        feedId: data.feedId,
         title: data.title,
         summary: data.summary,
         contents: data.contents,

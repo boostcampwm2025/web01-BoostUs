@@ -6,7 +6,7 @@ import { PrismaClient } from '../../../src/generated/prisma/client';
 export async function seedFeeds(prisma: PrismaClient) {
   console.log('📡 Seeding feeds...');
 
-  const feeds = await prisma.feeds.upsert({
+  const feeds = await prisma.feed.upsert({
     where: { id: 1n },
     update: {},
     create: {

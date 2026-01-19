@@ -5,7 +5,7 @@ import { IsDateString, IsNotEmpty, IsOptional, IsString } from 'class-validator'
  */
 export class CreateStoryRequestDto {
   @IsNotEmpty()
-  feedsId: bigint;
+  feedId: bigint;
 
   @IsNotEmpty()
   @IsString()

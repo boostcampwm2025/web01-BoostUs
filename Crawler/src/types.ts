@@ -35,7 +35,7 @@ export type FeedListResponse = ApiResponse<FeedListData>;
  * Story 생성 요청 DTO
  */
 export interface CreateStoryRequest {
-  feedsId: string;
+  feedId: string;
   guid: string;
   title: string;
   summary?: string;

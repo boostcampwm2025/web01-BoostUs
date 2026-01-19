@@ -3,8 +3,8 @@
 
   - You are about to drop the column `rss_feed_id` on the `stories` table. All the data in the column will be lost.
   - You are about to drop the `rss_feeds` table. If the table is not empty, all the data it contains will be lost.
-  - A unique constraint covering the columns `[guid]` on the table `stories` will be added. If there are existing duplicate values, this will fail.
-  - Added the required column `feeds_id` to the `stories` table without a default value. This is not possible if the table is not empty.
+  - A unique constraint covering the columns `[feed_id,guid]` on the table `stories` will be added. If there are existing duplicate values, this will fail.
+  - Added the required column `feed_id` to the `stories` table without a default value. This is not possible if the table is not empty.
   - Added the required column `guid` to the `stories` table without a default value. This is not possible if the table is not empty.
   - Added the required column `published_at` to the `stories` table without a default value. This is not possible if the table is not empty.
 
@@ -20,8 +20,8 @@ DROP INDEX `stories_rss_feed_id_fkey` ON `stories`;
 
 -- AlterTable
 ALTER TABLE `stories` DROP COLUMN `rss_feed_id`,
-    ADD COLUMN `feeds_id` BIGINT NOT NULL,
-    ADD COLUMN `guid` VARCHAR(768) NOT NULL,
+    ADD COLUMN `feed_id` BIGINT NOT NULL,
+    ADD COLUMN `guid` VARCHAR(512) NOT NULL,
     ADD COLUMN `published_at` DATETIME(3) NOT NULL;
 
 -- DropTable
@@ -31,7 +31,7 @@ DROP TABLE `rss_feeds`;
 CREATE TABLE `feeds` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `member_id` BIGINT NOT NULL,
-    `feed_url` VARCHAR(768) NOT NULL,
+    `feed_url` VARCHAR(512) NOT NULL,
     `state` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE',
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `last_fetched_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -42,10 +42,10 @@ CREATE TABLE `feeds` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateIndex
-CREATE UNIQUE INDEX `stories_guid_key` ON `stories`(`guid`);
+CREATE UNIQUE INDEX `stories_feed_id_guid_key` ON `stories`(`feed_id`, `guid`);
 
 -- AddForeignKey
 ALTER TABLE `feeds` ADD CONSTRAINT `feeds_member_id_fkey` FOREIGN KEY (`member_id`) REFERENCES `members`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `stories` ADD CONSTRAINT `stories_feeds_id_fkey` FOREIGN KEY (`feeds_id`) REFERENCES `feeds`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `stories` ADD CONSTRAINT `stories_feed_id_fkey` FOREIGN KEY (`feed_id`) REFERENCES `feeds`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

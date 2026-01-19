@@ -178,7 +178,7 @@ async function upsertStory(prisma: PrismaClient, story: Story, contents: string)
       viewCount: story.viewCount,
       createdAt: story.createdAt,
       member: { connect: { id: 1n } },
-      feeds: { connect: { id: 1n } },
+      feed: { connect: { id: 1n } },
     },
   });
 }
