@@ -44,6 +44,58 @@ export class StoryRepository {
   }
 
   /**
+   * GUID로 Story 조회
+   * @param guid string
+   * @returns Story | null
+   */
+  async findStoryByGuid(guid: string): Promise<Story | null> {
+    return this.prisma.story.findUnique({
+      where: { guid },
+    });
+  }
+
+  /**
+   * Story 생성 (upsert)
+   * @param data Story 생성 데이터
+   * @returns Story
+   */
+  async upsertStory(data: {
+    guid: string;
+    memberId: bigint;
+    feedsId: bigint;
+    title: string;
+    summary?: string;
+    contents: string;
+    thumbnailUrl?: string;
+    originalUrl?: string;
+    publishedAt: Date;
+  }): Promise<Story> {
+    return this.prisma.story.upsert({
+      where: { guid: data.guid },
+      update: {
+        title: data.title,
+        summary: data.summary,
+        contents: data.contents,
+        thumbnailUrl: data.thumbnailUrl,
+        originalUrl: data.originalUrl,
+        publishedAt: data.publishedAt,
+      },
+      create: {
+        guid: data.guid,
+        memberId: data.memberId,
+        feedsId: data.feedsId,
+        title: data.title,
+        summary: data.summary,
+        contents: data.contents,
+        thumbnailUrl: data.thumbnailUrl,
+        originalUrl: data.originalUrl,
+        publishedAt: data.publishedAt,
+        state: ContentState.PUBLISHED,
+      },
+    });
+  }
+
+  /**
    * 기간 필터 생성
    */
   private getPeriodFilter(period: StoryPeriod) {

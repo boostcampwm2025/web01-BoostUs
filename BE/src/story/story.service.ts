@@ -1,7 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
+import { FeedRepository } from '../feed/feed.repository';
 import { ContentState } from '../generated/prisma/client';
 import {
+  CreateStoryRequestDto,
+  CreateStoryResponseDto,
   StoryListItemDto,
   StoryListRequestDto,
   StoryListResponseDto,
@@ -11,7 +14,10 @@ import { StoryRepository } from './story.repository';
 
 @Injectable()
 export class StoryService {
-  constructor(private readonly storyRepository: StoryRepository) {}
+  constructor(
+    private readonly storyRepository: StoryRepository,
+    private readonly feedRepository: FeedRepository,
+  ) {}
 
   /**
    * 모든 공개된 캠퍼들의 이야기 목록 조회
@@ -50,5 +56,40 @@ export class StoryService {
     return plainToInstance(StoryResponseDto, story, {
       excludeExtraneousValues: true,
     });
+  }
+
+  /**
+   * Story 생성 (RSS 크롤러용)
+   * @param dto CreateStoryRequestDto
+   * @returns CreateStoryResponseDto
+   */
+  async createStory(dto: CreateStoryRequestDto): Promise<CreateStoryResponseDto> {
+    // feedsId로 Feed 조회하여 memberId 추출
+    const feed = await this.feedRepository.findFeedById(dto.feedsId);
+    if (!feed) {
+      throw new NotFoundException(`피드를 찾을 수 없습니다. feedsId: ${dto.feedsId}`);
+    }
+
+    // Story upsert (guid 기준)
+    const story = await this.storyRepository.upsertStory({
+      guid: dto.guid,
+      memberId: feed.memberId,
+      feedsId: dto.feedsId,
+      title: dto.title,
+      summary: dto.summary,
+      contents: dto.contents,
+      thumbnailUrl: dto.thumbnailUrl,
+      originalUrl: dto.originalUrl,
+      publishedAt: dto.publishedAt,
+    });
+
+    // Feed의 lastFetchedAt 업데이트
+    await this.feedRepository.updateLastFetchedAt(dto.feedsId);
+
+    return plainToInstance(
+      CreateStoryResponseDto,
+      story,
+      { excludeExtraneousValues: true },
+    );
   }
 }
