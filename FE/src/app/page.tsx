@@ -1,6 +1,6 @@
-import FeedSection from "@/features/mainpage/feed/FeedSection";
-import QuickMenuSection from "@/features/mainpage/quickmenu/QuickMenuSection";
-import RecommendedSection from "@/features/mainpage/recommendation/RecommendedSection";
+import FeedSection from '@/features/mainpage/feed/FeedSection';
+import QuickMenuSection from '@/features/mainpage/quickmenu/QuickMenuSection';
+import RecommendedSection from '@/features/mainpage/recommendation/RecommendedSection';
 
 const Home = () => {
   return (

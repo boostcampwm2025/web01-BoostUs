@@ -1,15 +1,43 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // --- 기존 설정 유지 ---
+  turbopack: {
+    root: __dirname,
+  },
   reactCompiler: true,
+
+  // --------------------
+
+  rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://backend:3000/api/:path*',
+      },
+    ];
+  },
 
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'cdn.example.com', // 에러에 뜬 도메인 추가
-        port: '',
+        hostname: 'blog.kakaocdn.net',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'velog.velcdn.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.velog.io',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.githubusercontent.com',
         pathname: '/**',
       },
     ],

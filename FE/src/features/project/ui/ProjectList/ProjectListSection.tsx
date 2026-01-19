@@ -1,67 +1,90 @@
-import ProjectListCard from "./ProjectListCard";
+'use client';
 
-interface ProjectData {
-  id: number;
-  thumbnailUrl: string | null;
-  title: string;
-  description: string;
-  cohort: number;
-  techStack: string[];
-  createdAt: string;
-  updatedAt: string;
-}
+import { useEffect, useState } from 'react';
+import ProjectListCard from '@/features/project/ui/ProjectList/ProjectListCard';
+import { useSearchParams } from 'next/navigation';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import { fetchProjects, Project } from '@/features/project/api/getProjects';
 
-const mockProjects: ProjectData[] = [
-  {
-    id: 1,
-    thumbnailUrl: "https://cdn.example.com/thumbnails/project-1.png",
-    title: "BoostUs 커뮤니티 서비스",
-    description: "부스트캠프 수료생과 예비 지원자를 위한 커뮤니티 서비스입니다.",
-    cohort: 9,
-    techStack: ["NestJS", "Prisma", "Next"],
-    createdAt: "2024-07-01T10:00:00",
-    updatedAt: "2024-08-20T15:30:00",
-  },
-  {
-    id: 2,
-    thumbnailUrl: null,
-    title: "Web OS",
-    description: "부스트캠프 그룹 스프린트로 진행한 웹 기반 OS 에뮬레이션 서비스입니다.",
-    cohort: 10,
-    techStack: ["React", "NestJS", "MySQL"],
-    createdAt: "2024-09-01T09:00:00",
-    updatedAt: "2024-10-01T12:00:00",
-  },
-  {
-    id: 3,
-    thumbnailUrl: "https://cdn.example.com/thumbnails/project-3.png",
-    title: "실시간 협업 화이트보드",
-    description: "WebSocket 기반 멀티플레이어 드로잉 앱",
-    cohort: 9,
-    techStack: ["Next.js", "Node.js", "Socket.io"],
-    createdAt: "2024-06-15T14:20:00",
-    updatedAt: "2024-09-10T08:45:00",
-  },
-  {
-    id: 4,
-    thumbnailUrl: "https://cdn.example.com/thumbnails/project-4.png",
-    title: "AI 코드 리뷰 플랫폼",
-    description: "OpenAI API를 활용한 자동 코드 리뷰 시스템",
-    cohort: 10,
-    techStack: ["TypeScript", "FastAPI", "PostgreSQL"],
-    createdAt: "2024-08-05T11:30:00",
-    updatedAt: "2024-09-20T16:15:00",
-  },
-];
+const SORT_ORDER = {
+  TEAM_NUM: '팀 번호 순',
+  VIEW_COUNT: '조회수 순',
+} as const;
+
+type SortOrderType = (typeof SORT_ORDER)[keyof typeof SORT_ORDER];
 
 const ProjectListSection = () => {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [sortOrder, setSortOrder] = useState<SortOrderType>(
+    SORT_ORDER.TEAM_NUM
+  );
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchProjects();
+        setProjects(data.items); // 받아온 데이터의 items를 state에 저장
+      } catch (error) {
+        console.error('데이터 로드 실패:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void loadData();
+  }, []); // 빈 배열: 마운트 시 1회만 실행
+
+  const searchParams = useSearchParams();
+  const field = searchParams.get('field') ?? '전체';
+  const cohort = searchParams.get('cohort') ?? '전체';
+
+  const filteredProjects = projects
+    .filter((project) => {
+      if (field !== '전체' && project.field !== field) return false;
+      return !(cohort !== '전체' && project.cohort !== parseInt(cohort));
+    })
+    .sort((a, b) => {
+      if (sortOrder === SORT_ORDER.TEAM_NUM) {
+        return a.id - b.id;
+      } else {
+        return b.viewCount - a.viewCount;
+      }
+    });
+
   return (
-    <section className="flex flex-col gap-4 mt-8 mb-20 w-full">
-      <span className="text-black text-sm">
-        총 <span className="font-semibold text-blue-700 text-sm">{mockProjects.length}</span>개의 프로젝트
-      </span>
-      <div className="gap-4 grid grid-cols-3 w-full">
-        {mockProjects.map((project) => (
+    <section className="mt-8 mb-20 flex w-full flex-col gap-4">
+      <div className="flex flex-row justify-between">
+        <span className="text-strong-medium16 text-black">
+          총{' '}
+          <span className="text-strong-medium16 font-semibold text-blue-700">
+            {filteredProjects.length}
+          </span>
+          개의 프로젝트
+        </span>
+        <div className="flex flex-wrap gap-2">
+          <button
+            className="text-neutral-text-default text-strong-medium16 flex flex-row items-center gap-1"
+            onClick={() =>
+              setSortOrder(
+                sortOrder === SORT_ORDER.TEAM_NUM
+                  ? SORT_ORDER.VIEW_COUNT
+                  : SORT_ORDER.TEAM_NUM
+              )
+            }
+          >
+            {sortOrder}{' '}
+            {sortOrder === SORT_ORDER.TEAM_NUM ? (
+              <ChevronDown />
+            ) : (
+              <ChevronUp />
+            )}
+          </button>
+        </div>
+      </div>
+      <div className="grid w-full grid-cols-4 gap-8">
+        {filteredProjects.map((project) => (
           <ProjectListCard key={project.id} project={project} />
         ))}
       </div>

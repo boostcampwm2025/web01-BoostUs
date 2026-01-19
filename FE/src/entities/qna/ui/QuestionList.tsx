@@ -1,8 +1,9 @@
 'use client';
 
-import { MOCK_QUESTIONS } from '../config/mockData';
-import { QuestionCard } from './QuestionCard';
+import { MOCK_QUESTIONS } from '@/entities/qna/config/mockData';
+import { QuestionCard } from '@/entities/qna/ui/QuestionCard';
 import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
 export default function QuestionList() {
   const searchParams = useSearchParams();
@@ -19,6 +20,7 @@ export default function QuestionList() {
   });
 
   return (
+
     <div className="flex flex-col gap-8">
       {filteredQuestions.map((question) => (
         <QuestionCard key={question.id} data={question} />

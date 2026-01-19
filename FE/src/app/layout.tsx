@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
+import localFont from 'next/font/local';
 import './globals.css';
 import Header from '@/widgets/Header';
 import Footer from '@/widgets/Footer';
-import localFont from 'next/font/local';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -23,9 +23,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${pretendard.variable}`}>
-      <body className="font-sans antialiased flex flex-col min-h-screen">
+      <body className="flex flex-col min-h-screen font-sans antialiased">
         <Header />
-        <main className="flex flex-col flex-1 items-center bg-[#F0F4FA] px-4 pt-24 w-full">
+        <main className="flex flex-col items-center flex-1 w-full px-4 py-32 bg-neutral-surface-default">
           {children}
         </main>
         <Footer />

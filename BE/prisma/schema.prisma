@@ -24,6 +24,7 @@ enum State {
 
 enum ContentState {
   PUBLISHED
+  PRIVATE
   DELETED
 }
 
@@ -41,7 +42,7 @@ model Member {
   id              BigInt  @id @default(autoincrement())
   githubUniqueId  String  @unique @map("github_unique_id")
   nickname        String  @unique
-  avatarUrl       String? @map("avatar_url")
+  avatarUrl       String? @db.VarChar(768) @map("avatar_url")
   cohort          Int?    @db.TinyInt
   state           State   @default(ACTIVE) @map("state")
   githubLogin     String? @map("github_login") // ERD의 '깃허브id' 용도(로그인 아이디)로 보관
@@ -70,11 +71,11 @@ model Member {
  */
 model Project {
   id             BigInt  @id @default(autoincrement())
+  title          String?  @unique @map("title")
+  description    String? @map("description")
   memberId       BigInt  @map("member_id") // 프로젝트 등록자
-  name           String  @unique @map("name")
-  repoUrl        String  @unique @map("repo_url")
-  oneLineIntro   String? @map("one_line_intro")
-  thumbnailUrl   String? @map("thumbnail_url")
+  repoUrl        String  @db.VarChar(768) @unique @map("repo_url")
+  thumbnailUrl   String? @db.Text @map("thumbnail_url")
 
   startDate DateTime? @map("start_date")
   endDate   DateTime? @map("end_date")
@@ -83,9 +84,9 @@ model Project {
   teamName   String? @map("team_name")
   cohort     Int?    @db.TinyInt
   field      String? @map("field") // Web/iOS/Android
-  demoUrl    String? @unique @map("demo_url")
+  demoUrl    String? @db.VarChar(768) @unique @map("demo_url")
 
-  contents String? @map("contents") // 마크다운
+  contents String? @db.Text @map("contents") // 마크다운
   viewCount Int    @default(0) @map("view_count")
   state     ContentState @default(PUBLISHED) @map("state")
 
@@ -108,7 +109,7 @@ model ProjectParticipant {
   id         BigInt  @id @default(autoincrement())
   projectId  BigInt  @map("project_id")
   githubId   String  @map("github_id")
-  avatarUrl  String? @map("avatar_url")
+  avatarUrl  String? @db.VarChar(768) @map("avatar_url")
 
   project Project @relation(fields: [projectId], references: [id])
 
@@ -154,7 +155,7 @@ model ProjectTechStack {
 model RssFeed {
   id       BigInt @id @default(autoincrement())
   memberId BigInt @unique @map("member_id")
-  rssUrl   String @unique @map("rss_url")
+  rssUrl   String @db.VarChar(768) @unique @map("rss_url")
   state    State  @default(ACTIVE) @map("state")
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -177,9 +178,9 @@ model Story {
 
   title       String  @map("title")
   summary     String? @map("summary")
-  contents    String  @map("contents")
-  thumbnailUrl String? @map("thumbnail_url")
-  originalUrl String? @map("original_url")
+  contents    String  @db.Text @map("contents")
+  thumbnailUrl String? @db.Text @map("thumbnail_url")
+  originalUrl String? @db.VarChar(768) @map("original_url")
 
   likeCount Int @default(0) @map("like_count")
   viewCount Int @default(0) @map("view_count")
@@ -221,7 +222,7 @@ model Question {
   memberId     BigInt @map("member_id")
 
   title        String @map("title")
-  contents     String @map("contents") // markdown
+  contents     String  @db.Text @map("contents") // markdown
   hashtags     String? @map("hashtags") // comma-separated
 
   viewCount    Int @default(0) @map("view_count")
@@ -271,7 +272,7 @@ model Answer {
   questionId BigInt @map("question_id")
   memberId   BigInt @map("member_id")
 
-  contents   String  @map("contents")
+  contents   String  @db.Text @map("contents")
   isAccepted Boolean @default(false) @map("is_accepted")
 
   upCount    Int @default(0) @map("up_count")
