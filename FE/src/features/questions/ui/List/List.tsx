@@ -1,11 +1,33 @@
-import ListCard from '@/features/questions/ui/List/ListCard';
+import type { Question } from '@/features/questions/model/questions.type';
+import ListCard from '@/features/questions/ui/ListCard/ListCard';
 import ListHeader from '@/features/questions/ui/List/ListHeader';
+import { useMemo } from 'react';
 
-const QuestionsList = () => {
+const QuestionsList = ({
+  initialQuestions,
+}: {
+  initialQuestions: Question[];
+}) => {
+  const filteredAndSortedQuestions = useMemo(() => {
+    const result = [...initialQuestions];
+    return result;
+  }, [initialQuestions]);
+
   return (
     <div className="flex flex-col w-full mt-4 border border-neutral-border-default rounded-2xl">
       <ListHeader />
-      <ListCard />
+      {filteredAndSortedQuestions.map((question, index) => (
+        <div
+          key={question.id}
+          className={
+            index !== filteredAndSortedQuestions.length - 1
+              ? 'border-b border-neutral-border-default'
+              : 'rounded-b-2xl'
+          }
+        >
+          <ListCard question={question} />
+        </div>
+      ))}
     </div>
   );
 };

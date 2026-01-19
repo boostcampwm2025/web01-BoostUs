@@ -1,9 +1,14 @@
+import { Question } from '@/features/questions/model/questions.type';
 import QuestionButton from '@/features/questions/ui/Button/QuestionButton';
 import QuestionsHeader from '@/features/questions/ui/Header/Header';
 import QuestionsList from '@/features/questions/ui/List/List';
 import QuestionsSearchBar from '@/features/questions/ui/SearchBar/SearchBar';
 
-const QuestionsPageContent = () => {
+const QuestionsPageContent = ({
+  initialQuestions,
+}: {
+  initialQuestions: Question[];
+}) => {
   return (
     <div className="flex flex-col w-full font-sans max-w-270">
       <QuestionsHeader />
@@ -11,7 +16,7 @@ const QuestionsPageContent = () => {
         <QuestionsSearchBar />
         <QuestionButton />
       </div>
-      <QuestionsList />
+      <QuestionsList initialQuestions={initialQuestions} />
     </div>
   );
 };

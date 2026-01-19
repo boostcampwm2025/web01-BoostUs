@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Headers, Query } fro
 import { QuestionService } from './question.service';
 import { CreateQuestionDto } from './dto/req/create-question.dto';
 import { QuestionQueryDto } from './dto/req/question-query.dto';
-@Controller('question')
+@Controller('questions')
 export class QuestionController {
   constructor(private readonly questionService: QuestionService) {}
 

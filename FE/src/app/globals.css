@@ -44,8 +44,8 @@ body {
     --color-danger-surface-default: #ff3b3026;
     --color-danger-border-default: var(--color-accent-red);
 
-    --success-surface-default: #00f81980;
-    --success-text-default: var(--color-accent-green);
+    --color-success-surface-default: #00f81980;
+    --color-success-text-default: var(--color-accent-green);
 
     --font-pretendard: var(--font-pretendard);
     --font-sans: var(--font-pretendard), ui-sans-serif, system-ui, sans-serif;
