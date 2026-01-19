@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
 import TogglePills from '@/features/project/ui/filter/TogglePills';
@@ -11,17 +11,27 @@ import Link from 'next/link';
 
 const ease: [number, number, number, number] = [0.04, 0.62, 0.23, 0.98];
 
-const FilterSection = () => {
-  const [isOpen, setIsOpen] = useState(true);
-  const [selectedCohort, setSelectedCohort] = useState('전체');
-  const [selectedField, setSelectedField] = useState('전체');
+const normalizeCohortSelected = (cohortParam: string | null) => {
+  if (!cohortParam) return '전체';
+  if (cohortParam === '전체') return '전체';
 
+  const n = cohortParam.replace(/[^0-9]/g, '');
+  return n ? `${n}기` : '전체';
+};
+
+const FilterSection = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const selectedField = searchParams.get('field') ?? '전체';
+  const selectedCohort = normalizeCohortSelected(searchParams.get('cohort'));
+  const [isOpen, setIsOpen] = useState(true);
+  const pushWithParams = (params: URLSearchParams) => {
+    const qs = params.toString();
+    router.push(qs ? `${pathname}?${qs}` : pathname);
+  };
 
   const handleCohortChange = (cohort: string) => {
-    setSelectedCohort(cohort);
     const params = new URLSearchParams(searchParams.toString());
 
     if (cohort === '전체' || !cohort) {
@@ -30,11 +40,11 @@ const FilterSection = () => {
       const value = cohort.replace(/[^0-9]/g, '');
       params.set('cohort', value);
     }
-    router.push(`${pathname}?${params.toString()}`);
+
+    pushWithParams(params);
   };
 
   const handleFieldChange = (field: string) => {
-    setSelectedField(field);
     const params = new URLSearchParams(searchParams.toString());
 
     if (field === '전체' || !field) {
@@ -42,7 +52,8 @@ const FilterSection = () => {
     } else {
       params.set('field', field);
     }
-    router.push(`${pathname}?${params.toString()}`);
+
+    pushWithParams(params);
   };
 
   const filterVariants: Variants = {
