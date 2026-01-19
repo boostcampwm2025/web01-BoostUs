@@ -1,0 +1,125 @@
+import Parser from 'rss-parser';
+import { CreateStoryRequest, RssItem } from './types';
+
+/**
+ * Feed Parser
+ * RSS XML을 파싱하여 Story 객체로 변환합니다.
+ */
+export class FeedParser {
+  private parser: Parser;
+
+  constructor() {
+    this.parser = new Parser();
+  }
+
+  /**
+   * RSS XML을 파싱하여 Story 생성 요청 데이터로 변환
+   * @param xmlContent RSS XML 문자열
+   * @param feedsId 피드 ID
+   * @returns CreateStoryRequest 배열
+   */
+  async parse(
+    xmlContent: string,
+    feedsId: string,
+  ): Promise<CreateStoryRequest[]> {
+    try {
+      console.log('🔍 Parsing RSS feed...');
+
+      const feed = await this.parser.parseString(xmlContent);
+
+      if (!feed.items || feed.items.length === 0) {
+        console.warn('⚠️  No items found in feed');
+        return [];
+      }
+
+      console.log(`✅ Found ${feed.items.length} item(s) in feed`);
+
+      // RSS 아이템을 Story 생성 요청 객체로 변환
+      const convertedStories = feed.items.map((item) =>
+        this.convertToStory(item as RssItem, feedsId),
+      );
+
+      // 유효하지 않은 항목(null) 제거
+      const validStories = convertedStories.filter(
+        (story): story is CreateStoryRequest => story !== null,
+      );
+
+      console.log(`✅ Parsed ${validStories.length} valid story(ies)`);
+      return validStories;
+    } catch (error) {
+      throw new Error(`Failed to parse RSS feed: ${error}`);
+    }
+  }
+
+  /**
+   * RSS Item을 Story 생성 요청 데이터로 변환
+   * @param item RSS Item
+   * @param feedsId 피드 ID
+   * @returns CreateStoryRequest 또는 null
+   */
+  private convertToStory(
+    item: RssItem,
+    feedsId: string,
+  ): CreateStoryRequest | null {
+    // 필수 필드 검증
+    if (!item.guid || !item.title) {
+      console.warn('⚠️  Skipping item without guid or title:', item);
+      return null;
+    }
+
+    // 본문 콘텐츠 추출
+    const contents = item.content || '';
+
+    if (!contents) {
+      console.warn('⚠️  Skipping item without content:', item.title);
+      return null;
+    }
+
+    // 요약 추출
+    let summary = this.extractSummary(contents);
+  
+    // 발행일 파싱 (없으면 현재 시간)
+    const publishedAt = item.pubDate
+      ? new Date(item.pubDate).toISOString()
+      : new Date().toISOString();
+
+    return {
+      feedsId,
+      guid: item.guid,
+      title: item.title,
+      summary,
+      contents,
+      thumbnailUrl: this.extractImageUrl(contents),
+      originalUrl: item.link,
+      publishedAt,
+    };
+  }
+
+  /**
+   * HTML 태그를 제거하고 첫 150자를 추출하여 요약 생성
+   * @param html HTML 문자열
+   * @returns 요약 문자열
+   */
+  private extractSummary(html: string): string {
+    // HTML 태그 제거
+    const text = html.replace(/<[^>]*>/g, '');
+    
+    // 연속된 공백 제거
+    const cleaned = text.replace(/\s+/g, ' ').trim();
+    
+    // 첫 150자 추출
+    return cleaned.length > 150 ? cleaned.substring(0, 150) + '...' : cleaned;
+  }
+
+  /**
+   * HTML 콘텐츠에서 첫 번째 이미지 URL 추출
+   */
+  private extractImageUrl(html: string): string | undefined {
+    if (!html) {
+      return undefined;
+    }
+    
+    const imgMatch = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+    return imgMatch ? imgMatch[1] : undefined;
+  }
+}
