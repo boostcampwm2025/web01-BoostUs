@@ -7,7 +7,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=test
       - MYSQL_DATABASE=boostus
-      - MYSQL_USER=root
+      - MYSQL_USER=test
       - MYSQL_PASSWORD=test
     #개발 단계에서 db 접속을 위해 포트를 노출한다.
     ports:
