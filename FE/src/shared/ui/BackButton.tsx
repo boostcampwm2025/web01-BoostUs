@@ -12,9 +12,9 @@ const BackButton = () => {
   return (
     <button
       onClick={handleGoBack}
-      className="flex flex-row items-center justify-center cursor-pointer transition-colors duration-150 text-neutral-text-default hover:text-neutral-text-strong"
+      className="flex flex-row gap-1 items-center justify-center cursor-pointer transition-colors duration-150 text-neutral-text-default hover:text-neutral-text-strong"
     >
-      <ChevronLeft size={24} strokeWidth={1} />
+      <ChevronLeft size={24} strokeWidth={1} className="-ml-1 -mr-1" />
       <span className="text-string-16">목록으로 돌아가기</span>
     </button>
   );
