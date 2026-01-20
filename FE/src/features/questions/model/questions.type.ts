@@ -19,3 +19,17 @@ export interface Question {
   updatedAt: string;
   member: Member;
 }
+
+export interface QuestionDetail extends Question {
+  contents: string;
+}
+
+export interface Answer {
+  id: string;
+  contents: string;
+  upCount: number;
+  downCount: number;
+  isAceepted: boolean;
+  createdAt: string;
+  user: Member;
+}

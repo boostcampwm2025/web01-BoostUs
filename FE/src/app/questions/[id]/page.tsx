@@ -1,4 +1,5 @@
 import { getQuestionById } from '@/features/questions/api/questions.api';
+import QuestionDetail from '@/features/questions/ui/QuestionDetail/QuestionDetail';
 
 interface Props {
   params: Promise<{
@@ -9,14 +10,11 @@ interface Props {
 const QuestionsDetailPage = async ({ params }: Props) => {
   const { id } = await params;
   const response = await getQuestionById(id);
-  const question = response.data;
+  const question = response.data.question;
+  const answers = response.data.answers;
+  const data = { question, answers };
 
-  return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
-      <h1 className="text-2xl font-bold mb-4">질문 상세 페이지</h1>
-      <p>현재 보고 있는 질문 {question.title}</p>
-    </div>
-  );
+  return <QuestionDetail data={data} />;
 };
 
 export default QuestionsDetailPage;

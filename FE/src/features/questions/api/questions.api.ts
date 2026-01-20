@@ -1,4 +1,8 @@
-import { Question } from '@/features/questions/model/questions.type';
+import {
+  Answer,
+  Question,
+  QuestionDetail,
+} from '@/features/questions/model/questions.type';
 import { ApiResponse } from '@/shared/types/ApiResponseType';
 
 export const fetchQuestions = async () => {
@@ -38,7 +42,10 @@ export const getQuestionById = async (id: string) => {
     throw new Error('Failed to fetch story by ID');
   }
 
-  const data = (await response.json()) as ApiResponse<Question>;
+  const data = (await response.json()) as ApiResponse<{
+    question: QuestionDetail;
+    answers: Answer[];
+  }>;
 
   return data;
 };
