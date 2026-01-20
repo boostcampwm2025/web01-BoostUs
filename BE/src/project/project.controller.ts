@@ -1,37 +1,79 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Patch,
-  Delete,
-  Query,
-  Param,
   Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
   ParseIntPipe,
+  Post,
+  Query
 } from '@nestjs/common';
-import { ProjectService } from './project.service';
+import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateProjectDto } from './dto/create-project.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
+import { ProjectDetailItemDto } from './dto/project-detail-item.dto';
+import { ProjectListItemDto } from './dto/project-list-item.dto';
 import { ProjectListQueryDto } from './dto/project-list-query.dto';
+import { ProjectService } from './project.service';
 
+@ApiTags('프로젝트')
 @Controller('projects')
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
-  // 전체조회/조건조회
   @Get()
+  @ApiOperation({
+    summary: '프로젝트 목록 조회',
+    description: '프로젝트 목록을 조회합니다. 페이지네이션, 기수, 기술 스택으로 필터링할 수 있습니다.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '프로젝트 목록 조회 성공',
+    type: [ProjectListItemDto],
+  })
   findAll(@Query() query: ProjectListQueryDto) {
     return this.projectService.findAll(query);
   }
 
-  // 단일조회
   @Get(':id')
+  @ApiOperation({
+    summary: '프로젝트 상세 조회',
+    description: '특정 프로젝트의 상세 정보를 조회합니다.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: '프로젝트 ID',
+    example: 1,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '프로젝트 상세 조회 성공',
+    type: ProjectDetailItemDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: '프로젝트를 찾을 수 없음',
+  })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.projectService.findOne(id);
   }
 
-  // 생성
   @Post()
+  @ApiOperation({
+    summary: '프로젝트 생성',
+    description: '새로운 프로젝트를 생성합니다.',
+  })
+  @ApiBody({
+    type: CreateProjectDto,
+  })
+  @ApiResponse({
+    status: 201,
+    description: '프로젝트 생성 성공',
+    type: ProjectDetailItemDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: '잘못된 요청',
+  })
   create(@Body() dto: CreateProjectDto) {
     return this.projectService.create(dto);
   }
@@ -42,8 +84,24 @@ export class ProjectController {
   //   return this.projectService.update(id, dto);
   // }
 
-  // 삭제
   @Delete(':id')
+  @ApiOperation({
+    summary: '프로젝트 삭제',
+    description: '특정 프로젝트를 삭제합니다.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: '프로젝트 ID',
+    example: 1,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '프로젝트 삭제 성공',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '프로젝트를 찾을 수 없음',
+  })
   delete(@Param('id', ParseIntPipe) id: number) {
     return this.projectService.delete(id);
   }
