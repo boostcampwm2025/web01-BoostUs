@@ -114,6 +114,18 @@ export class ProjectDetailItemDto {
   field: ProjectField | null;
 
   @ApiProperty({
+    description: '기술 스택 목록',
+    example: ['React', 'NestJS', 'TypeScript'],
+    type: [String],
+  })
+  @Expose()
+  @Transform(({ obj }: { obj: { techStacks?: Array<{ techStack: { name: string } }> } }) => {
+    const techStacks = obj.techStacks ?? [];
+    return techStacks.map((x) => x.techStack.name);
+  })
+  techStack: string[];
+
+  @ApiProperty({
     description: '프로젝트 참여자 목록',
     type: [ProjectParticipantDto],
   })

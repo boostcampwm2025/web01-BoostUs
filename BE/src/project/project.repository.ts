@@ -17,6 +17,15 @@ export class ProjectRepository {
             avatarUrl: true,
           },
         },
+        techStacks: {
+          select: {
+            techStack: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
   }
