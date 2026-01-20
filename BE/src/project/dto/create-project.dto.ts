@@ -53,7 +53,7 @@ export class CreateProjectDto {
   @IsOptional()
   @IsArray()
   @IsInt({ each: true })
-  techStack: number[];
+  techStack?: number[];
 
   @IsOptional()
   @IsDateString()
