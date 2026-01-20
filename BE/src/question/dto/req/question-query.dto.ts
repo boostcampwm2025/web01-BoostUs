@@ -1,14 +1,18 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+
 export enum QuestionStatus {
   ALL = 'ALL',
   UNANSWERED = 'UNANSWERED',
+  UNSOLVED = 'UNSOLVED',
+  SOLVED = 'SOLVED',
 }
 
 export enum QuestionSort {
   LATEST = 'LATEST',
-  POPULAR = 'POPULAR',
+  LIKES = 'LIKES',
+  VIEWS = 'VIEWS',
 }
 
 export class QuestionQueryDto {
@@ -32,8 +36,35 @@ export class QuestionQueryDto {
   @IsEnum(QuestionSort)
   sort: QuestionSort = QuestionSort.LATEST;
 
+  // ✅ 커서 기반은 page 대신 limit을 쓰는게 정석
   @ApiPropertyOptional({
-    description: '페이지 번호',
+    description: '한 번에 가져올 개수 (cursor pagination)',
+    example: 20,
+    default: 20,
+    minimum: 1,
+    maximum: 100,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  limit: number = 20;
+
+  @ApiPropertyOptional({
+    description:
+      '커서(base64url). 이전 응답의 meta.nextCursor 값을 그대로 넣으면 다음 페이지를 가져옵니다.',
+    example: 'eyJzb3J0IjoiTEFURVNUIiwidiI6IjIwMjYtMDEtMjBUMDY6MDA6MDAuMDAwWiIsImlkIjoiMTIzIn0',
+  })
+  @IsOptional()
+  @Type(() => String)
+  @IsString()
+  cursor?: string;
+
+  // (선택) 기존 offset pagination 호환용: FE가 아직 page/size를 쓰면 남겨두기
+  // cursor가 오면 page/size는 무시하도록 service에서 처리하면 됨
+  @ApiPropertyOptional({
+    description: '[호환용] offset pagination 페이지 번호 (cursor가 있으면 무시)',
     example: 1,
     default: 1,
     minimum: 1,
@@ -42,10 +73,10 @@ export class QuestionQueryDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  page: number = 1;
+  page?: number;
 
   @ApiPropertyOptional({
-    description: '페이지당 항목 수',
+    description: '[호환용] offset pagination size (cursor가 있으면 무시)',
     example: 10,
     default: 10,
     minimum: 1,
@@ -56,5 +87,5 @@ export class QuestionQueryDto {
   @IsInt()
   @Min(1)
   @Max(100)
-  size: number = 10;
+  size?: number;
 }

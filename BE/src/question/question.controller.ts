@@ -4,6 +4,7 @@ import { CreateQuestionDto } from './dto/req/create-question.dto';
 import { QuestionQueryDto } from './dto/req/question-query.dto';
 import { QuestionResponseDto } from './dto/res/question-response.dto';
 import { QuestionService } from './question.service';
+import { QuestionCountDto } from './dto/res/question-count.dto';
 
 @ApiTags('질문')
 @Controller('questions')
@@ -36,6 +37,24 @@ export class QuestionController {
     return this.questionService.create(memberId, createQuestionDto);
   }
 
+  @Get('count')
+  @ApiOperation({
+    summary: '전체 질문 수 조회',
+    description: '전체 질문의 수를 답변 갯수와 채택 여부를 기준으로 조회합니다.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '질문 상세 갯수 조회 성공',
+    type: QuestionCountDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: '질문 갯수를 조회할 수 없음',
+  })
+  getQuestionsCount() {
+    return this.questionService.getQuestionsCount();
+  }
+
   @Get()
   @ApiOperation({
     summary: '질문 목록 조회',
@@ -48,7 +67,7 @@ export class QuestionController {
     type: [QuestionResponseDto],
   })
   findAll(@Query() query: QuestionQueryDto) {
-    return this.questionService.findAll(query);
+    return this.questionService.findAllCursor(query);
   }
 
   @Get(':id')
