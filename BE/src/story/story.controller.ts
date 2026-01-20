@@ -1,7 +1,13 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ParseBigIntPipe } from '../common/pipe/parse-bigint.pipe';
-import { StoryListRequestDto, StoryListResponseDto, StoryResponseDto } from './dto';
+import {
+  CreateStoryRequestDto,
+  CreateStoryResponseDto,
+  StoryListRequestDto,
+  StoryListResponseDto,
+  StoryResponseDto,
+} from './dto';
 import { StoryService } from './story.service';
 
 @ApiTags('캠퍼들의 이야기')
@@ -45,5 +51,10 @@ export class StoryController {
   })
   async getStory(@Param('id', ParseBigIntPipe) id: bigint): Promise<StoryResponseDto> {
     return await this.storyService.findStoryById(id);
+  }
+
+  @Post()
+  async createStory(@Body() dto: CreateStoryRequestDto): Promise<CreateStoryResponseDto> {
+    return await this.storyService.createStory(dto);
   }
 }

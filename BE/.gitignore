@@ -15,6 +15,9 @@ lerna-debug.log*
 # OS
 .DS_Store
 
+# TypeScript
+tsconfig.tsbuildinfo
+
 # Tests
 /coverage
 /.nyc_output

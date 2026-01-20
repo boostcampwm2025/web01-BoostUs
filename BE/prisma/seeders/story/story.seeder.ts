@@ -20,6 +20,7 @@ function getRandomKSTDateWithin30Days() {
 const stories: Partial<Story>[] = [
   {
     id: 1n,
+    guid: 'story-1',
     title: '[트러블슈팅] Supabase Max client connections reached',
     summary:
       '오늘은 일주일 간 나를 골머리 아프게 했던 Max client connections reached 에러 해결 방법에 대해 기록하고자 한다. 이 문제를 해결하면서 데이터베이스의 연결 관리와 최적화에 대해 많은 것을 배울 수 있었다.',
@@ -29,10 +30,12 @@ const stories: Partial<Story>[] = [
       'https://velog.io/@dongho18/%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85-Supabase-Max-client-connections-reached',
     likeCount: 55,
     viewCount: 123,
+    publishedAt: getRandomKSTDateWithin30Days(),
     createdAt: getRandomKSTDateWithin30Days(),
   },
   {
     id: 2n,
+    guid: 'story-2',
     title: '이커머스 도메인 개체명 인식기 개발하기',
     summary: '이커머스 도메인 개체명 인식기를 개발해서 상품의 추천 성능을 높여보자.',
     thumbnailUrl:
@@ -41,10 +44,12 @@ const stories: Partial<Story>[] = [
       'https://velog.io/@dongho18/%EC%9D%B4%EC%BB%A4%EB%A8%B8%EC%8A%A4-%EB%8F%84%EB%A9%94%EC%9D%B8-%EA%B0%9C%EC%B2%B4%EB%AA%85-%EC%9D%B8%EC%8B%9D%EA%B8%B0-%EA%B0%9C%EB%B0%9C%ED%95%98%EA%B8%B0',
     likeCount: 12,
     viewCount: 34,
+    publishedAt: getRandomKSTDateWithin30Days(),
     createdAt: getRandomKSTDateWithin30Days(),
   },
   {
     id: 3n,
+    guid: 'story-3',
     title: "시각장애인을 위한 읽어주는 쇼핑 대화형 AI '소담' 개발 회고",
     summary:
       '오늘은 많은 학과 교수님들의 관심과 대회에서 큰 상을 받았던 팀 프로젝트를 진행한 경험을 회고하고자 한다. 이 프로젝트를 통해 나는 인공지능에 대한 큰 흥미를 가지게 되었고, 그것이 가진 잠재력을 몸소 깨닫게 되었다.',
@@ -54,10 +59,12 @@ const stories: Partial<Story>[] = [
       'https://velog.io/@dongho18/%EC%8B%9C%EA%B0%81%EC%9E%A5%EC%95%A0%EC%9D%B8%EC%9D%84-%EC%9C%84%ED%95%9C-%EC%9D%BD%EC%96%B4%EC%A3%BC%EB%8A%94-%EC%87%BC%ED%95%91-%EB%8C%80%ED%99%94%ED%98%95-AI-%EC%86%8C%EB%8B%B4-%EA%B0%9C%EB%B0%9C-%ED%9A%8C%EA%B3%A0',
     likeCount: 18,
     viewCount: 45,
+    publishedAt: getRandomKSTDateWithin30Days(),
     createdAt: getRandomKSTDateWithin30Days(),
   },
   {
     id: 4n,
+    guid: 'story-4',
     title: '대학가 주변 맛집 소개 <eatGNU> 제작 회고',
     summary:
       '오늘은 맛집 소개 웹사이트 개발 회고를 써보려고 한다. 이 프로젝트를 통해 나는 HTML, CSS, JavaScript를 배워보고, 웹사이트 개발을 해보았다.',
@@ -66,10 +73,12 @@ const stories: Partial<Story>[] = [
     originalUrl: 'https://velog.io/@dongho18/eatGNU-%EC%A0%9C%EC%9E%91-%ED%9A%8C%EA%B3%A0',
     likeCount: 23,
     viewCount: 56,
+    publishedAt: getRandomKSTDateWithin30Days(),
     createdAt: getRandomKSTDateWithin30Days(),
   },
   {
     id: 5n,
+    guid: 'story-5',
     title: '[Troubleshooting] Jenkins에서 docker-compose 명령 수행 시 Permission denied 에러',
     summary:
       '문제 상황 컨테이너에서 돌아가고 있는 젠킨스에서 docker-compose 명령을 수행하면 다음과 같이 Permission denied 가 뜨는 상황 호스트',
@@ -78,10 +87,12 @@ const stories: Partial<Story>[] = [
     originalUrl: 'https://dongho-dev.tistory.com/58',
     likeCount: 30,
     viewCount: 67,
+    publishedAt: getRandomKSTDateWithin30Days(),
     createdAt: getRandomKSTDateWithin30Days(),
   },
   {
     id: 6n,
+    guid: 'story-6',
     title: '[JavaScript] 프로그래머스 다리를 지나는 트럭',
     summary:
       '이 글은 프로그래머스 다리를 지나는 트럭을 풀이한다. 코드는 JavaScript로 구현하였다. 문제 설명 트럭 여러 대가 강을 가로지르는 일차선',
@@ -90,10 +101,12 @@ const stories: Partial<Story>[] = [
     originalUrl: 'https://velog.io/@dongho18/eatGNU-%EC%A0%9C%EC%9E%91-%ED%9A%8C%EA%B3%A0',
     likeCount: 36,
     viewCount: 78,
+    publishedAt: getRandomKSTDateWithin30Days(),
     createdAt: getRandomKSTDateWithin30Days(),
   },
   {
     id: 7n,
+    guid: 'story-7',
     title: '[JavaScript] 프로그래머스 프로세스',
     summary: '운영체제의 역할 중 하나는 컴퓨터 시스템의 자원을 효율적으로 관리하는 것입니다.',
     thumbnailUrl:
@@ -102,10 +115,12 @@ const stories: Partial<Story>[] = [
       'https://blog.kakaocdn.net/dna/uaQo9/btsuqDBgkSH/AAAAAAAAAAAAAAAAAAAAAB2_LpoK9cc7JKyKBdh6LVb-z2rRkTEwqfZ-AAphs2aL/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1769871599&allow_ip=&allow_referer=&signature=cudH0ZeezoIE2CSsg2CZVTk6MJw%3D',
     likeCount: 42,
     viewCount: 89,
+    publishedAt: getRandomKSTDateWithin30Days(),
     createdAt: getRandomKSTDateWithin30Days(),
   },
   {
     id: 8n,
+    guid: 'story-8',
     title: '[JavaScript] 프로그래머스 주식가격',
     summary: '이 글은 프로그래머스 주식가격을 풀이한다. 코드는 JavaScript로 구현하였다.',
     thumbnailUrl:
@@ -113,10 +128,12 @@ const stories: Partial<Story>[] = [
     originalUrl: 'https://dongho-dev.tistory.com/55',
     likeCount: 48,
     viewCount: 100,
+    publishedAt: getRandomKSTDateWithin30Days(),
     createdAt: getRandomKSTDateWithin30Days(),
   },
   {
     id: 9n,
+    guid: 'story-9',
     title: '[JavaScript] 프로그래머스 올바른 괄호',
     summary: '이 글은 프로그래머스 올바른 괄호를 풀이한다. 코드는 JavaScript로 구현하였다.',
     thumbnailUrl:
@@ -124,10 +141,12 @@ const stories: Partial<Story>[] = [
     originalUrl: 'https://dongho-dev.tistory.com/54',
     likeCount: 54,
     viewCount: 111,
+    publishedAt: getRandomKSTDateWithin30Days(),
     createdAt: getRandomKSTDateWithin30Days(),
   },
   {
     id: 10n,
+    guid: 'story-10',
     title: '[JavaScript] 프로그래머스 베스트앨범',
     summary: '이 글은 프로그래머스 베스트앨범을 풀이한다. 코드는 JavaScript로 구현하였다.',
     thumbnailUrl:
@@ -135,6 +154,7 @@ const stories: Partial<Story>[] = [
     originalUrl: 'https://dongho-dev.tistory.com/53',
     likeCount: 60,
     viewCount: 122,
+    publishedAt: getRandomKSTDateWithin30Days(),
     createdAt: getRandomKSTDateWithin30Days(),
   },
 ];
@@ -147,6 +167,8 @@ async function upsertStory(prisma: PrismaClient, story: Story, contents: string)
     where: { id: story.id },
     update: {},
     create: {
+      guid: story.guid,
+      publishedAt: story.publishedAt,
       title: story.title,
       summary: story.summary,
       contents,
@@ -156,7 +178,7 @@ async function upsertStory(prisma: PrismaClient, story: Story, contents: string)
       viewCount: story.viewCount,
       createdAt: story.createdAt,
       member: { connect: { id: 1n } },
-      rssFeed: { connect: { id: 1n } },
+      feed: { connect: { id: 1n } },
     },
   });
 }
