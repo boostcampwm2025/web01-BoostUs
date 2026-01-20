@@ -1,7 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Prisma } from 'src/generated/prisma/client';
+import { ContentState, Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProjectDto } from './dto/create-project.dto';
+import { UpdateProjectDto } from './dto/update-project.dto';
 
 @Injectable()
 export class ProjectRepository {
@@ -120,9 +121,81 @@ export class ProjectRepository {
     });
   }
 
+  async update(id: bigint, dto: UpdateProjectDto) {
+    return this.prisma.$transaction(async (tx) => {
+      // 1. participants 업데이트 (전체 교체)
+      if (dto.participants !== undefined) {
+        await tx.projectParticipant.deleteMany({ where: { projectId: id } });
+
+        if (dto.participants.length > 0) {
+          const uniqueGithubIds = [...new Set(dto.participants)];
+          await tx.projectParticipant.createMany({
+            data: uniqueGithubIds.map((githubId) => ({
+              projectId: id,
+              githubId,
+              avatarUrl: null,
+            })),
+          });
+        }
+      }
+
+      // 2. techStacks 업데이트 (전체 교체)
+      if (dto.techStack !== undefined) {
+        await tx.projectTechStack.deleteMany({ where: { projectId: id } });
+
+        if (dto.techStack.length > 0) {
+          const techStackNames = [...new Set(dto.techStack)];
+
+          // 기술 스택 이름으로 ID 조회
+          const foundTechStacks = await tx.techStack.findMany({
+            where: { name: { in: techStackNames } },
+            select: { id: true, name: true },
+          });
+
+          // 존재하지 않는 기술 스택 검증
+          if (foundTechStacks.length !== techStackNames.length) {
+            const foundNames = foundTechStacks.map((ts) => ts.name);
+            const notFoundNames = techStackNames.filter((name) => !foundNames.includes(name));
+            throw new BadRequestException(
+              `존재하지 않는 기술 스택: ${notFoundNames.join(', ')}`,
+            );
+          }
+
+          await tx.projectTechStack.createMany({
+            data: foundTechStacks.map((ts) => ({
+              projectId: id,
+              techStackId: ts.id,
+            })),
+            skipDuplicates: true,
+          });
+        }
+      }
+
+      // 3. 프로젝트 정보 업데이트
+      const updateData: Prisma.ProjectUpdateInput = {};
+
+      if (dto.thumbnailUrl !== undefined) updateData.thumbnailUrl = dto.thumbnailUrl ?? null;
+      if (dto.title !== undefined) updateData.title = dto.title;
+      if (dto.description !== undefined) updateData.description = dto.description ?? null;
+      if (dto.contents !== undefined) updateData.contents = dto.contents ?? null;
+      if (dto.repoUrl !== undefined) updateData.repoUrl = dto.repoUrl;
+      if (dto.demoUrl !== undefined) updateData.demoUrl = dto.demoUrl ?? null;
+      if (dto.cohort !== undefined) updateData.cohort = dto.cohort ?? null;
+      if (dto.startDate !== undefined) updateData.startDate = dto.startDate ? new Date(dto.startDate) : null;
+      if (dto.endDate !== undefined) updateData.endDate = dto.endDate ? new Date(dto.endDate) : null;
+      if (dto.field !== undefined) updateData.field = dto.field ?? null;
+
+      return tx.project.update({
+        where: { id },
+        data: updateData,
+      });
+    });
+  }
+
   async deleteById(id: bigint) {
-    return this.prisma.project.delete({
+    return this.prisma.project.update({
       where: { id },
+      data: { state: ContentState.DELETED },
     });
   }
 

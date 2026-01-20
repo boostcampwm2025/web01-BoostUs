@@ -1,15 +1,16 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectDetailItemDto } from './dto/project-detail-item.dto';
 import { ProjectListItemDto } from './dto/project-list-item.dto';
 import { ProjectListQueryDto } from './dto/project-list-query.dto';
+import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectService } from './project.service';
 
 @ApiTags('프로젝트')
 @Controller('projects')
 export class ProjectController {
-  constructor(private readonly projectService: ProjectService) {}
+  constructor(private readonly projectService: ProjectService) { }
 
   @Get()
   @ApiOperation({
@@ -70,11 +71,35 @@ export class ProjectController {
     return this.projectService.create(dto);
   }
 
-  // // 수정
-  // @Patch(':id')
-  // update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateProjectDto) {
-  //   return this.projectService.update(id, dto);
-  // }
+  @Patch(':id')
+  @ApiOperation({
+    summary: '프로젝트 수정',
+    description: '특정 프로젝트를 수정합니다. participants와 techStack은 전체 교체됩니다.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: '프로젝트 ID',
+    example: 1,
+  })
+  @ApiBody({
+    type: UpdateProjectDto,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '프로젝트 수정 성공',
+    type: ProjectDetailItemDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: '잘못된 요청',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '프로젝트를 찾을 수 없음',
+  })
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateProjectDto) {
+    return this.projectService.update(id, dto);
+  }
 
   @Delete(':id')
   @ApiOperation({
