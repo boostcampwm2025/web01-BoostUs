@@ -1,5 +1,6 @@
 # BE/Dockerfile
 
+# ---------- deps ----------
 FROM node:20-alpine AS deps
 WORKDIR /app
 
@@ -7,27 +8,37 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 
-FROM node:20-alpine AS builder
+# ---------- prisma ----------
+FROM deps AS prisma
 WORKDIR /app
 
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY prisma ./prisma
 
+# DB_URL 환경변수 주입 후 Prisma 스키마 생성
 RUN --mount=type=secret,id=DB_URL \
     export DB_URL="$(cat /run/secrets/DB_URL)" && \
     npx prisma generate
+
+# ---------- build ----------
+FROM prisma AS build
+WORKDIR /app
+
+COPY tsconfig.json nest-cli.json ./
+COPY src ./src
+
 RUN npm run build
 
 
+# ---------- runner ----------
 FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
+# prod 전용 의존성 설치
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+
+COPY --from=build /app/dist ./dist
 
 EXPOSE 3000
-
-CMD ["npm", "run", "start:prod"]
+CMD ["node", "dist/main.js"]    

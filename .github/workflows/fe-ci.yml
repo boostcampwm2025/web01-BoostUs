@@ -1,0 +1,41 @@
+name: fe-ci
+
+on:
+  pull_request:
+    branches: [dev]
+    paths:
+      - "FE/**"
+      - ".github/workflows/fe-ci.yml"
+  workflow_dispatch:
+
+jobs:
+  ci-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: FE/pnpm-lock.yaml
+
+      - name: Install Dependencies
+        working-directory: ./FE
+        run: pnpm install --frozen-lockfile
+
+      #   - name: Lint Check
+      #     working-directory: ./FE
+      #     run: pnpm lint
+
+      - name: Build Check
+        working-directory: ./FE
+        run: pnpm build

@@ -9,12 +9,6 @@ export default function ProjectMainBoard() {
       <h2>부스트캠프 웹 ・ 모바일 역대 프로젝트 아카이브</h2>
       <div className="flex flex-row gap-4">
         <FilterSection />
-        <Link
-          href="/project/register"
-          className="bg-accent-blue text-display-24 self-end rounded px-4 py-2 text-gray-50"
-        >
-          프로젝트 등록하기
-        </Link>
       </div>
       <ProjectListSection />
     </div>
