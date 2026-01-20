@@ -8,23 +8,18 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 
-# ---------- prisma ----------
-FROM deps AS prisma
+# ---------- build ----------
+FROM deps AS build
 WORKDIR /app
 
+COPY tsconfig.json tsconfig.build.json nest-cli.json ./
+COPY src ./src
 COPY prisma ./prisma
 
 # DB_URL 환경변수 주입 후 Prisma 스키마 생성
 RUN --mount=type=secret,id=DB_URL \
     export DB_URL="$(cat /run/secrets/DB_URL)" && \
     npx prisma generate
-
-# ---------- build ----------
-FROM prisma AS build
-WORKDIR /app
-
-COPY tsconfig.json nest-cli.json ./
-COPY src ./src
 
 RUN npm run build
 
