@@ -7,7 +7,7 @@ export type QuestionsStatusFilter =
   | 'solved';
 
 export interface Question {
-  id: number;
+  id: string;
   title: string;
   hashtags: string[];
   upCount: number;
