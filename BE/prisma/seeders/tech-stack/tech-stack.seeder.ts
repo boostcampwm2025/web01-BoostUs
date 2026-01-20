@@ -1,49 +1,49 @@
-import { PrismaClient, TechStack } from '../../../src/generated/prisma/client';
+import { PrismaClient, TechStack, TechStackCategory } from '../../../src/generated/prisma/client';
 
 const techStacks: Partial<TechStack>[] = [
   // 프론트엔드
-  { id: 1n, name: 'React' },
-  { id: 2n, name: 'Vue' },
-  { id: 3n, name: 'TypeScript' },
-  { id: 4n, name: 'JavaScript' },
-  { id: 5n, name: 'Next.js' },
-  { id: 6n, name: 'Tailwind CSS' },
-  { id: 7n, name: 'Vite' },
-  { id: 8n, name: 'Zustand' },
+  { id: 1n, name: 'React', category: TechStackCategory.FRONTEND },
+  { id: 2n, name: 'Vue', category: TechStackCategory.FRONTEND },
+  { id: 3n, name: 'TypeScript', category: TechStackCategory.FRONTEND },
+  { id: 4n, name: 'JavaScript', category: TechStackCategory.FRONTEND },
+  { id: 5n, name: 'Next.js', category: TechStackCategory.FRONTEND },
+  { id: 6n, name: 'Tailwind CSS', category: TechStackCategory.FRONTEND },
+  { id: 7n, name: 'Vite', category: TechStackCategory.FRONTEND },
+  { id: 8n, name: 'Zustand', category: TechStackCategory.FRONTEND },
 
   // 백엔드
-  { id: 9n, name: 'Node.js' },
-  { id: 10n, name: 'NestJS' },
-  { id: 11n, name: 'Express' },
-  { id: 12n, name: 'Spring Boot' },
-  { id: 13n, name: 'Django' },
-  { id: 14n, name: 'FastAPI' },
-  { id: 15n, name: 'Socket.io' },
+  { id: 9n, name: 'Node.js', category: TechStackCategory.BACKEND },
+  { id: 10n, name: 'NestJS', category: TechStackCategory.BACKEND },
+  { id: 11n, name: 'Express', category: TechStackCategory.BACKEND },
+  { id: 12n, name: 'Spring Boot', category: TechStackCategory.BACKEND },
+  { id: 13n, name: 'Django', category: TechStackCategory.BACKEND },
+  { id: 14n, name: 'FastAPI', category: TechStackCategory.BACKEND },
+  { id: 15n, name: 'Socket.io', category: TechStackCategory.BACKEND },
 
   // 데이터베이스
-  { id: 16n, name: 'MySQL' },
-  { id: 17n, name: 'PostgreSQL' },
-  { id: 18n, name: 'MongoDB' },
-  { id: 19n, name: 'Redis' },
-  { id: 20n, name: 'Prisma' },
+  { id: 16n, name: 'MySQL', category: TechStackCategory.DATABASE },
+  { id: 17n, name: 'PostgreSQL', category: TechStackCategory.DATABASE },
+  { id: 18n, name: 'MongoDB', category: TechStackCategory.DATABASE },
+  { id: 19n, name: 'Redis', category: TechStackCategory.DATABASE },
+  { id: 20n, name: 'Prisma', category: TechStackCategory.DATABASE },
 
   // 인프라/배포
-  { id: 21n, name: 'Docker' },
-  { id: 22n, name: 'Kubernetes' },
-  { id: 23n, name: 'AWS' },
-  { id: 24n, name: 'GCP' },
-  { id: 25n, name: 'Nginx' },
-  { id: 26n, name: 'GitHub Actions' },
+  { id: 21n, name: 'Docker', category: TechStackCategory.INFRA },
+  { id: 22n, name: 'Kubernetes', category: TechStackCategory.INFRA },
+  { id: 23n, name: 'AWS', category: TechStackCategory.INFRA },
+  { id: 24n, name: 'GCP', category: TechStackCategory.INFRA },
+  { id: 25n, name: 'Nginx', category: TechStackCategory.INFRA },
+  { id: 26n, name: 'GitHub Actions', category: TechStackCategory.INFRA },
 
   // 모바일
-  { id: 27n, name: 'React Native' },
-  { id: 28n, name: 'Swift' },
-  { id: 29n, name: 'Kotlin' },
+  { id: 27n, name: 'React Native', category: TechStackCategory.MOBILE },
+  { id: 28n, name: 'Swift', category: TechStackCategory.MOBILE },
+  { id: 29n, name: 'Kotlin', category: TechStackCategory.MOBILE },
 
   // 기타
-  { id: 30n, name: 'Git' },
-  { id: 31n, name: 'Jest' },
-  { id: 32n, name: 'Webpack' },
+  { id: 30n, name: 'Git', category: TechStackCategory.ETC },
+  { id: 31n, name: 'Jest', category: TechStackCategory.ETC },
+  { id: 32n, name: 'Webpack', category: TechStackCategory.ETC },
 ];
 
 /**
