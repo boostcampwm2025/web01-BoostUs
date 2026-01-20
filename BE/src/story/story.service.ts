@@ -70,8 +70,8 @@ export class StoryService {
       throw new NotFoundException(`피드를 찾을 수 없습니다. feedId: ${dto.feedId}`);
     }
 
-    // Story upsert (guid 기준)
-    const story = await this.storyRepository.upsertStory({
+    // Story upsert 및 Feed lastFetchedAt 업데이트 (트랜잭션)
+    const story = await this.storyRepository.upsertStoryWithFeedUpdate({
       guid: dto.guid,
       memberId: feed.memberId,
       feedId: feed.id,
@@ -82,9 +82,6 @@ export class StoryService {
       originalUrl: dto.originalUrl,
       publishedAt: dto.publishedAt,
     });
-
-    // Feed의 lastFetchedAt 업데이트
-    await this.feedRepository.updateLastFetchedAt(feed.id);
 
     return plainToInstance(CreateStoryResponseDto, story, { excludeExtraneousValues: true });
   }
