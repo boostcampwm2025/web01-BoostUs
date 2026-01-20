@@ -37,6 +37,17 @@ export class QuestionRepository {
     });
   }
 
+  // QuestionRepository.ts
+  findAll(args: Prisma.QuestionFindManyArgs) {
+    return this.prisma.question.findMany({
+      ...args,
+      include: {
+        member: true,
+        _count: { select: { answers: true } },
+      },
+    });
+  }
+
   async findAllWithCount(params: SearchParams) {
     const { where, orderBy, skip, take } = params;
 

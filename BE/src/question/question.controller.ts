@@ -48,7 +48,7 @@ export class QuestionController {
     type: [QuestionResponseDto],
   })
   findAll(@Query() query: QuestionQueryDto) {
-    return this.questionService.findAll(query);
+    return this.questionService.findAllCursor(query);
   }
 
   @Get(':id')
