@@ -219,4 +219,8 @@ export class QuestionService {
     const id = BigInt(idStr);
     return this.questionRepo.findOne(id);
   }
+
+  getQuestionsCount() {
+    return this.questionRepo.countByAnswerAndResolution();
+  }
 }

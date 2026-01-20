@@ -79,4 +79,33 @@ export class QuestionRepository {
       },
     });
   }
+
+  async countByAnswerAndResolution() {
+    const total = await this.prisma.question.count(); // 전체 질문 수
+
+    const noAnswer = await this.prisma.question.count({
+      where: {
+        answers: { none: {} },
+      },
+    });
+
+    const unsolved = await this.prisma.question.count({
+      where: {
+        isResolved: false,
+      },
+    });
+
+    const solved = await this.prisma.question.count({
+      where: {
+        isResolved: true,
+      },
+    });
+
+    return {
+      total: total.toString(),
+      noAnswer: noAnswer.toString(),
+      unsolved: unsolved.toString(),
+      solved: solved.toString(),
+    };
+  }
 }
