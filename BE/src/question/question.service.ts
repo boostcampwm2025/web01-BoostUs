@@ -3,6 +3,7 @@ import { Prisma } from 'src/generated/prisma/client';
 import { CreateQuestionDto } from './dto/req/create-question.dto';
 import { QuestionRepository } from './question.repository';
 import { QuestionQueryDto, QuestionSort, QuestionStatus } from './dto/req/question-query.dto';
+import { animationFrameProvider } from 'rxjs/internal/scheduler/animationFrameProvider';
 
 type CursorPayload =
   | { sort: 'LATEST'; v: string; id: string }
@@ -217,7 +218,34 @@ export class QuestionService {
 
   async findOne(idStr: string) {
     const id = BigInt(idStr);
-    return this.questionRepo.findOne(id);
+    const q = await this.questionRepo.findOne(id);
+
+    if (!q) throw new Error('Question not found');
+
+    return {
+      question: {
+        id: Number(q.id),
+        title: q.title,
+        content: q.contents,
+        hashtags: q.hashtags ? q.hashtags.split(',') : [],
+        upCount: q.upCount,
+        viewCount: q.viewCount,
+        answerCount: q._count.answers,
+        isResolved: q.isResolved,
+        createdAt: q.createdAt.toISOString(),
+        updatedAt: q.updatedAt.toISOString(),
+        member: {
+          id: Number(q.member.id),
+          nickname: q.member.nickname,
+          avatarUrl: q.member.avatarUrl,
+          cohort: q.member.cohort,
+        },
+        answers: q.answers.map((a) => ({
+          id: Number(a.id),
+          contents: a.contents,
+        })),
+      },
+    };
   }
 
   getQuestionsCount() {
