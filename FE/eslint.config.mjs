@@ -20,19 +20,22 @@ export default ts.config(
       'out/**',
       'build/**',
       'eslint.config.mjs',
+      'postcss.config.mjs',
     ],
   },
 
   // 2. 기본 JS 및 TS 엄격 모드 설정 (Rush Stack의 엄격함 모방)
   js.configs.recommended,
-  // strictTypeChecked: 타입 정보를 사용하는 가장 엄격한 규칙 세트
-  ...ts.configs.strictTypeChecked,
-  // stylisticTypeChecked: 일관된 스타일 규칙 (read-only 배열 등)
-  ...ts.configs.stylisticTypeChecked,
 
   // 3. React, Hooks, Next.js 공통 설정
   {
     files: ['**/*.{ts,tsx}'],
+    extends: [
+      // strictTypeChecked: 타입 정보를 사용하는 가장 엄격한 규칙 세트
+      ...ts.configs.strictTypeChecked,
+      // stylisticTypeChecked: 일관된 스타일 규칙 (read-only 배열 등)
+      ...ts.configs.stylisticTypeChecked,
+    ],
     plugins: {
       react,
       'react-hooks': hooks,

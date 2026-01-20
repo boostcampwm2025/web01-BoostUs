@@ -8,6 +8,7 @@ import { useParams } from 'next/navigation';
 import { Participant, ProjectData } from '@/entities/projectDetail/model/types';
 import { useEffect, useState } from 'react';
 import paint from '@/assets/NoImage.png';
+import MarkdownViewer from '@/shared/ui/MarkdownViewer';
 
 export default function ProjectDetail() {
   const params = useParams<{ id: string }>();
@@ -126,10 +127,7 @@ export default function ProjectDetail() {
           <h4 className="mb-4 text-lg font-bold text-gray-800">
             프로젝트 개요
           </h4>
-          <div
-            className="whitespace-pre-line"
-            dangerouslySetInnerHTML={{ __html: data.contents }}
-          />
+          <MarkdownViewer content={data.contents} />
         </div>
         {/* 팀원 리스트*/}
         {}
