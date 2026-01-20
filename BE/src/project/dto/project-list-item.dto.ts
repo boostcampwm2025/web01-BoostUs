@@ -47,7 +47,10 @@ export class ProjectListItemDto {
     type: [String],
   })
   @Expose()
-  @Transform(({ obj }) => (obj.techStacks ?? []).map((x) => x.techStack.name))
+  @Transform(({ obj }: { obj: { techStacks?: Array<{ techStack: { name: string } }> } }) => {
+    const techStacks = obj.techStacks ?? [];
+    return techStacks.map((x) => x.techStack.name);
+  })
   techStack: string[];
 
   @ApiProperty({

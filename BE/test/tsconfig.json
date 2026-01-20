@@ -1,0 +1,16 @@
+/** lint 오류 방지
+ 추가 이유: test/app.e2e-spec.ts 파일이 메인 tsconfig.json의 include에 포함되지 않아 TypeScript 파싱 에러가 발생했습니다.
+ 수정 내용:
+ - test/tsconfig.json 파일을 생성해 메인 tsconfig.json을 확장하도록 설정했습니다.
+- 이 파일은 e2e 테스트 파일과 src 디렉토리의 파일을 포함하도록 구성했습니다.
+*/
+
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "..",
+    "outDir": "../dist"
+  },
+  "include": ["**/*.ts", "../src/**/*.ts"],
+  "exclude": ["node_modules"]
+}

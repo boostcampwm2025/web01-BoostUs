@@ -15,13 +15,24 @@ export class HttpExceptionFilter implements ExceptionFilter {
     // 에러 로깅
     this.logger.error(`${req.method} ${req.url} - ${status}`, exception.stack);
 
+    // exceptionResponse가 객체인지 확인하고 타입 지정 (lint 오류 방지를 위해 추가)
+    const responseBody =
+      typeof exceptionResponse === 'object' && exceptionResponse !== null
+        ? (exceptionResponse as Record<string, unknown>)
+        : {
+            message:
+              typeof exceptionResponse === 'string'
+                ? exceptionResponse
+                : '알 수 없는 오류가 발생했습니다.',
+          };
+
     res.status(status).json({
       success: false,
       error: {
-        code: exceptionResponse['code'] || 'UNKNOWN_ERROR',
-        message: exceptionResponse['message'] || '알 수 없는 오류가 발생했습니다.',
+        code: (responseBody.code as string) || 'UNKNOWN_ERROR',
+        message: (responseBody.message as string) || '알 수 없는 오류가 발생했습니다.',
         status,
-        details: exceptionResponse['details'] || undefined,
+        details: responseBody.details as Record<string, any> | undefined,
       },
       data: null,
     });

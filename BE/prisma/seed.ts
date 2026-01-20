@@ -1,7 +1,7 @@
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import { config } from 'dotenv';
 import { PrismaClient } from '../src/generated/prisma/client';
-import { seedMembers, seedProjects, seedRssFeeds, seedStories, seedTechStacks } from './seeders';
+import { seedFeeds, seedMembers, seedProjects, seedStories, seedTechStacks } from './seeders';
 
 // 환경변수 로드
 config();
@@ -25,7 +25,7 @@ async function main() {
 
   // 도메인별로 시드 데이터 생성
   await seedMembers(prisma);
-  await seedRssFeeds(prisma);
+  await seedFeeds(prisma);
   await seedStories(prisma);
   await seedTechStacks(prisma);
   await seedProjects(prisma);

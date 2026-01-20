@@ -44,6 +44,58 @@ export class StoryRepository {
   }
 
   /**
+   * Story 생성 (upsert) 및 Feed lastFetchedAt 업데이트 (트랜잭션)
+   * @param data Story 생성 데이터
+   * @returns Story
+   */
+  async upsertStoryWithFeedUpdate(data: {
+    guid: string;
+    memberId: bigint;
+    feedId: bigint;
+    title: string;
+    summary?: string;
+    contents: string;
+    thumbnailUrl?: string;
+    originalUrl?: string;
+    publishedAt: Date;
+  }): Promise<Story> {
+    return this.prisma.$transaction(async (tx) => {
+      // Story upsert
+      const story = await tx.story.upsert({
+        where: { feedId_guid: { feedId: data.feedId, guid: data.guid } },
+        update: {
+          title: data.title,
+          summary: data.summary,
+          contents: data.contents,
+          thumbnailUrl: data.thumbnailUrl,
+          originalUrl: data.originalUrl,
+          publishedAt: data.publishedAt,
+        },
+        create: {
+          guid: data.guid,
+          memberId: data.memberId,
+          feedId: data.feedId,
+          title: data.title,
+          summary: data.summary,
+          contents: data.contents,
+          thumbnailUrl: data.thumbnailUrl,
+          originalUrl: data.originalUrl,
+          publishedAt: data.publishedAt,
+          state: ContentState.PUBLISHED,
+        },
+      });
+
+      // Feed의 lastFetchedAt 업데이트
+      await tx.feed.update({
+        where: { id: data.feedId },
+        data: { lastFetchedAt: new Date() },
+      });
+
+      return story;
+    });
+  }
+
+  /**
    * 기간 필터 생성
    */
   private getPeriodFilter(period: StoryPeriod) {

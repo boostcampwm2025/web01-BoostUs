@@ -52,7 +52,7 @@ model Member {
 
   // relations
   projects          Project[]
-  rssFeed           RssFeed?
+  feed              Feed?
   stories           Story[]
   storyLikes        StoryLike[]
   questions         Question[]
@@ -152,19 +152,19 @@ model ProjectTechStack {
  * ERD: 사용자 1:1 RSS 피드, RSS 피드 URL [UQ]
  * -> memberId도 유니크로 만들어 1:1 강제
  */
-model RssFeed {
+model Feed {
   id       BigInt @id @default(autoincrement())
   memberId BigInt @unique @map("member_id")
-  rssUrl   String @db.VarChar(768) @unique @map("rss_url")
+  feedUrl   String @db.VarChar(512) @unique @map("feed_url")
   state    State  @default(ACTIVE) @map("state")
 
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  lastFetchedAt DateTime @default(now()) @map("last_fetched_at")
 
   member  Member @relation(fields: [memberId], references: [id])
   stories Story[]
 
-  @@map("rss_feeds")
+  @@map("feeds")
 }
 
 /**
@@ -173,8 +173,9 @@ model RssFeed {
  */
 model Story {
   id          BigInt @id @default(autoincrement())
+  guid        String @db.VarChar(512) @map("guid")
   memberId    BigInt @map("member_id")
-  rssFeedId   BigInt @map("rss_feed_id")
+  feedId   BigInt @map("feed_id")
 
   title       String  @map("title")
   summary     String? @map("summary")
@@ -186,13 +187,15 @@ model Story {
   viewCount Int @default(0) @map("view_count")
 
   state ContentState @default(PUBLISHED) @map("state")
+  publishedAt DateTime @map("published_at")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
   member  Member  @relation(fields: [memberId], references: [id])
-  rssFeed RssFeed @relation(fields: [rssFeedId], references: [id])
+  feed Feed @relation(fields: [feedId], references: [id])
   likes   StoryLike[]
 
+  @@unique([feedId, guid])
   @@map("stories")
 }
 

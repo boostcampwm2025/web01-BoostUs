@@ -5,7 +5,7 @@ import { AppModule } from './app.module';
 import { ResponseInterceptor } from './common/interceptor/response.interceptor';
 
 // BigInt 전역 설정 (JSON.stringify 시 문자열로 변환)
-(BigInt.prototype as any).toJSON = function () {
+(BigInt.prototype as unknown as { toJSON: () => string }).toJSON = function (this: bigint) {
   return this.toString();
 };
 
@@ -38,10 +38,14 @@ async function bootstrap() {
   );
 
   // 스웨거 설정
-  const config = new DocumentBuilder().setTitle('BoostUs API').setDescription('BoostUs API Description').setVersion('1.0').build();
+  const config = new DocumentBuilder()
+    .setTitle('BoostUs API')
+    .setDescription('BoostUs API Description')
+    .setVersion('1.0')
+    .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
 
   await app.listen(process.env.PORT ?? 3000);
 }
-bootstrap();
+void bootstrap();

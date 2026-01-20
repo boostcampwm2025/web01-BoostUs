@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  ParseIntPipe,
-  Post,
-  Query
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectDetailItemDto } from './dto/project-detail-item.dto';
@@ -23,7 +14,8 @@ export class ProjectController {
   @Get()
   @ApiOperation({
     summary: '프로젝트 목록 조회',
-    description: '프로젝트 목록을 조회합니다. 페이지네이션, 기수, 기술 스택으로 필터링할 수 있습니다.',
+    description:
+      '프로젝트 목록을 조회합니다. 페이지네이션, 기수, 기술 스택으로 필터링할 수 있습니다.',
   })
   @ApiResponse({
     status: 200,

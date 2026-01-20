@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import { UnknownExceptionFilter } from './common/filter/unknown-exception.filter';
+import { FeedModule } from './feed/feed.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ProjectModule } from './project/project.module';
 import { QuestionModule } from './question/question.module';
@@ -14,6 +15,7 @@ import { StoryModule } from './story/story.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    FeedModule,
     StoryModule,
     QuestionModule,
     ProjectModule,
