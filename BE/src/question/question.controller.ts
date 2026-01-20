@@ -3,10 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiHeader } from
 import { QuestionService } from './question.service';
 import { CreateQuestionDto } from './dto/req/create-question.dto';
 import { QuestionQueryDto } from './dto/req/question-query.dto';
-import { QuestionResponseDto } from './dto/res/question-response.dto';
-
-@ApiTags('질문')
-@Controller('question')
+@Controller('questions')
 export class QuestionController {
   constructor(private readonly questionService: QuestionService) {}
 

@@ -1,7 +1,6 @@
 'use client';
 
 import StoriesCard from '@/features/stories/ui/Card/Card';
-import StoriesListDropdown from '@/features/stories/ui/ListDropdown/Dropdown';
 import { useStoriesContext } from '@/features/stories/model';
 import { useMemo } from 'react';
 import { Story } from '@/features/stories/model/stories.type';
@@ -29,7 +28,6 @@ const StoriesList = ({ initialStories }: StoriesListProps) => {
 
   return (
     <section className="flex w-full flex-col items-end gap-4">
-      <StoriesListDropdown />
       <div
         className={`grid w-full ${!isRankingOpen ? 'grid-cols-4' : 'grid-cols-3'} gap-4`}
       >
