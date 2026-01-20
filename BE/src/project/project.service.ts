@@ -1,12 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateProjectDto } from './dto/create-project.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
-import { ProjectListQueryDto } from './dto/project-list-query.dto';
-import { ProjectListItemDto } from './dto/project-list-item.dto';
-import { ProjectParticipantDto } from './dto/project-participant.dto';
-import { ProjectDetailItemDto } from './dto/project-detail-item.dto';
-import { ProjectRepository } from './project.repository';
 import { plainToInstance } from 'class-transformer';
+import { CreateProjectDto } from './dto/create-project.dto';
+import { ProjectDetailItemDto } from './dto/project-detail-item.dto';
+import { ProjectListItemDto } from './dto/project-list-item.dto';
+import { ProjectListQueryDto } from './dto/project-list-query.dto';
+import { ProjectRepository } from './project.repository';
 
 @Injectable()
 export class ProjectService {

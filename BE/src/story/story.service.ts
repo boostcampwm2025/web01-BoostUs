@@ -86,10 +86,6 @@ export class StoryService {
     // Feed의 lastFetchedAt 업데이트
     await this.feedRepository.updateLastFetchedAt(feed.id);
 
-    return plainToInstance(
-      CreateStoryResponseDto,
-      story,
-      { excludeExtraneousValues: true },
-    );
+    return plainToInstance(CreateStoryResponseDto, story, { excludeExtraneousValues: true });
   }
 }

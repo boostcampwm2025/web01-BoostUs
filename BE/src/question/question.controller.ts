@@ -1,8 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Headers, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiHeader } from '@nestjs/swagger';
-import { QuestionService } from './question.service';
+import { Body, Controller, Get, Headers, Param, Post, Query } from '@nestjs/common';
+import { ApiBody, ApiHeader, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateQuestionDto } from './dto/req/create-question.dto';
 import { QuestionQueryDto } from './dto/req/question-query.dto';
+import { QuestionResponseDto } from './dto/res/question-response.dto';
+import { QuestionService } from './question.service';
+
+@ApiTags('질문')
 @Controller('questions')
 export class QuestionController {
   constructor(private readonly questionService: QuestionService) {}
@@ -36,7 +39,8 @@ export class QuestionController {
   @Get()
   @ApiOperation({
     summary: '질문 목록 조회',
-    description: '질문 목록을 조회합니다. 상태, 정렬 기준으로 필터링하고 페이지네이션할 수 있습니다.',
+    description:
+      '질문 목록을 조회합니다. 상태, 정렬 기준으로 필터링하고 페이지네이션할 수 있습니다.',
   })
   @ApiResponse({
     status: 200,
