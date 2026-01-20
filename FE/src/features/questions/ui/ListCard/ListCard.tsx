@@ -11,12 +11,12 @@ const ListCard = ({ question }: { question: Question }) => {
       <div className="flex flex-col px-6 py-3 cursor-pointer bg-neutral-surface-bold">
         <QuestionStatus status={question.isResolved} />
         <ListCardTitle title={question.title} />
-        <div className="flex flex-row gap-1 mt-2">
+        <div className="flex flex-row items-center justify-center gap-1 mt-2">
           {question.hashtags?.map((tag) => (
             <ListCardChip key={tag} tag={tag} />
           ))}
+          <ListCardFooter question={question} />
         </div>
-        <ListCardFooter question={question} />
       </div>
     </Link>
   );
