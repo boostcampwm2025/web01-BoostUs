@@ -1,8 +1,14 @@
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import { config } from 'dotenv';
 import { PrismaClient } from '../src/generated/prisma/client';
-import { seedFeeds, seedMembers, seedProjects, seedStories, seedTechStacks } from './seeders';
-
+import {
+  seedFeeds,
+  seedMembers,
+  seedProjects,
+  seedStories,
+  seedTechStacks,
+  seedQuestions,
+} from './seeders';
 // 환경변수 로드
 config();
 
@@ -13,6 +19,7 @@ const adapter = new PrismaMariaDb({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   connectionLimit: 5,
+  allowPublicKeyRetrieval: true,
 });
 
 const prisma = new PrismaClient({ adapter });
@@ -24,11 +31,12 @@ async function main() {
   console.log('🌱 Seeding database...');
 
   // 도메인별로 시드 데이터 생성
-  await seedMembers(prisma);
+  const members = await seedMembers(prisma);
   await seedFeeds(prisma);
   await seedStories(prisma);
   await seedTechStacks(prisma);
   await seedProjects(prisma);
+  await seedQuestions(prisma, members);
 
   console.log('🎉 Seeding completed!');
 }
