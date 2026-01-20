@@ -89,6 +89,7 @@ export class CreateProjectDto {
   @Max(100)
   cohort?: number;
 
+  @IsOptional()
   @ApiProperty({
     description: '기술 스택 ID 목록',
     example: [1, 2, 3],
@@ -96,7 +97,7 @@ export class CreateProjectDto {
   })
   @IsArray()
   @IsInt({ each: true })
-  techStack: number[];
+  techStack?: number[];
 
   @ApiPropertyOptional({
     description: '프로젝트 시작일 (YYYY-MM-DD)',
