@@ -1,35 +1,31 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
 import {
   IsArray,
   IsDateString,
-  IsInt,
+  IsEnum,
   IsOptional,
   IsString,
   IsUrl,
   Max,
   Min,
-  ValidateNested,
 } from 'class-validator';
-
-class CreateProjectParticipantDto {
-  @ApiProperty({
-    description: 'GitHub ID',
-    example: 'octocat',
-  })
-  @IsString()
-  githubId: string;
-
-  @ApiPropertyOptional({
-    description: '프로필 이미지 URL',
-    example: 'https://avatars.githubusercontent.com/u/583231',
-  })
-  @IsOptional()
-  @IsUrl()
-  avatarUrl?: string;
-}
+import { ProjectField } from '../type/project-field.type';
 
 export class CreateProjectDto {
+  @ApiProperty({
+    description: '프로젝트 제목',
+    example: '부스트 캠프 최종 프로젝트',
+  })
+  @IsString()
+  title: string;
+
+  @ApiProperty({
+    description: 'GitHub 저장소 URL',
+    example: 'https://github.com/username/repository',
+  })
+  @IsUrl()
+  repoUrl: string;
+
   @ApiPropertyOptional({
     description: '썸네일 이미지 URL',
     example: 'https://example.com/thumbnail.jpg',
@@ -37,14 +33,6 @@ export class CreateProjectDto {
   @IsOptional()
   @IsUrl()
   thumbnailUrl?: string;
-
-  @ApiPropertyOptional({
-    description: '프로젝트 제목',
-    example: '부스트 캠프 최종 프로젝트',
-  })
-  @IsOptional()
-  @IsString()
-  title?: string;
 
   @ApiPropertyOptional({
     description: '프로젝트 설명',
@@ -62,13 +50,6 @@ export class CreateProjectDto {
   @IsString()
   contents?: string;
 
-  @ApiProperty({
-    description: 'GitHub 저장소 URL',
-    example: 'https://github.com/username/repository',
-  })
-  @IsUrl()
-  repoUrl: string;
-
   @ApiPropertyOptional({
     description: '데모/배포 URL',
     example: 'https://project-demo.com',
@@ -84,20 +65,19 @@ export class CreateProjectDto {
     maximum: 100,
   })
   @IsOptional()
-  @IsInt()
   @Min(1)
   @Max(100)
   cohort?: number;
 
-  @IsOptional()
-  @ApiProperty({
-    description: '기술 스택 ID 목록',
-    example: [1, 2, 3],
-    type: [Number],
+  @ApiPropertyOptional({
+    description: '기술 스택 이름 목록',
+    example: ['React', 'NestJS', 'TypeScript'],
+    type: [String],
   })
+  @IsOptional()
   @IsArray()
-  @IsInt({ each: true })
-  techStack?: number[];
+  @IsString({ each: true })
+  techStack?: string[];
 
   @ApiPropertyOptional({
     description: '프로젝트 시작일 (YYYY-MM-DD)',
@@ -117,19 +97,20 @@ export class CreateProjectDto {
 
   @ApiPropertyOptional({
     description: '프로젝트 분야',
-    example: 'Web',
+    example: 'WEB',
+    enum: ProjectField,
   })
   @IsOptional()
-  @IsString()
-  field: string;
+  @IsEnum(ProjectField)
+  field?: ProjectField;
 
   @ApiPropertyOptional({
-    description: '프로젝트 참여자 목록',
-    type: [CreateProjectParticipantDto],
+    description: '프로젝트 참여자 GitHub ID 목록',
+    type: [String],
+    example: ['octocat', 'user2', 'user3'],
   })
   @IsOptional()
   @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CreateProjectParticipantDto)
-  participants?: CreateProjectParticipantDto[];
+  @IsString({ each: true })
+  participants?: string[];
 }

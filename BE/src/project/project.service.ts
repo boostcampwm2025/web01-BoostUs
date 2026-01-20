@@ -8,31 +8,28 @@ import { ProjectRepository } from './project.repository';
 
 @Injectable()
 export class ProjectService {
-  constructor(private readonly projectRepository: ProjectRepository) {}
+  constructor(private readonly projectRepository: ProjectRepository) { }
 
   async findAll(query: ProjectListQueryDto) {
-    const page = query.page ?? 1;
-    const size = query.size ?? 10;
-    const where = query.cohort ? { cohort: query.cohort } : undefined;
+    const where: any = {};
+    if (query.cohort) {
+      where.cohort = query.cohort;
+    }
+    if (query.field) {
+      where.field = query.field;
+    }
 
-    const { totalItems, projects } = await this.projectRepository.findAll(where);
+    const { projects } = await this.projectRepository.findAll(
+      Object.keys(where).length > 0 ? where : undefined,
+    );
 
     const items = plainToInstance(ProjectListItemDto, projects, {
       excludeExtraneousValues: true,
     });
 
-    const totalPages = Math.ceil(totalItems / size);
-
     return {
       items,
-      meta: {
-        page,
-        size,
-        totalItems,
-        totalPages,
-        hasPrev: false,
-        hasNext: true,
-      },
+      meta: {},
     };
   }
 

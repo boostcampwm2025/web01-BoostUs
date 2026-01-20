@@ -1,12 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma } from 'src/generated/prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateProjectDto } from './dto/create-project.dto';
-import { BadRequestException } from '@nestjs/common';
 
 @Injectable()
 export class ProjectRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async findById(id: bigint) {
     return this.prisma.project.findUnique({
@@ -69,36 +68,40 @@ export class ProjectRepository {
       // 2. project_participants 생성
       if (dto.participants?.length) {
         // 중복 제거
-        const uniq = new Map<string, { githubId: string; avatarUrl?: string }>();
-        for (const participant of dto.participants) {
-          uniq.set(participant.githubId, participant);
-        }
+        const uniqueGithubIds = [...new Set(dto.participants)];
 
         await tx.projectParticipant.createMany({
-          data: [...uniq.values()].map((p) => ({
+          data: uniqueGithubIds.map((githubId) => ({
             projectId: project.id,
-            githubId: p.githubId,
-            avatarUrl: p.avatarUrl,
+            githubId,
+            avatarUrl: null,
           })),
         });
       }
 
       // 3. project_tech_stacks 생성
-      const techStackIds = [...new Set(dto.techStack ?? [])];
+      const techStackNames = [...new Set(dto.techStack ?? [])];
 
-      if (techStackIds.length) {
-        const ids = techStackIds.map((id) => BigInt(id));
-        const foundCount = await tx.techStack.count({
-          where: { id: { in: ids } },
+      if (techStackNames.length) {
+        // 기술 스택 이름으로 ID 조회
+        const foundTechStacks = await tx.techStack.findMany({
+          where: { name: { in: techStackNames } },
+          select: { id: true, name: true },
         });
-        if (foundCount !== ids.length) {
-          throw new BadRequestException();
+
+        // 존재하지 않는 기술 스택 검증
+        if (foundTechStacks.length !== techStackNames.length) {
+          const foundNames = foundTechStacks.map((ts) => ts.name);
+          const notFoundNames = techStackNames.filter((name) => !foundNames.includes(name));
+          throw new BadRequestException(
+            `존재하지 않는 기술 스택: ${notFoundNames.join(', ')}`,
+          );
         }
 
         await tx.projectTechStack.createMany({
-          data: techStackIds.map((id) => ({
+          data: foundTechStacks.map((ts) => ({
             projectId: project.id,
-            techStackId: BigInt(id),
+            techStackId: ts.id,
           })),
           skipDuplicates: true, // (projectId, techStackId) unique 제약조건 충돌 방어
         });

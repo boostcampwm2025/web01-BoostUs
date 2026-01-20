@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Transform, Type } from 'class-transformer';
+import { ProjectField } from '../type/project-field.type';
 import { ProjectParticipantDto } from './project-participant.dto';
 
 export class ProjectDetailItemDto {
@@ -105,10 +106,12 @@ export class ProjectDetailItemDto {
 
   @ApiProperty({
     description: '프로젝트 분야',
-    example: 'Web',
+    example: 'WEB',
+    enum: ProjectField,
+    nullable: true,
   })
   @Expose()
-  field: string;
+  field: ProjectField | null;
 
   @ApiProperty({
     description: '프로젝트 참여자 목록',
