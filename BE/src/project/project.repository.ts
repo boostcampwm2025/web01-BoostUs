@@ -6,7 +6,7 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 
 @Injectable()
 export class ProjectRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async findById(id: bigint) {
     return this.prisma.project.findUnique({
@@ -103,9 +103,7 @@ export class ProjectRepository {
         if (foundTechStacks.length !== techStackNames.length) {
           const foundNames = foundTechStacks.map((ts) => ts.name);
           const notFoundNames = techStackNames.filter((name) => !foundNames.includes(name));
-          throw new BadRequestException(
-            `존재하지 않는 기술 스택: ${notFoundNames.join(', ')}`,
-          );
+          throw new BadRequestException(`존재하지 않는 기술 스택: ${notFoundNames.join(', ')}`);
         }
 
         await tx.projectTechStack.createMany({
@@ -156,9 +154,7 @@ export class ProjectRepository {
           if (foundTechStacks.length !== techStackNames.length) {
             const foundNames = foundTechStacks.map((ts) => ts.name);
             const notFoundNames = techStackNames.filter((name) => !foundNames.includes(name));
-            throw new BadRequestException(
-              `존재하지 않는 기술 스택: ${notFoundNames.join(', ')}`,
-            );
+            throw new BadRequestException(`존재하지 않는 기술 스택: ${notFoundNames.join(', ')}`);
           }
 
           await tx.projectTechStack.createMany({
@@ -181,8 +177,10 @@ export class ProjectRepository {
       if (dto.repoUrl !== undefined) updateData.repoUrl = dto.repoUrl;
       if (dto.demoUrl !== undefined) updateData.demoUrl = dto.demoUrl ?? null;
       if (dto.cohort !== undefined) updateData.cohort = dto.cohort ?? null;
-      if (dto.startDate !== undefined) updateData.startDate = dto.startDate ? new Date(dto.startDate) : null;
-      if (dto.endDate !== undefined) updateData.endDate = dto.endDate ? new Date(dto.endDate) : null;
+      if (dto.startDate !== undefined)
+        updateData.startDate = dto.startDate ? new Date(dto.startDate) : null;
+      if (dto.endDate !== undefined)
+        updateData.endDate = dto.endDate ? new Date(dto.endDate) : null;
       if (dto.field !== undefined) updateData.field = dto.field ?? null;
 
       return tx.project.update({

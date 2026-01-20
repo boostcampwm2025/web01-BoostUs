@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
+import { Prisma } from '../generated/prisma/client';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectDetailItemDto } from './dto/project-detail-item.dto';
 import { ProjectListItemDto } from './dto/project-list-item.dto';
@@ -12,7 +13,7 @@ export class ProjectService {
   constructor(private readonly projectRepository: ProjectRepository) { }
 
   async findAll(query: ProjectListQueryDto) {
-    const where: any = {};
+    const where: Prisma.ProjectWhereInput = {};
     if (query.cohort) {
       where.cohort = query.cohort;
     }
