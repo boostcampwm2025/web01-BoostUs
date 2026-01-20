@@ -1,8 +1,6 @@
 import { Logger, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import { UnknownExceptionFilter } from './common/filter/unknown-exception.filter';
 import { PrismaModule } from './prisma/prisma.module';
@@ -20,9 +18,7 @@ import { StoryModule } from './story/story.module';
     QuestionModule,
     ProjectModule,
   ],
-  controllers: [AppController],
   providers: [
-    AppService,
     Logger,
     // 순서 중요: 역순으로 체크되므로 구체적인 필터를 나중에 등록
     {

@@ -48,7 +48,7 @@ const StoriesListDropdown = () => {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="text-neutral-text-default flex cursor-pointer flex-row"
+        className="text-neutral-text-default hover:text-neutral-text-strong transition-colors duration-150 flex cursor-pointer flex-row whitespace-nowrap"
       >
         <span className="text-string-16">
           {sortBy === 'latest'
@@ -70,7 +70,7 @@ const StoriesListDropdown = () => {
             animate={{ opacity: 1, scaleY: 1, y: 0 }}
             exit={{ opacity: 0, scaleY: 0, y: -10 }}
             transition={{ duration: 0.2, ease: 'easeInOut' }}
-            className="bg-neutral-surface-strong shadow-default absolute right-0 z-20 mt-1 flex w-58 origin-top flex-col overflow-hidden rounded-2xl"
+            className="bg-neutral-surface-strong shadow-default absolute right-0 z-20 mt-4 flex w-58 origin-top flex-col overflow-hidden rounded-2xl"
           >
             <DropdownTitle />
             <div className="flex flex-col px-3 py-2">
