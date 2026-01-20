@@ -1,4 +1,4 @@
-export interface  Participant {
+export interface Participant {
   githubId: string;
   avatarUrl?: string;
 }
