@@ -6,7 +6,7 @@ import {
 import { ApiResponse } from '@/shared/types/ApiResponseType';
 import { Meta } from '@/shared/types/PaginationType';
 
-export const fetchQuestions = async () => {
+export const getInitialQuestions = async () => {
   const isServerComponent = typeof window === 'undefined';
 
   const baseUrl = isServerComponent
@@ -52,4 +52,24 @@ export const getQuestionById = async (id: string) => {
   }>;
 
   return data;
+};
+
+export const fetchQuestionsByCursor = async (
+  cursor: Base64URLString | null
+) => {
+  const currentParams = new URLSearchParams(window.location.search);
+
+  currentParams.delete('cursor');
+  if (cursor) {
+    currentParams.append('cursor', cursor);
+  }
+
+  const response = await fetch(`/api/questions?${currentParams.toString()}`);
+  if (!response.ok) throw new Error('Failed to fetch questions');
+
+  const data = (await response.json()) as ApiResponse<{
+    items: Question[];
+    meta: Meta;
+  }>;
+  return data.data;
 };
