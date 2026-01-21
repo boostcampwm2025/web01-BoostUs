@@ -50,6 +50,13 @@ export default function ProjectEditPage() {
   const params = useParams<{ id: string }>();
   const projectId = Number(params.id);
 
+  // ID 유효성 검사
+  if (isNaN(projectId)) {
+    return (
+      <div className="p-10 text-center">유효하지 않은 프로젝트 ID입니다.</div>
+    );
+  }
+
   // 훅에 ID와 완료 후 이동할 경로 전달
   const {
     register,
@@ -99,13 +106,6 @@ export default function ProjectEditPage() {
     el.style.height = '0px';
     el.style.height = `${el.scrollHeight}px`;
   }, [contentsValue]);
-
-  // ID 유효성 검사
-  if (isNaN(projectId)) {
-    return (
-      <div className="p-10 text-center">유효하지 않은 프로젝트 ID입니다.</div>
-    );
-  }
 
   return (
     <ModalOverlay>
@@ -440,7 +440,7 @@ export default function ProjectEditPage() {
           {/* hidden input은 hook 내부 useEffect가 동기화해주므로 제거해도 되지만, 안전장치로 둬도 무방 */}
         </div>
 
-        {/* ✅ 버튼 그룹 (취소 / 수정완료) */}
+        {/* 버튼 그룹  */}
         <div className="flex justify-end gap-3 pt-6 border-t border-gray-100 mt-8">
           <button
             type="button"

@@ -42,15 +42,12 @@ const normalizeStacks = (data: unknown): TechStackResponse => {
   return empty;
 };
 
-interface RegisterModalPageProps {
-  editProjectId?: number;
-  onClose?: () => void;
-}
+// interface RegisterModalPageProps {
+//   editProjectId?: number;
+//   onClose?: () => void;
+// }
 
-export default function RegisterModalPage({
-  editProjectId,
-  onClose,
-}: RegisterModalPageProps) {
+export default function RegisterModalPage() {
   const {
     register,
     watch,

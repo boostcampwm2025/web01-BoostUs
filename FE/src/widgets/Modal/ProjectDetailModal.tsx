@@ -18,12 +18,7 @@ export default function ProjectDetailModalPage({ projectId }: Props) {
   };
 
   if (isEditing) {
-    return (
-      <RegisterModalPage
-        editProjectId={projectId}
-        onClose={() => setIsEditing(false)} // 닫으면 다시 상세 화면으로
-      />
-    );
+    return <RegisterModalPage />;
   }
 
   return (
