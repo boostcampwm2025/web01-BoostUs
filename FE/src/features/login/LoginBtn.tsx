@@ -22,7 +22,7 @@ export default function LoginBtn() {
         className="flex flex-row items-center gap-2 text-white p-2 text-string-16 "
         onClick={() => signIn('github')}
       >
-        <Github /> GitHub 로그인
+        <Github /> GitHub로 계속하기
       </button>
     </div>
   );
