@@ -1,17 +1,21 @@
 import { Controller, Get, Query, Redirect } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { GithubCallbackQueryDto } from './dto/github-callback-query.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly authService: AuthService,
+  ) {}
 
   @Get('login')
   @Redirect()
   login() {
     const params = new URLSearchParams({
-      client_id: process.env.GITHUB_CLIENT_ID ?? '',
-      redirect_uri: process.env.GITHUB_REDIRECT_URI ?? '',
+      client_id: this.configService.getOrThrow('GITHUB_CLIENT_ID'),
+      redirect_uri: this.configService.getOrThrow('GITHUB_REDIRECT_URI'),
       scope: 'read:org',
     });
 
