@@ -83,4 +83,11 @@ export class ProjectListItemDto {
   })
   @Expose()
   field: ProjectField | null;
+
+  @ApiProperty({
+    description: '팀 번호',
+    example: '1',
+  })
+  @Expose()
+  teamNumber: number;
 }

@@ -38,7 +38,7 @@ export class ProjectRepository {
         where: {
           AND: [{ state: 'PUBLISHED' }, ...(where ? [where] : [])],
         },
-        orderBy: { teamNumber: 'desc' },
+        orderBy: { teamNumber: 'asc' },
         include: {
           techStacks: {
             select: {
