@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose, Type } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
 import { MemberDto } from '../../member/dto/member.dto';
 
 /**
@@ -56,6 +56,7 @@ export class StoryBaseDto {
     example: '2024-01-19T12:00:00Z',
   })
   @Expose()
+  @Transform(({ obj }) => obj.publishedAt)
   createdAt: Date;
 
   @ApiProperty({
