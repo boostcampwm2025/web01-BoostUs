@@ -167,7 +167,7 @@ export default function ProjectDetail() {
             className="flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100"
           >
             <Pencil size={16} />
-            수정하기dd
+            수정하기
           </a>
         </div>
       </div>

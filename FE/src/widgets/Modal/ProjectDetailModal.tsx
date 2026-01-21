@@ -5,17 +5,9 @@ import ModalOverlay from '@/shared/ui/ModalOverlay';
 import ProjectDetail from '@/entities/projectDetail/ui/ProjectDetail';
 import RegisterModalPage from '@/features/project/ui/register/RegisterModalPage';
 
-interface Props {
-  projectId: number;
-}
-
-export default function ProjectDetailModalPage({ projectId }: Props) {
+export default function ProjectDetailModalPage() {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
-
-  const handleCLose = () => {
-    router.back();
-  };
 
   if (isEditing) {
     return <RegisterModalPage />;
