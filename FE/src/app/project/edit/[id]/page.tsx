@@ -43,14 +43,14 @@ const normalizeStacks = (data: unknown): TechStackResponse => {
   return empty;
 };
 
-// ✅ 컴포넌트 이름 변경 & params 받기
+// 컴포넌트 이름 변경 & params 받기
 export default function ProjectEditPage() {
   const router = useRouter();
 
   const params = useParams<{ id: string }>();
   const projectId = Number(params.id);
 
-  // ✅ 훅에 ID와 완료 후 이동할 경로 전달
+  // 훅에 ID와 완료 후 이동할 경로 전달
   const {
     register,
     watch,
@@ -74,7 +74,7 @@ export default function ProjectEditPage() {
     const loadStacks = async () => {
       try {
         const res = await fetchStacks();
-        setStackData(normalizeStacks(res.data));
+        setStackData(normalizeStacks(res));
       } catch (err) {
         console.error(err);
       }
@@ -114,7 +114,6 @@ export default function ProjectEditPage() {
       <form onSubmit={onSubmit} className="space-y-6">
         {/* 1. 썸네일 업로드 */}
         <div className="flex flex-col gap-2">
-          <label className="block text-sm font-medium text-gray-700"></label>
           <label
             htmlFor="thumbnail"
             {...dragHandlers}

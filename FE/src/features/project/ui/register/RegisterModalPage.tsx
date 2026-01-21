@@ -76,8 +76,8 @@ export default function RegisterModalPage({
     const loadStacks = async () => {
       try {
         const res = await fetchStacks();
-        // API 응답 구조가 { data: { ... } } 형태라면 res.data
-        setStackData(normalizeStacks(res.data));
+
+        setStackData(normalizeStacks(res));
       } catch (err) {
         console.error(err);
       }

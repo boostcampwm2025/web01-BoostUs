@@ -14,7 +14,7 @@ interface UpdateProjectBody {
 }
 
 export const updateProject = async (id: number, body: UpdateProjectBody) => {
-  const response = await fetch(`api/projects/${id}`, {
+  const response = await fetch(`/api/projects/${id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
