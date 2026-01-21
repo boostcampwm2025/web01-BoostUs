@@ -6,7 +6,7 @@ import { StoryPeriod, StorySortBy } from './type/story-query.type';
 
 @Injectable()
 export class StoryRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   /**
    * 모든 공개된 캠퍼들의 이야기 목록 조회
@@ -25,7 +25,7 @@ export class StoryRepository {
     take: number;
     cursor?: CursorPayload;
   }): Promise<Story[]> {
-    const cursorFilter = this.getCursorFilter(cursor);
+    const cursorFilter = this.getCursorFilter(sortBy, cursor);
     const periodFilter = this.getPeriodFilter(period);
     const orderBy = this.getOrderBy(sortBy);
 
@@ -136,12 +136,12 @@ export class StoryRepository {
    * 커서 필터 생성
    * WHERE (field < cursor.v) OR (field = cursor.v AND id < cursor.id)
    */
-  private getCursorFilter(cursor?: CursorPayload): Prisma.StoryWhereInput {
+  private getCursorFilter(sortBy: StorySortBy, cursor?: CursorPayload): Prisma.StoryWhereInput {
     if (!cursor) return {};
     const cursorId = BigInt(cursor.id);
 
     // 2-1. 최신순(publishedAt, id) 보다 작은 것들
-    if (cursor.sort === 'LATEST') {
+    if (sortBy === StorySortBy.LATEST) {
       const cursorDate = new Date(cursor.v);
       return {
         OR: [
@@ -154,24 +154,26 @@ export class StoryRepository {
     }
 
     // 2-2. 조회순(viewCount, id) 보다 작은 것들
-    if (cursor.sort === 'VIEWS') {
+    if (sortBy === StorySortBy.VIEWS) {
+      const cursorViewCount = Number(cursor.v);
       return {
         OR: [
-          { viewCount: { lt: cursor.v } },
+          { viewCount: { lt: cursorViewCount } },
           {
-            AND: [{ viewCount: { equals: cursor.v } }, { id: { lt: cursorId } }],
+            AND: [{ viewCount: { equals: cursorViewCount } }, { id: { lt: cursorId } }],
           },
         ],
       };
     }
 
     // 2-3. 좋아요순(likeCount, id) 보다 작은 것들
-    if (cursor.sort === 'LIKES') {
+    if (sortBy === StorySortBy.LIKES) {
+      const cursorLikeCount = Number(cursor.v);
       return {
         OR: [
-          { likeCount: { lt: cursor.v } },
+          { likeCount: { lt: cursorLikeCount } },
           {
-            AND: [{ likeCount: { equals: cursor.v } }, { id: { lt: cursorId } }],
+            AND: [{ likeCount: { equals: cursorLikeCount } }, { id: { lt: cursorId } }],
           },
         ],
       };

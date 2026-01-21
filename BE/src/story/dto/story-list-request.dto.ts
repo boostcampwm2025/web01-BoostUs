@@ -39,7 +39,7 @@ export class StoryListRequestDto {
   @Min(1)
   @Max(100)
   @Type(() => Number)
-  size: number;
+  size: number = 20;
 
   @ApiPropertyOptional({
     description:

@@ -19,7 +19,7 @@ export class StoryService {
   constructor(
     private readonly storyRepository: StoryRepository,
     private readonly feedRepository: FeedRepository,
-  ) {}
+  ) { }
 
   /**
    * 모든 공개된 캠퍼들의 이야기 목록 조회
