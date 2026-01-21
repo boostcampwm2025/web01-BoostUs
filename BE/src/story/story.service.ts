@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
+import { CursorPayload, decodeCursor, encodeCursor } from '../common/util/cursor.util';
 import { FeedRepository } from '../feed/feed.repository';
 import { ContentState } from '../generated/prisma/client';
 import {
@@ -11,6 +12,7 @@ import {
   StoryResponseDto,
 } from './dto';
 import { StoryRepository } from './story.repository';
+import { StorySortBy } from './type/story-query.type';
 
 @Injectable()
 export class StoryService {
@@ -25,17 +27,69 @@ export class StoryService {
    * @returns StoryListResponseDto
    */
   async findAllPublishedStories(query: StoryListRequestDto): Promise<StoryListResponseDto> {
-    const { sortBy, period } = query;
+    const { sortBy, period, size, cursor } = query;
 
-    const stories = await this.storyRepository.findAllPublishedStories(sortBy, period);
+    let decodedCursor: CursorPayload | null = null;
+    if (cursor) {
+      decodedCursor = decodeCursor(cursor);
+    }
+
+    const take = size + 1;
+
+    const stories = await this.storyRepository.findAllPublishedStories({
+      sortBy,
+      period,
+      take,
+      cursor: decodedCursor ?? undefined,
+    });
+
+    const hasNextPage = stories.length > size;
+    const pageSize = hasNextPage ? size : stories.length;
+
+    // sortBy에 따라 적절한 CursorPayload 생성
+    let nextCursor: string | null = null;
+    if (hasNextPage) {
+      const lastStory = stories[stories.length - 2];
+      let cursorPayload: CursorPayload;
+
+      switch (sortBy) {
+        case StorySortBy.LATEST:
+          cursorPayload = {
+            sort: StorySortBy.LATEST,
+            v: lastStory.publishedAt.toISOString(),
+            id: lastStory.id.toString(),
+          };
+          break;
+        case StorySortBy.LIKES:
+          cursorPayload = {
+            sort: StorySortBy.LIKES,
+            v: lastStory.likeCount,
+            id: lastStory.id.toString(),
+          };
+          break;
+        case StorySortBy.VIEWS:
+          cursorPayload = {
+            sort: StorySortBy.VIEWS,
+            v: lastStory.viewCount,
+            id: lastStory.id.toString(),
+          };
+          break;
+      }
+
+      nextCursor = encodeCursor(cursorPayload);
+    }
 
     const items = plainToInstance(StoryListItemDto, stories, {
       excludeExtraneousValues: true,
     });
 
     return {
-      items,
-      meta: {}, // TODO: 페이지네이션 메타 정보 추가
+      items: items.slice(0, size),
+      meta: {
+        nextCursor,
+        hasNextPage,
+        pageSize,
+      },
     };
   }
 
