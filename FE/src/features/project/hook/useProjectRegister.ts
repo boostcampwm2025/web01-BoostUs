@@ -88,11 +88,6 @@ export const useProjectRegister = (
           ? rawData.contents[0]
           : rawData.contents || '';
 
-        console.log('💉 UI 강제 주입 시작:', {
-          title: rawData.title,
-          startDateStr,
-        });
-
         setValue('title', rawData.title);
         setValue('repoUrl', rawData.repoUrl ?? '');
         setValue('demoUrl', rawData.demoUrl ?? '');
