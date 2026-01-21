@@ -13,8 +13,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
-  // 기존처럼 코드에 박아두려면 아래처럼 유지하세요.
-  trustHost: true,
+
+  trustHost: false,
 
   callbacks: {
     jwt({ token, account }) {
