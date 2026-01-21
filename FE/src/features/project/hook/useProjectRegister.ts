@@ -7,6 +7,7 @@ import {
 } from '@/features/project/model/projectSchema';
 import { registerProject } from '@/features/project/api/registerProject';
 
+// 에러 메시지 추출 헬퍼
 const getErrorMessage = (err: unknown): string => {
   if (err instanceof Error) return err.message;
   if (typeof err === 'string') return err;
@@ -20,45 +21,48 @@ const getErrorMessage = (err: unknown): string => {
 export const useProjectRegister = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
+  // 참여자는 별도 로직이 있어서 state 유지
+  const [techStack, setTechStack] = useState<string[]>([]);
   const [participants, setParticipants] = useState<string[]>([]);
-
-  const [techStack, setTechStack] = useState<number[]>([]);
-
   const [isDragging, setIsDragging] = useState(false);
 
-  const formMethods = useForm({
+  const formMethods = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
     mode: 'onChange',
     defaultValues: {
       title: '',
       description: '',
-      contents: [''],
+      contents: [''], // 스키마가 array(string)이면 배열로
       repoUrl: '',
       demoUrl: '',
-      cohort: '10기', // 초기값 빈 문자열
+      cohort: '10기',
       participantsInput: '',
       techStackInput: '',
       field: 'WEB',
       startDate: new Date(),
       endDate: new Date(),
       participants: [],
-      techStack: [],
+      techStack: [], // 초기값 빈 배열
     },
   });
 
-  const { watch, setValue } = formMethods;
+  const { watch, setValue, handleSubmit } = formMethods;
   const thumbnailList = watch('thumbnail');
 
-  // 1. 참여자 목록이 바뀌면 폼 데이터에 반영
+  // 참여자 목록 동기화
   useEffect(() => {
     setValue('participants', participants, { shouldValidate: true });
   }, [participants, setValue]);
 
-  // 2. 기술 스택이 바뀌면 폼 데이터에 반영
+  // 기술스택 목록 동기화
   useEffect(() => {
-    setValue('techStack', techStack, { shouldValidate: true });
+    setValue('techStack', techStack, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
   }, [techStack, setValue]);
 
+  // 썸네일 미리보기 로직
   useEffect(() => {
     if (thumbnailList && thumbnailList.length > 0) {
       const file = thumbnailList[0];
@@ -69,6 +73,7 @@ export const useProjectRegister = () => {
     setPreviewUrl(null);
   }, [thumbnailList]);
 
+  // 드래그 앤 드롭 핸들러
   const handleDragEnter = (e: DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -97,16 +102,15 @@ export const useProjectRegister = () => {
       setValue('thumbnail', files, { shouldValidate: true });
   };
 
+  // 참여자 추가/삭제 로직
   const handleParticipantsAdd = () => {
     const raw = watch('participantsInput');
     const name = (raw ?? '').trim();
     if (name === '') return;
 
     setParticipants((prev) => {
-      // 중복 추가 방지
       if (prev.includes(name)) return prev;
-      const next = [...prev, name];
-      return next;
+      return [...prev, name];
     });
     setValue('participantsInput', '', { shouldDirty: true });
   };
@@ -115,44 +119,19 @@ export const useProjectRegister = () => {
     setParticipants((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleTechStackAdd = () => {
-    const raw = watch('techStackInput');
-    const techStr = (raw ?? '').trim();
-    if (techStr === '') return;
-
-    const techId = parseInt(techStr, 10);
-
-    if (isNaN(techId)) {
-      alert('기술 스택은 현재 ID(숫자)로만 입력 가능합니다.'); // 임시 경고
-      setValue('techStackInput', '');
-      return;
-    }
-
-    setTechStack((prev) => {
-      if (prev.includes(techId)) return prev;
-      const next = [...prev, techId];
-      return next;
-    });
-    setValue('techStackInput', '', { shouldDirty: true });
-  };
-
-  const handleTechStackRemove = (index: number) => {
-    setTechStack((prev) => prev.filter((_, i) => i !== index));
-  };
-
+  // 폼 제출 로직
   const submitValidForm = async (data: ProjectFormValues) => {
     try {
-      //TODO: S3 이미지 업로드 로직
+      // TODO: S3 이미지 업로드 로직
       let uploadedThumbnailUrl: string | null = null;
       if (data.thumbnail && data.thumbnail.length > 0) {
         console.log('이미지 업로드 필요:', data.thumbnail[0].name);
         uploadedThumbnailUrl = 'https://임시-이미지-주소.com/image.png';
       }
 
-      // 기수 처리
-      const cohortStr = data.cohort
-        ? (data.cohort as string).replace('기', '')
-        : '0';
+      // 기수 처리 ('10기' -> 10)
+      const cohortStr =
+        typeof data.cohort === 'string' ? data.cohort.replace('기', '') : '0';
       const parsedCohort = parseInt(cohortStr, 10);
 
       const requestBody = {
@@ -165,14 +144,10 @@ export const useProjectRegister = () => {
         repoUrl: data.repoUrl,
         demoUrl: data.demoUrl,
         cohort: isNaN(parsedCohort) ? 0 : parsedCohort,
-
-        // 날짜 처리 (YYYY-MM-DD)
         startDate: new Date(data.startDate).toISOString().split('T')[0],
         endDate: new Date(data.endDate).toISOString().split('T')[0],
-
         techStack: data.techStack,
         field: data.field,
-
         participants: participants.map((name) => ({
           githubId: name,
           avatarUrl: undefined,
@@ -181,7 +156,6 @@ export const useProjectRegister = () => {
 
       await registerProject(requestBody);
       alert('프로젝트가 등록되었습니다.');
-      // 성공 후 페이지 이동이나 폼 초기화 로직 추가 가능
     } catch (error: unknown) {
       console.error(error);
       alert(`등록 실패: ${getErrorMessage(error)}`);
@@ -198,14 +172,12 @@ export const useProjectRegister = () => {
       onDragLeave: handleDragLeave,
       onDrop: handleDrop,
     },
-    onSubmit: formMethods.handleSubmit(submitValidForm), // handleSubmit으로 감싸야 함
-
+    onSubmit: handleSubmit(submitValidForm),
     participants,
     addParticipant: handleParticipantsAdd,
     removeParticipant: handleParticipantsRemove,
 
     techStack,
-    addTechStack: handleTechStackAdd,
-    removeTechStack: handleTechStackRemove,
+    setTechStack,
   };
 };

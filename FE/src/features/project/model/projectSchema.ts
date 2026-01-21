@@ -104,7 +104,7 @@ export const projectSchema = z
     techStackInput: z.string().optional(),
 
     // 실제 제출 배열
-    techStack: z.array(z.number()).optional(),
+    techStack: z.array(z.string()).optional(),
   })
   .refine((data) => data.endDate >= data.startDate, {
     message: '종료 날짜는 시작 날짜 이후이어야 합니다.',
