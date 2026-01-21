@@ -131,11 +131,9 @@ export class FeedParser {
     }
 
     // 숫자 엔티티 디코딩 (&#123; 또는 &#xAB; 형식)
-    result = result.replace(/&#(\d+);/g, (_, code) =>
-      String.fromCharCode(parseInt(code, 10)),
-    );
+    result = result.replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(parseInt(code, 10)));
     result = result.replace(/&#x([0-9A-Fa-f]+);/g, (_, code) =>
-      String.fromCharCode(parseInt(code, 16)),
+      String.fromCodePoint(parseInt(code, 16)),
     );
 
     return result;
