@@ -1,4 +1,3 @@
-import { ApiResponse } from '@/shared/types/ApiResponseType';
 import { TechStackResponse } from '@/entities/TechStackSelector/model/types';
 
 export const fetchStacks = async (): Promise<TechStackResponse> => {

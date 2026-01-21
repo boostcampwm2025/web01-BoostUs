@@ -81,7 +81,7 @@ export default function ProjectEditPage() {
     const loadStacks = async () => {
       try {
         const res = await fetchStacks();
-        setStackData(normalizeStacks(res));
+        setStackData(normalizeStacks(res.data));
       } catch (err) {
         console.error(err);
       }

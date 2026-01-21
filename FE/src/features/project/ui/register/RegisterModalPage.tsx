@@ -74,7 +74,7 @@ export default function RegisterModalPage() {
       try {
         const res = await fetchStacks();
 
-        setStackData(normalizeStacks(res));
+        setStackData(normalizeStacks(res.data));
       } catch (err) {
         console.error(err);
       }

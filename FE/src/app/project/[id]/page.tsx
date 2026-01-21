@@ -10,5 +10,5 @@ export default async function ProjectDetailModalPage({
 
   if (isNaN(projectId)) return null;
 
-  return <ProjectDetailModal projectId={projectId} />;
+  return <ProjectDetailModal />;
 }
