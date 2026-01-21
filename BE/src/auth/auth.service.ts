@@ -20,7 +20,7 @@ export class AuthService {
     const orgList = userInfo.orgLogins;
     const cohort = this.getCohortFromOrgList(orgList);
 
-    const dto = plainToInstance(
+    const upsertMemberDto = plainToInstance(
       GithubLoginUpsertDto,
       {
         ...userInfo,
@@ -29,7 +29,7 @@ export class AuthService {
       { excludeExtraneousValues: true },
     );
 
-    const member = await this.authRepository.upsertByGithubProfile(dto);
+    const member = await this.authRepository.upsertByGithubProfile(upsertMemberDto);
 
     return plainToInstance(GithubLoginResponseDto, member, { excludeExtraneousValues: true });
   }
