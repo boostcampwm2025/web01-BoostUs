@@ -10,7 +10,7 @@ import Image from 'next/image';
 
 const ListCardFooter = ({ question }: { question: Question }) => {
   return (
-    <div className="flex flex-row items-center justify-center gap-4 mt-2 w-fit">
+    <div className="flex flex-row items-center justify-end gap-4 w-full">
       <div className="flex flex-row items-center justify-center gap-1">
         <div className="relative w-4 h-4">
           <Image
