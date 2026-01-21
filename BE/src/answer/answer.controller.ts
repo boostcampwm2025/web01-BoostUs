@@ -53,9 +53,8 @@ export class AnswerController {
     type: AnswerUpdateResponseDto,
   })
   @ApiResponse({
-    status: 200,
-    description: '답변 수정 성공',
-    type: AnswerUpdateResponseDto,
+    status: 404,
+    description: '답변 찾기 실패',
   })
   update(
     @Param('id') id: string,
@@ -65,8 +64,20 @@ export class AnswerController {
     return this.answerService.update(id, memberId, updateAnswerDto);
   }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.answerService.remove(+id);
-  // }
+  @Delete(':id')
+  @ApiOperation({
+    summary: '답변 삭제',
+    description: '기존 답변을 삭제합니다.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '답변 삭제 성공',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '답변을 찾을 수 없음',
+  })
+  remove(@Param('id') id: string, @Headers('memberId') memberId: string) {
+    return this.answerService.delete(id, memberId);
+  }
 }
