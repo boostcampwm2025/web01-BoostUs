@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `tech_stacks` ADD COLUMN `category` ENUM('FRONTEND', 'BACKEND', 'DATABASE', 'INFRA', 'MOBILE', 'ETC') NOT NULL DEFAULT 'ETC';

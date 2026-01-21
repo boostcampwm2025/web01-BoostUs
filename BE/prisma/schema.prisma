@@ -33,6 +33,15 @@ enum VoteType {
   DOWN
 }
 
+enum TechStackCategory {
+  FRONTEND
+  BACKEND
+  DATABASE
+  INFRA
+  MOBILE
+  ETC
+}
+
 /**
  * 사용자
  * - 깃허브 고유 식별자 id [UQ]  -> githubUniqueId
@@ -124,6 +133,7 @@ model ProjectParticipant {
  */
 model TechStack {
   id   BigInt @id @default(autoincrement())
+  category TechStackCategory @default(ETC)
   name String @unique @map("name")
 
   projects ProjectTechStack[]
