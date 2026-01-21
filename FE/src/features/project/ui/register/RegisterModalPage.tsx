@@ -99,7 +99,7 @@ export default function RegisterModalPage() {
       <div className="w-full rounded-lg bg-white">
         <h2 className="mb-4 text-xl font-bold">프로젝트 등록</h2>
         <form onSubmit={onSubmit} className="space-y-4">
-          {/* 1. 썸네일 업로드 */}
+          {/* 썸네일 업로드 */}
           <div className="flex flex-col gap-2">
             <label
               htmlFor="thumbnail"
@@ -164,7 +164,7 @@ export default function RegisterModalPage() {
             )}
           </div>
 
-          {/* 2. 기수 & 분야 */}
+          {/* 기수 & 분야 */}
           <div className="flex flex-row gap-4">
             <div className="flex-1">
               <label
@@ -209,7 +209,7 @@ export default function RegisterModalPage() {
             </div>
           </div>
 
-          {/* 3. 날짜 */}
+          {/* 날짜 */}
           <div className="flex flex-row gap-4">
             <div className="flex-1">
               <label
@@ -251,7 +251,7 @@ export default function RegisterModalPage() {
             </div>
           </div>
 
-          {/* 4. URL */}
+          {/* URL */}
           <div className="flex flex-row gap-4">
             <div className="flex-1">
               <label
@@ -295,7 +295,7 @@ export default function RegisterModalPage() {
             </div>
           </div>
 
-          {/* 5. 제목 */}
+          {/* 제목 */}
           <div>
             <label
               htmlFor="title"
@@ -317,7 +317,7 @@ export default function RegisterModalPage() {
             )}
           </div>
 
-          {/* 6. 요약 */}
+          {/* 요약 */}
           <div>
             <label
               htmlFor="description"
@@ -338,7 +338,7 @@ export default function RegisterModalPage() {
             )}
           </div>
 
-          {/* 7. 상세 내용 */}
+          {/* 상세 내용 */}
           <div>
             <label
               htmlFor="contents"
@@ -371,7 +371,7 @@ export default function RegisterModalPage() {
             )}
           </div>
 
-          {/* 8. 참여자 */}
+          {/* 참여자 */}
           <div>
             <label
               htmlFor="participantsInput"
@@ -427,7 +427,7 @@ export default function RegisterModalPage() {
             </div>
           </div>
 
-          {/* 9. 기술 스택 (수정 완료) */}
+          {/*  기술 스택 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               기술 스택

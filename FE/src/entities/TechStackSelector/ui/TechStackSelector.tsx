@@ -43,7 +43,7 @@ export function TechStackSelector({
       newStack = [...selectedStack, item.name];
     }
 
-    onChange(newStack); // 부모(Form)에게 변경된 배열 전달
+    onChange(newStack);
   };
 
   // 선택된 아이템 삭제

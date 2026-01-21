@@ -6,6 +6,8 @@ import {
   ProjectFormValues,
 } from '@/features/project/model/projectSchema';
 import { registerProject } from '@/features/project/api/registerProject';
+import { updateProject } from '@/features/project/api/updateProject';
+import { fetchProjectDetail } from '@/entities/projectDetail/api/projectDetailAPI';
 
 // 에러 메시지 추출 헬퍼
 const getErrorMessage = (err: unknown): string => {
@@ -18,7 +20,10 @@ const getErrorMessage = (err: unknown): string => {
   }
 };
 
-export const useProjectRegister = () => {
+export const useProjectRegister = (
+  editProjectId?: number,
+  onClose?: () => void
+) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   // 참여자는 별도 로직이 있어서 state 유지
@@ -46,8 +51,79 @@ export const useProjectRegister = () => {
     },
   });
 
-  const { watch, setValue, handleSubmit } = formMethods;
+  const { watch, setValue, handleSubmit, reset } = formMethods;
   const thumbnailList = watch('thumbnail');
+
+  useEffect(() => {
+    if (!editProjectId || isNaN(editProjectId)) return;
+
+    const loadData = async () => {
+      try {
+        const response = await fetchProjectDetail({ id: editProjectId });
+        const rawData = response.data || response;
+
+        if (!rawData) {
+          console.error('데이터가 비어있습니다.');
+          return;
+        }
+
+        // 1. 날짜 변환 (YYYY-MM-DD)
+        const toDateString = (dateStr: string | Date | null) => {
+          if (!dateStr) return new Date().toISOString().split('T')[0];
+          const d = new Date(dateStr);
+          if (isNaN(d.getTime())) return new Date().toISOString().split('T')[0];
+          return d.toISOString().split('T')[0];
+        };
+
+        const startDateStr = toDateString(rawData.startDate);
+        const endDateStr = toDateString(rawData.endDate);
+
+        // 2. 기수 변환
+        const cohortValue = rawData.cohort
+          ? `${rawData.cohort.toString().replace('기', '')}기`
+          : '10기';
+
+        // 3. 내용 변환 (배열의 0번째 요소)
+        const contentText = Array.isArray(rawData.contents)
+          ? rawData.contents[0]
+          : rawData.contents || '';
+
+        console.log('💉 UI 강제 주입 시작:', {
+          title: rawData.title,
+          startDateStr,
+        });
+
+        setValue('title', rawData.title);
+        setValue('repoUrl', rawData.repoUrl ?? '');
+        setValue('demoUrl', rawData.demoUrl ?? '');
+        setValue('description', rawData.description ?? '');
+
+        // 날짜 강제 주입
+        setValue('startDate', startDateStr as any);
+        setValue('endDate', endDateStr as any);
+
+        // 셀렉트 박스 강제 주입
+        setValue('cohort', cohortValue as any);
+        setValue('field', (rawData.field ?? 'WEB') as any);
+
+        // 텍스트 에디터 강제 주입 (contents는 배열 형태나 .0으로 접근)
+        setValue('contents', [contentText]); // 혹은 setValue('contents.0', contentText);
+
+        // 4. 별도 상태(State) 동기화
+        setPreviewUrl(rawData.thumbnailUrl);
+        setTechStack(rawData.techStack || []);
+
+        const participantNames =
+          rawData.participants?.map((p: any) =>
+            typeof p === 'string' ? p : p.githubId
+          ) || [];
+        setParticipants(participantNames);
+      } catch (err) {
+        console.error('데이터 로드 실패:', err);
+      }
+    };
+    loadData();
+  }, [editProjectId, setValue, reset]); // 의존성에 setValue 추가
 
   // 참여자 목록 동기화
   useEffect(() => {
@@ -154,11 +230,17 @@ export const useProjectRegister = () => {
         })),
       };
 
-      await registerProject(requestBody);
-      alert('프로젝트가 등록되었습니다.');
+      if (editProjectId) {
+        await updateProject(editProjectId, requestBody);
+        alert('수정되었습니다.');
+      } else {
+        await registerProject(requestBody);
+        alert('등록되었습니다.');
+      }
+      if (onClose) onClose();
     } catch (error: unknown) {
       console.error(error);
-      alert(`등록 실패: ${getErrorMessage(error)}`);
+      alert(`처리 실패: ${getErrorMessage(error)}`);
     }
   };
 
