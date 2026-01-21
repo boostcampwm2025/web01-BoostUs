@@ -4,6 +4,7 @@ import {
   QuestionDetail,
 } from '@/features/questions/model/questions.type';
 import { ApiResponse } from '@/shared/types/ApiResponseType';
+import { Meta } from '@/shared/types/PaginationType';
 
 export const fetchQuestions = async () => {
   const isServerComponent = typeof window === 'undefined';
@@ -20,7 +21,10 @@ export const fetchQuestions = async () => {
     throw new Error('Failed to fetch questions');
   }
 
-  const data = (await response.json()) as ApiResponse<{ items: Question[] }>;
+  const data = (await response.json()) as ApiResponse<{
+    items: Question[];
+    meta: Meta;
+  }>;
 
   return data;
 };

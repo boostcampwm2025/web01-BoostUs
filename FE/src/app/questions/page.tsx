@@ -4,7 +4,10 @@ import QuestionsPageContent from '@/features/questions/ui/QuestionsPageContent';
 const QuestionsPage = async () => {
   const response = await fetchQuestions();
   const initialQuestions = response.data.items;
-  return <QuestionsPageContent initialQuestions={initialQuestions} />;
+  const meta = response.data.meta;
+  return (
+    <QuestionsPageContent initialQuestions={initialQuestions} meta={meta} />
+  );
 };
 
 export default QuestionsPage;
