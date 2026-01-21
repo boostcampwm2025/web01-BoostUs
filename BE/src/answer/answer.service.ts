@@ -5,7 +5,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { CreateAnswerDto } from './dto/req/create-answer.dto';
-import { AnswerRepository } from './answer.repositiory';
+import { AnswerRepository } from './answer.repository';
 import { AnswerResponseDto } from './dto/res/answer-response.dto';
 import { UpdateAnswerDto } from './dto/req/update-answer.dto';
 @Injectable()

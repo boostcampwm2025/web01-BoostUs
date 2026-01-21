@@ -16,8 +16,8 @@ export class AnswerController {
     description: '새로운 답변을 생성합니다.',
   })
   @ApiHeader({
-    name: 'Authorization',
-    description: 'Bearer 토큰',
+    name: 'memberId',
+    description: '작성자 멤버 ID',
     required: true,
   })
   @ApiBody({
