@@ -22,7 +22,7 @@ interface TechStackSelectorProps {
   onChange: (newStack: string[]) => void;
 }
 
-export function TechStackSelector({
+export default function TechStackSelector({
   data,
   selectedStack = [],
   onChange,

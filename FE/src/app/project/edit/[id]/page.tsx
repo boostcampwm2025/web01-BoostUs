@@ -6,7 +6,7 @@ import { ImageUp } from 'lucide-react';
 import { useProjectRegister } from '@/features/project/hook/useProjectRegister';
 
 import { fetchStacks } from '@/entities/TechStackSelector/api/getTechStack';
-import { TechStackSelector } from '@/entities/TechStackSelector/ui/TechStackSelector';
+import TechStackSelector from '@/entities/TechStackSelector/ui/TechStackSelector';
 import {
   TechStackItem,
   TechStackResponse,

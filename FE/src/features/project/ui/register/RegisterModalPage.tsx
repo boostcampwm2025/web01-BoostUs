@@ -6,7 +6,7 @@ import { ImageUp } from 'lucide-react';
 import { useProjectRegister } from '@/features/project/hook/useProjectRegister';
 
 import { fetchStacks } from '@/entities/TechStackSelector/api/getTechStack';
-import { TechStackSelector } from '@/entities/TechStackSelector/ui/TechStackSelector';
+import TechStackSelector from '@/entities/TechStackSelector/ui/TechStackSelector';
 import {
   TechStackItem,
   TechStackResponse,
@@ -42,7 +42,15 @@ const normalizeStacks = (data: unknown): TechStackResponse => {
   return empty;
 };
 
-export default function RegisterModalPage() {
+interface RegisterModalPageProps {
+  editProjectId?: number;
+  onClose?: () => void;
+}
+
+export default function RegisterModalPage({
+  editProjectId,
+  onClose,
+}: RegisterModalPageProps) {
   const {
     register,
     watch,

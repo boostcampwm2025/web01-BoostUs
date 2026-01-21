@@ -18,7 +18,7 @@ interface Props {
   onEditClick?: () => void;
 }
 
-export default function ProjectDetail({ onEditClick }: Props) {
+export default function ProjectDetail() {
   const params = useParams<{ id: string }>();
   const rawId = params?.id;
 
@@ -162,13 +162,13 @@ export default function ProjectDetail({ onEditClick }: Props) {
         )}
 
         <div className="mt-6 flex justify-center">
-          <Link
+          <a
             href={`/project/edit/${id}`}
             className="flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100"
           >
             <Pencil size={16} />
-            수정하기
-          </Link>
+            수정하기dd
+          </a>
         </div>
       </div>
     </div>

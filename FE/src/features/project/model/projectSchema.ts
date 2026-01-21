@@ -47,7 +47,35 @@ const optionalFileList = z
     return files;
   });
 
-export const projectSchema = z
+// 1) 먼저 "정확한 출력 타입"을 정의
+export type ProjectFormValues = {
+  thumbnail: FileList | undefined;
+  field: 'WEB' | 'IOS' | 'ANDROID';
+  title: string;
+  description: string | undefined;
+  contents?: string[] | undefined;
+  repoUrl: string;
+  demoUrl: string | undefined;
+  cohort:
+    | '1기'
+    | '2기'
+    | '3기'
+    | '4기'
+    | '5기'
+    | '6기'
+    | '7기'
+    | '8기'
+    | '9기'
+    | '10기';
+  startDate: Date;
+  endDate: Date;
+  participantsInput?: string | undefined;
+  participants?: string[] | undefined;
+  techStackInput?: string | undefined;
+  techStack?: string[] | undefined;
+};
+
+export const projectSchema: z.ZodType<ProjectFormValues> = z
   .object({
     thumbnail: optionalFileList,
     field: z.enum(['WEB', 'IOS', 'ANDROID']),
@@ -110,5 +138,3 @@ export const projectSchema = z
     message: '종료 날짜는 시작 날짜 이후이어야 합니다.',
     path: ['endDate'], // 에러를 endDate 필드에 표시
   });
-
-export type ProjectFormValues = z.infer<typeof projectSchema>;
