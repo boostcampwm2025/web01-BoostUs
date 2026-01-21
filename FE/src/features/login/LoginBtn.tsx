@@ -1,5 +1,6 @@
 'use client';
 import { signIn, signOut, useSession } from 'next-auth/react';
+import { Github } from 'lucide-react';
 
 export default function LoginBtn() {
   const { data: session } = useSession();
@@ -16,8 +17,13 @@ export default function LoginBtn() {
 
   // 로그인 안 된 상태
   return (
-    <button onClick={() => signIn('github')}>
-      GitHub 로그인 (Repo 권한 포함)
-    </button>
+    <div className="flex flex-row items-center gap-2 bg-black rounded-lg">
+      <button
+        className="flex flex-row items-center gap-2 text-white p-2 text-string-16 "
+        onClick={() => signIn('github')}
+      >
+        <Github /> GitHub 로그인
+      </button>
+    </div>
   );
 }
