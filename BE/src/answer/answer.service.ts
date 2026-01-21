@@ -7,7 +7,7 @@ import {
 import { CreateAnswerDto } from './dto/req/create-answer.dto';
 import { AnswerRepository } from './answer.repositiory';
 import { AnswerResponseDto } from './dto/res/answer-response.dto';
-import { UpdateAnswerDto } from './dto/res/update-answer.dto';
+import { UpdateAnswerDto } from './dto/req/update-answer.dto';
 @Injectable()
 export class AnswerService {
   constructor(private readonly answerRepo: AnswerRepository) {}

@@ -2,7 +2,7 @@ import { Controller, Post, Body, Patch, Param, Delete, Headers, Query } from '@n
 import { ApiTags, ApiHeader, ApiOperation, ApiParam, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { AnswerService } from './answer.service';
 import { CreateAnswerDto } from './dto/req/create-answer.dto';
-import { UpdateAnswerDto } from './dto/res/update-answer.dto';
+import { UpdateAnswerDto } from './dto/req/update-answer.dto';
 import { AnswerResponseDto } from './dto/res/answer-response.dto';
 import { AnswerUpdateResponseDto } from './dto/res/answer-update-response.dto';
 @ApiTags('답변')
