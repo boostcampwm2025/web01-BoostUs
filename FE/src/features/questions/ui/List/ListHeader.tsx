@@ -5,6 +5,7 @@ import {
   QuestionCounts,
   QuestionsStatusFilter,
 } from '@/features/questions/model/questions.type';
+import Dropdown from '@/features/questions/ui/Dropdown/Dropdown';
 
 interface StatusButtonProps {
   label: string;
@@ -72,6 +73,7 @@ const ListHeader = ({ counts }: { counts: QuestionCounts }) => {
           count={counts.solved}
         />
       </div>
+      <Dropdown />
     </div>
   );
 };
