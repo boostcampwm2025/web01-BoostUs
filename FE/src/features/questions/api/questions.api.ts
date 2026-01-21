@@ -3,6 +3,7 @@ import {
   Question,
   QuestionCounts,
   QuestionDetail,
+  QuestionsSortBy,
   QuestionsStatusFilter,
 } from '@/features/questions/model/questions.type';
 import { ApiResponse } from '@/shared/types/ApiResponseType';
@@ -11,11 +12,16 @@ import { customFetch } from '@/shared/utils/fetcher';
 
 export const getInitialQuestions = async (params?: {
   status?: QuestionsStatusFilter;
+  sort?: QuestionsSortBy;
 }) => {
   const searchParams = new URLSearchParams();
 
   if (params?.status && params.status !== 'all') {
     searchParams.append('status', params.status.toUpperCase());
+  }
+
+  if (params?.sort) {
+    searchParams.append('sort', params.sort.toUpperCase());
   }
 
   const queryString = searchParams.toString();
@@ -48,13 +54,17 @@ export const fetchQuestionsByCursor = async (
   const currentParams = new URLSearchParams(window.location.search);
 
   const statusParam = currentParams.get('status');
-
   if (statusParam) {
     if (statusParam === 'all') {
       currentParams.delete('status');
     } else {
       currentParams.set('status', statusParam.toUpperCase());
     }
+  }
+
+  const sortParam = currentParams.get('sort');
+  if (sortParam) {
+    currentParams.set('sort', sortParam.toUpperCase());
   }
 
   currentParams.delete('cursor');
@@ -68,6 +78,7 @@ export const fetchQuestionsByCursor = async (
       meta: Meta;
     }>
   >(`/api/questions?${currentParams.toString()}`, { cache: 'no-store' });
+
   return data.data;
 };
 

@@ -6,6 +6,8 @@ export type QuestionsStatusFilter =
   | 'unsolved'
   | 'solved';
 
+export type QuestionsSortBy = 'latest' | 'likes' | 'views';
+
 export interface Question {
   id: string;
   title: string;

@@ -2,16 +2,20 @@ import {
   getInitialQuestions,
   getQuestionCounts,
 } from '@/features/questions/api/questions.api';
-import { QuestionsStatusFilter } from '@/features/questions/model';
+import {
+  QuestionsSortBy,
+  QuestionsStatusFilter,
+} from '@/features/questions/model';
 import QuestionsPageContent from '@/features/questions/ui/QuestionsPageContent';
 
 const QuestionsPage = async ({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; sort?: string }>;
 }) => {
   const params = await searchParams;
   const statusParam = params.status ?? 'all';
+  const sortParam = params.sort ?? 'latest';
 
   const validStatus: QuestionsStatusFilter = [
     'all',
@@ -23,7 +27,10 @@ const QuestionsPage = async ({
     : 'all';
 
   const [listResponse, counts] = await Promise.all([
-    getInitialQuestions({ status: validStatus }),
+    getInitialQuestions({
+      status: validStatus,
+      sort: sortParam as QuestionsSortBy,
+    }),
     getQuestionCounts(),
   ]);
 

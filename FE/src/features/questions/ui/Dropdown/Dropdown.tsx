@@ -1,5 +1,9 @@
 'use client';
 
+import {
+  QuestionsSortBy,
+  useQuestionsContext,
+} from '@/features/questions/model';
 import DropdownSelect from '@/features/questions/ui/Dropdown/DropdownSelect';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
@@ -7,11 +11,12 @@ import { useState, useRef, useEffect } from 'react';
 
 const SORT_BY_OPTIONS = [
   { key: 'latest', label: '최신순' },
-  { key: 'views', label: '인기순' },
-  { key: 'likes', label: '조회순' },
+  { key: 'likes', label: '인기순' },
+  { key: 'views', label: '조회순' },
 ] as const;
 
 const Dropdown = () => {
+  const { sort, setSort } = useQuestionsContext();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -39,7 +44,9 @@ const Dropdown = () => {
         onClick={() => setIsOpen(!isOpen)}
         className="text-neutral-text-default hover:text-neutral-text-strong transition-colors duration-150 flex cursor-pointer flex-row whitespace-nowrap"
       >
-        <span className="text-string-16">최신순</span>
+        <span className="text-string-16">
+          {SORT_BY_OPTIONS.find((option) => option.key === sort)?.label}
+        </span>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
@@ -58,9 +65,14 @@ const Dropdown = () => {
             className="bg-neutral-surface-bold shadow-default border border-neutral-border-default absolute z-20 mt-7 flex w-40 origin-top flex-col overflow-hidden rounded-2xl"
           >
             <div className="flex flex-col divide-y divide-neutral-border-default">
-              <DropdownSelect isSelected={true} label="최신순" />
-              <DropdownSelect isSelected={false} label="인기순" />
-              <DropdownSelect isSelected={false} label="조회순" />
+              {SORT_BY_OPTIONS.map((option) => (
+                <DropdownSelect
+                  key={option.key}
+                  onSelect={() => setSort(option.key as QuestionsSortBy)}
+                  isSelected={sort === option.key}
+                  label={option.label}
+                />
+              ))}
             </div>
           </motion.div>
         )}
