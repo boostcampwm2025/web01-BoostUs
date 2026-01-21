@@ -1,4 +1,7 @@
-import { getInitialQuestions } from '@/features/questions/api/questions.api';
+import {
+  getInitialQuestions,
+  getQuestionCounts,
+} from '@/features/questions/api/questions.api';
 import { QuestionsStatusFilter } from '@/features/questions/model';
 import QuestionsPageContent from '@/features/questions/ui/QuestionsPageContent';
 
@@ -19,12 +22,13 @@ const QuestionsPage = async ({
     ? (statusParam as QuestionsStatusFilter)
     : 'all';
 
-  console.log(`[server] status: ${validStatus}`);
+  const [listResponse, counts] = await Promise.all([
+    getInitialQuestions({ status: validStatus }),
+    getQuestionCounts(),
+  ]);
 
-  const response = await getInitialQuestions({ status: validStatus });
-
-  const initialQuestions = response.data.items ?? [];
-  const meta = response.data.meta ?? {
+  const initialQuestions = listResponse.data.items ?? [];
+  const meta = listResponse.data.meta ?? {
     size: 10,
     nextCursor: null,
     prevCursor: null,
@@ -32,7 +36,11 @@ const QuestionsPage = async ({
   };
 
   return (
-    <QuestionsPageContent initialQuestions={initialQuestions} meta={meta} />
+    <QuestionsPageContent
+      initialQuestions={initialQuestions}
+      meta={meta}
+      counts={counts}
+    />
   );
 };
 

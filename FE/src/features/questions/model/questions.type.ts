@@ -33,3 +33,10 @@ export interface Answer {
   createdAt: string;
   user: Member;
 }
+
+export interface QuestionCounts {
+  total: number;
+  noAnswer: number;
+  unsolved: number;
+  solved: number;
+}

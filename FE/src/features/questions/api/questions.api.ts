@@ -1,6 +1,7 @@
 import {
   Answer,
   Question,
+  QuestionCounts,
   QuestionDetail,
   QuestionsStatusFilter,
 } from '@/features/questions/model/questions.type';
@@ -104,5 +105,23 @@ export const fetchQuestionsByCursor = async (
     items: Question[];
     meta: Meta;
   }>;
+  return data.data;
+};
+
+export const getQuestionCounts = async () => {
+  const isServerComponent = typeof window === 'undefined';
+  const baseUrl = isServerComponent
+    ? (process.env.INTERNAL_API_URL ?? 'http://backend:3000') // 서버 환경 (Docker 내부)
+    : (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000'); // 클라이언트 환경 (브라우저)
+
+  const response = await fetch(`${baseUrl}/api/questions/count`, {
+    cache: 'no-store',
+  });
+
+  if (!response.ok) {
+    return { total: 0, noAnswer: 0, unsolved: 0, solved: 0 };
+  }
+
+  const data = (await response.json()) as ApiResponse<QuestionCounts>;
   return data.data;
 };

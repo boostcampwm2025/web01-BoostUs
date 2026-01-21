@@ -2,7 +2,7 @@
 
 import { useQuestionsContext } from '@/features/questions/model';
 import {
-  Question,
+  QuestionCounts,
   QuestionsStatusFilter,
 } from '@/features/questions/model/questions.type';
 
@@ -37,7 +37,7 @@ const StatusButton = ({
   );
 };
 
-const ListHeader = ({ questions }: { questions: Question[] }) => {
+const ListHeader = ({ counts }: { counts: QuestionCounts }) => {
   const { status, setStatus } = useQuestionsContext();
 
   return (
@@ -48,28 +48,28 @@ const ListHeader = ({ questions }: { questions: Question[] }) => {
           value="all"
           isActive={status === 'all'}
           onClick={() => setStatus('all')}
-          count={questions.length}
+          count={counts.total}
         />
         <StatusButton
           label="답변 없음"
           value="unanswered"
           isActive={status === 'unanswered'}
           onClick={() => setStatus('unanswered')}
-          count={0}
+          count={counts.noAnswer}
         />
         <StatusButton
           label="미해결"
           value="unsolved"
           isActive={status === 'unsolved'}
           onClick={() => setStatus('unsolved')}
-          count={0}
+          count={counts.unsolved}
         />
         <StatusButton
           label="해결됨"
           value="solved"
           isActive={status === 'solved'}
           onClick={() => setStatus('solved')}
-          count={0}
+          count={counts.solved}
         />
       </div>
     </div>

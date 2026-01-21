@@ -1,6 +1,9 @@
 'use client';
 
-import { Question } from '@/features/questions/model/questions.type';
+import {
+  Question,
+  QuestionCounts,
+} from '@/features/questions/model/questions.type';
 import { QuestionsProvider } from '@/features/questions/model';
 import QuestionButton from '@/features/questions/ui/Button/QuestionButton';
 import QuestionsHeader from '@/features/questions/ui/Header/Header';
@@ -13,11 +16,13 @@ import { useQuestionPagination } from '@/features/questions/model/useQuestionsPa
 interface QuestionsPageContentProps {
   initialQuestions: Question[];
   meta: Meta;
+  counts: QuestionCounts;
 }
 
 const QuestionsPageContent = ({
   initialQuestions,
   meta: initialMeta,
+  counts,
 }: QuestionsPageContentProps) => {
   const {
     questions,
@@ -40,7 +45,7 @@ const QuestionsPageContent = ({
         <div
           className={`transition-opacity duration-200 ${isLoading ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}
         >
-          <QuestionsList initialQuestions={questions} />
+          <QuestionsList initialQuestions={questions} counts={counts} />
         </div>
         <div className="flex flex-row items-center justify-center gap-2 mt-4">
           <button
