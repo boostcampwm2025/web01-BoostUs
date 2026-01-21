@@ -5,7 +5,7 @@ const QuestionStatus = ({ status }: { status: boolean }) => {
     return (
       <div className="flex flex-row items-center justify-center gap-1 px-2 py-1 rounded-lg w-fit bg-success-surface-default">
         <CheckCircle className="text-accent-green" strokeWidth={2} size={14} />
-        <span className="text-accent-green text-string-12">채택됨</span>
+        <span className="text-accent-green text-string-12">해결됨</span>
       </div>
     );
   } else {
@@ -16,7 +16,7 @@ const QuestionStatus = ({ status }: { status: boolean }) => {
           strokeWidth={2}
           size={14}
         />
-        <span className="text-neutral-text-weak text-string-12">열림</span>
+        <span className="text-neutral-text-weak text-string-12">미해결</span>
       </div>
     );
   }

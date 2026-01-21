@@ -6,6 +6,7 @@ import QuestionButton from '@/features/questions/ui/Button/QuestionButton';
 import QuestionsHeader from '@/features/questions/ui/Header/Header';
 import QuestionsList from '@/features/questions/ui/List/List';
 import QuestionsSearchBar from '@/features/questions/ui/SearchBar/SearchBar';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const QuestionsPageContent = ({
   initialQuestions,
@@ -21,6 +22,20 @@ const QuestionsPageContent = ({
           <QuestionButton />
         </div>
         <QuestionsList initialQuestions={initialQuestions} />
+        <div className="flex flex-row items-center justify-center gap-2 mt-4">
+          <button className="cursor-pointer text-neutral-text-weak hover:text-neutral-text-strong">
+            <ChevronLeft strokeWidth={1} />
+          </button>
+          <button className="cursor-pointer text-neutral-text-weak hover:text-neutral-text-strong">
+            1
+          </button>
+          <button className="cursor-pointer text-neutral-text-weak hover:text-neutral-text-strong">
+            2
+          </button>
+          <button className="cursor-pointer text-neutral-text-weak hover:text-neutral-text-strong">
+            <ChevronRight strokeWidth={1} />
+          </button>
+        </div>
       </div>
     </QuestionsProvider>
   );
