@@ -3,6 +3,7 @@ import {
   IsArray,
   IsDateString,
   IsEnum,
+  IsInt,
   IsOptional,
   IsString,
   IsUrl,
@@ -65,6 +66,7 @@ export class CreateProjectDto {
     maximum: 100,
   })
   @IsOptional()
+  @IsInt()
   @Min(1)
   @Max(100)
   cohort?: number;

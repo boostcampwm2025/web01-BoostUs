@@ -6,7 +6,7 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 
 @Injectable()
 export class ProjectRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async findById(id: bigint) {
     return this.prisma.project.findUnique({
@@ -125,8 +125,9 @@ export class ProjectRepository {
       if (dto.participants !== undefined) {
         await tx.projectParticipant.deleteMany({ where: { projectId: id } });
 
-        if (dto.participants.length > 0) {
-          const uniqueGithubIds = [...new Set(dto.participants)];
+        const participants = Array.isArray(dto.participants) ? dto.participants : [];
+        if (participants.length > 0) {
+          const uniqueGithubIds = [...new Set(participants)];
           await tx.projectParticipant.createMany({
             data: uniqueGithubIds.map((githubId) => ({
               projectId: id,
@@ -142,7 +143,8 @@ export class ProjectRepository {
         await tx.projectTechStack.deleteMany({ where: { projectId: id } });
 
         if (dto.techStack.length > 0) {
-          const techStackNames = [...new Set(dto.techStack)];
+          const techStack = Array.isArray(dto.techStack) ? dto.techStack : [];
+          const techStackNames = [...new Set(techStack)];
 
           // 기술 스택 이름으로 ID 조회
           const foundTechStacks = await tx.techStack.findMany({
@@ -182,6 +184,11 @@ export class ProjectRepository {
       if (dto.endDate !== undefined)
         updateData.endDate = dto.endDate ? new Date(dto.endDate) : null;
       if (dto.field !== undefined) updateData.field = dto.field ?? null;
+
+      // 업데이트할 정보가 없으면 기존 프로젝트 반환
+      if (Object.keys(updateData).length === 0) {
+        return tx.project.findUnique({ where: { id } });
+      }
 
       return tx.project.update({
         where: { id },
