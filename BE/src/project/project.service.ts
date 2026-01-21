@@ -10,7 +10,7 @@ import { ProjectRepository } from './project.repository';
 
 @Injectable()
 export class ProjectService {
-  constructor(private readonly projectRepository: ProjectRepository) { }
+  constructor(private readonly projectRepository: ProjectRepository) {}
 
   async findAll(query: ProjectListQueryDto) {
     const where: Prisma.ProjectWhereInput = {};
