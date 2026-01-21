@@ -1,10 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import {
-  CreateStoryRequest,
-  CreateStoryResponse,
-  Feed,
-  FeedListResponse,
-} from './types';
+import { CreateStoryRequest, CreateStoryResponse, Feed, FeedListResponse } from './types';
 
 /**
  * BE API Client
@@ -30,9 +25,9 @@ export class BeApiClient {
   async getFeeds(): Promise<Feed[]> {
     try {
       console.log('📡 Fetching feeds from BE API...');
-      
+
       const response = await this.client.get<FeedListResponse>('/feeds');
-      
+
       console.log(`✅ Fetched ${response.data.data.items.length} feed(s)`);
       return response.data.data.items;
     } catch (error) {
@@ -52,12 +47,9 @@ export class BeApiClient {
   async createStory(story: CreateStoryRequest): Promise<CreateStoryResponse> {
     try {
       console.log(`📝 Creating story: ${story.title}`);
-      
-      const response = await this.client.post<CreateStoryResponse>(
-        '/stories',
-        story,
-      );
-      
+
+      const response = await this.client.post<CreateStoryResponse>('/stories', story);
+
       console.log(`✅ Story created: ${story.title}`);
       return response.data;
     } catch (error) {
@@ -76,7 +68,7 @@ export class BeApiClient {
    */
   async createStories(stories: CreateStoryRequest[]): Promise<number> {
     console.log(`📝 Creating ${stories.length} stories...`);
-    
+
     let successCount = 0;
     let errorCount = 0;
 

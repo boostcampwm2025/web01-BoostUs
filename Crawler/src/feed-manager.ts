@@ -59,19 +59,14 @@ export class FeedManager {
 
           console.log(`✅ Finished processing feed: ${feed.feedUrl}\n`);
         } catch (error) {
-          console.error(
-            `❌ Error processing feed ${feed.feedUrl}:`,
-            error,
-          );
+          console.error(`❌ Error processing feed ${feed.feedUrl}:`, error);
           // 개별 피드 에러는 무시하고 다음 피드 계속 처리
           continue;
         }
       }
 
       console.log('\n========================================');
-      console.log(
-        `✅ Feed collection completed! Total stories created: ${totalStoriesCreated}`,
-      );
+      console.log(`✅ Feed collection completed! Total stories created: ${totalStoriesCreated}`);
       console.log('========================================\n');
     } catch (error) {
       console.error('\n❌ Fatal error during feed collection:', error);
