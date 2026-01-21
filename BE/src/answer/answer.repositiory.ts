@@ -26,4 +26,25 @@ export class AnswerRepository {
       },
     });
   }
+
+  update(id: bigint, data: Prisma.AnswerUpdateInput) {
+    return this.prisma.answer.update({
+      where: { id },
+      data,
+      include: {
+        member: {
+          select: { id: true, nickname: true, avatarUrl: true, cohort: true },
+        },
+      },
+    });
+  }
+  // answer.repository.ts
+  findOwnerIdByAnswerId(id: bigint) {
+    return this.prisma.answer
+      .findUnique({
+        where: { id },
+        select: { memberId: true },
+      })
+      .then((r) => r?.memberId ?? null);
+  }
 }

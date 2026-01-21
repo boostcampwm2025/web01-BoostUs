@@ -1,8 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  NotFoundException,
+  BadRequestException,
+  Injectable,
+} from '@nestjs/common';
 import { CreateAnswerDto } from './dto/req/create-answer.dto';
 import { AnswerRepository } from './answer.repositiory';
 import { AnswerResponseDto } from './dto/res/answer-response.dto';
-
+import { UpdateAnswerDto } from './dto/res/update-answer.dto';
 @Injectable()
 export class AnswerService {
   constructor(private readonly answerRepo: AnswerRepository) {}
@@ -36,11 +41,25 @@ export class AnswerService {
     };
   }
 
-  // update(id: number, updateAnswerDto: UpdateAnswerDto) {
-  //   return `This action updates a #${id} answer`;
-  // }
+  async update(idstr: string, memberIdStr: string | undefined, dto: UpdateAnswerDto) {
+    if (!memberIdStr) throw new BadRequestException('로그인을 하셨어야죠');
 
-  remove(id: number) {
-    return `This action removes a #${id} answer`;
+    const id = BigInt(idstr);
+    const memberId = BigInt(memberIdStr);
+
+    // ✅ 작성자 확인용으로 최소 조회
+    const ownerId = await this.answerRepo.findOwnerIdByAnswerId(id);
+    if (!ownerId) throw new NotFoundException('답변의 주인이 없소');
+
+    if (ownerId !== memberId) {
+      throw new ForbiddenException('수정권한이 없소');
+    }
+
+    // ✅ 수정
+    const updated = await this.answerRepo.update(id, {
+      contents: dto.contents,
+    });
+
+    return updated;
   }
 }
