@@ -24,8 +24,6 @@ export const useProjectRegister = (
   onClose?: () => void
 ) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-
-  // 참여자와 기술스택은 별도 State로 관리
   const [techStack, setTechStack] = useState<string[]>([]);
   const [participants, setParticipants] = useState<string[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -52,7 +50,7 @@ export const useProjectRegister = (
   const { watch, setValue, handleSubmit } = formMethods;
   const thumbnailList = watch('thumbnail');
 
-  // ✅ 1. 데이터 로드 (수정 모드일 때)
+  // 1. 데이터 로드
   useEffect(() => {
     if (!editProjectId || isNaN(editProjectId)) return;
 
@@ -61,12 +59,8 @@ export const useProjectRegister = (
         const response = await fetchProjectDetail({ id: editProjectId });
         const rawData = response.data || response;
 
-        if (!rawData) {
-          console.error('데이터가 비어있습니다.');
-          return;
-        }
+        if (!rawData) return;
 
-        // 날짜 변환 (YYYY-MM-DD)
         const toDateString = (dateStr: string | Date | null) => {
           if (!dateStr) return new Date().toISOString().split('T')[0];
           const d = new Date(dateStr);
@@ -85,7 +79,6 @@ export const useProjectRegister = (
           ? rawData.contents[0]
           : rawData.contents || '';
 
-        // 폼 필드 강제 주입
         setValue('title', rawData.title);
         setValue('repoUrl', rawData.repoUrl ?? '');
         setValue('demoUrl', rawData.demoUrl ?? '');
@@ -94,16 +87,10 @@ export const useProjectRegister = (
         setValue('startDate', startDateStr as any);
         setValue('endDate', endDateStr as any);
         setValue('cohort', cohortValue as any);
-
-        // field 타입 에러 방지 (any 캐스팅)
         setValue('field', ((rawData as any).field ?? 'WEB') as any);
-
         setValue('contents', [contentText]);
 
-        // State 동기화
-        if (rawData.thumbnailUrl) {
-          setPreviewUrl(rawData.thumbnailUrl);
-        }
+        if (rawData.thumbnailUrl) setPreviewUrl(rawData.thumbnailUrl);
 
         setTechStack(rawData.techStack || []);
 
@@ -119,7 +106,7 @@ export const useProjectRegister = (
     loadData();
   }, [editProjectId, setValue]);
 
-  // ✅ 2. 썸네일 미리보기 로직
+  // 2. 썸네일 미리보기
   useEffect(() => {
     if (thumbnailList && thumbnailList.length > 0) {
       const file = thumbnailList[0];
@@ -127,12 +114,10 @@ export const useProjectRegister = (
       setPreviewUrl(url);
       return () => URL.revokeObjectURL(url);
     }
-    if (!editProjectId) {
-      setPreviewUrl(null);
-    }
+    if (!editProjectId) setPreviewUrl(null);
   }, [thumbnailList, editProjectId]);
 
-  // ✅ 3. State -> Form 동기화
+  // 3. State -> Form 동기화
   useEffect(() => {
     setValue('participants', participants);
   }, [participants, setValue]);
@@ -184,11 +169,10 @@ export const useProjectRegister = (
     setParticipants((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // ✅ 4. 폼 제출 로직
+  // 4. 폼 제출 로직
   const submitValidForm = async (data: ProjectFormValues) => {
     try {
       let uploadedThumbnailUrl: string | null = previewUrl;
-
       if (data.thumbnail && data.thumbnail.length > 0) {
         // TODO: 이미지 업로드 로직
         uploadedThumbnailUrl = 'https://임시-이미지-주소.com/new-image.png';
@@ -207,22 +191,25 @@ export const useProjectRegister = (
           : (data.contents ?? ''),
         repoUrl: data.repoUrl,
 
-        // demoUrl null 처리
-        demoUrl: data.demoUrl ?? '',
+        demoUrl:
+          data.demoUrl && data.demoUrl.trim() !== '' ? data.demoUrl : null,
 
         cohort: isNaN(parsedCohort) ? 0 : parsedCohort,
         startDate: new Date(data.startDate).toISOString().split('T')[0],
         endDate: new Date(data.endDate).toISOString().split('T')[0],
+
+        // 백엔드(@IsString({each:true}))에 맞춰 문자열 배열 그대로 전송
         techStack: techStack,
+
         field: data.field,
         participants: participants,
       };
 
+      //
       if (editProjectId) {
-        await updateProject(editProjectId, requestBody);
+        await updateProject(editProjectId, requestBody as any);
         alert('수정되었습니다.');
       } else {
-        // techStack 타입(string[] vs number[]) 불일치를 무시하기 위해 as any 사용 고쳤는데 에러뜸
         await registerProject(requestBody as any);
         alert('등록되었습니다.');
       }
