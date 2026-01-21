@@ -6,7 +6,7 @@ import { UpdateAnswerDto } from './dto/res/update-answer.dto';
 import { AnswerResponseDto } from './dto/res/answer-response.dto';
 import { AnswerUpdateResponseDto } from './dto/res/answer-update-response.dto';
 @ApiTags('답변')
-@Controller('answer')
+@Controller('answers')
 export class AnswerController {
   constructor(private readonly answerService: AnswerService) {}
 

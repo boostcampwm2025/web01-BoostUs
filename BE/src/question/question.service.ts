@@ -205,6 +205,17 @@ export class QuestionService {
         answers: q.answers.map((a) => ({
           id: Number(a.id),
           contents: a.contents,
+          upCount: a.upCount,
+          downCount: a.downCount,
+          isAccepted: a.isAccepted,
+          createdAt: a.createdAt.toISOString(),
+          updatedAt: a.updatedAt.toISOString(),
+          member: {
+            id: Number(q.member.id),
+            nickname: q.member.nickname,
+            avatarUrl: q.member.avatarUrl,
+            cohort: q.member.cohort,
+          },
         })),
       },
     };
