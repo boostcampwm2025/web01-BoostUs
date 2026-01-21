@@ -18,10 +18,7 @@ export class FeedParser {
    * @param feedId 피드 ID
    * @returns CreateStoryRequest 배열
    */
-  async parse(
-    xmlContent: string,
-    feedId: string,
-  ): Promise<CreateStoryRequest[]> {
+  async parse(xmlContent: string, feedId: string): Promise<CreateStoryRequest[]> {
     try {
       console.log('🔍 Parsing RSS feed...');
 
@@ -57,10 +54,7 @@ export class FeedParser {
    * @param feedId 피드 ID
    * @returns CreateStoryRequest 또는 null
    */
-  private convertToStory(
-    item: RssItem,
-    feedId: string,
-  ): CreateStoryRequest | null {
+  private convertToStory(item: RssItem, feedId: string): CreateStoryRequest | null {
     // 필수 필드 검증
     if (!item.guid || !item.title) {
       console.warn('⚠️  Skipping item without guid or title:', item);
@@ -77,7 +71,7 @@ export class FeedParser {
 
     // 요약 추출
     let summary = this.extractSummary(contents);
-  
+
     // 발행일 파싱 (없으면 현재 시간)
     const publishedAt = item.pubDate
       ? new Date(item.pubDate).toISOString()
@@ -103,10 +97,10 @@ export class FeedParser {
   private extractSummary(html: string): string {
     // HTML 태그 제거
     const text = html.replace(/<[^>]*>/g, '');
-    
+
     // 연속된 공백 제거
     const cleaned = text.replace(/\s+/g, ' ').trim();
-    
+
     // 첫 150자 추출
     return cleaned.length > 150 ? cleaned.substring(0, 150) + '...' : cleaned;
   }
@@ -118,8 +112,9 @@ export class FeedParser {
     if (!html) {
       return undefined;
     }
-    
-    const imgMatch = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+
+    // <img 태그의 src 속성만 정확히 추출
+    const imgMatch = html.match(/<img\s+[^>]*?src=["']([^"']+)["']/i);
     return imgMatch ? imgMatch[1] : undefined;
   }
 }
