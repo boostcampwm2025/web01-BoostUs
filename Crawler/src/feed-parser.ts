@@ -80,7 +80,7 @@ export class FeedParser {
     return {
       feedId,
       guid: item.guid,
-      title: item.title,
+      title: this.decodeHtmlEntities(item.title),
       summary,
       contents,
       thumbnailUrl: this.extractImageUrl(contents),
@@ -98,11 +98,47 @@ export class FeedParser {
     // HTML 태그 제거
     const text = html.replace(/<[^>]*>/g, '');
 
+    // HTML 엔티티 디코딩
+    const decoded = this.decodeHtmlEntities(text);
+
     // 연속된 공백 제거
-    const cleaned = text.replace(/\s+/g, ' ').trim();
+    const cleaned = decoded.replace(/\s+/g, ' ').trim();
 
     // 첫 150자 추출
     return cleaned.length > 150 ? cleaned.substring(0, 150) + '...' : cleaned;
+  }
+
+  /**
+   * HTML 엔티티를 일반 문자로 디코딩
+   */
+  private decodeHtmlEntities(text: string): string {
+    const entities: Record<string, string> = {
+      '&nbsp;': ' ',
+      '&amp;': '&',
+      '&lt;': '<',
+      '&gt;': '>',
+      '&quot;': '"',
+      '&#39;': "'",
+      '&apos;': "'",
+      '&ndash;': '–',
+      '&mdash;': '—',
+      '&hellip;': '…',
+    };
+
+    let result = text;
+    for (const [entity, char] of Object.entries(entities)) {
+      result = result.replace(new RegExp(entity, 'g'), char);
+    }
+
+    // 숫자 엔티티 디코딩 (&#123; 또는 &#xAB; 형식)
+    result = result.replace(/&#(\d+);/g, (_, code) =>
+      String.fromCharCode(parseInt(code, 10)),
+    );
+    result = result.replace(/&#x([0-9A-Fa-f]+);/g, (_, code) =>
+      String.fromCharCode(parseInt(code, 16)),
+    );
+
+    return result;
   }
 
   /**
