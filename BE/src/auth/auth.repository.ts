@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { GithubLoginResponseDto } from './dto/github-login-response.dto';
+import { GithubLoginUpsertDto } from './dto/github-login-upsert.dto';
 
 @Injectable()
 export class AuthRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async upsertByGithubProfile(data: GithubLoginResponseDto) {
+  async upsertByGithubProfile(data: GithubLoginUpsertDto) {
     return this.prisma.member.upsert({
       where: { githubId: data.githubId },
       update: {
