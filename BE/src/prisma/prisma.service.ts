@@ -15,6 +15,12 @@ export class PrismaService extends PrismaClient {
       allowPublicKeyRetrieval: true,
       ssl: false,
     });
-    super({ adapter });
+    super({
+      adapter,
+      log:
+        configService.get<string>('NODE_ENV') === 'production'
+          ? ['warn', 'error']
+          : ['query', 'info', 'warn', 'error'],
+    });
   }
 }
