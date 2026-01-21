@@ -8,6 +8,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ProjectModule } from './project/project.module';
 import { QuestionModule } from './question/question.module';
 import { StoryModule } from './story/story.module';
+import { TechStackModule } from './tech-stack/tech-stack.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { StoryModule } from './story/story.module';
     StoryModule,
     QuestionModule,
     ProjectModule,
+    TechStackModule,
   ],
   providers: [
     Logger,

@@ -7,7 +7,7 @@ export type QuestionsStatusFilter =
   | 'solved';
 
 export interface Question {
-  id: number;
+  id: string;
   title: string;
   hashtags: string[];
   upCount: number;
@@ -18,4 +18,18 @@ export interface Question {
   createdAt: string;
   updatedAt: string;
   member: Member;
+}
+
+export interface QuestionDetail extends Question {
+  contents: string;
+}
+
+export interface Answer {
+  id: string;
+  contents: string;
+  upCount: number;
+  downCount: number;
+  isAceepted: boolean;
+  createdAt: string;
+  user: Member;
 }

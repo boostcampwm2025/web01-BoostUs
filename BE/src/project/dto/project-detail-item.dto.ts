@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Transform, Type } from 'class-transformer';
+import { ProjectField } from '../type/project-field.type';
 import { ProjectParticipantDto } from './project-participant.dto';
 
 export class ProjectDetailItemDto {
@@ -105,10 +106,24 @@ export class ProjectDetailItemDto {
 
   @ApiProperty({
     description: '프로젝트 분야',
-    example: 'Web',
+    example: 'WEB',
+    enum: ProjectField,
+    nullable: true,
   })
   @Expose()
-  field: string;
+  field: ProjectField | null;
+
+  @ApiProperty({
+    description: '기술 스택 목록',
+    example: ['React', 'NestJS', 'TypeScript'],
+    type: [String],
+  })
+  @Expose()
+  @Transform(({ obj }: { obj: { techStacks?: Array<{ techStack: { name: string } }> } }) => {
+    const techStacks = obj.techStacks ?? [];
+    return techStacks.map((x) => x.techStack.name);
+  })
+  techStack: string[];
 
   @ApiProperty({
     description: '프로젝트 참여자 목록',

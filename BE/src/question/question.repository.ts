@@ -37,6 +37,17 @@ export class QuestionRepository {
     });
   }
 
+  // QuestionRepository.ts
+  findAll(args: Prisma.QuestionFindManyArgs) {
+    return this.prisma.question.findMany({
+      ...args,
+      include: {
+        member: true,
+        _count: { select: { answers: true } },
+      },
+    });
+  }
+
   async findAllWithCount(params: SearchParams) {
     const { where, orderBy, skip, take } = params;
 
@@ -64,8 +75,38 @@ export class QuestionRepository {
       where: { id },
       include: {
         member: { select: { id: true, nickname: true, avatarUrl: true, cohort: true } },
+        answers: true,
         _count: { select: { answers: true } },
       },
     });
+  }
+
+  async countByAnswerAndResolution() {
+    const total = await this.prisma.question.count(); // 전체 질문 수
+
+    const noAnswer = await this.prisma.question.count({
+      where: {
+        answers: { none: {} },
+      },
+    });
+
+    const unsolved = await this.prisma.question.count({
+      where: {
+        isResolved: false,
+      },
+    });
+
+    const solved = await this.prisma.question.count({
+      where: {
+        isResolved: true,
+      },
+    });
+
+    return {
+      total: total.toString(),
+      noAnswer: noAnswer.toString(),
+      unsolved: unsolved.toString(),
+      solved: solved.toString(),
+    };
   }
 }
