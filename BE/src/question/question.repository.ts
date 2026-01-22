@@ -117,4 +117,26 @@ export class QuestionRepository {
       solved: solved.toString(),
     };
   }
+
+  update(id: bigint, data: Prisma.QuestionUpdateInput) {
+    return this.prisma.question.update({
+      where: { id },
+      data,
+      include: {
+        member: {
+          select: { id: true, nickname: true, avatarUrl: true, cohort: true },
+        },
+        _count: { select: { answers: true } },
+      },
+    });
+  }
+
+  async findOwnerIdByQuestionId(id: bigint) {
+    return this.prisma.question
+      .findUnique({
+        where: { id },
+        select: { memberId: true },
+      })
+      .then((r) => r?.memberId ?? null);
+  }
 }

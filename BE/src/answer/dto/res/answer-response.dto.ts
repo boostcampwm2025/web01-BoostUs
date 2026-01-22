@@ -56,5 +56,5 @@ export class AnswerResponseDto {
     description: '작성자 정보',
     type: () => AnswerUserDto,
   })
-  user!: AnswerUserDto;
+  member!: AnswerUserDto;
 }

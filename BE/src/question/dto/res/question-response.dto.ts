@@ -38,7 +38,7 @@ export class QuestionResponseDto {
     description: '비추천 수',
     example: 0,
   })
-  downCount!: number; // Prisma downCount
+  downCount!: number; // Prisma
 
   @ApiProperty({
     description: '조회수',
@@ -57,7 +57,13 @@ export class QuestionResponseDto {
     enum: ContentState,
     example: ContentState.PUBLISHED,
   })
-  contentState!: ContentState;
+  state!: ContentState;
+
+  @ApiProperty({
+    description: '답변 갯수',
+    example: 0,
+  })
+  answerCount!: number;
 
   @ApiProperty({
     description: '생성일시',
@@ -75,5 +81,5 @@ export class QuestionResponseDto {
     description: '작성자 정보',
     type: () => QuestionUserDto,
   })
-  user!: QuestionUserDto;
+  member!: QuestionUserDto;
 }

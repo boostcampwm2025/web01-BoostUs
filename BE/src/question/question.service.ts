@@ -1,9 +1,17 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { Prisma } from 'src/generated/prisma/client';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { Prisma, Question } from 'src/generated/prisma/client';
 import { decodeCursor, encodeCursor } from '../common/util/cursor.util';
 import { CreateQuestionDto } from './dto/req/create-question.dto';
 import { QuestionQueryDto, QuestionSort, QuestionStatus } from './dto/req/question-query.dto';
 import { QuestionRepository } from './question.repository';
+import { QuestionResponseDto } from './dto/res/question-response.dto';
+import { UpdateQuestionDto } from './dto/req/update-question.dto';
+import { AnswerResponseDto } from 'src/answer/dto/res/answer-response.dto';
 
 @Injectable()
 export class QuestionService {
@@ -178,7 +186,10 @@ export class QuestionService {
     };
   }
 
-  async findOne(idStr: string) {
+  async findOne(idStr: string): Promise<{
+    question: QuestionResponseDto;
+    answers: AnswerResponseDto[];
+  }> {
     const id = BigInt(idStr);
     const q = await this.questionRepo.findOne(id);
 
@@ -186,33 +197,37 @@ export class QuestionService {
 
     return {
       question: {
-        id: Number(q.id),
+        id: q.id.toString(),
         title: q.title,
-        content: q.contents,
+        contents: q.contents,
         hashtags: q.hashtags ? q.hashtags.split(',') : [],
+        state: q.state,
         upCount: q.upCount,
+        downCount: q.downCount,
         viewCount: q.viewCount,
         answerCount: q._count.answers,
         isResolved: q.isResolved,
         createdAt: q.createdAt.toISOString(),
         updatedAt: q.updatedAt.toISOString(),
         member: {
-          id: Number(q.member.id),
+          id: q.member.id.toString(),
           nickname: q.member.nickname,
           avatarUrl: q.member.avatarUrl,
           cohort: q.member.cohort,
         },
       },
       answers: q.answers.map((a) => ({
-        id: Number(a.id),
+        id: a.id.toString(),
         contents: a.contents,
         upCount: a.upCount,
         downCount: a.downCount,
         isAccepted: a.isAccepted,
         createdAt: a.createdAt.toISOString(),
         updatedAt: a.updatedAt.toISOString(),
+        state: a.state,
+
         member: {
-          id: Number(a.member.id),
+          id: a.member.id.toString(),
           nickname: a.member.nickname,
           avatarUrl: a.member.avatarUrl,
           cohort: a.member.cohort,
@@ -221,7 +236,68 @@ export class QuestionService {
     };
   }
 
-  getQuestionsCount() {
+  async update(
+    idstr: string,
+    memberIdStr: string | undefined,
+    dto: UpdateQuestionDto,
+  ): Promise<QuestionResponseDto> {
+    if (!memberIdStr) throw new BadRequestException('로그인을 하셨어야죠');
+
+    const id = BigInt(idstr);
+    const memberId = BigInt(memberIdStr);
+
+    const ownerId = await this.questionRepo.findOwnerIdByQuestionId(id);
+    if (!ownerId) throw new NotFoundException('질문의 주인이 없소');
+
+    if (ownerId !== memberId) {
+      throw new ForbiddenException('수정권한이 없소');
+    }
+
+    const updated = await this.questionRepo.update(id, {
+      contents: dto.contents,
+    });
+
+    return {
+      id: updated.id.toString(),
+      title: updated.title,
+      hashtags: updated.hashtags ? updated.hashtags.split(',') : [],
+      viewCount: updated.viewCount,
+      contents: updated.contents,
+      isResolved: updated.isResolved,
+      upCount: updated.upCount,
+      downCount: updated.downCount,
+      answerCount: updated._count.answers,
+      state: updated.state,
+      createdAt: updated.createdAt.toISOString(),
+      updatedAt: updated.updatedAt.toISOString(),
+      member: {
+        id: updated.member.id.toString(),
+        nickname: updated.member.nickname,
+        avatarUrl: updated.member.avatarUrl,
+        cohort: updated.member.cohort,
+      },
+    };
+  }
+
+  async delete(idstr: string, memberIdStr: string | undefined) {
+    if (!memberIdStr) throw new BadRequestException('로그인을 하셨어야죠');
+
+    const id = BigInt(idstr);
+    const memberId = BigInt(memberIdStr);
+
+    // ✅ 작성자 확인용으로 최소 조회
+    const ownerId = await this.questionRepo.findOwnerIdByQuestionId(id);
+    if (!ownerId) throw new NotFoundException('답변의 주인이 없소');
+
+    if (ownerId !== memberId) {
+      throw new ForbiddenException('삭제권한이 없소');
+    }
+
+    // ✅ 삭제
+    await this.questionRepo.update(id, { state: 'DELETED' });
+    return { id: idstr };
+  }
+  async getQuestionsCount() {
     return this.questionRepo.countByAnswerAndResolution();
   }
 }

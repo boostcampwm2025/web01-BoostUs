@@ -32,7 +32,7 @@ export class AnswerService {
       state: created.state,
       createdAt: created.createdAt.toISOString(),
       updatedAt: created.updatedAt.toISOString(),
-      user: {
+      member: {
         id: created.member.id.toString(),
         nickname: created.member.nickname,
         avatarUrl: created.member.avatarUrl,
@@ -73,7 +73,7 @@ export class AnswerService {
       state: updated.state,
       createdAt: updated.createdAt.toISOString(),
       updatedAt: updated.updatedAt.toISOString(),
-      user: {
+      member: {
         id: updated.member.id.toString(),
         nickname: updated.member.nickname,
         avatarUrl: updated.member.avatarUrl,
