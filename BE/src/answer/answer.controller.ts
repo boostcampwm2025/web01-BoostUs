@@ -84,6 +84,11 @@ export class AnswerController {
 
   @Post(':id/like')
   @responseMessage('답변 좋아요 성공')
+  @ApiHeader({
+    name: 'memberId',
+    description: '작성자 멤버 ID',
+    required: true,
+  })
   @ApiOperation({
     summary: '답변 좋아요',
     description: '답변에 좋아요를 누릅니다.',
@@ -96,6 +101,11 @@ export class AnswerController {
 
   @Post(':id/dislike')
   @responseMessage('답변 싫어요 성공')
+  @ApiHeader({
+    name: 'memberId',
+    description: '작성자 멤버 ID',
+    required: true,
+  })
   @ApiOperation({
     summary: '답변 싫어요',
     description: '답변에 싫어요를 누릅니다.',

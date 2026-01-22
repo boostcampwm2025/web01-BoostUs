@@ -255,6 +255,8 @@ export class QuestionService {
 
     const updated = await this.questionRepo.update(id, {
       contents: dto.contents,
+      title: dto.title,
+      hashtags: dto.hashtags,
     });
 
     return {
@@ -287,7 +289,7 @@ export class QuestionService {
 
     // ✅ 작성자 확인용으로 최소 조회
     const ownerId = await this.questionRepo.findOwnerIdByQuestionId(id);
-    if (!ownerId) throw new NotFoundException('답변의 주인이 없소');
+    if (!ownerId) throw new NotFoundException('질문의 주인이 없소');
 
     if (ownerId !== memberId) {
       throw new ForbiddenException('삭제권한이 없소');

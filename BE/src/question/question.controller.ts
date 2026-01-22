@@ -103,6 +103,11 @@ export class QuestionController {
     summary: '질문 수정',
     description: '기존 질문을 수정합니다.',
   })
+  @ApiHeader({
+    name: 'memberId',
+    description: '작성자 멤버 ID',
+    required: true,
+  })
   @ApiResponse({
     status: 200,
     description: '질문 수정 성공',
@@ -122,6 +127,11 @@ export class QuestionController {
 
   @Delete(':id')
   @responseMessage('질문 삭제 성공')
+  @ApiHeader({
+    name: 'memberId',
+    description: '작성자 멤버 ID',
+    required: true,
+  })
   @ApiOperation({
     summary: '질문 삭제',
     description: '기존 질문을 삭제합니다.',
@@ -140,6 +150,11 @@ export class QuestionController {
 
   @Post(':id/answers/:answerId/accept')
   @responseMessage('답변 채택 성공')
+  @ApiHeader({
+    name: 'memberId',
+    description: '작성자 멤버 ID',
+    required: true,
+  })
   @ApiOperation({
     summary: '답변 채택',
     description: '질문에 달린 답변을 채택합니다.',
@@ -156,6 +171,11 @@ export class QuestionController {
 
   @Post(':id/like')
   @responseMessage('질문 좋아요 성공')
+  @ApiHeader({
+    name: 'memberId',
+    description: '작성자 멤버 ID',
+    required: true,
+  })
   @ApiOperation({
     summary: '질문 좋아요',
     description: '질문에 좋아요를 누릅니다.',
@@ -168,6 +188,11 @@ export class QuestionController {
 
   @Post(':id/dislike')
   @responseMessage('질문 싫어요 성공')
+  @ApiHeader({
+    name: 'memberId',
+    description: '작성자 멤버 ID',
+    required: true,
+  })
   @ApiOperation({
     summary: '질문 싫어요',
     description: '질문에 싫어요를 누릅니다.',
