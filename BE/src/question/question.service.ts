@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma } from 'src/generated/prisma/client';
+import { decodeCursor, encodeCursor } from '../common/util/cursor.util';
 import { CreateQuestionDto } from './dto/req/create-question.dto';
-import { QuestionRepository } from './question.repository';
 import { QuestionQueryDto, QuestionSort, QuestionStatus } from './dto/req/question-query.dto';
-import { encodeCursor, decodeCursor } from './util/cursor.util';
+import { QuestionRepository } from './question.repository';
 
 @Injectable()
 export class QuestionService {
