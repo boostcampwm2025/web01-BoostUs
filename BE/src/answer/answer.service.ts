@@ -41,7 +41,11 @@ export class AnswerService {
     };
   }
 
-  async update(idstr: string, memberIdStr: string | undefined, dto: UpdateAnswerDto) {
+  async update(
+    idstr: string,
+    memberIdStr: string | undefined,
+    dto: UpdateAnswerDto,
+  ): Promise<AnswerResponseDto> {
     if (!memberIdStr) throw new BadRequestException('로그인을 하셨어야죠');
 
     const id = BigInt(idstr);
@@ -60,7 +64,22 @@ export class AnswerService {
       contents: dto.contents,
     });
 
-    return updated;
+    return {
+      id: updated.id.toString(),
+      contents: updated.contents,
+      isAccepted: updated.isAccepted,
+      upCount: updated.upCount,
+      downCount: updated.downCount,
+      state: updated.state,
+      createdAt: updated.createdAt.toISOString(),
+      updatedAt: updated.updatedAt.toISOString(),
+      user: {
+        id: updated.member.id.toString(),
+        nickname: updated.member.nickname,
+        avatarUrl: updated.member.avatarUrl,
+        cohort: updated.member.cohort,
+      },
+    };
   }
 
   async delete(idstr: string, memberIdStr: string | undefined) {
