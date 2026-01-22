@@ -202,22 +202,22 @@ export class QuestionService {
           avatarUrl: q.member.avatarUrl,
           cohort: q.member.cohort,
         },
-        answers: q.answers.map((a) => ({
-          id: Number(a.id),
-          contents: a.contents,
-          upCount: a.upCount,
-          downCount: a.downCount,
-          isAccepted: a.isAccepted,
-          createdAt: a.createdAt.toISOString(),
-          updatedAt: a.updatedAt.toISOString(),
-          member: {
-            id: Number(a.member.id),
-            nickname: a.member.nickname,
-            avatarUrl: a.member.avatarUrl,
-            cohort: a.member.cohort,
-          },
-        })),
       },
+      answers: q.answers.map((a) => ({
+        id: Number(a.id),
+        contents: a.contents,
+        upCount: a.upCount,
+        downCount: a.downCount,
+        isAccepted: a.isAccepted,
+        createdAt: a.createdAt.toISOString(),
+        updatedAt: a.updatedAt.toISOString(),
+        member: {
+          id: Number(a.member.id),
+          nickname: a.member.nickname,
+          avatarUrl: a.member.avatarUrl,
+          cohort: a.member.cohort,
+        },
+      })),
     };
   }
 
