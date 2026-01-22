@@ -5,6 +5,7 @@ import { QuestionQueryDto } from './dto/req/question-query.dto';
 import { QuestionResponseDto } from './dto/res/question-response.dto';
 import { QuestionService } from './question.service';
 import { QuestionCountDto } from './dto/res/question-count.dto';
+import { responseMessage } from '../common/decorator/response-message.decorator';
 
 @ApiTags('질문')
 @Controller('questions')
@@ -71,6 +72,7 @@ export class QuestionController {
   }
 
   @Get(':id')
+  @responseMessage('질문 목록 조회 성공!')
   @ApiOperation({
     summary: '질문 상세 조회',
     description: '특정 질문의 상세 정보를 조회합니다.',
