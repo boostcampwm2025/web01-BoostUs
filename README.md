@@ -21,22 +21,25 @@
 - 지금까지 부스트캠프의 **값진 경험**들은 개인 블로그, 깃허브, 슬랙 등 **여러 곳에 분산되어 있다는 문제점**이 있었습니다.
 
 - BoostUs는 이 **모든 경험을 하나로 연결**해, **기록이 자산이 되고 성장이 다음 도전으로 이어지도록** 돕습니다.
-  
-## 🔹 기술 스택
-<div align="center">
 
-  <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 700px;">
-    <img src="https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white">
-    <img src="https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white">
-    <img src="https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white">
-    <img src="https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white">
-    <img src="https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white">
-    <img src="https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white">
-    <img src="https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white">
-    <img src="https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge&logo=nginx&logoColor=white">
-    <img src="https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white">
-  </div>
-</div>
+<br>
+
+## 🔹 기술 스택
+
+| Category           | Stack                                                                                                                                                                                                                                                     |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Language**       | ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge\&logo=typescript\&logoColor=white) ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge\&logo=javascript\&logoColor=%23F7DF1E) |
+| **Frontend**       | ![Next.js](https://img.shields.io/badge/Next-black?style=for-the-badge\&logo=next.js\&logoColor=white) ![Tailwind CSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge\&logo=tailwind-css\&logoColor=white)                    |
+| **Backend**        | ![Node.js](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge\&logo=node.js\&logoColor=white) ![NestJS](https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge\&logo=nestjs\&logoColor=white)                                 |
+| **Database / ORM** | ![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge\&logo=mysql\&logoColor=white) ![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge\&logo=Prisma\&logoColor=white)                                          |
+| **DevOps / Infra** | ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge\&logo=docker\&logoColor=white) ![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge\&logo=nginx\&logoColor=white)                                |
+
+
+<br>
+
+## 서비스 아키텍처
+
+<img width="80%" alt="image" src="https://github.com/user-attachments/assets/feea07bc-d233-4046-981a-fe3e3357bbf4" />
 
 <br>
 
@@ -76,9 +79,3 @@
     <td align="center"><a href="https://github.com/DevJunz">J273_최준환</a></td>
   </tr>
 </table>
-
-
-
-
-
-
