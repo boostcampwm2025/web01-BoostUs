@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 const StoriesCard = ({ id, story }: StoriesCardProps) => {
   return (
-    <Link href={`/stories/${id}`} target="_blank" rel="noopener noreferrer">
+    <Link href={`/stories/${id}`}>
       <div className="bg-neutral-surface-bold border-neutral-border-default hover:shadow-default grid w-full cursor-pointer grid-rows-[4fr_6fr] overflow-hidden rounded-2xl border transition-shadow duration-150">
         <div className="relative w-full">
           <Image

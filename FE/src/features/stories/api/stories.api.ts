@@ -1,66 +1,38 @@
 import {
-  StoriesResponse,
   StoriesSortOption,
-  StoryDetailResponse,
+  Story,
 } from '@/features/stories/model/stories.type';
+import { ApiResponse } from '@/shared/types/ApiResponseType';
+import { Meta } from '@/shared/types/PaginationType';
+import { customFetch } from '@/shared/utils/fetcher';
 
 interface FetchStoriesParams {
   sortBy?: StoriesSortOption['sortBy'];
   period?: StoriesSortOption['period'];
 }
 
-export const fetchStories = async (
-  params?: FetchStoriesParams
-): Promise<StoriesResponse> => {
+export const fetchStories = async (params?: FetchStoriesParams) => {
   const queryParams = new URLSearchParams();
 
   if (params?.sortBy) {
-    queryParams.append('sortBy', params.sortBy);
+    queryParams.append('sortBy', params.sortBy.toUpperCase());
   }
   if (params?.period) {
-    queryParams.append('period', params.period);
+    queryParams.append('period', params.period.toUpperCase());
   }
 
-  const isServerComponent = typeof window === 'undefined';
-
-  const baseUrl = isServerComponent
-    ? (process.env.INTERNAL_API_URL ?? 'http://backend:3000') // 서버 환경 (Docker 내부)
-    : (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000'); // 클라이언트 환경 (브라우저)
-
-  const queryString = queryParams.toString();
-  const url = `${baseUrl}/api/stories${queryString ? `?${queryString}` : ''}`;
-
-  const response = await fetch(url, {
-    cache: 'no-store',
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch stories');
-  }
-
-  const data = (await response.json()) as StoriesResponse;
+  const data = await customFetch<
+    ApiResponse<{
+      items: Story[];
+      meta: Meta;
+    }>
+  >(`/api/stories?${queryParams.toString()}`);
 
   return data;
 };
 
 export const getStoryById = async (id: string) => {
-  const isServerComponent = typeof window === 'undefined';
-
-  const baseUrl = isServerComponent
-    ? (process.env.INTERNAL_API_URL ?? 'http://backend:3000') // 서버 환경 (Docker 내부)
-    : (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000'); // 클라이언트 환경 (브라우저)
-
-  const url = `${baseUrl}/api/stories/${id}`;
-
-  const response = await fetch(url, {
-    cache: 'no-store',
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch story by ID');
-  }
-
-  const data = (await response.json()) as StoryDetailResponse;
+  const data = await customFetch<ApiResponse<Story>>(`/api/stories/${id}`);
 
   return data;
 };

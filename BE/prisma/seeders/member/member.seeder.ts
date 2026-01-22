@@ -10,7 +10,7 @@ export async function seedMembers(prisma: PrismaClient) {
     where: { id: 1n },
     update: {},
     create: {
-      githubUniqueId: '29221823',
+      githubId: parseInt('29221823', 10),
       githubLogin: 'JangDongHo',
       nickname: 'willy',
       avatarUrl: 'https://avatars.githubusercontent.com/u/29221823?v=4',

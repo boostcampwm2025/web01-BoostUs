@@ -59,23 +59,6 @@ export interface StoryDetail {
   };
 }
 
-export interface StoriesResponse {
-  success: boolean;
-  message: string;
-  error: string | null;
-  data: {
-    items: Story[];
-    meta: object; // 우선 제외
-  };
-}
-
-export interface StoryDetailResponse {
-  success: boolean;
-  message: string;
-  error: string | null;
-  data: StoryDetail;
-}
-
 export interface StoriesSortOption {
   sortBy: 'latest' | 'views' | 'likes';
   period: 'all' | 'daily' | 'weekly' | 'monthly';

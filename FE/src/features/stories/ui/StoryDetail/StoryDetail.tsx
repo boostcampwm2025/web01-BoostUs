@@ -1,4 +1,5 @@
 import type { StoryDetail } from '@/features/stories/model/stories.type';
+import BackButton from '@/shared/ui/BackButton';
 import MarkdownViewer from '@/shared/ui/MarkdownViewer';
 import { Calendar, Eye, Heart } from 'lucide-react';
 import Image from 'next/image';
@@ -7,7 +8,8 @@ import Link from 'next/link';
 const StoryDetail = ({ story }: { story: StoryDetail }) => {
   return (
     <article className="mx-auto flex w-full max-w-3xl flex-col items-start justify-center">
-      <h1 className="text-neutral-text-strong text-display-32 w-full leading-tight break-all">
+      <BackButton />
+      <h1 className="text-neutral-text-strong text-display-32 w-full mt-4 leading-tight break-all">
         {story.title}
       </h1>
       <div className="mt-4 flex flex-row items-center gap-2">
