@@ -1,6 +1,5 @@
 import { StoriesPageContent, StoriesSortOption } from '@/features/stories';
 import { fetchStories } from '@/features/stories/api/stories.api';
-import { Suspense } from 'react';
 
 interface StoriesPageProps {
   searchParams: Promise<{
@@ -17,11 +16,7 @@ const StoriesPage = async ({ searchParams }: StoriesPageProps) => {
   });
   const initialStories = response.data.items;
 
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <StoriesPageContent initialStories={initialStories} />
-    </Suspense>
-  );
+  return <StoriesPageContent initialStories={initialStories} />;
 };
 
 export default StoriesPage;

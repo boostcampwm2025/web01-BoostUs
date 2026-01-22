@@ -9,17 +9,19 @@ import { customFetch } from '@/shared/utils/fetcher';
 interface FetchStoriesParams {
   sortBy?: StoriesSortOption['sortBy'];
   period?: StoriesSortOption['period'];
+  query?: string;
+  cursor?: string;
+  size?: number;
 }
 
 export const fetchStories = async (params?: FetchStoriesParams) => {
   const queryParams = new URLSearchParams();
 
-  if (params?.sortBy) {
-    queryParams.append('sortBy', params.sortBy.toUpperCase());
-  }
-  if (params?.period) {
-    queryParams.append('period', params.period.toUpperCase());
-  }
+  if (params?.sortBy) queryParams.append('sortBy', params.sortBy.toUpperCase());
+  if (params?.period) queryParams.append('period', params.period.toUpperCase());
+  if (params?.query) queryParams.append('query', params.query);
+  if (params?.cursor) queryParams.append('cursor', params.cursor);
+  if (params?.size) queryParams.append('size', params.size.toString());
 
   const data = await customFetch<
     ApiResponse<{
