@@ -28,12 +28,14 @@ export interface QuestionDetail extends Question {
 
 export interface Answer {
   id: string;
+  questionId: string;
   contents: string;
   upCount: number;
   downCount: number;
-  isAceepted: boolean;
+  isAccepted: boolean;
   createdAt: string;
-  user: Member;
+  updatedAt: string;
+  member: Member;
 }
 
 export interface QuestionCounts {
