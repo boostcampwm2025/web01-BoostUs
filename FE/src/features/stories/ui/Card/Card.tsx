@@ -1,7 +1,10 @@
+'use client';
+
 import Image from 'next/image';
 import { Eye, Heart } from 'lucide-react';
 import Link from 'next/link';
 import type { StoriesCard } from '@/features/stories/model/stories.type';
+import { useState } from 'react';
 
 interface StoriesCardProps {
   id: string;
@@ -11,18 +14,30 @@ interface StoriesCardProps {
 const DEFAULT_THUMBNAIL = '/FE/src/assets/NoImage.png';
 
 const StoriesCard = ({ id, story }: StoriesCardProps) => {
-  const thumbnailSrc = story.thumbnailUrl ?? DEFAULT_THUMBNAIL;
+  const [isImageError, setIsImageError] = useState(false);
+
+  const [prevUrl, setPrevUrl] = useState(story.thumbnailUrl);
+
+  if (story.thumbnailUrl !== prevUrl) {
+    setPrevUrl(story.thumbnailUrl);
+    setIsImageError(false);
+  }
+
+  const currentSrc = isImageError
+    ? DEFAULT_THUMBNAIL
+    : (story.thumbnailUrl ?? DEFAULT_THUMBNAIL);
 
   return (
     <Link href={`/stories/${id}`}>
       <div className="bg-neutral-surface-bold border-neutral-border-default hover:shadow-default grid w-full cursor-pointer grid-rows-[4fr_6fr] overflow-hidden rounded-2xl border transition-shadow duration-150">
         <div className="relative w-full">
           <Image
-            src={thumbnailSrc}
+            src={currentSrc}
             alt={`${story.title} 글의 썸네일 이미지`}
             fill
             className="object-cover"
             priority
+            onError={() => setIsImageError(true)}
           />
         </div>
         <div className="px-3 py-2">
