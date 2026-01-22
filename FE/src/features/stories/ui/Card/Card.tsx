@@ -11,7 +11,7 @@ interface StoriesCardProps {
   story: StoriesCard;
 }
 
-const DEFAULT_THUMBNAIL = '/FE/src/assets/NoImage.png';
+const DEFAULT_THUMBNAIL = '/FE/public/assets/NoImage.png';
 
 const StoriesCard = ({ id, story }: StoriesCardProps) => {
   const [isImageError, setIsImageError] = useState(false);
