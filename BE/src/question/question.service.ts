@@ -331,7 +331,7 @@ export class QuestionService {
     const memberId = BigInt(memberIdStr);
 
     await this.questionRepo.like(questionId, memberId);
-    return this.findOne(questionIdStr);
+    return questionId;
   }
 
   async dislike(questionIdStr: string, memberIdStr: string | undefined) {
@@ -341,6 +341,6 @@ export class QuestionService {
     const memberId = BigInt(memberIdStr);
 
     await this.questionRepo.dislike(questionId, memberId);
-    return this.findOne(questionIdStr);
+    return questionId;
   }
 }

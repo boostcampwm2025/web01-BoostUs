@@ -162,8 +162,8 @@ export class QuestionController {
   })
   @ApiResponse({ status: 200, description: '질문 좋아요 성공' })
   @ApiResponse({ status: 404, description: '질문을 찾을 수 없음' })
-  like(@Param('id') questionId: string, @Headers('memberId') memberId: string) {
-    return this.questionService.like(questionId, memberId);
+  async like(@Param('id') questionId: string, @Headers('memberId') memberId: string) {
+    return { questionId: await this.questionService.like(questionId, memberId) };
   }
 
   @Post(':id/dislike')
@@ -174,7 +174,7 @@ export class QuestionController {
   })
   @ApiResponse({ status: 200, description: '질문 싫어요 성공' })
   @ApiResponse({ status: 404, description: '질문을 찾을 수 없음' })
-  dislike(@Param('id') questionId: string, @Headers('memberId') memberId: string) {
-    return this.questionService.dislike(questionId, memberId);
+  async dislike(@Param('id') questionId: string, @Headers('memberId') memberId: string) {
+    return { questionId: await this.questionService.dislike(questionId, memberId) };
   }
 }

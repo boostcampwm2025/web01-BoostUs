@@ -102,4 +102,23 @@ export class AnswerService {
     await this.answerRepo.update(id, { state: 'DELETED' });
     return { id: idstr };
   }
+  async like(answerIdStr: string, memberIdStr: string | undefined) {
+    if (!memberIdStr) throw new BadRequestException('로그인을 하셨어야죠');
+
+    const answerId = BigInt(answerIdStr);
+    const memberId = BigInt(memberIdStr);
+
+    await this.answerRepo.like(answerId, memberId);
+    return answerId;
+  }
+
+  async dislike(answerIdStr: string, memberIdStr: string | undefined) {
+    if (!memberIdStr) throw new BadRequestException('로그인을 하셨어야죠');
+
+    const answerId = BigInt(answerIdStr);
+    const memberId = BigInt(memberIdStr);
+
+    await this.answerRepo.dislike(answerId, memberId);
+    return answerId;
+  }
 }
