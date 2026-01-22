@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, ContentState } from 'src/generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { VoteType } from 'src/generated/prisma/client';
 
 export type CreateQuestionInput = {
   memberId: bigint;
@@ -165,5 +166,56 @@ export class QuestionRepository {
         select: { memberId: true },
       })
       .then((r) => r?.memberId ?? null);
+  }
+
+  async like(questionId: bigint, memberId: bigint) {
+    const existing = await this.prisma.questionVote.findUnique({
+      where: {
+        memberId_questionId: {
+          memberId,
+          questionId,
+        },
+      },
+    });
+
+    if (!existing) {
+      await this.prisma.questionVote.create({
+        data: {
+          memberId,
+          questionId,
+          voteType: VoteType.UP,
+        },
+      });
+
+      await this.prisma.question.update({
+        where: { id: questionId },
+        data: { upCount: { increment: 1 } },
+      });
+    }
+  }
+  async dislike(questionId: bigint, memberId: bigint) {
+    const existing = await this.prisma.questionVote.findUnique({
+      where: {
+        memberId_questionId: {
+          memberId,
+          questionId,
+        },
+      },
+    });
+
+    if (!existing) {
+      await this.prisma.questionVote.create({
+        data: {
+          memberId,
+          questionId,
+          voteType: VoteType.DOWN,
+        },
+      });
+
+      await this.prisma.question.update({
+        where: { id: questionId },
+        data: { downCount: { increment: 1 } },
+      });
+    }
   }
 }

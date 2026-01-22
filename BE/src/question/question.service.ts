@@ -323,4 +323,24 @@ export class QuestionService {
 
     return this.findOne(questionIdStr);
   }
+
+  async like(questionIdStr: string, memberIdStr: string | undefined) {
+    if (!memberIdStr) throw new BadRequestException('로그인을 하셨어야죠');
+
+    const questionId = BigInt(questionIdStr);
+    const memberId = BigInt(memberIdStr);
+
+    await this.questionRepo.like(questionId, memberId);
+    return this.findOne(questionIdStr);
+  }
+
+  async dislike(questionIdStr: string, memberIdStr: string | undefined) {
+    if (!memberIdStr) throw new BadRequestException('로그인을 하셨어야죠');
+
+    const questionId = BigInt(questionIdStr);
+    const memberId = BigInt(memberIdStr);
+
+    await this.questionRepo.dislike(questionId, memberId);
+    return this.findOne(questionIdStr);
+  }
 }

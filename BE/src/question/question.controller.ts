@@ -153,4 +153,28 @@ export class QuestionController {
   ) {
     return this.questionService.accept(questionId, answerId, memberId);
   }
+
+  @Post(':id/like')
+  @responseMessage('질문 좋아요 성공')
+  @ApiOperation({
+    summary: '질문 좋아요',
+    description: '질문에 좋아요를 누릅니다.',
+  })
+  @ApiResponse({ status: 200, description: '질문 좋아요 성공' })
+  @ApiResponse({ status: 404, description: '질문을 찾을 수 없음' })
+  like(@Param('id') questionId: string, @Headers('memberId') memberId: string) {
+    return this.questionService.like(questionId, memberId);
+  }
+
+  @Post(':id/dislike')
+  @responseMessage('질문 싫어요 성공')
+  @ApiOperation({
+    summary: '질문 싫어요',
+    description: '질문에 싫어요를 누릅니다.',
+  })
+  @ApiResponse({ status: 200, description: '질문 싫어요 성공' })
+  @ApiResponse({ status: 404, description: '질문을 찾을 수 없음' })
+  dislike(@Param('id') questionId: string, @Headers('memberId') memberId: string) {
+    return this.questionService.dislike(questionId, memberId);
+  }
 }
