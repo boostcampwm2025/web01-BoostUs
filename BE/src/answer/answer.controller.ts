@@ -38,8 +38,6 @@ export class AnswerController {
     @Headers('memberId') memberId: string,
     @Body() createAnswerDto: CreateAnswerDto,
   ) {
-    console.log({ memberId, qid, headers: '...' });
-
     return this.answerService.create(memberId, qid, createAnswerDto);
   }
 
@@ -82,5 +80,39 @@ export class AnswerController {
   })
   remove(@Param('id') id: string, @Headers('memberId') memberId: string) {
     return this.answerService.delete(id, memberId);
+  }
+
+  @Post(':id/like')
+  @responseMessage('답변 좋아요 성공')
+  @ApiHeader({
+    name: 'memberId',
+    description: '작성자 멤버 ID',
+    required: true,
+  })
+  @ApiOperation({
+    summary: '답변 좋아요',
+    description: '답변에 좋아요를 누릅니다.',
+  })
+  @ApiResponse({ status: 200, description: '답변 좋아요 성공' })
+  @ApiResponse({ status: 404, description: '답변을 찾을 수 없음' })
+  async like(@Param('id') answerId: string, @Headers('memberId') memberId: string) {
+    return { answerId: await this.answerService.like(answerId, memberId) };
+  }
+
+  @Post(':id/dislike')
+  @responseMessage('답변 싫어요 성공')
+  @ApiHeader({
+    name: 'memberId',
+    description: '작성자 멤버 ID',
+    required: true,
+  })
+  @ApiOperation({
+    summary: '답변 싫어요',
+    description: '답변에 싫어요를 누릅니다.',
+  })
+  @ApiResponse({ status: 200, description: '답변 싫어요 성공' })
+  @ApiResponse({ status: 404, description: '답변을 찾을 수 없음' })
+  async dislike(@Param('id') answerId: string, @Headers('memberId') memberId: string) {
+    return { answerId: await this.answerService.dislike(answerId, memberId) };
   }
 }

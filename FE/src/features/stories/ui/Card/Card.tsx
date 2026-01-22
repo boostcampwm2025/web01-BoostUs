@@ -1,19 +1,43 @@
+'use client';
+
 import Image from 'next/image';
 import { Eye, Heart } from 'lucide-react';
-import { StoriesCardProps } from '@/features/stories/model/stories.type';
 import Link from 'next/link';
+import type { StoriesCard as StoriesCardType } from '@/features/stories/model/stories.type';
+import { useState } from 'react';
+
+interface StoriesCardProps {
+  id: string;
+  story: StoriesCardType;
+}
+
+const DEFAULT_THUMBNAIL = '/FE/public/assets/NoImage.png';
 
 const StoriesCard = ({ id, story }: StoriesCardProps) => {
+  const [isImageError, setIsImageError] = useState(false);
+
+  const [prevUrl, setPrevUrl] = useState(story.thumbnailUrl);
+
+  if (story.thumbnailUrl !== prevUrl) {
+    setPrevUrl(story.thumbnailUrl);
+    setIsImageError(false);
+  }
+
+  const currentSrc = isImageError
+    ? DEFAULT_THUMBNAIL
+    : (story.thumbnailUrl ?? DEFAULT_THUMBNAIL);
+
   return (
-    <Link href={`/stories/${id}`} target="_blank" rel="noopener noreferrer">
+    <Link href={`/stories/${id}`}>
       <div className="bg-neutral-surface-bold border-neutral-border-default hover:shadow-default grid w-full cursor-pointer grid-rows-[4fr_6fr] overflow-hidden rounded-2xl border transition-shadow duration-150">
         <div className="relative w-full">
           <Image
-            src={story.thumbnailUrl}
+            src={currentSrc}
             alt={`${story.title} 글의 썸네일 이미지`}
             fill
             className="object-cover"
             priority
+            onError={() => setIsImageError(true)}
           />
         </div>
         <div className="px-3 py-2">
@@ -23,9 +47,11 @@ const StoriesCard = ({ id, story }: StoriesCardProps) => {
               <span className="text-body-14 text-neutral-text-default">
                 {story.member.nickname}
               </span>
-              <span className="text-body-12 text-neutral-text-weak">
-                {story.member.cohort}기
-              </span>
+              {story.member.cohort && (
+                <span className="text-body-12 text-neutral-text-weak">
+                  {story.member.cohort}기
+                </span>
+              )}
             </div>
           </div>
           <h3 className="text-neutral-text-strong text-display-20 mt-4 line-clamp-1">

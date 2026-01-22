@@ -149,6 +149,49 @@ export class FeedParser {
 
     // <img 태그의 src 속성만 정확히 추출
     const imgMatch = html.match(/<img\s+[^>]*?src=["']([^"']+)["']/i);
-    return imgMatch ? imgMatch[1] : undefined;
+    const imageUrl = imgMatch ? imgMatch[1] : '';
+
+    // 이미지 URL 검증
+    if (!this.isValidImageUrl(imageUrl)) {
+      return undefined;
+    }
+
+    return imageUrl;
+  }
+
+  /**
+   * 이미지 URL 검증
+   * @param url 이미지 URL
+   * @returns 검증 결과
+   */
+  private isValidImageUrl(url: string): boolean {
+    // HTTPS만 허용
+    if (!url.startsWith('https://')) {
+      return false;
+    }
+
+    // Placeholder 이미지 필터링
+    const blacklist = [
+      'no-image',
+      'noimage',
+      'placeholder',
+      'default-image',
+      'default_image',
+      'tistory_admin/static/images/no-image',
+    ];
+
+    const lowerUrl = url.toLowerCase();
+    if (blacklist.some((pattern) => lowerUrl.includes(pattern))) {
+      return false;
+    }
+
+    // 이미지 확장자 검증 (선택사항)
+    const imageExtensions = /\.(jpg|jpeg|png|gif|webp)(\?|$)/i;
+    // 확장자가 있으면 확인, 없으면 일단 허용 (CDN URL 등)
+    if (url.match(/\.[a-z]+(\?|$)/i) && !imageExtensions.test(url)) {
+      return false;
+    }
+
+    return true;
   }
 }

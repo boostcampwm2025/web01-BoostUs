@@ -27,8 +27,6 @@ cp .env.example .env
 
 - `BE_API_URL`: BE 서버 URL (기본: http://localhost:3000)
 - `CRON_SCHEDULE`: Cron 표현식 (기본: 매 시간)
-- `NODE_ENV`: 실행 환경 (development, production)
-- `LOG_LEVEL`: 로그 레벨 (info, debug, error)
 
 ## 실행
 
