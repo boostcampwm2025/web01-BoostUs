@@ -1,6 +1,7 @@
 import {
   StoriesSortOption,
   Story,
+  StoryDetail,
 } from '@/features/stories/model/stories.type';
 import { ApiResponse } from '@/shared/types/ApiResponseType';
 import { Meta } from '@/shared/types/PaginationType';
@@ -34,7 +35,9 @@ export const fetchStories = async (params?: FetchStoriesParams) => {
 };
 
 export const getStoryById = async (id: string) => {
-  const data = await customFetch<ApiResponse<Story>>(`/api/stories/${id}`);
+  const data = await customFetch<ApiResponse<StoryDetail>>(
+    `/api/stories/${id}`
+  );
 
   return data;
 };
