@@ -1,30 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
-
-type TokenResponse = {
-  access_token: string;
-  token_type: string;
-  scope: string;
-};
-
-type GithubUserResponse = {
-  id: number;
-  login: string;
-  avatar_url: string;
-};
-
-type GithubOrgResponse = {
-  login: string;
-  id: number;
-};
-
-type GithubLoginPayload = {
-  githubId: number;
-  githubLogin: string;
-  avatarUrl: string;
-  orgLogins: string[];
-};
+import {
+  TokenResponse,
+  GithubUserResponse,
+  GithubOrgResponse,
+  GithubLoginPayload,
+} from './type/github-client.type';
 
 @Injectable()
 export class GithubAuthClient {
