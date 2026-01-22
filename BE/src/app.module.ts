@@ -10,6 +10,7 @@ import { QuestionModule } from './question/question.module';
 import { StoryModule } from './story/story.module';
 import { TechStackModule } from './tech-stack/tech-stack.module';
 import { AuthModule } from './auth/auth.module';
+import { AnswerModule } from './answer/answer.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AuthModule } from './auth/auth.module';
     ProjectModule,
     TechStackModule,
     AuthModule,
+    AnswerModule,
   ],
   providers: [
     Logger,

@@ -91,7 +91,7 @@ export class QuestionController {
     status: 404,
     description: '질문을 찾을 수 없음',
   })
-  findOne(@Param('id') id: string) {
-    return this.questionService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    return { message: '질문 상세 조회 성공', data: await this.questionService.findOne(id) };
   }
 }

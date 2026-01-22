@@ -75,7 +75,15 @@ export class QuestionRepository {
       where: { id },
       include: {
         member: { select: { id: true, nickname: true, avatarUrl: true, cohort: true } },
-        answers: true,
+        answers: {
+          where: { state: ContentState.PUBLISHED },
+          orderBy: { createdAt: 'desc' },
+          include: {
+            member: {
+              select: { id: true, nickname: true, avatarUrl: true, cohort: true },
+            },
+          },
+        },
         _count: { select: { answers: true } },
       },
     });
