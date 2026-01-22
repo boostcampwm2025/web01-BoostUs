@@ -22,7 +22,7 @@ export interface FeedListData {
 export interface ApiResponse<T> {
   success: boolean;
   message: string;
-  error: any;
+  error?: unknown;
   data: T;
 }
 

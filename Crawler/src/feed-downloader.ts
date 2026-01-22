@@ -13,11 +13,11 @@ export class FeedDownloader {
   async download(feedUrl: string): Promise<string> {
     try {
       console.log(`📥 Downloading feed from: ${feedUrl}`);
-      
+
       const response = await axios.get(feedUrl, {
         headers: {
           'User-Agent': 'BoostUs-RSS-Crawler/1.0',
-          'Accept': 'application/rss+xml, application/xml, text/xml, */*',
+          Accept: 'application/rss+xml, application/xml, text/xml, */*',
         },
         timeout: 30000, // 30초 타임아웃
       });
