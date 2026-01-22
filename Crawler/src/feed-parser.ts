@@ -186,7 +186,7 @@ export class FeedParser {
     }
 
     // 이미지 확장자 검증 (선택사항)
-    const imageExtensions = /\.(jpg|jpeg|png|gif|webp|svg)(\?|$)/i;
+    const imageExtensions = /\.(jpg|jpeg|png|gif|webp)(\?|$)/i;
     // 확장자가 있으면 확인, 없으면 일단 허용 (CDN URL 등)
     if (url.match(/\.[a-z]+(\?|$)/i) && !imageExtensions.test(url)) {
       return false;
