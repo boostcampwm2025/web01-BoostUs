@@ -1,5 +1,5 @@
 import { ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ResponseInterceptor } from './common/interceptor/response.interceptor';
@@ -19,9 +19,9 @@ async function bootstrap() {
     origin: ['http://localhost:5173'],
     credentials: true,
   });
-
+  const reflector = app.get(Reflector);
   // 응답 인터셉터 적용
-  app.useGlobalInterceptors(new ResponseInterceptor());
+  app.useGlobalInterceptors(new ResponseInterceptor(reflector));
 
   // 유효성 검사 파이프 적용
   // transform: true - 요청 데이터를 클래스 인스턴스로 자동 변환

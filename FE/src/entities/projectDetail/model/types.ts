@@ -9,7 +9,7 @@ export interface ProjectData {
   title: string;
   description: string;
   summary: string;
-  techStacks: string[];
+  techStack: string[];
   contents: string; // Markdown 텍스트
   repoUrl: string;
   demoUrl: string;

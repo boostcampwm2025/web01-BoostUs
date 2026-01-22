@@ -72,7 +72,7 @@ const Header = () => {
           ))}
         </nav>
         <Link
-          href="/"
+          href="/login"
           className="transition-colors text-string-16 text-neutral-text-strong hover:text-accent-blue"
         >
           로그인
