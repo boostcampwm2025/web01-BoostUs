@@ -62,7 +62,7 @@ const ProjectListSection = () => {
     })
     .sort((a, b) => {
       if (sortOrder === SORT_ORDER.TEAM_NUM) {
-        return a.id - b.id;
+        return a.teamNumber - b.teamNumber;
       } else {
         return b.viewCount - a.viewCount;
       }

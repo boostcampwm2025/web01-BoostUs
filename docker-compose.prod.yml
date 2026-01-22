@@ -28,16 +28,7 @@ services:
     networks:
       - boostus_network
     healthcheck:
-      test:
-        [
-          "CMD",
-          "mysqladmin",
-          "ping",
-          "-h",
-          "127.0.0.1",
-          "-u${MYSQL_USER}",
-          "-p${MYSQL_PASSWORD}",
-        ]
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}"]
       interval: 5s
       timeout: 3s
       retries: 20
@@ -79,6 +70,20 @@ services:
       - backend
     networks:
       - boostus_network
+
+  crawler:
+    # CI에서 빌드한 크롤러 이미지 사용
+    image: ${CRAWLER_IMAGE}
+    container_name: boostus_crawler
+    restart: unless-stopped
+    expose:
+      - "5000"
+    env_file:
+      - .env.prod
+    networks:
+      - boostus_network
+    depends_on:
+      - backend
 
 networks:
   boostus_network:

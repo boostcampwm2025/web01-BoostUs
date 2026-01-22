@@ -2,7 +2,6 @@
 
 import { useStoriesContext } from '@/features/stories/model/stories.context';
 import DropdownChip from '@/features/stories/ui/ListDropdown/DropdownChip';
-import DropdownTitle from '@/features/stories/ui/ListDropdown/DropdownTitle';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
@@ -70,9 +69,8 @@ const StoriesListDropdown = () => {
             animate={{ opacity: 1, scaleY: 1, y: 0 }}
             exit={{ opacity: 0, scaleY: 0, y: -10 }}
             transition={{ duration: 0.2, ease: 'easeInOut' }}
-            className="bg-neutral-surface-strong shadow-default absolute right-0 z-20 mt-4 flex w-58 origin-top flex-col overflow-hidden rounded-2xl"
+            className="bg-neutral-surface-bold border border-neutral-border-default shadow-default absolute right-0 z-20 mt-4 flex w-58 origin-top flex-col overflow-hidden rounded-2xl"
           >
-            <DropdownTitle />
             <div className="flex flex-col px-3 py-2">
               <motion.div
                 layout="position"
@@ -103,7 +101,7 @@ const StoriesListDropdown = () => {
                     transition={{ duration: 0.2 }}
                     className="overflow-hidden"
                   >
-                    <div className="bg-neutral-surface-default mt-2 flex h-8 w-full flex-row justify-between gap-2 rounded-lg px-1 py-1">
+                    <div className="bg-neutral-surface-strong mt-2 flex h-8 w-full flex-row justify-between gap-2 rounded-lg px-1 py-1">
                       {PERIOD_OPTIONS.map((option) => {
                         const isSelected = period === option.key;
 

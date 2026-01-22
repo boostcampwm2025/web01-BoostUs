@@ -25,6 +25,7 @@ export class AnswerService {
 
     return {
       id: created.id.toString(),
+      questionId: created.questionId.toString(),
       contents: created.contents,
       isAccepted: created.isAccepted,
       upCount: created.upCount,
@@ -32,7 +33,7 @@ export class AnswerService {
       state: created.state,
       createdAt: created.createdAt.toISOString(),
       updatedAt: created.updatedAt.toISOString(),
-      user: {
+      member: {
         id: created.member.id.toString(),
         nickname: created.member.nickname,
         avatarUrl: created.member.avatarUrl,
@@ -66,6 +67,7 @@ export class AnswerService {
 
     return {
       id: updated.id.toString(),
+      questionId: updated.questionId.toString(),
       contents: updated.contents,
       isAccepted: updated.isAccepted,
       upCount: updated.upCount,
@@ -73,7 +75,7 @@ export class AnswerService {
       state: updated.state,
       createdAt: updated.createdAt.toISOString(),
       updatedAt: updated.updatedAt.toISOString(),
-      user: {
+      member: {
         id: updated.member.id.toString(),
         nickname: updated.member.nickname,
         avatarUrl: updated.member.avatarUrl,
@@ -99,5 +101,24 @@ export class AnswerService {
     // ✅ 삭제
     await this.answerRepo.update(id, { state: 'DELETED' });
     return { id: idstr };
+  }
+  async like(answerIdStr: string, memberIdStr: string | undefined) {
+    if (!memberIdStr) throw new BadRequestException('로그인을 하셨어야죠');
+
+    const answerId = BigInt(answerIdStr);
+    const memberId = BigInt(memberIdStr);
+
+    await this.answerRepo.like(answerId, memberId);
+    return answerId;
+  }
+
+  async dislike(answerIdStr: string, memberIdStr: string | undefined) {
+    if (!memberIdStr) throw new BadRequestException('로그인을 하셨어야죠');
+
+    const answerId = BigInt(answerIdStr);
+    const memberId = BigInt(memberIdStr);
+
+    await this.answerRepo.dislike(answerId, memberId);
+    return answerId;
   }
 }
