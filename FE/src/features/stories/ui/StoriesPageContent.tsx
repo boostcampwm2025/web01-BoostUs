@@ -7,6 +7,7 @@ import StoriesList from '@/features/stories/ui/List/List';
 import StoriesListDropdown from '@/features/stories/ui/ListDropdown/Dropdown';
 import StoriesSearchBar from '@/features/stories/ui/SearchBar/SearchBar';
 import StoriesRanking from '@/features/stories/ui/StoriesRanking/Ranking';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   AnimatePresence,
   motion,
@@ -89,10 +90,24 @@ const StoriesLayout = ({ initialStories }: { initialStories: Story[] }) => {
 };
 
 const StoriesPageContent = ({ initialStories }: StoriesPageContentProps) => {
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            refetchOnWindowFocus: false,
+            staleTime: 60 * 1000,
+          },
+        },
+      })
+  );
+
   return (
-    <StoriesProvider>
-      <StoriesLayout initialStories={initialStories} />
-    </StoriesProvider>
+    <QueryClientProvider client={queryClient}>
+      <StoriesProvider>
+        <StoriesLayout initialStories={initialStories} />
+      </StoriesProvider>
+    </QueryClientProvider>
   );
 };
 
