@@ -14,7 +14,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
 
-  trustHost: false,
+  trustHost: true,
 
   callbacks: {
     jwt({ token, account }) {

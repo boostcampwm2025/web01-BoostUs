@@ -115,7 +115,7 @@ async function upsertProject(prisma: PrismaClient, projectData: ProjectData, con
     });
   }
 
-  // 3) TechStacks: (projectId, techStackId) 복합 유니크로 upsert
+  // 3) TechStackSelector: (projectId, techStackId) 복합 유니크로 upsert
   for (const techStackId of techStackIds) {
     await prisma.projectTechStack.upsert({
       where: {
