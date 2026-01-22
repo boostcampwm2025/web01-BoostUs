@@ -2,6 +2,7 @@ export type SortOrder = 'TEAM_NUM' | 'VIEW_COUNT';
 
 export interface Project {
   id: number;
+  teamNumber: number;
   thumbnailUrl: string | null;
   title: string;
   description: string;
