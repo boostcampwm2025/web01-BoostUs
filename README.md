@@ -29,6 +29,8 @@
 
 **폴포지션**은 레이싱에서 출발선 맨 앞자리를 의미해요.
 
+<br>
+
 ## 🔹 팀원 소개
 
 <table>
@@ -64,6 +66,8 @@
   </tr>
 </table>
 
+<br>
+
 ## 🔹 서비스 아키텍처
 
 <img width="95%" alt="image" src="https://github.com/user-attachments/assets/feea07bc-d233-4046-981a-fe3e3357bbf4" />
@@ -81,6 +85,7 @@
 | **Infra & DevOps** | ![NCP](https://img.shields.io/badge/Naver%20Cloud-03C75A?style=for-the-badge&logo=naver&logoColor=white) ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge\&logo=docker\&logoColor=white) ![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge\&logo=nginx\&logoColor=white) ![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)  |
 
 <br>
+
 
 
 
