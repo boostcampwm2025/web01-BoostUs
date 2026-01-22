@@ -9,12 +9,13 @@ interface Props {
 
 const QuestionsDetailPage = async ({ params }: Props) => {
   const { id } = await params;
-  const response = await getQuestionById(id);
-  const question = response.data.question;
-  const answers = response.data.answers;
-  const data = { question, answers };
 
-  return <QuestionDetail data={data} />;
+  const response = await getQuestionById(id);
+  const question = response.data?.question;
+  const answers = response.data?.answers;
+
+  const data = { question, answers: answers || [] };
+  <QuestionDetail data={data} />;
 };
 
 export default QuestionsDetailPage;

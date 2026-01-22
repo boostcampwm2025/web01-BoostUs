@@ -6,36 +6,62 @@ import BackButton from '@/shared/ui/BackButton';
 import { Eye, MessageCircle } from 'lucide-react';
 
 const QuestionDetail = ({
-  data, // TODO: 백엔드 API 연결 후 실제 데이터 사용
+  data,
 }: {
   data: { question: QuestionDetail; answers: Answer[] };
 }) => {
+  if (!data?.question) {
+    return (
+      <article className="mx-auto flex w-full max-w-270 flex-col items-start justify-center">
+        <BackButton />
+        <p className="mt-4 text-neutral-text-weak">
+          질문을 불러올 수 없습니다.
+        </p>
+      </article>
+    );
+  }
+
+  const { question, answers } = data;
   return (
     <article className="mx-auto flex w-full max-w-270 flex-col items-start justify-center">
       <BackButton />
       <h1 className="mt-4 text-display-32 text-neutral-text-strong">
-        BoostUs 질문 & 답변 제목
+        {question.title}
       </h1>
       <div className="flex flex-row gap-4 mt-3">
-        <QuestionStatus status={false} />
+        <QuestionStatus status={question.isResolved} />
         <div className="flex flex-row items-center justify-center gap-1">
           <MessageCircle
             className="text-neutral-text-weak"
             strokeWidth={2}
             size={14}
           />
-          <span className="text-neutral-text-weak text-body-12">{1}</span>
+          <span className="text-neutral-text-weak text-body-12">
+            {question.answers.length}
+          </span>
         </div>
         <div className="flex flex-row items-center justify-center gap-1">
           <Eye className="text-neutral-text-weak" strokeWidth={2} size={14} />
-          <span className="text-neutral-text-weak text-body-12">{123}</span>
+          <span className="text-neutral-text-weak text-body-12">
+            {question.viewCount}
+          </span>
         </div>
       </div>
-      <QuestionCard />
-      <h2 className="mt-10 text-display-24 text-neutral-text-strong">
-        1개의 답변
-      </h2>
-      <AnswerCard />
+      <QuestionCard question={question} />
+      {answers ? (
+        <>
+          <h2 className="mt-12 text-display-24 text-neutral-text-strong">
+            {question.answers.length}개의 답변
+          </h2>
+          {answers.map((answer) => (
+            <AnswerCard key={answer.id} answer={answer} />
+          ))}
+        </>
+      ) : (
+        <p className="w-full flex items-center justify-center mt-12 text-string-16 text-neutral-text-weak">
+          답변이 없습니다.
+        </p>
+      )}
     </article>
   );
 };

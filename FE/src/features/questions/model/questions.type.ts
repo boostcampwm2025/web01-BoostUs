@@ -23,7 +23,8 @@ export interface Question {
 }
 
 export interface QuestionDetail extends Question {
-  contents: string;
+  content: string;
+  answers: Answer[];
 }
 
 export interface Answer {
@@ -33,7 +34,7 @@ export interface Answer {
   downCount: number;
   isAceepted: boolean;
   createdAt: string;
-  user: Member;
+  member: Member;
 }
 
 export interface QuestionCounts {
