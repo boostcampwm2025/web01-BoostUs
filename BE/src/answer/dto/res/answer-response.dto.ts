@@ -10,6 +10,12 @@ export class AnswerResponseDto {
   id!: string; // BigInt → string
 
   @ApiProperty({
+    description: '질문 ID',
+    example: '1',
+  })
+  questionId!: string; // BigInt → string
+
+  @ApiProperty({
     description: '답변 내용',
     example: '# 답변\n\n그 정도는 알아서 하세요.',
   })

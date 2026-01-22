@@ -25,6 +25,7 @@ export class AnswerService {
 
     return {
       id: created.id.toString(),
+      questionId: created.questionId.toString(),
       contents: created.contents,
       isAccepted: created.isAccepted,
       upCount: created.upCount,
@@ -66,6 +67,7 @@ export class AnswerService {
 
     return {
       id: updated.id.toString(),
+      questionId: updated.questionId.toString(),
       contents: updated.contents,
       isAccepted: updated.isAccepted,
       upCount: updated.upCount,
