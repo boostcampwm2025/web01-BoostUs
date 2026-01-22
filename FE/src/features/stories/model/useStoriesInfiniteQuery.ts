@@ -24,7 +24,6 @@ export const useStoriesInfiniteQuery = ({
         period,
         query: searchQuery,
         cursor: pageParam,
-        size: 2,
       }),
 
     // 첫 요청 시 pageParam의 초기값
