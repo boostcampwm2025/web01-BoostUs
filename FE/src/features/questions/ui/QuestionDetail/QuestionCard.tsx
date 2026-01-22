@@ -1,9 +1,9 @@
 import ListCardChip from '@/features/questions/ui/ListCard/ListCardChip';
 import CardHeader from '@/features/questions/ui/QuestionDetail/CardHeader';
-import QuestionDetail from '@/features/questions/ui/QuestionDetail/QuestionDetail';
+import type { QuestionDetail as QuestionDetailType } from '@/features/questions/model/questions.type';
 import VoteButtons from '@/features/questions/ui/QuestionDetail/VoteButtons';
 
-const QuestionCard = ({ question }: { question: QuestionDetail }) => {
+const QuestionCard = ({ question }: { question: QuestionDetailType }) => {
   return (
     <section className="mt-8 w-full rounded-2xl border border-neutral-border-default bg-neutral-surface-bold">
       <CardHeader question={question} />
