@@ -31,12 +31,10 @@ export const useStoriesInfiniteQuery = ({
 
     // 다음 페이지를 불러올 때 사용할 커서를 결정
     getNextPageParam: (lastPage) => {
-      // API 응답 구조에 따라 meta.hasNextPage가 true면 nextCursor 반환
-      if (lastPage.data.meta.hasNextPage) {
-        return lastPage.data.meta.nextCursor;
-      }
-      // 더 이상 페이지가 없으면 undefined 반환 (fetching 중단)
-      return undefined;
+      const hasNext =
+        lastPage.data.meta.hasNextPage ?? lastPage.data.meta.hasNext;
+      if (!hasNext) return undefined;
+      return lastPage.data.meta.nextCursor ?? undefined;
     },
   });
 };
