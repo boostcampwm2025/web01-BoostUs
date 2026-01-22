@@ -17,7 +17,7 @@ export function parseMarkdownWithFrontmatter(content: string): {
   content: string;
 } {
   // frontmatter가 있는지 확인 (--- 로 시작하는지)
-  const frontmatterRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/;
+  const frontmatterRegex = /^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/;
   const match = content.match(frontmatterRegex);
 
   if (!match) {
