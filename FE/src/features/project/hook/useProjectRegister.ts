@@ -8,6 +8,7 @@ import {
 import { registerProject } from '@/features/project/api/registerProject';
 import { updateProject } from '@/features/project/api/updateProject';
 import { fetchProjectDetail } from '@/entities/projectDetail/api/projectDetailAPI';
+import { useRouter } from 'next/navigation';
 
 const getErrorMessage = (err: unknown): string => {
   if (err instanceof Error) return err.message;
@@ -23,6 +24,7 @@ export const useProjectRegister = (
   editProjectId?: number,
   onClose?: () => void
 ) => {
+  const router = useRouter();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [techStack, setTechStack] = useState<string[]>([]);
   const [participants, setParticipants] = useState<string[]>([]);
@@ -209,9 +211,11 @@ export const useProjectRegister = (
       if (editProjectId) {
         await updateProject(editProjectId, requestBody as any);
         alert('수정되었습니다.');
+        await router.push('/project');
       } else {
         await registerProject(requestBody as any);
         alert('등록되었습니다.');
+        await router.push('/project');
       }
       if (onClose) onClose();
     } catch (error: unknown) {
