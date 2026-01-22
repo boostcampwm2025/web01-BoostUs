@@ -3,12 +3,12 @@
 import Image from 'next/image';
 import { Eye, Heart } from 'lucide-react';
 import Link from 'next/link';
-import type { StoriesCard } from '@/features/stories/model/stories.type';
+import type { StoriesCard as StoriesCardType } from '@/features/stories/model/stories.type';
 import { useState } from 'react';
 
 interface StoriesCardProps {
   id: string;
-  story: StoriesCard;
+  story: StoriesCardType;
 }
 
 const DEFAULT_THUMBNAIL = '/FE/public/assets/NoImage.png';
