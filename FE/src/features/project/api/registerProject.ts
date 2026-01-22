@@ -16,7 +16,7 @@ interface RegisterProjectRequest {
 
   cohort: number;
 
-  techStack?: number[] | null;
+  techStack?: string[] | null;
 
   startDate: string;
   endDate: string;
