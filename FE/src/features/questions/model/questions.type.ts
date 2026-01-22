@@ -6,6 +6,8 @@ export type QuestionsStatusFilter =
   | 'unsolved'
   | 'solved';
 
+export type QuestionsSortBy = 'latest' | 'likes' | 'views';
+
 export interface Question {
   id: string;
   title: string;
@@ -32,4 +34,11 @@ export interface Answer {
   isAceepted: boolean;
   createdAt: string;
   user: Member;
+}
+
+export interface QuestionCounts {
+  total: number;
+  noAnswer: number;
+  unsolved: number;
+  solved: number;
 }

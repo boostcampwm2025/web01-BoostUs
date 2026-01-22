@@ -49,7 +49,7 @@ enum TechStackCategory {
  */
 model Member {
   id              BigInt  @id @default(autoincrement())
-  githubUniqueId  String  @unique @map("github_unique_id")
+  githubId        BigInt  @unique @map("github_id")
   nickname        String  @unique
   avatarUrl       String? @db.VarChar(768) @map("avatar_url")
   cohort          Int?    @db.TinyInt
