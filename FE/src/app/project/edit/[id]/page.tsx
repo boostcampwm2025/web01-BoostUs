@@ -452,7 +452,6 @@ export default function ProjectEditPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            onClick={() => router.push(`/project`)}
             className="rounded-md bg-blue-600 px-6 py-3 font-medium text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
           >
             {isSubmitting ? '저장 중...' : '수정 완료'}
