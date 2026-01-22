@@ -8,7 +8,7 @@ export default function CloseButton() {
 
   return (
     <button
-      onClick={() => router.back()}
+      onClick={() => router.push('/project')}
       className="rounded px-3 py-1 hover:bg-gray-300"
     >
       <X size={24} />

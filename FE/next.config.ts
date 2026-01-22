@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
   rewrites() {
     return [
       {
-        source: '/api/:path((?!auth).*)', // 'auth'가 포함되지 않은 경로만 매칭
+        source: '/api/:path*', // 'auth'가 포함되지 않은 경로만 매칭
         destination: 'http://backend:3000/api/:path*',
       },
     ];

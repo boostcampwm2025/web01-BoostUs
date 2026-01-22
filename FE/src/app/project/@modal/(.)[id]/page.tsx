@@ -1,9 +1,14 @@
 import ProjectDetailModal from '@/widgets/Modal/ProjectDetailModal';
 
-export default function ProjectDetailModalPage() {
-  return (
-    <div>
-      <ProjectDetailModal />
-    </div>
-  );
+export default async function ProjectDetailModalPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const resolvedParams = await params;
+  const projectId = Number(resolvedParams.id);
+
+  if (isNaN(projectId)) return null;
+
+  return <ProjectDetailModal />;
 }
