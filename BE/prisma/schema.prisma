@@ -206,6 +206,7 @@ model Story {
   likes   StoryLike[]
 
   @@unique([feedId, guid])
+  @@index([publishedAt, id])
   @@map("stories")
 }
 
