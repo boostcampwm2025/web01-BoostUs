@@ -20,11 +20,6 @@ export interface StoriesCard {
   member: Member;
 }
 
-export interface StoriesCardProps {
-  id: string;
-  story: StoriesCard;
-}
-
 export interface Story {
   id: string;
   title: string;

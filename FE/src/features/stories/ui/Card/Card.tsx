@@ -1,15 +1,24 @@
 import Image from 'next/image';
 import { Eye, Heart } from 'lucide-react';
-import { StoriesCardProps } from '@/features/stories/model/stories.type';
 import Link from 'next/link';
+import type { StoriesCard } from '@/features/stories/model/stories.type';
+
+interface StoriesCardProps {
+  id: string;
+  story: StoriesCard;
+}
+
+const DEFAULT_THUMBNAIL = '/FE/src/assets/NoImage.png';
 
 const StoriesCard = ({ id, story }: StoriesCardProps) => {
+  const thumbnailSrc = story.thumbnailUrl ?? DEFAULT_THUMBNAIL;
+
   return (
     <Link href={`/stories/${id}`}>
       <div className="bg-neutral-surface-bold border-neutral-border-default hover:shadow-default grid w-full cursor-pointer grid-rows-[4fr_6fr] overflow-hidden rounded-2xl border transition-shadow duration-150">
         <div className="relative w-full">
           <Image
-            src={story.thumbnailUrl}
+            src={thumbnailSrc}
             alt={`${story.title} 글의 썸네일 이미지`}
             fill
             className="object-cover"
@@ -23,9 +32,11 @@ const StoriesCard = ({ id, story }: StoriesCardProps) => {
               <span className="text-body-14 text-neutral-text-default">
                 {story.member.nickname}
               </span>
-              <span className="text-body-12 text-neutral-text-weak">
-                {story.member.cohort}기
-              </span>
+              {story.member.cohort && (
+                <span className="text-body-12 text-neutral-text-weak">
+                  {story.member.cohort}기
+                </span>
+              )}
             </div>
           </div>
           <h3 className="text-neutral-text-strong text-display-20 mt-4 line-clamp-1">
