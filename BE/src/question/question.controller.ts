@@ -137,4 +137,20 @@ export class QuestionController {
   remove(@Param('id') id: string, @Headers('memberId') memberId: string) {
     return this.questionService.delete(id, memberId);
   }
+
+  @Post(':id/answers/:answerId/accept')
+  @responseMessage('답변 채택 성공')
+  @ApiOperation({
+    summary: '답변 채택',
+    description: '질문에 달린 답변을 채택합니다.',
+  })
+  @ApiResponse({ status: 200, description: '답변 채택 성공' })
+  @ApiResponse({ status: 404, description: '질문 또는 답변을 찾을 수 없음' })
+  accept(
+    @Param('id') questionId: string,
+    @Param('answerId') answerId: string,
+    @Headers('memberId') memberId: string,
+  ) {
+    return this.questionService.accept(questionId, answerId, memberId);
+  }
 }

@@ -131,6 +131,33 @@ export class QuestionRepository {
     });
   }
 
+  async acceptAnswer(questionId: bigint, answerId: bigint) {
+    return this.prisma.$transaction(async (tx) => {
+      // 1답변 존재 + questionId 매칭 확인
+      const a = await tx.answer.findUnique({
+        where: { id: answerId },
+        select: { id: true, questionId: true },
+      });
+
+      if (!a) return 'ANSWER_NOT_FOUND' as const;
+      if (a.questionId !== questionId) return 'ANSWER_NOT_IN_QUESTION' as const;
+
+      // 2답변 채택 처리
+      await tx.answer.update({
+        where: { id: answerId },
+        data: { isAccepted: true },
+      });
+
+      // 3질문 해결 처리
+      await tx.question.update({
+        where: { id: questionId },
+        data: { isResolved: true },
+      });
+
+      return 'OK' as const;
+    });
+  }
+
   async findOwnerIdByQuestionId(id: bigint) {
     return this.prisma.question
       .findUnique({

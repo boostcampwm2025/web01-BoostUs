@@ -38,8 +38,6 @@ export class AnswerController {
     @Headers('memberId') memberId: string,
     @Body() createAnswerDto: CreateAnswerDto,
   ) {
-    console.log({ memberId, qid, headers: '...' });
-
     return this.answerService.create(memberId, qid, createAnswerDto);
   }
 

@@ -38,6 +38,7 @@ export class AnswerRepository {
       },
     });
   }
+
   // answer.repository.ts
   findOwnerIdByAnswerId(id: bigint) {
     return this.prisma.answer

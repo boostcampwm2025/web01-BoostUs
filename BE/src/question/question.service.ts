@@ -293,11 +293,34 @@ export class QuestionService {
       throw new ForbiddenException('삭제권한이 없소');
     }
 
-    // ✅ 삭제
     await this.questionRepo.update(id, { state: 'DELETED' });
     return { id: idstr };
   }
   async getQuestionsCount() {
     return this.questionRepo.countByAnswerAndResolution();
+  }
+
+  async accept(questionIdStr: string, answerIdStr: string, memberIdStr: string | undefined) {
+    if (!memberIdStr) throw new BadRequestException('로그인을 하셨어야죠');
+
+    const questionId = BigInt(questionIdStr);
+    const answerId = BigInt(answerIdStr);
+    const memberId = BigInt(memberIdStr);
+
+    const ownerId = await this.questionRepo.findOwnerIdByQuestionId(questionId);
+    if (!ownerId) throw new NotFoundException('질문을 찾을 수 없음');
+
+    if (ownerId !== memberId) {
+      throw new ForbiddenException('채택권한이 없소');
+    }
+
+    const result = await this.questionRepo.acceptAnswer(questionId, answerId);
+
+    if (result === 'ANSWER_NOT_FOUND') throw new NotFoundException('답변을 찾을 수 없음');
+    if (result === 'ANSWER_NOT_IN_QUESTION') {
+      throw new BadRequestException('해당 질문에 달린 답변이 아닙니다');
+    }
+
+    return this.findOne(questionIdStr);
   }
 }
