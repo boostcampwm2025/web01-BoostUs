@@ -1,51 +1,91 @@
 import {
   Answer,
   Question,
+  QuestionCounts,
   QuestionDetail,
+  QuestionsSortBy,
+  QuestionsStatusFilter,
 } from '@/features/questions/model/questions.type';
 import { ApiResponse } from '@/shared/types/ApiResponseType';
+import { Meta } from '@/shared/types/PaginationType';
+import { customFetch } from '@/shared/utils/fetcher';
 
-export const fetchQuestions = async () => {
-  const isServerComponent = typeof window === 'undefined';
+export const getInitialQuestions = async (params?: {
+  status?: QuestionsStatusFilter;
+  sort?: QuestionsSortBy;
+}) => {
+  const searchParams = new URLSearchParams();
 
-  const baseUrl = isServerComponent
-    ? (process.env.INTERNAL_API_URL ?? 'http://backend:3000') // 서버 환경 (Docker 내부)
-    : (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000'); // 클라이언트 환경 (브라우저)
-
-  const response = await fetch(`${baseUrl}/api/questions`, {
-    cache: 'no-store',
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch questions');
+  if (params?.status && params.status !== 'all') {
+    searchParams.append('status', params.status.toUpperCase());
   }
 
-  const data = (await response.json()) as ApiResponse<{ items: Question[] }>;
+  if (params?.sort) {
+    searchParams.append('sort', params.sort.toUpperCase());
+  }
+
+  const queryString = searchParams.toString();
+  const path = queryString ? `/api/questions?${queryString}` : `/api/questions`;
+
+  const data = await customFetch<
+    ApiResponse<{
+      items: Question[];
+      meta: Meta;
+    }>
+  >(path, { cache: 'no-store' });
 
   return data;
 };
 
 export const getQuestionById = async (id: string) => {
-  const isServerComponent = typeof window === 'undefined';
-
-  const baseUrl = isServerComponent
-    ? (process.env.INTERNAL_API_URL ?? 'http://backend:3000') // 서버 환경 (Docker 내부)
-    : (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000'); // 클라이언트 환경 (브라우저)
-
-  const url = `${baseUrl}/api/questions/${id}`;
-
-  const response = await fetch(url, {
-    cache: 'no-store',
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch story by ID');
-  }
-
-  const data = (await response.json()) as ApiResponse<{
-    question: QuestionDetail;
-    answers: Answer[];
-  }>;
+  const data = await customFetch<
+    ApiResponse<{
+      question: QuestionDetail;
+      answers: Answer[];
+    }>
+  >(`/api/questions/${id}`, { cache: 'no-store' });
 
   return data;
+};
+
+export const fetchQuestionsByCursor = async (
+  cursor: Base64URLString | null
+) => {
+  const currentParams = new URLSearchParams(window.location.search);
+
+  const statusParam = currentParams.get('status');
+  if (statusParam) {
+    if (statusParam === 'all') {
+      currentParams.delete('status');
+    } else {
+      currentParams.set('status', statusParam.toUpperCase());
+    }
+  }
+
+  const sortParam = currentParams.get('sort');
+  if (sortParam) {
+    currentParams.set('sort', sortParam.toUpperCase());
+  }
+
+  currentParams.delete('cursor');
+  if (cursor) {
+    currentParams.append('cursor', cursor);
+  }
+
+  const data = await customFetch<
+    ApiResponse<{
+      items: Question[];
+      meta: Meta;
+    }>
+  >(`/api/questions?${currentParams.toString()}`, { cache: 'no-store' });
+
+  return data.data;
+};
+
+export const getQuestionCounts = async () => {
+  const data = await customFetch<ApiResponse<QuestionCounts>>(
+    `/api/questions/count`,
+    { cache: 'no-store' }
+  );
+  return data.data;
 };
