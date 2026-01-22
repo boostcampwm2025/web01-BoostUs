@@ -45,7 +45,8 @@ export const getQuestionById = async (id: string) => {
     }>
   >(`/api/questions/${id}`, { cache: 'no-store' });
 
-  return data;
+  // return data.data; // 백엔드 오류 고쳐지면 이거 풀기
+  return data.data.data;
 };
 
 export const fetchQuestionsByCursor = async (

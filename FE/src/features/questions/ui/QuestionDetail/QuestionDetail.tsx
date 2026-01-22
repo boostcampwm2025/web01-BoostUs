@@ -10,18 +10,8 @@ const QuestionDetail = ({
 }: {
   data: { question: QuestionDetail; answers: Answer[] };
 }) => {
-  if (!data?.question) {
-    return (
-      <article className="mx-auto flex w-full max-w-270 flex-col items-start justify-center">
-        <BackButton />
-        <p className="mt-4 text-neutral-text-weak">
-          질문을 불러올 수 없습니다.
-        </p>
-      </article>
-    );
-  }
-
   const { question, answers } = data;
+
   return (
     <article className="mx-auto flex w-full max-w-270 flex-col items-start justify-center">
       <BackButton />

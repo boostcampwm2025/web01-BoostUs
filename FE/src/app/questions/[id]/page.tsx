@@ -11,11 +11,11 @@ const QuestionsDetailPage = async ({ params }: Props) => {
   const { id } = await params;
 
   const response = await getQuestionById(id);
-  const question = response.data?.question;
-  const answers = response.data?.answers;
+  const question = response?.question;
+  const answers = response?.answers;
 
   const data = { question, answers: answers || [] };
-  <QuestionDetail data={data} />;
+  return <QuestionDetail data={data} />;
 };
 
 export default QuestionsDetailPage;
