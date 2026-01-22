@@ -45,7 +45,7 @@ export const getQuestionById = async (id: string) => {
     }>
   >(`/api/questions/${id}`, { cache: 'no-store' });
 
-  return data;
+  return data.data;
 };
 
 export const fetchQuestionsByCursor = async (
