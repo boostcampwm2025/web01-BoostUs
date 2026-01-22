@@ -11,7 +11,7 @@ const QuestionCard = ({ question }: { question: QuestionDetail }) => {
         <VoteButtons question={question} />
         <div className="flex flex-col justify-between w-full">
           <div className="w-full">
-            <p>{question.content}</p>
+            <p>{question.contents}</p>
           </div>
           <div className="border-t border-neutral-border-default w-full flex flex-row pt-4 justify-between">
             <div className="flex flex-row items-center justify-center gap-2">

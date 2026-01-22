@@ -27,7 +27,7 @@ const QuestionDetail = ({
             size={14}
           />
           <span className="text-neutral-text-weak text-body-12">
-            {question.answers.length}
+            {question.answerCount}
           </span>
         </div>
         <div className="flex flex-row items-center justify-center gap-1">
@@ -38,10 +38,10 @@ const QuestionDetail = ({
         </div>
       </div>
       <QuestionCard question={question} />
-      {answers ? (
+      {answers.length > 0 ? (
         <>
           <h2 className="mt-12 text-display-24 text-neutral-text-strong">
-            {question.answers.length}개의 답변
+            {question.answerCount}개의 답변
           </h2>
           {answers.map((answer) => (
             <AnswerCard key={answer.id} answer={answer} />

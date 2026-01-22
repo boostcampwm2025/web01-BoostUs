@@ -23,17 +23,18 @@ export interface Question {
 }
 
 export interface QuestionDetail extends Question {
-  content: string;
-  answers: Answer[];
+  contents: string;
 }
 
 export interface Answer {
   id: string;
+  questionId: string;
   contents: string;
   upCount: number;
   downCount: number;
-  isAceepted: boolean;
+  isAccepted: boolean;
   createdAt: string;
+  updatedAt: string;
   member: Member;
 }
 

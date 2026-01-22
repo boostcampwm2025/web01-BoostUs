@@ -16,7 +16,7 @@ const AnswerCard = ({ answer }: { answer: Answer }) => {
           <div className="border-t border-neutral-border-default w-full flex flex-row pt-4 justify-between">
             <button className="gap-1 flex flex-row items-center justify-center text-neutral-text-default cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150">
               <CircleCheck size={16} />
-              <span>채택하기</span>
+              <span>채택하기</span> {/* TODO: 질문자 한테만 보이도록 */}
             </button>
             <div className="flex flex-row items-center justify-center gap-2">
               <button className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150">
