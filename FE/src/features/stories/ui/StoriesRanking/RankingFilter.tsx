@@ -20,7 +20,7 @@ const RankingFilter = () => {
     : 'all';
 
   return (
-    <div className="bg-neutral-surface-default flex h-10 w-full flex-row justify-between gap-2 rounded-lg px-1 py-1">
+    <div className="bg-neutral-surface-strong flex h-10 w-full flex-row justify-between gap-2 rounded-lg px-1 py-1">
       {FILTER_OPTIONS.map((option) => {
         const isSelected = currentSelection === option.key;
 
