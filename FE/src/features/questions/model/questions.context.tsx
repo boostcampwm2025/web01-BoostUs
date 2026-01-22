@@ -1,6 +1,9 @@
 'use client';
 
-import { QuestionsStatusFilter } from '@/features/questions/model/questions.type';
+import {
+  QuestionsSortBy,
+  QuestionsStatusFilter,
+} from '@/features/questions/model';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
   createContext,
@@ -25,6 +28,8 @@ interface QuestionsContextType {
   setStatus: (status: QuestionsStatusFilter) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  sort: QuestionsSortBy;
+  setSort: (sort: QuestionsSortBy) => void;
 }
 
 const QuestionsContext = createContext<QuestionsContextType | null>(null);
@@ -56,6 +61,7 @@ export const QuestionsProvider = ({
 
   const status = (searchParams.get('status') ?? 'all') as QuestionsStatusFilter;
   const searchQuery = searchParams.get('query') ?? '';
+  const sort = (searchParams.get('sort') ?? 'latest') as QuestionsSortBy;
 
   /**
    * URL의 쿼리 파라미터를 업데이트하는 헬퍼 함수
@@ -94,8 +100,10 @@ export const QuestionsProvider = ({
         updateUrl('status', newStatus),
       searchQuery,
       setSearchQuery: (query: string) => updateUrl('query', query),
+      sort,
+      setSort: (newSort: QuestionsSortBy) => updateUrl('sort', newSort),
     }),
-    [status, searchQuery, updateUrl]
+    [status, searchQuery, sort, updateUrl]
   );
 
   return (
