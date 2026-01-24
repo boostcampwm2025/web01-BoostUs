@@ -61,7 +61,7 @@ const StoriesCard = ({ id, story }: StoriesCardProps) => {
               )}
             </div>
           </div>
-          <h3 className="text-neutral-text-strong text-display-20 mt-4 line-clamp-1">
+          <h3 className="text-neutral-text-strong text-display-16 mt-4 line-clamp-1">
             {story.title}
           </h3>
           <div className="text-body-14 text-neutral-text-weak mt-2 mb-2 h-18 leading-6">
