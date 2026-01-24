@@ -5,6 +5,7 @@ import { Eye, Heart } from 'lucide-react';
 import Link from 'next/link';
 import type { StoriesCard as StoriesCardType } from '@/features/stories/model/stories.type';
 import useImageError from '@/shared/model/useImageError';
+import UserProfile from '@/shared/ui/UserProfile';
 
 interface StoriesCardProps {
   id: string;
@@ -34,26 +35,11 @@ const StoriesCard = ({ id, story }: StoriesCardProps) => {
           />
         </div>
         <div className="px-3 py-2">
-          <div className="flex flex-row items-center justify-start gap-2">
-            {/*<div className="bg-grayscale-300 h-8 w-8 rounded-full" />*/}
-            <Image
-              src={story.member.avatarUrl}
-              alt={`${story.member.nickname} 유저의 프로필 이미지`}
-              className="h-8 w-8 rounded-full"
-              width={32}
-              height={32}
-            />
-            <div className="flex flex-col">
-              <span className="text-body-14 text-neutral-text-default">
-                {story.member.nickname}
-              </span>
-              {story.member.cohort && (
-                <span className="text-body-12 text-neutral-text-weak">
-                  {story.member.cohort}기
-                </span>
-              )}
-            </div>
-          </div>
+          <UserProfile
+            imageSrc={story.member.avatarUrl}
+            nickname={story.member.nickname}
+            cohort={story.member.cohort}
+          />
           <h3 className="text-neutral-text-strong text-display-16 mt-4 line-clamp-1">
             {story.title}
           </h3>
