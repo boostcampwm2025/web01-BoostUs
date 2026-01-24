@@ -19,14 +19,12 @@ interface FetchStoriesParams {
  * 블로그 글 목록 조회
  */
 export const fetchStories = async (params?: FetchStoriesParams) => {
-  const queryParams = new URLSearchParams();
-
   return await customFetch<
     ApiResponse<{
       items: Story[];
       meta: Meta;
     }>
-  >(`/api/stories?${queryParams.toString()}`, { params: { ...params } });
+  >('/api/stories', { params: { ...params } });
 };
 
 /**
