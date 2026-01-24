@@ -45,5 +45,5 @@ export const customFetch = async <T>(
       `API Error: ${response.statusText} (${response.status.toString()})`
     );
 
-  return (await response.json()) as Promise<T>;
+  return (await response.json()) as T;
 };
