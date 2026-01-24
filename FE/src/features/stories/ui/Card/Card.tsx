@@ -16,7 +16,7 @@ interface StoriesCardProps {
 const DEFAULT_THUMBNAIL = '/assets/NoImage.png';
 
 const StoriesCard = ({ id, story }: StoriesCardProps) => {
-  const { isError, setIsError } = useImageError();
+  const { isError, setIsError } = useImageError(story.thumbnailUrl);
 
   const currentSrc = isError
     ? DEFAULT_THUMBNAIL
