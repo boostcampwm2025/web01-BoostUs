@@ -5,6 +5,7 @@ import DropdownChip from '@/features/stories/ui/ListDropdown/DropdownChip';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
+import SlidingFilter from '@/widgets/SlidingFilter';
 
 const PERIOD_OPTIONS = [
   { key: 'daily', label: '오늘' },
@@ -21,7 +22,6 @@ const SORT_BY_OPTIONS = [
 
 const StoriesListDropdown = () => {
   const { sortBy, setSortBy, period, setPeriod } = useStoriesContext();
-
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -101,43 +101,14 @@ const StoriesListDropdown = () => {
                     transition={{ duration: 0.2 }}
                     className="overflow-hidden"
                   >
-                    <div className="bg-neutral-surface-strong mt-2 flex h-8 w-full flex-row justify-between gap-2 rounded-lg px-1 py-1">
-                      {PERIOD_OPTIONS.map((option) => {
-                        const isSelected = period === option.key;
-
-                        return (
-                          <button
-                            key={option.key}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              setPeriod(option.key);
-                            }}
-                            className="relative flex w-full cursor-pointer items-center justify-center rounded-lg transition-colors duration-300"
-                          >
-                            {isSelected && (
-                              <motion.div
-                                layoutId="dropdown-active-pill"
-                                className="bg-neutral-surface-bold shadow-default absolute inset-0 rounded-lg"
-                                transition={{
-                                  type: 'spring',
-                                  stiffness: 300,
-                                  damping: 30,
-                                }}
-                              />
-                            )}
-                            <span
-                              className={`relative z-10 ${
-                                isSelected
-                                  ? 'text-string-14 text-neutral-text-strong'
-                                  : 'text-body-14 text-neutral-text-weak'
-                              }`}
-                            >
-                              {option.label}
-                            </span>
-                          </button>
-                        );
-                      })}
+                    <div className="mt-2">
+                      <SlidingFilter
+                        options={PERIOD_OPTIONS}
+                        value={period ?? 'all'}
+                        onChange={setPeriod}
+                        layoutId="dropdown-period-pill"
+                        className="h-8"
+                      />
                     </div>
                   </motion.div>
                 )}
