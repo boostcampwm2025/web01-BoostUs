@@ -15,29 +15,24 @@ interface FetchStoriesParams {
   size?: number;
 }
 
+/**
+ * 블로그 글 목록 조회
+ */
 export const fetchStories = async (params?: FetchStoriesParams) => {
   const queryParams = new URLSearchParams();
 
-  if (params?.sortBy) queryParams.append('sortBy', params.sortBy.toUpperCase());
-  if (params?.period) queryParams.append('period', params.period.toUpperCase());
-  if (params?.query) queryParams.append('query', params.query);
-  if (params?.cursor) queryParams.append('cursor', params.cursor);
-  if (params?.size) queryParams.append('size', params.size.toString());
-
-  const data = await customFetch<
+  return await customFetch<
     ApiResponse<{
       items: Story[];
       meta: Meta;
     }>
-  >(`/api/stories?${queryParams.toString()}`);
-
-  return data;
+  >(`/api/stories?${queryParams.toString()}`, { params: { ...params } });
 };
 
+/**
+ * 특정 블로그 글 상세 조회
+ * @param id 블로그 글 ID
+ * **/
 export const getStoryById = async (id: string) => {
-  const data = await customFetch<ApiResponse<StoryDetail>>(
-    `/api/stories/${id}`
-  );
-
-  return data;
+  return await customFetch<ApiResponse<StoryDetail>>(`/api/stories/${id}`);
 };
