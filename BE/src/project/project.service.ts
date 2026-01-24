@@ -43,19 +43,19 @@ export class ProjectService {
     });
   }
 
-  async uploadTempThumbnail(file: Express.Multer.File, ownerId: number) {
+  async uploadTempThumbnail(file: Express.Multer.File, memberId: number) {
     const uploadId = randomUUID();
     const ext = (file.originalname.split('.').pop() || 'png').toLocaleLowerCase();
     const tempKey = `temp/projects/thumbnail/${uploadId}.${ext}`;
 
-    await this.uploadImage(file, tempKey);
+    const previewUrl = await this.uploadImage(file, tempKey);
 
     const redisKey = `upload:thumbnail:${uploadId}`;
     await this.redis.set(
       redisKey,
       JSON.stringify({
         uploadId,
-        ownerId,
+        memberId,
         objectKey: tempKey,
         contentType: file.mimetype,
         status: 'TEMP',
@@ -65,7 +65,6 @@ export class ProjectService {
       3600,
     );
 
-    const previewUrl = `${this.endpoint}/${this.bucket}/${tempKey}`;
     return { uploadId, previewUrl };
   }
 
