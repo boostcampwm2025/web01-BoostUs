@@ -71,6 +71,7 @@ export const DropdownTrigger = ({ label }: { label: ReactNode }) => {
 
   return (
     <button
+      type="button"
       onClick={toggle}
       className="text-neutral-text-default hover:text-neutral-text-strong transition-colors duration-150 flex cursor-pointer flex-row items-center gap-1 whitespace-nowrap"
     >
@@ -134,6 +135,7 @@ export const DropdownItem = ({
 
   return (
     <button
+      type="button"
       onClick={handleClick}
       className="text-neutral-text-default hover:text-neutral-text-strong hover:bg-neutral-surface-strong w-full px-3 py-2 flex flex-row items-center justify-between cursor-pointer transition-colors duration-75"
     >
