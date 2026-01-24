@@ -2,7 +2,6 @@
 
 import { StoriesProvider, useStoriesContext } from '@/features/stories/model';
 import { Story } from '@/features/stories/model/stories.type';
-import StoriesHeader from '@/features/stories/ui/Header/Header';
 import StoriesList from '@/features/stories/ui/List/List';
 import StoriesListDropdown from '@/features/stories/ui/ListDropdown/Dropdown';
 import StoriesSearchBar from '@/features/stories/ui/SearchBar/SearchBar';
@@ -15,12 +14,13 @@ import {
   useScroll,
 } from 'framer-motion';
 import { useState } from 'react';
+import PageHeader from '@/shared/ui/PageHeader';
 
 interface StoriesPageContentProps {
   initialStories: Story[];
 }
 
-const StoriesLayout = ({ initialStories }: { initialStories: Story[] }) => {
+const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
   const { isRankingOpen, toggleRanking } = useStoriesContext();
 
   const { scrollY } = useScroll();
@@ -50,7 +50,10 @@ const StoriesLayout = ({ initialStories }: { initialStories: Story[] }) => {
 
   return (
     <div className="flex w-full max-w-7xl flex-col font-sans">
-      <StoriesHeader />
+      <PageHeader
+        title={'캠퍼들의 이야기'}
+        subtitle={'캠퍼들의 기술, 경험, 회고, 면접 팁 등의 이야기'}
+      />
       <motion.div
         layout
         className={`mt-8 grid items-start gap-8 ${isRankingOpen ? 'grid-cols-[7fr_3fr]' : 'grid-cols-1'}`}
