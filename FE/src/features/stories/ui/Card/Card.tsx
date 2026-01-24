@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Eye, Heart } from 'lucide-react';
 import Link from 'next/link';
 import type { StoriesCard as StoriesCardType } from '@/features/stories/model/stories.type';
-import { useState } from 'react';
+import useImageError from '@/shared/model/useImageError';
 
 interface StoriesCardProps {
   id: string;
@@ -14,16 +14,9 @@ interface StoriesCardProps {
 const DEFAULT_THUMBNAIL = '/FE/public/assets/NoImage.png';
 
 const StoriesCard = ({ id, story }: StoriesCardProps) => {
-  const [isImageError, setIsImageError] = useState(false);
+  const { isError, setIsError } = useImageError();
 
-  const [prevUrl, setPrevUrl] = useState(story.thumbnailUrl);
-
-  if (story.thumbnailUrl !== prevUrl) {
-    setPrevUrl(story.thumbnailUrl);
-    setIsImageError(false);
-  }
-
-  const currentSrc = isImageError
+  const currentSrc = isError
     ? DEFAULT_THUMBNAIL
     : (story.thumbnailUrl ?? DEFAULT_THUMBNAIL);
 
@@ -37,7 +30,7 @@ const StoriesCard = ({ id, story }: StoriesCardProps) => {
             fill
             className="object-cover"
             priority
-            onError={() => setIsImageError(true)}
+            onError={() => setIsError(true)}
           />
         </div>
         <div className="px-3 py-2">
