@@ -8,7 +8,10 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectDetailItemDto } from './dto/project-detail-item.dto';
@@ -21,6 +24,13 @@ import { ProjectService } from './project.service';
 @Controller('projects')
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
+
+  @Post('uploads/thumbnails')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadTempThumbnail(@UploadedFile() file: Express.Multer.File) {
+    const memberId = 1; // authGuard 에서 주입? (req.user.id)
+    return this.projectService.uploadTempThumbnail(file, memberId);
+  }
 
   @Get()
   @ApiOperation({
