@@ -7,14 +7,10 @@ import StoriesListDropdown from '@/features/stories/ui/ListDropdown/Dropdown';
 import StoriesSearchBar from '@/features/stories/ui/SearchBar/SearchBar';
 import StoriesRanking from '@/features/stories/ui/StoriesRanking/Ranking';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import {
-  AnimatePresence,
-  motion,
-  useMotionValueEvent,
-  useScroll,
-} from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
 import PageHeader from '@/shared/ui/PageHeader';
+import useRankingButtonVisibility from '@/features/stories/model/useRankingButtonVisibility';
 
 interface StoriesPageContentProps {
   initialStories: Story[];
@@ -23,36 +19,13 @@ interface StoriesPageContentProps {
 const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
   const { isRankingOpen, toggleRanking } = useStoriesContext();
 
-  const { scrollY } = useScroll();
-  const [isRankingButtonHidden, setIsRankingButtonHidden] = useState(false);
-  const [lastY, setLastY] = useState(0);
-
-  // 스크롤 감지 로직
-  useMotionValueEvent(scrollY, 'change', (latest) => {
-    const previous = lastY;
-    setLastY(latest);
-
-    // 1. 랭킹이 열려있으면 숨기지 않음
-    if (isRankingOpen) {
-      setIsRankingButtonHidden(false);
-      return;
-    }
-
-    // 2. 스크롤을 내리는 중이고(latest > previous), 스크롤이 일정 이상(100px) 내려갔을 때 -> 숨김
-    if (latest > previous && latest > 100) {
-      setIsRankingButtonHidden(true);
-    }
-    // 3. 스크롤을 올리는 중 -> 보임
-    else if (latest < previous) {
-      setIsRankingButtonHidden(false);
-    }
-  });
+  const isRankingButtonHidden = useRankingButtonVisibility(isRankingOpen);
 
   return (
     <div className="flex w-full max-w-7xl flex-col font-sans">
       <PageHeader
-        title={'캠퍼들의 이야기'}
-        subtitle={'캠퍼들의 기술, 경험, 회고, 면접 팁 등의 이야기'}
+        title="캠퍼들의 이야기"
+        subtitle="캠퍼들의 기술, 경험, 회고, 면접 팁 등의 이야기"
       />
       <motion.div
         layout
