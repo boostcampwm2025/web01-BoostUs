@@ -13,7 +13,7 @@ interface StoriesCardProps {
   story: Story;
 }
 
-const DEFAULT_THUMBNAIL = '/FE/public/assets/NoImage.png';
+const DEFAULT_THUMBNAIL = '/assets/NoImage.png';
 
 const StoriesCard = ({ id, story }: StoriesCardProps) => {
   const { isError, setIsError } = useImageError();
