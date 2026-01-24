@@ -3,14 +3,14 @@
 import Image from 'next/image';
 import { Eye, Heart } from 'lucide-react';
 import Link from 'next/link';
-import type { StoriesCard as StoriesCardType } from '@/features/stories/model/stories.type';
+import type { Story } from '@/features/stories/model/stories.type';
 import useImageError from '@/shared/model/useImageError';
 import UserProfile from '@/shared/ui/UserProfile';
 import extractDate from '@/shared/utils/extractDate';
 
 interface StoriesCardProps {
   id: string;
-  story: StoriesCardType;
+  story: Story;
 }
 
 const DEFAULT_THUMBNAIL = '/FE/public/assets/NoImage.png';
