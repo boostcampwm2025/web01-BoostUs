@@ -42,7 +42,14 @@ const StoriesCard = ({ id, story }: StoriesCardProps) => {
         </div>
         <div className="px-3 py-2">
           <div className="flex flex-row items-center justify-start gap-2">
-            <div className="bg-grayscale-300 h-8 w-8 rounded-full" />
+            {/*<div className="bg-grayscale-300 h-8 w-8 rounded-full" />*/}
+            <Image
+              src={story.member.avatarUrl}
+              alt={`${story.member.nickname} 유저의 프로필 이미지`}
+              className="h-8 w-8 rounded-full"
+              width={32}
+              height={32}
+            />
             <div className="flex flex-col">
               <span className="text-body-14 text-neutral-text-default">
                 {story.member.nickname}
