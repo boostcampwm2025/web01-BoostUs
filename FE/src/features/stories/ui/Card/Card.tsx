@@ -6,6 +6,7 @@ import Link from 'next/link';
 import type { StoriesCard as StoriesCardType } from '@/features/stories/model/stories.type';
 import useImageError from '@/shared/model/useImageError';
 import UserProfile from '@/shared/ui/UserProfile';
+import extractDate from '@/shared/utils/extractDate';
 
 interface StoriesCardProps {
   id: string;
@@ -62,7 +63,7 @@ const StoriesCard = ({ id, story }: StoriesCardProps) => {
               </div>
             </div>
             <span className="text-body-12 text-neutral-text-weak">
-              {story.createdAt.slice(0, 10)}
+              {extractDate(story.createdAt)}
             </span>
           </div>
         </div>

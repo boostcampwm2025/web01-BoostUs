@@ -5,6 +5,7 @@ import { Calendar, Eye, Heart } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import UserProfile from '@/shared/ui/UserProfile';
+import extractDate from '@/shared/utils/extractDate';
 
 const StoryDetail = ({ story }: { story: StoryDetail }) => {
   return (
@@ -34,7 +35,7 @@ const StoryDetail = ({ story }: { story: StoryDetail }) => {
         <div className="flex flex-row items-center gap-1">
           <Calendar className="text-neutral-text-weak h-3 w-3" />
           <span className="text-body-12 text-neutral-text-weak">
-            {story.createdAt.slice(0, 10)}
+            {extractDate(story.createdAt)}
           </span>
         </div>
         <Link

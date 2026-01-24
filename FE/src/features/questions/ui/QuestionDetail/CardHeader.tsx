@@ -2,6 +2,7 @@ import type { Answer, QuestionDetail } from '@/features/questions/model/';
 import { Calendar1 } from 'lucide-react';
 import Image from 'next/image';
 import UserProfile from '@/shared/ui/UserProfile';
+import extractDate from '@/shared/utils/extractDate';
 
 const CardHeader = ({
   question,
@@ -35,8 +36,8 @@ const CardHeader = ({
           />
           <span className="text-neutral-text-weak text-body-12">
             {question
-              ? question.createdAt.slice(0, 10)
-              : answer?.createdAt.slice(0, 10)}
+              ? extractDate(question?.createdAt)
+              : extractDate(answer?.createdAt)}
           </span>
         </div>
       </div>

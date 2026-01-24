@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import UserProfile from '@/shared/ui/UserProfile';
+import extractDate from '@/shared/utils/extractDate';
 
 const ListCardFooter = ({ question }: { question: Question }) => {
   return (
@@ -61,7 +62,7 @@ const ListCardFooter = ({ question }: { question: Question }) => {
             size={14}
           />
           <span className="text-neutral-text-weak text-body-12">
-            {question.createdAt.slice(0, 10)}
+            {extractDate(question.createdAt)}
           </span>
         </div>
       </div>
