@@ -18,7 +18,6 @@ export default function MainQnaSection() {
         setIsLoading(true);
         const response = await fetchQnaMain({
           status: activeTab === 'ALL' ? 'all' : 'unanswered',
-          sort: 'latest',
           size: 3,
         });
 
