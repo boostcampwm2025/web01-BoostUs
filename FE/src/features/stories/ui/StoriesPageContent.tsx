@@ -68,8 +68,10 @@ const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
                   </div>
                 }
               />
-              <TooltipContent>
-                <p>내 블로그 RSS URL 등록하기</p>
+              <TooltipContent className={'bg-brand-surface-default'}>
+                <p className="text-body-12 text-brand-text-on-default">
+                  내 블로그 RSS URL 등록하기
+                </p>
               </TooltipContent>
             </Tooltip>
           </div>
