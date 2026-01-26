@@ -1,35 +1,37 @@
 'use client';
 
 import { Github } from 'lucide-react';
-import { navigateToGithubLogin } from './LoginFetch'; // 위에서 만든 파일 import
-import { useState, useEffect } from 'react';
+import { navigateToGithubLogin } from './LoginFetch';
+import { useAuth } from './model/auth.context';
 
 export default function LoginBtn() {
-  // 아직 전역 상태 관리가 없으니 일단 로컬 state로 둡니다.
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState('');
-
-  // TODO: 페이지 로드 시 로그인 여부 체크하는 로직
-  // useEffect(() => {
-  //   const token = localStorage.getItem('accessToken');
-  //   if (token) {
-  //     setIsLoggedIn(true);
-  //     // 사용자 정보 가져오는 API 호출 필요
-  //   }
-  // }, []);
+  const { member, isAuthenticated, isLoading, logout } = useAuth();
 
   const handleLogout = () => {
-    // 로그아웃 로직 (토큰 삭제 등)
-    setIsLoggedIn(false);
+    logout();
     alert('로그아웃 되었습니다.');
   };
 
-  // 로그인 된 상태 (임시)
-  if (isLoggedIn) {
+  // 로딩 중일 때
+  if (isLoading) {
     return (
-      <div>
-        <p>{userName || '사용자'}님 반갑소!</p>
-        <button onClick={handleLogout}>로그아웃</button>
+      <div className="flex flex-col items-center gap-2 bg-black rounded-lg">
+        <div className="text-white p-2 text-string-16">로딩 중...</div>
+      </div>
+    );
+  }
+
+  // 로그인 된 상태
+  if (isAuthenticated && member) {
+    return (
+      <div className="flex flex-col items-center gap-2">
+        <p className="text-string-16">{member.nickname || '사용자'}님 반갑소!</p>
+        <button
+          onClick={handleLogout}
+          className="text-string-14 text-neutral-text-weak hover:text-neutral-text-strong"
+        >
+          로그아웃
+        </button>
       </div>
     );
   }
