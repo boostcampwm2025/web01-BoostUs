@@ -48,7 +48,7 @@ export class FeedValidatorService {
         this.httpService.get(feedUrl, {
           headers: {
             'User-Agent': 'BoostUs-RSS-Validator/1.0',
-            Accept: 'application/rss+xml, application/xml, text/xml, */*',
+            Accept: 'text/xml, */*',
           },
           timeout: 3000,
         }),
@@ -67,11 +67,7 @@ export class FeedValidatorService {
 
       // Content-Type 검증 (접근 가능 여부만 확인)
       const contentType = response.headers['content-type']?.toLowerCase() ?? '';
-      const isXml =
-        contentType.includes('application/rss+xml') ||
-        contentType.includes('application/xml') ||
-        contentType.includes('text/xml') ||
-        contentType.includes('application/atom+xml');
+      const isXml = contentType.includes('text/xml');
 
       // XML이 아니어도 data가 있으면 통과 (실제 파싱은 crawler 책임)
       if (!isXml && !response.data) {
