@@ -11,6 +11,19 @@ services:
       - backend
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certbot-data/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    networks:
+      - boostus_network
+
+  certbot:
+    image: certbot/certbot
+    container_name: boostus_certbot
+    volumes:
+      - ./certbot-data/conf:/etc/letsencrypt
+      - ./certbot-data/logs:/var/log/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: ""
     networks:
       - boostus_network
 
@@ -28,7 +41,16 @@ services:
     networks:
       - boostus_network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}"]
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "127.0.0.1",
+          "-u${MYSQL_USER}",
+          "-p${MYSQL_PASSWORD}",
+        ]
       interval: 5s
       timeout: 3s
       retries: 20
