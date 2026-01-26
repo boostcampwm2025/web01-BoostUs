@@ -31,8 +31,12 @@ export async function getCurrentMember(): Promise<Member> {
  * 서버의 쿠키를 삭제합니다.
  */
 export async function logout(): Promise<void> {
-  await fetch('/api/auth/logout', {
+  const response = await fetch('/api/auth/logout', {
     method: 'GET',
     credentials: 'include',
   });
+
+  if (!response.ok) {
+    throw new Error(`API Error: ${response.statusText}`);
+  }
 }
