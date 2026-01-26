@@ -105,8 +105,8 @@ export default function RecommendProjectSection() {
                   h-2.5 rounded-full transition-all duration-300 ease-out 
                   ${
                     activeIndex === index
-                      ? 'w-8 bg-white' // 활성 상태: 길어지고 흰색
-                      : 'w-2.5 bg-gray-500 hover:bg-gray-400' // 비활성: 동그라미, 회색
+                      ? 'w-8 bg-neutral-surface-bold' // 활성 상태
+                      : 'w-2.5 bg-gray-600 hover:bg-gray-400' // 비활성
                   }
                 `}
                 aria-label={`Go to slide ${index + 1}`}
