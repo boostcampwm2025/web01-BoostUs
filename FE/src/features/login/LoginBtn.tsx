@@ -9,7 +9,6 @@ export default function LoginBtn() {
 
   const handleLogout = () => {
     logout();
-    alert('로그아웃 되었습니다.');
   };
 
   // 로딩 중일 때
@@ -25,7 +24,9 @@ export default function LoginBtn() {
   if (isAuthenticated && member) {
     return (
       <div className="flex flex-col items-center gap-2">
-        <p className="text-string-16">{member.nickname || '사용자'}님 반갑소!</p>
+        <p className="text-string-16">
+          {member.nickname || '사용자'}님 반갑소!
+        </p>
         <button
           onClick={handleLogout}
           className="text-string-14 text-neutral-text-weak hover:text-neutral-text-strong"

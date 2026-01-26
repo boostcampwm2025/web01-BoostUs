@@ -74,5 +74,10 @@ export class AuthController {
   async reissueToken() { }
 
   @Get('logout')
-  async logout() { }
+  async logout(@Res() res: Response) {
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
+
+    return res.sendStatus(200);
+  }
 }

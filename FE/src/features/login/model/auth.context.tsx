@@ -10,7 +10,8 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { getCurrentMember } from '../api/auth.api';
+import { useRouter } from 'next/navigation';
+import { getCurrentMember, logout as logoutApi } from '../api/auth.api';
 import type { AuthContextType, Member } from './auth.types';
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -37,6 +38,7 @@ export const AuthProvider = ({
 }: {
   children: ReactNode;
 }): JSX.Element => {
+  const router = useRouter();
   const [member, setMember] = useState<Member | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -49,9 +51,7 @@ export const AuthProvider = ({
       const memberData = await getCurrentMember();
       setMember(memberData);
     } catch (error) {
-      // 401 에러 또는 네트워크 에러 시 멤버 정보 초기화
       setMember(null);
-      console.error('멤버 정보 가져오기 실패:', error);
     } finally {
       setIsLoading(false);
     }
@@ -59,12 +59,18 @@ export const AuthProvider = ({
 
   /**
    * 로그아웃 처리
-   * 멤버 정보를 초기화합니다.
-   * (쿠키 삭제는 백엔드에서 처리하거나 별도 로그아웃 API 호출 필요)
+   * 서버에 로그아웃 요청을 보내고 멤버 정보를 초기화한 후 메인 페이지로 리다이렉트합니다.
    */
-  const logout = useCallback(() => {
-    setMember(null);
-  }, []);
+  const logout = useCallback(async () => {
+    try {
+      await logoutApi();
+    } catch (error) {
+      console.error('로그아웃 실패:', error);
+    } finally {
+      setMember(null);
+      router.push('/');
+    }
+  }, [router]);
 
   /**
    * 컴포넌트 마운트 시 멤버 정보 로드
