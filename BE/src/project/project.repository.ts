@@ -55,13 +55,13 @@ export class ProjectRepository {
     return { totalItems, projects };
   }
 
-  async create(memberId: bigint, dto: CreateProjectDto, finalKey: string) {
+  async create(memberId: bigint, dto: CreateProjectDto, thumbnailKey: string) {
     return this.prisma.$transaction(async (tx) => {
       // 1, project 생성
       const project = await tx.project.create({
         data: {
           memberId,
-          thumbnailKey: finalKey ?? null,
+          thumbnailKey: thumbnailKey ?? null,
           title: dto.title ?? null,
           description: dto.description ?? null,
           contents: dto.contents ?? null,
@@ -129,7 +129,7 @@ export class ProjectRepository {
     });
   }
 
-  async update(id: bigint, dto: UpdateProjectDto) {
+  async update(id: bigint, dto: UpdateProjectDto, thumbnailKey: string | undefined) {
     return this.prisma.$transaction(async (tx) => {
       // 1. participants 업데이트 (전체 교체)
       if (dto.participants !== undefined) {
@@ -182,7 +182,7 @@ export class ProjectRepository {
       // 3. 프로젝트 정보 업데이트
       const updateData: Prisma.ProjectUpdateInput = {};
 
-      if (dto.thumbnailUrl !== undefined) updateData.thumbnailKey = dto.thumbnailUrl ?? null;
+      if (thumbnailKey !== undefined) updateData.thumbnailKey = thumbnailKey ?? null;
       if (dto.title !== undefined) updateData.title = dto.title;
       if (dto.description !== undefined) updateData.description = dto.description ?? null;
       if (dto.contents !== undefined) updateData.contents = dto.contents ?? null;

@@ -44,8 +44,9 @@ export class ProjectService {
     });
   }
 
-  private toPublicUrl(keyOrUrl: string | null): string | null {
+  private toPublicUrl(keyOrUrl: string | null | undefined): string | null {
     if (!keyOrUrl) return null;
+    if (keyOrUrl.startsWith('http://') || keyOrUrl.startsWith('https://')) return keyOrUrl;
     return `${this.endpoint}/${this.bucket}/${keyOrUrl}`;
   }
 
@@ -69,7 +70,7 @@ export class ProjectService {
       3600,
     );
 
-    return { uploadId, thumbnailUrl };
+    return { thumbnailUploadId: uploadId, thumbnailUrl };
   }
 
   /**
@@ -211,7 +212,7 @@ export class ProjectService {
     return plainToInstance(ProjectDetailItemDto, project, { excludeExtraneousValues: true });
   }
 
-  async update(id: number, dto: UpdateProjectDto) {
+  async update(id: number, memberId: bigint, dto: UpdateProjectDto) {
     const projectId = BigInt(id);
 
     const exists = await this.projectRepository.exists(projectId);
@@ -219,7 +220,12 @@ export class ProjectService {
       throw new NotFoundException('프로젝트를 찾을 수 없습니다.');
     }
 
-    return this.projectRepository.update(projectId, dto);
+    const finalKey = dto.thumbnailUploadId
+      ? await this.finalizeThumbnailOrThrow(dto.thumbnailUploadId, memberId)
+      : undefined;
+
+    const updated = await this.projectRepository.update(projectId, dto, finalKey);
+    return plainToInstance(ProjectDetailItemDto, updated, { excludeExtraneousValues: true });
   }
 
   async delete(id: number) {

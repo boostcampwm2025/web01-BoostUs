@@ -119,7 +119,8 @@ export class ProjectController {
     description: '프로젝트를 찾을 수 없음',
   })
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateProjectDto) {
-    return this.projectService.update(id, dto);
+    const memberId = BigInt(1);
+    return this.projectService.update(id, memberId, dto);
   }
 
   @Delete(':id')
