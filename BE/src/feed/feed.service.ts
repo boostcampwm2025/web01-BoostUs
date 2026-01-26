@@ -59,6 +59,9 @@ export class FeedService {
     let feed: Feed;
     if (existingFeed) {
       // 기존 Feed가 있으면 feedUrl 업데이트 (대체)
+      if (existingFeed.state === State.INACTIVE) {
+        await this.feedRepository.updateState(existingFeed.id, State.ACTIVE);
+      }
       feed = await this.feedRepository.updateFeedUrl(existingFeed.id, dto.feedUrl);
     } else {
       // 없으면 새로 생성

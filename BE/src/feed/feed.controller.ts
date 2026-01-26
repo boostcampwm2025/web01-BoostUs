@@ -80,10 +80,6 @@ export class FeedController {
     description: 'RSS 피드 조회 성공',
     type: FeedDetailDto,
   })
-  @ApiResponse({
-    status: 404,
-    description: 'RSS 피드를 찾을 수 없음',
-  })
   async getMyFeed(
     @CurrentMember() memberId: string,
   ): Promise<FeedDetailDto | null> {
