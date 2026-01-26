@@ -32,7 +32,7 @@ export async function getCurrentMember(): Promise<Member> {
  */
 export async function logout(): Promise<void> {
   const response = await fetch('/api/auth/logout', {
-    method: 'GET',
+    method: 'POST',
     credentials: 'include',
   });
 
