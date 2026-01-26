@@ -23,7 +23,6 @@ export const fetchQnaMain = async ({
   }
 
   // 2. 개수 제한 (기본값 3)
-  // 명세에 따라 limit 대신 호환용 size를 사용합니다.
   searchParams.append('size', size.toString());
 
   // 3. 정렬 기준 (메인은 무조건 최신순 고정)

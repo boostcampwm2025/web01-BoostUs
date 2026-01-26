@@ -2,13 +2,16 @@
 
 import React, { useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import type { Swiper as SwiperClass } from 'swiper/types';
 import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
 
 import { Pause, Play } from 'lucide-react';
 
 export default function RecommendProjectSection() {
-  const [swiperInstance, setSwiperInstance] = useState(null);
+  const [swiperInstance, setSwiperInstance] = useState<SwiperClass | null>(
+    null
+  );
   const [isPlaying, setIsPlaying] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -40,9 +43,7 @@ export default function RecommendProjectSection() {
   ];
 
   const handleSlideChange = (index: number) => {
-    if (swiperInstance) {
-      swiperInstance.slideToLoop(index);
-    }
+    swiperInstance?.slideToLoop(index);
   };
 
   const toggleAutoplay = () => {
