@@ -2,9 +2,8 @@
 
 import React, { useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay } from 'swiper/modules'; // Pagination 모듈은 이제 직접 구현하므로 제거해도 되지만, 놔둬도 무방합니다.
+import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
-// import 'swiper/css/pagination'; // 기본 css는 필요 없음
 
 import { Pause, Play } from 'lucide-react';
 
@@ -59,7 +58,7 @@ export default function RecommendProjectSection() {
   return (
     <div className="relative w-full h-[500px] overflow-hidden rounded-xl bg-gray-900 text-white">
       <Swiper
-        modules={[Autoplay]} // Pagination 모듈 제거 (직접 구현함)
+        modules={[Autoplay]}
         spaceBetween={0}
         slidesPerView={1}
         loop={true}
