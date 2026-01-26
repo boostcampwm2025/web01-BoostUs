@@ -206,7 +206,9 @@ export class ProjectService {
   async create(memberId: bigint, dto: CreateProjectDto) {
     const finalKey = await this.finalizeThumbnailOrThrow(dto.thumbnailUploadId, memberId);
 
-    return await this.projectRepository.create(memberId, dto, finalKey);
+    const project = await this.projectRepository.create(memberId, dto, finalKey);
+
+    return plainToInstance(ProjectDetailItemDto, project, { excludeExtraneousValues: true });
   }
 
   async update(id: number, dto: UpdateProjectDto) {

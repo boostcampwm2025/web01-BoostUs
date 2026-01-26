@@ -115,7 +115,17 @@ export class ProjectRepository {
         });
       }
 
-      return project;
+      return tx.project.findUniqueOrThrow({
+        where: { id: project.id },
+        include: {
+          participants: true,
+          techStacks: {
+            include: {
+              techStack: { select: { name: true } },
+            },
+          },
+        },
+      });
     });
   }
 
