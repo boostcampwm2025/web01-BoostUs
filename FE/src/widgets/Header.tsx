@@ -46,6 +46,10 @@ const Header = () => {
     };
   }, []);
 
+  useEffect(() => {
+    setAvatarError(false);
+  }, [member?.avatarUrl]);
+
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname.startsWith(href);
 
