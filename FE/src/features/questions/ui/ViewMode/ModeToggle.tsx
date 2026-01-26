@@ -1,6 +1,5 @@
 'use client';
-
-import type { Mode } from '../QuestionRegister/QuestionModeButton';
+import type { PreviewMode as Mode } from '../QuestionRegister/QuestionModeButton';
 import ModeButton, { MODES } from '../QuestionRegister/QuestionModeButton';
 type Props = {
   mode: Mode;
