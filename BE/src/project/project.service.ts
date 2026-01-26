@@ -8,11 +8,12 @@ import { ProjectListQueryDto } from './dto/project-list-query.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectRepository } from './project.repository';
 import { ConfigService } from '@nestjs/config';
-import { S3Client } from '@aws-sdk/client-s3';
+import { CopyObjectCommand, DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { randomUUID } from 'node:crypto';
 import type Redis from 'ioredis';
 import { REDIS } from '../redis/redis.provider';
+import { ThumbnailMeta } from './type/upload-image-meta.type';
 
 @Injectable()
 export class ProjectService {
@@ -43,29 +44,107 @@ export class ProjectService {
     });
   }
 
-  async uploadTempThumbnail(file: Express.Multer.File, memberId: number) {
+  private toPublicUrl(keyOrUrl: string | null): string | null {
+    if (!keyOrUrl) return null;
+    return `${this.endpoint}/${this.bucket}/${keyOrUrl}`;
+  }
+
+  async uploadTempThumbnail(file: Express.Multer.File, memberId: bigint) {
     const uploadId = randomUUID();
     const ext = (file.originalname.split('.').pop() || 'png').toLocaleLowerCase();
     const tempKey = `temp/projects/thumbnail/${uploadId}.${ext}`;
 
-    const previewUrl = await this.uploadImage(file, tempKey);
+    const thumbnailUrl = await this.uploadImage(file, tempKey);
 
     const redisKey = `upload:thumbnail:${uploadId}`;
     await this.redis.set(
       redisKey,
       JSON.stringify({
         uploadId,
-        memberId,
+        memberId: memberId.toString(),
         objectKey: tempKey,
         contentType: file.mimetype,
-        status: 'TEMP',
-        createdAt: Date.now(),
       }),
       'EX',
       3600,
     );
 
-    return { uploadId, previewUrl };
+    return { uploadId, thumbnailUrl };
+  }
+
+  /**
+   * Redis에 저장된 TEMP 썸네일 메타를 검증한 뒤, Object Storage의 temp key -> final key 로 확정합니다.
+   * 성공 시: Redis 메타 삭제 + finalKey 반환
+   */
+  private async finalizeThumbnailOrThrow(
+    uploadId: string | undefined,
+    memberId: bigint,
+  ): Promise<string> {
+    const redisKey = `upload:thumbnail:${uploadId}`;
+
+    const rawMeta = await this.redis.get(redisKey);
+    if (!rawMeta) {
+      throw new NotFoundException('썸네일 업로드 정보가 만료되어 찾을 수 없습니다.');
+    }
+
+    const meta = this.parseThumbnailMetaOrThrow(rawMeta);
+    if (meta.uploadId !== uploadId) {
+      throw new NotFoundException('썸네일 업로드 정보를 찾을 수 없습니다.');
+    }
+
+    // if (meta.memberId !== memberId.toString()) {
+    //   throw new NotFoundException(
+    //     `본인이 업로드한 썸네일이 아닙니다. meta.memberId : ${memberId} | memberId : ${memberId}`,
+    //   );
+    // }
+
+    const ext = (meta.objectKey.split('.').pop() || 'png').toLowerCase();
+    const finalKey = `projects/thumbnail/${randomUUID()}.${ext}`;
+
+    // temp -> final 복사
+    await this.s3.send(
+      new CopyObjectCommand({
+        Bucket: this.bucket,
+        Key: finalKey,
+        CopySource: `${this.bucket}/${encodeURI(meta.objectKey)}`,
+        ACL: 'public-read',
+        MetadataDirective: 'COPY',
+      }),
+    );
+
+    // temp 삭제
+    await this.s3.send(
+      new DeleteObjectCommand({
+        Bucket: this.bucket,
+        Key: meta.objectKey,
+      }),
+    );
+
+    await this.redis.del(redisKey);
+
+    return finalKey;
+  }
+
+  private parseThumbnailMetaOrThrow(raw: string): ThumbnailMeta {
+    let meta: unknown;
+
+    try {
+      meta = JSON.parse(raw);
+    } catch {
+      throw new NotFoundException('썸네일 업로드 메타데이터가 손상되었습니다.');
+    }
+
+    if (
+      !meta ||
+      typeof meta !== 'object' ||
+      typeof (meta as any).uploadId !== 'string' ||
+      typeof (meta as any).memberId !== 'string' ||
+      typeof (meta as any).objectKey !== 'string'
+    ) {
+      throw new NotFoundException('썸네일 업로드 메타데이터 형식이 올바르지 않습니다.');
+    }
+
+    return meta as ThumbnailMeta;
   }
 
   async uploadImage(file: Express.Multer.File, key: string): Promise<string> {
@@ -124,11 +203,10 @@ export class ProjectService {
     return data;
   }
 
-  async create(dto: CreateProjectDto) {
-    // 프로젝트 등록자 memberId는 인증 사용자에서 주입해야 함 -> 커스텀 데코레이터?
-    const memberId = BigInt(1); // 임시 값
+  async create(memberId: bigint, dto: CreateProjectDto) {
+    const finalKey = await this.finalizeThumbnailOrThrow(dto.thumbnailUploadId, memberId);
 
-    return await this.projectRepository.create(memberId, dto);
+    return await this.projectRepository.create(memberId, dto, finalKey);
   }
 
   async update(id: number, dto: UpdateProjectDto) {

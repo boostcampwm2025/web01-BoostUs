@@ -28,7 +28,7 @@ export class ProjectController {
   @Post('uploads/thumbnails')
   @UseInterceptors(FileInterceptor('file'))
   async uploadTempThumbnail(@UploadedFile() file: Express.Multer.File) {
-    const memberId = 1; // authGuard 에서 주입? (req.user.id)
+    const memberId = BigInt(1); // authGuard 에서 주입? (req.user.id)
     return this.projectService.uploadTempThumbnail(file, memberId);
   }
 
@@ -88,7 +88,8 @@ export class ProjectController {
     description: '잘못된 요청',
   })
   create(@Body() dto: CreateProjectDto) {
-    return this.projectService.create(dto);
+    const memberId = BigInt(1);
+    return this.projectService.create(memberId, dto);
   }
 
   @Patch(':id')
