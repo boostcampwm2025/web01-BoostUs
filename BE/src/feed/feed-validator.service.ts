@@ -69,13 +69,14 @@ export class FeedValidatorService {
       const contentType = response.headers['content-type']?.toLowerCase() ?? '';
       const isXml = contentType.includes('text/xml');
 
-      // XML이 아니어도 data가 있으면 통과 (실제 파싱은 crawler 책임)
-      if (!isXml && !response.data) {
+      // XML 형식이 아니면 예외 발생
+      if (!isXml) {
         throw new InvalidFeedUrlException(
           'RSS 피드 형식이 올바르지 않습니다.',
           { feedUrl },
         );
       }
+
     } catch (error) {
       if (error instanceof InvalidFeedUrlException) {
         throw error;
