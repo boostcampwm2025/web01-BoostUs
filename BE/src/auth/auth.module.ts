@@ -6,6 +6,7 @@ import { AuthController } from './auth.controller';
 import { AuthRepository } from './auth.repository';
 import { AuthService } from './auth.service';
 import { GithubAuthClient } from './github-auth.client';
+import { AuthGuard } from './guard/auth.guard';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { GithubAuthClient } from './github-auth.client';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, GithubAuthClient, AuthRepository],
+  providers: [AuthService, GithubAuthClient, AuthRepository, AuthGuard],
+  exports: [AuthGuard, JwtModule],
 })
 export class AuthModule { }

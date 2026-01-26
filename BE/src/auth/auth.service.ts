@@ -2,8 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { plainToInstance } from 'class-transformer';
+import { MemberDto } from '../member/dto/member.dto';
 import { AuthRepository } from './auth.repository';
 import { GithubLoginUpsertDto } from './dto/github-login-upsert.dto';
+import {
+  InvalidTokenException,
+  TokenExpiredException,
+} from './exception/auth.exception';
 import { GithubAuthClient } from './github-auth.client';
 import { COHORT_ORG_MAP } from './type/cohort.type';
 
@@ -49,7 +54,7 @@ export class AuthService {
       sub: memberId.toString(),
       type: 'access',
     };
-    const expiresIn = this.configService.getOrThrow('JWT_ACCESS_EXPIRES_IN');
+    const expiresIn = Number(this.configService.getOrThrow('JWT_ACCESS_EXPIRES_IN'));
     return this.jwtService.sign(payload, { expiresIn });
   }
 
@@ -58,8 +63,37 @@ export class AuthService {
       sub: memberId.toString(),
       type: 'refresh',
     };
-    const expiresIn = this.configService.getOrThrow('JWT_REFRESH_EXPIRES_IN');
+    const expiresIn = Number(this.configService.getOrThrow('JWT_REFRESH_EXPIRES_IN'));
     return this.jwtService.sign(payload, { expiresIn });
+  }
+
+  async verifyAccessToken(token: string): Promise<{ memberId: string }> {
+    try {
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: this.configService.getOrThrow('JWT_SECRET'),
+      });
+
+      if (payload.type !== 'access') {
+        throw new InvalidTokenException();
+      }
+
+      return { memberId: payload.sub };
+    } catch (error) {
+      if (error.name === 'TokenExpiredError') {
+        throw new TokenExpiredException();
+      }
+      throw new InvalidTokenException();
+    }
+  }
+
+  async getCurrentMember(memberId: string) {
+    const member = await this.authRepository.findById(memberId);
+
+    if (!member) {
+      throw new InvalidTokenException();
+    }
+
+    return plainToInstance(MemberDto, member, { excludeExtraneousValues: true });
   }
 
   private getCohortFromOrgList(orgList: string[]): number | null {

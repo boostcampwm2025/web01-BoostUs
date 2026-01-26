@@ -35,4 +35,16 @@ export class AuthRepository {
       },
     });
   }
+
+  async findById(id: string) {
+    return this.prisma.member.findUnique({
+      where: { id: BigInt(id) },
+      select: {
+        id: true,
+        nickname: true,
+        avatarUrl: true,
+        cohort: true,
+      },
+    });
+  }
 }
