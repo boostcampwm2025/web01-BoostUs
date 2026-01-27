@@ -26,6 +26,7 @@ import { ProjectService } from './project.service';
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
+  @Public()
   @Post('uploads/thumbnails')
   @UseInterceptors(FileInterceptor('file'))
   async uploadTempThumbnail(@UploadedFile() file: Express.Multer.File) {
@@ -73,6 +74,7 @@ export class ProjectController {
     return this.projectService.findOne(id);
   }
 
+  @Public()
   @Post()
   @ApiOperation({
     summary: '프로젝트 생성',
@@ -92,9 +94,11 @@ export class ProjectController {
   })
   create(@Body() dto: CreateProjectDto) {
     const memberId = BigInt(1);
+    console.log(dto);
     return this.projectService.create(memberId, dto);
   }
 
+  @Public()
   @Patch(':id')
   @ApiOperation({
     summary: '프로젝트 수정',
@@ -126,6 +130,7 @@ export class ProjectController {
     return this.projectService.update(id, memberId, dto);
   }
 
+  @Public()
   @Delete(':id')
   @ApiOperation({
     summary: '프로젝트 삭제',
