@@ -26,7 +26,7 @@ const ProjectListCard = ({ project }: ProjectCardProps) => {
       className="block h-full rounded-xl bg-white shadow"
       scroll={false}
     >
-      <article className="flex h-full flex-col overflow-hidden rounded-xl bg-white shadow">
+      <article className="flex h-full flex-col overflow-hidden rounded-xl bg-neutral-surface-bold border border-neutral-border-default hover:border-neutral-border-active cursor-pointer transition-colors duration-150 shadow-default hover:shadow-hover">
         <div className="relative w-full shrink-0">
           {' '}
           <Image
@@ -37,7 +37,7 @@ const ProjectListCard = ({ project }: ProjectCardProps) => {
             height={160}
             unoptimized
           />
-          <div className="absolute top-2 right-4 z-10">
+          <div className="absolute top-3 right-3 z-10">
             <TogglePill
               title={project.cohort.toString() + '기'}
               isSelected={true}
@@ -59,10 +59,13 @@ const ProjectListCard = ({ project }: ProjectCardProps) => {
                 <TechList key={tech} title={tech} />
               ))}
             </div>
-            <span className="text-neutral-text-weak flex shrink-0 flex-row items-center gap-1 self-end text-sm font-light">
+            <span className="text-neutral-text-weak flex shrink-0 flex-row items-center gap-1 self-end text-body-12 font-light">
+              <Eye
+                size={16}
+                className="text-neutral-text-weak"
+                strokeWidth={2}
+              />
               {project.viewCount}
-              {'  '}
-              <Eye size={16} className="text-neutral-text-weak" />
             </span>
           </div>
         </div>
