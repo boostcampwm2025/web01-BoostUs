@@ -8,7 +8,7 @@ export default function Contribute() {
           우리 모두가 함께 만들어가는 지속 가능한 커뮤니티 &nbsp;
         </span>
         <span className="text-lg mb-12">
-          필요한 기능이 있따면 자유롭게 제안하고 기여해보세요.
+          필요한 기능이 있다면 자유롭게 제안하고 기여해보세요.
         </span>
       </div>
 

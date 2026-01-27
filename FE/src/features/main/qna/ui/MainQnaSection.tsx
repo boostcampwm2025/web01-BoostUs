@@ -23,7 +23,6 @@ export default function MainQnaSection() {
 
         if (response?.data?.items) {
           setQuestions(response.data.items);
-          console.log(response.data.items);
         }
       } catch (error) {
         console.error('메인 질문 로딩 실패:', error);
