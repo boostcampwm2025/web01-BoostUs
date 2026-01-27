@@ -3,14 +3,14 @@
 
 import { useState } from 'react';
 
-const MAX_TECH_STACK = 10;
-const MAX_TECH_STACK_LENGTH = 30;
+const MAX_Hash_TAG = 10;
+const MAX_Hash_TAG_LENGTH = 30;
 
 type Props = {
   value: string;
   onChangeValue: (v: string) => void;
 
-  techStacks: string[];
+  hashTags: string[];
   onAdd: (v: string) => void;
   onRemove: (v: string) => void;
 
@@ -22,17 +22,17 @@ type Props = {
   maxLength?: number;
 };
 
-export default function TechStackInput({
+export default function HashTagInput({
   value,
   onChangeValue,
-  techStacks,
+  hashTags,
   onAdd,
   onRemove,
   isComposing,
   onCompositionStart,
   onCompositionEnd,
-  maxCount = MAX_TECH_STACK,
-  maxLength = MAX_TECH_STACK_LENGTH,
+  maxCount = MAX_Hash_TAG,
+  maxLength = MAX_Hash_TAG_LENGTH,
 }: Props) {
   const [localError, setLocalError] = useState<string | null>(null);
 
@@ -42,22 +42,20 @@ export default function TechStackInput({
     if (!next) return;
 
     if (next.length > maxLength) {
-      const msg = `기술 스택은 최대 ${maxLength}자까지 입력할 수 있어요.`;
+      const msg = `해시태그는 최대 ${maxLength}자까지 입력할 수 있어요.`;
       setLocalError(msg);
       alert(msg);
       return;
     }
 
-    if (techStacks.length >= maxCount) {
-      const msg = `기술 스택은 최대 ${maxCount}개까지 추가할 수 있어요.`;
+    if (hashTags.length >= maxCount) {
+      const msg = `해시태그는 최대 ${maxCount}개까지 추가할 수 있어요.`;
       setLocalError(msg);
       alert(msg);
       return;
     }
 
-    const exists = techStacks.some(
-      (s) => s.toLowerCase() === next.toLowerCase()
-    );
+    const exists = hashTags.some((s) => s.toLowerCase() === next.toLowerCase());
     if (exists) {
       onChangeValue('');
       return;
@@ -71,10 +69,10 @@ export default function TechStackInput({
     <div className="mb-6">
       <div className="flex items-end justify-between">
         <label className="text-neutral-text-strong text-body-14">
-          기술 스택
+          해시 태그
         </label>
         <span className="text-neutral-text-weak text-body-12">
-          {techStacks.length}/{maxCount}
+          {hashTags.length}/{maxCount}
         </span>
       </div>
 
@@ -97,9 +95,9 @@ export default function TechStackInput({
         <p className="mt-2 text-body-12 text-red-600">{localError}</p>
       )}
 
-      {techStacks.length > 0 && (
+      {hashTags.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-2">
-          {techStacks.map((t) => (
+          {hashTags.map((t) => (
             <div
               key={t}
               className="flex items-center gap-2 rounded-xl border border-neutral-border-default bg-neutral-surface-strong px-3 py-2"
@@ -122,4 +120,3 @@ export default function TechStackInput({
     </div>
   );
 }
-

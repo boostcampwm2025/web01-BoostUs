@@ -1,15 +1,15 @@
 /* eslint-disable no-alert */
 'use client';
 
-import { CreateQuestion } from '@/features/questions/api/questions.api';
+import { createQuestion } from '@/features/questions/api/questions.api';
 import BackButton from '@/shared/ui/BackButton';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import ModeToggle from '../ViewMode/ModeToggle';
 import type { PreviewMode } from './QuestionModeButton';
-import TechStackInput from './TechStackInput';
 import QuestionPreview from '../Textarea/QuestionPreview';
 import QuestionEditor from '../Textarea/QuestionEditor';
+import HashTagInput from './HashTagInput';
 
 const MAX_TITLE_LENGTH = 200;
 
@@ -34,8 +34,8 @@ export default function QuestionRegister() {
 
   const [title, setTitle] = useState('');
   const [contents, setContents] = useState('');
-  const [techStackInput, setTechStackInput] = useState('');
-  const [techStacks, setTechStacks] = useState<string[]>([]);
+  const [techHashTagInput, setTechHashTagInput] = useState('');
+  const [hashTags, setHashTags] = useState<string[]>([]);
   const [mode, setMode] = useState<PreviewMode>('split');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isComposing, setIsComposing] = useState(false);
@@ -68,10 +68,10 @@ export default function QuestionRegister() {
 
     setIsSubmitting(true);
     try {
-      const created = await CreateQuestion(memberId || '1', {
+      const created = await createQuestion(memberId || '1', {
         title: normalizedTitle,
         contents,
-        hashtags: techStacks.length ? techStacks : undefined,
+        hashtags: hashTags.length ? hashTags : undefined,
       });
 
       router.push(`/questions/${created.id}`);
@@ -156,15 +156,13 @@ export default function QuestionRegister() {
             <QuestionPreview contents={contents} />
           )}
 
-          {/* 기술 스택 */}
-          <TechStackInput
-            value={techStackInput}
-            onChangeValue={setTechStackInput}
-            techStacks={techStacks}
-            onAdd={(v) => setTechStacks((prev) => [...prev, v])}
-            onRemove={(v) =>
-              setTechStacks((prev) => prev.filter((x) => x !== v))
-            }
+          {/* 해시 태그 */}
+          <HashTagInput
+            value={techHashTagInput}
+            onChangeValue={setTechHashTagInput}
+            hashTags={hashTags}
+            onAdd={(v) => setHashTags((prev) => [...prev, v])}
+            onRemove={(v) => setHashTags((prev) => prev.filter((x) => x !== v))}
             isComposing={isComposing}
             onCompositionStart={() => setIsComposing(true)}
             onCompositionEnd={() => setIsComposing(false)}
