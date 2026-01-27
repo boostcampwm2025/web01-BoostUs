@@ -1,11 +1,12 @@
 import AnswerRegister from '@/features/questions/ui/AnswerRegister/AnswerRegister';
 
-type Props = {
-  params: {
-    questionId: string;
-  };
-};
+interface Props {
+  params: Promise<{
+    id: string;
+  }>;
+}
 
-export default function QuestionRegisterPage({ params }: Props) {
-  return <AnswerRegister questionId={params.questionId} />;
+export default async function QuestionRegisterPage({ params }: Props) {
+  const { id } = await params;
+  return <AnswerRegister questionId={id} />;
 }

@@ -31,7 +31,7 @@ export default function AnswerRegister({ questionId }: Props) {
 
     setIsSubmitting(true);
     try {
-      const created = await createAnswer(memberId || '1', questionId, {
+      const created = await createAnswer(questionId, {
         contents,
       });
 

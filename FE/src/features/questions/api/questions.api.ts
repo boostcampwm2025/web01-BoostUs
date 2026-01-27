@@ -82,21 +82,17 @@ export const getQuestionCounts = async () => {
   return response.data;
 };
 
-export const createQuestion = async (
-  memberId: string,
-  body: {
-    title: string;
-    contents: string;
-    hashtags?: string[];
-  }
-) => {
+export const createQuestion = async (body: {
+  title: string;
+  contents: string;
+  hashtags?: string[];
+}) => {
   const data = await customFetch<ApiResponse<QuestionDetail>>(
     `/api/questions`,
     {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        memberId,
       },
       body: JSON.stringify(body),
     }
@@ -106,7 +102,6 @@ export const createQuestion = async (
 };
 
 export const createAnswer = async (
-  memberId: string,
   questionId: string,
   body: {
     contents: string;
@@ -118,7 +113,6 @@ export const createAnswer = async (
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        memberId,
       },
       body: JSON.stringify(body),
     }

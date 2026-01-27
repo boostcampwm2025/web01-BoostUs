@@ -42,20 +42,20 @@ export default function QuestionRegister() {
     return null;
   }, [contents]);
 
-  //   const canSubmit =
-  //     !!memberId && !titleError && !contentsError && !isSubmitting;
+  const canSubmit =
+    !!memberId && !titleError && !contentsError && !isSubmitting;
 
   const handleSubmit = async () => {
-    // if (!memberId) {
-    //   alert('로그인이 필요해요. (memberId를 찾을 수 없습니다)');
-    //   return;
-    // }
+    if (!memberId) {
+      alert('로그인이 필요해요. (memberId를 찾을 수 없습니다)');
+      return;
+    }
 
     if (titleError || contentsError) return;
 
     setIsSubmitting(true);
     try {
-      const created = await createQuestion(memberId || '1', {
+      const created = await createQuestion({
         title: normalizedTitle,
         contents,
         hashtags: hashTags.length ? hashTags : undefined,
@@ -97,7 +97,7 @@ export default function QuestionRegister() {
 
           <button
             type="button"
-            // disabled={!canSubmit}
+            disabled={!canSubmit}
             onClick={handleSubmit}
             className="h-10 px-4 rounded-xl bg-brand-surface-default text-brand-text-on-default disabled:opacity-50 disabled:cursor-not-allowed"
           >

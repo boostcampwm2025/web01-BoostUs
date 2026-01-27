@@ -11,7 +11,7 @@ import { CurrentMember } from 'src/auth/decorator/current-member.decorator';
 export class AnswerController {
   constructor(private readonly answerService: AnswerService) {}
 
-  @Post()
+  @Post(':id')
   @responseMessage('답변 생성 성공')
   @ApiOperation({
     summary: '답변 생성',
@@ -35,11 +35,11 @@ export class AnswerController {
     description: '잘못된 요청',
   })
   create(
-    @Query('qid') qid: string,
+    @Param('id') questionId: string,
     @Headers('memberId') @CurrentMember() memberId: string,
     @Body() createAnswerDto: CreateAnswerDto,
   ) {
-    return this.answerService.create(memberId, qid, createAnswerDto);
+    return this.answerService.create(memberId, questionId, createAnswerDto);
   }
 
   @Patch(':id')
