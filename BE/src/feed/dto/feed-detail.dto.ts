@@ -2,9 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 
 /**
- * Feed List Item DTO
+ * Feed 상세 정보 DTO
  */
-export class FeedListItemDto {
+export class FeedDetailDto {
   @ApiProperty({
     description: 'RSS 피드 ID',
     example: 1,
@@ -27,17 +27,24 @@ export class FeedListItemDto {
   memberId: bigint;
 
   @ApiProperty({
-    description: '마지막 수집일시',
-    example: '2024-01-19T12:00:00Z',
-  })
-  @Expose()
-  lastFetchedAt: Date;
-
-  @ApiProperty({
     description: '피드 상태',
     example: 'ACTIVE',
     enum: ['ACTIVE', 'INACTIVE'],
   })
   @Expose()
   state: string;
+
+  @ApiProperty({
+    description: '생성일시',
+    example: '2024-01-19T12:00:00Z',
+  })
+  @Expose()
+  createdAt: Date;
+
+  @ApiProperty({
+    description: '마지막 수집일시',
+    example: '2024-01-19T12:00:00Z',
+  })
+  @Expose()
+  lastFetchedAt: Date;
 }
