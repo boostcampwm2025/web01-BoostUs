@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { fetchRecoStory } from '@/features/main/reco/api/fetchRecoStory';
 import { Story } from '@/features/stories';
+import UserProfile from '@/shared/ui/UserProfile';
 
 const DEFAULT_THUMBNAIL = '/FE/public/assets/NoImage.png';
 
@@ -76,19 +77,11 @@ const RecommendStorySection = () => {
         {/* 하단 텍스트 정보 영역 */}
         <div className="px-3 py-2 flex flex-col justify-between h-full">
           <div>
-            <div className="flex flex-row items-center justify-start gap-2">
-              <div className="bg-grayscale-300 h-8 w-8 rounded-full flex-shrink-0" />
-              <div className="flex flex-col">
-                <span className="text-body-14 text-neutral-text-default">
-                  {bestStory.member.nickname}
-                </span>
-                {bestStory.member.cohort && (
-                  <span className="text-body-12 text-neutral-text-weak">
-                    {bestStory.member.cohort}기
-                  </span>
-                )}
-              </div>
-            </div>
+            <UserProfile
+              imageSrc={bestStory.member.avatarUrl}
+              nickname={bestStory.member.nickname}
+              cohort={bestStory.member.cohort}
+            />
             <h3 className="text-neutral-text-strong text-display-20 mt-4 line-clamp-1">
               {bestStory.title}
             </h3>
