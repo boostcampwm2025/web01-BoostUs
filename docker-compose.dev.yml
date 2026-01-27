@@ -37,6 +37,11 @@ services:
       - DB_USER=root
       - DB_PASSWORD=test
       - DB_NAME=boostus
+      - NODE_ENV=development
+      - JWT_SECRET=secret
+      - JWT_ACCESS_EXPIRES_IN=3600
+      - JWT_REFRESH_EXPIRES_IN=604800
+      - FRONTEND_URL=http://localhost:5173
       - REDIS_HOST=redis
       - REDIS_PORT=6379
     depends_on:
@@ -62,6 +67,7 @@ services:
     environment:
       - INTERNAL_API_URL=http://backend:3000
       - NEXT_PUBLIC_API_URL=http://localhost:3000
+      - NODE_ENV=development
 
   crawler:
     image: node:24.11.0-alpine

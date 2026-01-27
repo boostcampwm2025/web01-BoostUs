@@ -45,4 +45,70 @@ export class FeedRepository {
       },
     });
   }
+
+  /**
+   * memberId로 피드 조회
+   * @param memberId bigint
+   * @returns Feed | null
+   */
+  async findByMemberId(memberId: bigint): Promise<Feed | null> {
+    return this.prisma.feed.findUnique({
+      where: { memberId },
+    });
+  }
+
+  /**
+   * 피드 생성
+   * @param memberId bigint
+   * @param feedUrl string
+   * @returns Feed
+   */
+  async create(memberId: bigint, feedUrl: string): Promise<Feed> {
+    return this.prisma.feed.create({
+      data: {
+        memberId,
+        feedUrl,
+        state: State.ACTIVE,
+      },
+    });
+  }
+
+  /**
+   * 피드 URL 업데이트
+   * @param id bigint
+   * @param feedUrl string
+   * @returns Feed
+   */
+  async updateFeedUrl(id: bigint, feedUrl: string): Promise<Feed> {
+    return this.prisma.feed.update({
+      where: { id },
+      data: { feedUrl },
+    });
+  }
+
+  /**
+   * 피드 상태 업데이트
+   * @param id bigint
+   * @param state State
+   * @returns Feed
+   */
+  async updateState(id: bigint, state: State): Promise<Feed> {
+    return this.prisma.feed.update({
+      where: { id },
+      data: { state },
+    });
+  }
+
+  /**
+   * 피드 존재 여부 확인
+   * @param id bigint
+   * @returns boolean
+   */
+  async exists(id: bigint): Promise<boolean> {
+    const feed = await this.prisma.feed.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+    return feed !== null;
+  }
 }

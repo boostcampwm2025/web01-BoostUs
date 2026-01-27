@@ -1,21 +1,29 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { plainToInstance } from 'class-transformer';
+import { MemberDto } from '../member/dto/member.dto';
+import { AuthRepository } from './auth.repository';
+import { GithubLoginUpsertDto } from './dto/github-login-upsert.dto';
+import {
+  InvalidTokenException,
+  TokenExpiredException,
+} from './exception/auth.exception';
 import { GithubAuthClient } from './github-auth.client';
 import { COHORT_ORG_MAP } from './type/cohort.type';
-import { plainToInstance } from 'class-transformer';
-import { GithubLoginUpsertDto } from './dto/github-login-upsert.dto';
-import { GithubLoginResponseDto } from './dto/github-login-response.dto';
-import { AuthRepository } from './auth.repository';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly githubAuthClient: GithubAuthClient,
     private readonly authRepository: AuthRepository,
-  ) {}
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+  ) { }
 
   async handleCallback(code: string) {
-    const accessToken = await this.githubAuthClient.exchangeCodeForToken(code);
-    const userInfo = await this.githubAuthClient.getUserInfoByAccessToken(accessToken);
+    const githubAccessToken = await this.githubAuthClient.exchangeCodeForToken(code);
+    const userInfo = await this.githubAuthClient.getUserInfoByAccessToken(githubAccessToken);
 
     const orgList = userInfo.orgLogins;
     const cohort = this.getCohortFromOrgList(orgList);
@@ -31,10 +39,64 @@ export class AuthService {
 
     const member = await this.authRepository.upsertByGithubProfile(upsertMemberDto);
 
-    return plainToInstance(GithubLoginResponseDto, member, { excludeExtraneousValues: true });
+    const accessToken = this.generateAccessToken(member.id);
+    const refreshToken = this.generateRefreshToken(member.id);
+    // TODO: 리프레시 토큰 DBMS 혹은 Redis에 저장
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 
-  getCohortFromOrgList(orgList: string[]): number | null {
+  private generateAccessToken(memberId: bigint): string {
+    const payload = {
+      sub: memberId.toString(),
+      type: 'access',
+    };
+    const expiresIn = Number(this.configService.getOrThrow('JWT_ACCESS_EXPIRES_IN'));
+    return this.jwtService.sign(payload, { expiresIn });
+  }
+
+  private generateRefreshToken(memberId: bigint): string {
+    const payload = {
+      sub: memberId.toString(),
+      type: 'refresh',
+    };
+    const expiresIn = Number(this.configService.getOrThrow('JWT_REFRESH_EXPIRES_IN'));
+    return this.jwtService.sign(payload, { expiresIn });
+  }
+
+  async verifyAccessToken(token: string): Promise<{ memberId: string }> {
+    try {
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: this.configService.getOrThrow('JWT_SECRET'),
+      });
+
+      if (payload.type !== 'access') {
+        throw new InvalidTokenException();
+      }
+
+      return { memberId: payload.sub };
+    } catch (error) {
+      if (error.name === 'TokenExpiredError') {
+        throw new TokenExpiredException();
+      }
+      throw new InvalidTokenException();
+    }
+  }
+
+  async getCurrentMember(memberId: string) {
+    const member = await this.authRepository.findById(memberId);
+
+    if (!member) {
+      throw new InvalidTokenException();
+    }
+
+    return plainToInstance(MemberDto, member, { excludeExtraneousValues: true });
+  }
+
+  private getCohortFromOrgList(orgList: string[]): number | null {
     for (const [cohortStr, orgs] of Object.entries(COHORT_ORG_MAP)) {
       const cohort = Number(cohortStr);
       if (orgs.some((org) => orgList.includes(org))) {

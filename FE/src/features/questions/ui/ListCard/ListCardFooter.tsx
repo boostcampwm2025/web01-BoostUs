@@ -7,23 +7,17 @@ import {
   MessageCircle,
 } from 'lucide-react';
 import Image from 'next/image';
+import UserProfile from '@/shared/ui/UserProfile';
+import extractDate from '@/shared/utils/extractDate';
 
 const ListCardFooter = ({ question }: { question: Question }) => {
   return (
     <div className="flex flex-row items-center justify-end gap-4 w-full">
-      <div className="flex flex-row items-center justify-center gap-1">
-        <div className="relative w-4 h-4">
-          <Image
-            src={question.member.avatarUrl}
-            alt={`${question.member.nickname}'의 프로필 사진`}
-            className="object-cover rounded-full"
-            fill
-          />
-        </div>
-        <span className="text-body-12 text-neutral-text-weak">
-          {question.member.nickname}
-        </span>
-      </div>
+      <UserProfile
+        imageSrc={question.member.avatarUrl}
+        nickname={question.member.nickname}
+        size="small"
+      />
       <div className="flex flex-row items-center justify-center gap-3">
         <div className="flex flex-row items-center justify-center gap-1">
           <ArrowBigUp
@@ -68,7 +62,7 @@ const ListCardFooter = ({ question }: { question: Question }) => {
             size={14}
           />
           <span className="text-neutral-text-weak text-body-12">
-            {question.createdAt.slice(0, 10)}
+            {extractDate(question.createdAt)}
           </span>
         </div>
       </div>

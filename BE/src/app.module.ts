@@ -1,6 +1,9 @@
 import { Logger, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { AnswerModule } from './answer/answer.module';
+import { AuthModule } from './auth/auth.module';
+import { AuthGuard } from './auth/guard/auth.guard';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import { UnknownExceptionFilter } from './common/filter/unknown-exception.filter';
 import { FeedModule } from './feed/feed.module';
@@ -9,8 +12,6 @@ import { ProjectModule } from './project/project.module';
 import { QuestionModule } from './question/question.module';
 import { StoryModule } from './story/story.module';
 import { TechStackModule } from './tech-stack/tech-stack.module';
-import { AuthModule } from './auth/auth.module';
-import { AnswerModule } from './answer/answer.module';
 
 @Module({
   imports: [
@@ -28,6 +29,11 @@ import { AnswerModule } from './answer/answer.module';
   ],
   providers: [
     Logger,
+    // 전역 가드 등록
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
     // 순서 중요: 역순으로 체크되므로 구체적인 필터를 나중에 등록
     {
       provide: APP_FILTER,
@@ -39,4 +45,4 @@ import { AnswerModule } from './answer/answer.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }

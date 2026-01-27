@@ -1,7 +1,7 @@
 'use client';
 
 import { useStoriesContext } from '@/features/stories/model';
-import { motion } from 'framer-motion';
+import SlidingFilter from '@/widgets/SlidingFilter';
 
 const FILTER_OPTIONS = [
   { key: 'daily', label: '오늘' },
@@ -20,36 +20,13 @@ const RankingFilter = () => {
     : 'all';
 
   return (
-    <div className="bg-neutral-surface-strong flex h-10 w-full flex-row justify-between gap-2 rounded-lg px-1 py-1">
-      {FILTER_OPTIONS.map((option) => {
-        const isSelected = currentSelection === option.key;
-
-        return (
-          <button
-            key={option.key}
-            onClick={() => setRankingPeriod(option.key)}
-            className="relative flex w-full cursor-pointer items-center justify-center rounded-lg transition-colors duration-300"
-          >
-            {isSelected && (
-              <motion.div
-                layoutId="ranking-active-pill"
-                className="bg-neutral-surface-bold shadow-default absolute inset-0 rounded-lg"
-                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              />
-            )}
-            <span
-              className={`relative z-10 ${
-                isSelected
-                  ? 'text-string-14 text-neutral-text-strong'
-                  : 'text-body-14 text-neutral-text-weak'
-              }`}
-            >
-              {option.label}
-            </span>
-          </button>
-        );
-      })}
-    </div>
+    <SlidingFilter
+      options={FILTER_OPTIONS}
+      value={currentSelection}
+      onChange={setRankingPeriod}
+      layoutId="ranking-filter-pill"
+      className="h-10"
+    />
   );
 };
 

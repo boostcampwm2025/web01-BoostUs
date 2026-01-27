@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { ResponseInterceptor } from './common/interceptor/response.interceptor';
 
@@ -12,11 +13,14 @@ import { ResponseInterceptor } from './common/interceptor/response.interceptor';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // 쿠키 파서 미들웨어 추가
+  app.use(cookieParser());
+
   app.setGlobalPrefix('api');
 
   // CORS 설정
   app.enableCors({
-    origin: ['http://localhost:5173'],
+    origin: [process.env.FRONTEND_URL || 'http://localhost:5173'],
     credentials: true,
   });
   const reflector = app.get(Reflector);
