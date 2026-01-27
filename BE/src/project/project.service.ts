@@ -46,12 +46,6 @@ export class ProjectService {
     });
   }
 
-  private toPublicUrl(keyOrUrl: string | null | undefined): string | null {
-    if (!keyOrUrl) return null;
-    if (keyOrUrl.startsWith('http://') || keyOrUrl.startsWith('https://')) return keyOrUrl;
-    return `${this.endpoint}/${this.bucket}/${keyOrUrl}`;
-  }
-
   async uploadTempThumbnail(file: Express.Multer.File, memberId: string) {
     const uploadId = randomUUID();
     const ext = (file.originalname.split('.').pop() || 'png').toLocaleLowerCase();
