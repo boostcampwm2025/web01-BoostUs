@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { MemberProfileResponseDto } from './dto/member-profile-response.dto';
 import { MemberRepository } from './member.repository';
+import { MemberNotFoundException } from './exception/member.exception';
 
 @Injectable()
 export class MemberService {
@@ -14,7 +15,7 @@ export class MemberService {
     const profile = await this.memberRepository.findProfileById(memberId);
 
     if (!profile) {
-      throw new Error('Member not found'); // TODO: 추후 커스텀 에러로 변경
+      throw new MemberNotFoundException(memberId);
     }
 
     const response = {
