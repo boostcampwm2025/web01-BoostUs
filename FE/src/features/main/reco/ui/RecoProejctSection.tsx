@@ -84,11 +84,11 @@ export default function RecommendProjectSection() {
       <div className="absolute bottom-0 left-0 w-full p-8 z-20 flex justify-between items-end">
         {/* 왼쪽 텍스트 */}
         <div className="flex flex-col gap-2">
-          <span className="bg-blue-600 text-xs font-bold px-3 py-1 rounded-full w-fit">
+          <span className="bg-brand-surface-default text-string-14 font-bold px-3 py-1 rounded-full w-fit">
             {slides[activeIndex]?.category}
           </span>
-          <h1 className="text-2xl font-bold">{slides[activeIndex]?.title}</h1>
-          <p className="text-gray-300 text-sm">
+          <h1 className="text-display-24">{slides[activeIndex]?.title}</h1>
+          <p className="text-body-14 text-brand-text-on-default">
             {slides[activeIndex]?.description}
           </p>
         </div>
