@@ -42,8 +42,11 @@ services:
       - JWT_ACCESS_EXPIRES_IN=3600
       - JWT_REFRESH_EXPIRES_IN=604800
       - FRONTEND_URL=http://localhost:5173
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     depends_on:
       - db
+      - redis
     networks:
       - boostus_network
 
@@ -76,6 +79,15 @@ services:
     command: sh -c "npm install && npm run dev"
     ports:
       - "5000:5000"
+
+  redis:
+    image: redis:7-alpine
+    container_name: boostus_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - boostus_network
 
 networks:
   boostus_network:

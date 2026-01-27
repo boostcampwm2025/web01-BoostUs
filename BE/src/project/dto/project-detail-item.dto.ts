@@ -2,7 +2,11 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Transform, Type } from 'class-transformer';
 import { ProjectField } from '../type/project-field.type';
 import { ProjectParticipantDto } from './project-participant.dto';
+import { toPublicUrl } from '../util/thumbnail-transform.util';
 
+/*
+ * 프로젝트 상세조회 응답을 담는 DTO 입니당
+ */
 export class ProjectDetailItemDto {
   @ApiProperty({
     description: '프로젝트 ID',
@@ -18,6 +22,7 @@ export class ProjectDetailItemDto {
     nullable: true,
   })
   @Expose()
+  @Transform(({ obj }) => toPublicUrl(obj.thumbnailKey))
   thumbnailUrl: string | null;
 
   @ApiProperty({

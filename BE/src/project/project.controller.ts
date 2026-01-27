@@ -8,7 +8,10 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Public } from '../auth/decorator/public.decorator';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -22,6 +25,13 @@ import { ProjectService } from './project.service';
 @Controller('projects')
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
+
+  @Post('uploads/thumbnails')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadTempThumbnail(@UploadedFile() file: Express.Multer.File) {
+    const memberId = BigInt(1); // authGuard 에서 주입? (req.user.id)
+    return this.projectService.uploadTempThumbnail(file, memberId);
+  }
 
   @Public()
   @Get()
@@ -81,7 +91,8 @@ export class ProjectController {
     description: '잘못된 요청',
   })
   create(@Body() dto: CreateProjectDto) {
-    return this.projectService.create(dto);
+    const memberId = BigInt(1);
+    return this.projectService.create(memberId, dto);
   }
 
   @Patch(':id')
@@ -111,7 +122,8 @@ export class ProjectController {
     description: '프로젝트를 찾을 수 없음',
   })
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateProjectDto) {
-    return this.projectService.update(id, dto);
+    const memberId = BigInt(1);
+    return this.projectService.update(id, memberId, dto);
   }
 
   @Delete(':id')
