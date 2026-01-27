@@ -4,13 +4,13 @@ import StoriesCard from '@/features/stories/ui/Card/Card';
 import FeedHeader from '@/features/mainpage/feed/FeedHeader';
 import { useEffect, useState } from 'react';
 import { fetchRecoStory } from '@/features/main/reco/api/fetchRecoStory';
-import type { StoriesCard as StoriesCardType } from '@/features/stories/model/stories.type';
 import Contribute from '@/features/main/contribute/Contribute';
 import MainQnaSection from '@/features/main/qna/ui/MainQnaSection';
 import Link from 'next/link';
+import { Story } from '@/features/stories/model/stories.type';
 
 const FeedSection = () => {
-  const [Stories, setStories] = useState<StoriesCardType[] | null>(null);
+  const [Stories, setStories] = useState<Story[] | null>(null);
 
   useEffect(() => {
     const loadStories = async () => {
@@ -18,7 +18,7 @@ const FeedSection = () => {
         const response = await fetchRecoStory({
           sortBy: 'views',
           period: 'all',
-          size: 6,
+          size: 8,
         });
 
         if (response?.data?.items && response.data.items.length > 0) {
@@ -29,13 +29,13 @@ const FeedSection = () => {
       }
     };
 
-    loadStories();
+    void loadStories();
   }, []);
 
   return (
     <>
       <FeedHeader />
-      <section className="gap-16 columns-3 mt-4 mb-8 w-full">
+      <section className="gap-8 md:columns-3 lg:columns-4 mt-4 mb-8 w-full">
         {Stories?.map((story) => (
           <div key={story.id} className={'mb-8'}>
             <StoriesCard id={story.id} key={story.id} story={story} />
@@ -48,12 +48,12 @@ const FeedSection = () => {
         {/* 질문 & 답변 */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-4 justify-between mb-4">
-            <h2 className="text-xl font-bold text-neutral-text-strong">
+            <h2 className="text-display-24 text-neutral-text-strong">
               질문 & 답변
             </h2>
             <Link
               href="/questions"
-              className="text-sm text-neutral-text-weak hover:text-neutral-text-default flex items-center gap-1"
+              className="text-neutral-text-weak hover:text-neutral-text-strong text-string-16 transition-colors duration-150 flex flex-row items-center gap-1"
             >
               더보기 &rarr;
             </Link>
