@@ -4,7 +4,7 @@ import RecommendStorySection from '@/features/main/reco/ui/RecoStorySection';
 const RecommendedSection = () => {
   return (
     <>
-      <h1 className="font-bold text-2xl">오늘의 추천</h1>
+      <h1 className="text-display-24 text-neutral-text-strong">오늘의 추천</h1>
       <section className="flex flex-row gap-8 mt-4 w-full h-130">
         <RecommendedProjectSection />
         <div className="flex flex-col gap-4 w-[40%]">

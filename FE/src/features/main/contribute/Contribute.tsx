@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function Contribute() {
   return (
-    <div className="flex flex-col px-6 py-20 items-center justify-center bg-brand-surface-default  text-brand-text-on-default mt-11 rounded-2xl">
+    <div className="flex flex-col px-6 py-20 items-center justify-center bg-brand-surface-default text-brand-text-on-default mt-13 rounded-2xl">
       <div className="flex flex-col gap-1 text-center">
         <span className="text-display-24 mb-3">
           우리 모두가 함께 만들어가는 지속 가능한 커뮤니티

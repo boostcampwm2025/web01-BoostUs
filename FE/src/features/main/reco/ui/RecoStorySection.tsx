@@ -1,12 +1,13 @@
 'use client';
 
 import Image from 'next/image';
-import { Eye, Heart } from 'lucide-react';
+import { Calendar1, Eye, Heart } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { fetchRecoStory } from '@/features/main/reco/api/fetchRecoStory';
 import { Story } from '@/features/stories';
 import UserProfile from '@/shared/ui/UserProfile';
+import extractDate from '@/shared/utils/extractDate';
 
 const DEFAULT_THUMBNAIL = '/FE/public/assets/NoImage.png';
 
@@ -38,13 +39,13 @@ const RecommendStorySection = () => {
       }
     };
 
-    loadBestStory();
+    void loadBestStory();
   }, []);
 
   // 3. 로딩 중일 때 처리 (스켈레톤 혹은 빈 화면)
   if (isLoading) {
     return (
-      <div className="w-full h-full bg-neutral-surface-bold animate-pulse rounded-2xl border border-neutral-border-default min-h-[400px]" />
+      <div className="w-full h-full bg-neutral-surface-bold animate-pulse rounded-2xl border border-neutral-border-default min-h-50" />
     );
   }
 
@@ -61,9 +62,9 @@ const RecommendStorySection = () => {
   // 6. 렌더링 (Props 대신 bestStory State 사용)
   return (
     <Link href={`/stories/${bestStory.id}`}>
-      <div className="bg-neutral-surface-bold border-neutral-border-default hover:shadow-default grid w-full cursor-pointer grid-rows-[4fr_6fr] overflow-hidden rounded-2xl border transition-shadow duration-150 h-full">
+      <div className="bg-neutral-surface-bold border-neutral-border-default shadow-default hover:shadow-hover grid w-full cursor-pointer grid-rows-[4fr_6fr] overflow-hidden rounded-2xl border transition-shadow duration-150 h-full">
         {/* 상단 이미지 영역 */}
-        <div className="relative w-full h-full min-h-[200px]">
+        <div className="relative w-full h-full min-h-50">
           <Image
             src={currentSrc}
             alt={`${bestStory.title} 글의 썸네일 이미지`}
@@ -90,24 +91,25 @@ const RecommendStorySection = () => {
             </div>
           </div>
 
-          <div className="mt-3 flex w-full flex-row items-center justify-between">
-            <div className="flex flex-row items-center gap-2">
-              <div className="flex flex-row items-center gap-1">
-                <Heart className="text-neutral-text-weak h-3 w-3" />
-                <span className="text-body-12 text-neutral-text-weak">
-                  {bestStory.likeCount}
-                </span>
-              </div>
-              <div className="flex flex-row items-center gap-1">
-                <Eye className="text-neutral-text-weak h-3 w-3" />
-                <span className="text-body-12 text-neutral-text-weak">
-                  {bestStory.viewCount}
-                </span>
-              </div>
+          <div className="mt-3 flex w-full flex-row items-center gap-2">
+            <div className="flex flex-row items-center gap-1">
+              <Heart className="text-neutral-text-weak h-3 w-3" />
+              <span className="text-body-12 text-neutral-text-weak">
+                {bestStory.likeCount}
+              </span>
             </div>
-            <span className="text-body-12 text-neutral-text-weak">
-              {bestStory.createdAt.slice(0, 10)}
-            </span>
+            <div className="flex flex-row items-center gap-1">
+              <Eye className="text-neutral-text-weak h-3 w-3" />
+              <span className="text-body-12 text-neutral-text-weak">
+                {bestStory.viewCount}
+              </span>
+            </div>
+            <div className="flex flex-row items-center gap-1">
+              <Calendar1 className="text-neutral-text-weak h-3 w-3" />
+              <span className="text-body-12 text-neutral-text-weak">
+                {extractDate(bestStory.createdAt)}
+              </span>
+            </div>
           </div>
         </div>
       </div>

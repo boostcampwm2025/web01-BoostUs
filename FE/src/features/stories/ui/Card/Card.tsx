@@ -60,7 +60,6 @@ const StoriesCard = ({ id, story }: StoriesCardProps) => {
                 {story.viewCount}
               </span>
             </div>
-
             <div className="flex flex-row items-center gap-1">
               <Calendar1 className="text-neutral-text-weak h-3 w-3" />
               <span className="text-body-12 text-neutral-text-weak">
