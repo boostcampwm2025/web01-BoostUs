@@ -3,15 +3,15 @@
 import Image from 'next/image';
 import { Eye, Heart } from 'lucide-react';
 import Link from 'next/link';
-import type { StoriesCard as StoriesCardType } from '@/features/stories/model/stories.type';
 import { useEffect, useState } from 'react';
 import { fetchRecoStory } from '@/features/main/reco/api/fetchRecoStory';
+import { Story } from '@/features/stories';
 
 const DEFAULT_THUMBNAIL = '/FE/public/assets/NoImage.png';
 
 const RecommendStorySection = () => {
   // 1. 내부에서 사용할 State 정의
-  const [bestStory, setBestStory] = useState<StoriesCardType | null>(null);
+  const [bestStory, setBestStory] = useState<Story | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isImageError, setIsImageError] = useState(false);
 
