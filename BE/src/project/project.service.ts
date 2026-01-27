@@ -15,6 +15,14 @@ import { randomUUID } from 'node:crypto';
 import type Redis from 'ioredis';
 import { REDIS } from '../redis/redis.provider';
 import { ThumbnailMeta } from './type/upload-image-meta.type';
+import {
+  ProjectNotFoundException,
+  ProjectForbiddenException,
+  ThumbnailUploadNotFoundException,
+  InvalidThumbnailMetadataException,
+  ThumbnailOwnershipException,
+  MemberNotFoundException,
+} from './exception/project.exception';
 
 @Injectable()
 export class ProjectService {
@@ -81,16 +89,16 @@ export class ProjectService {
 
     const rawMeta = await this.redis.get(redisKey);
     if (!rawMeta) {
-      throw new NotFoundException('썸네일 업로드 정보가 만료되어 찾을 수 없습니다.');
+      throw new ThumbnailUploadNotFoundException();
     }
 
     const meta = this.parseThumbnailMetaOrThrow(rawMeta);
     if (meta.uploadId !== uploadId) {
-      throw new NotFoundException('썸네일 업로드 정보를 찾을 수 없습니다.');
+      throw new ThumbnailUploadNotFoundException();
     }
 
     if (meta.memberId !== memberId.toString()) {
-      throw new NotFoundException('본인이 업로드한 썸네일이 아닙니다.');
+      throw new ThumbnailOwnershipException();
     }
 
     const ext = (meta.objectKey.split('.').pop() || 'png').toLowerCase();
@@ -126,7 +134,7 @@ export class ProjectService {
     try {
       meta = JSON.parse(raw);
     } catch {
-      throw new NotFoundException('썸네일 업로드 메타데이터가 손상되었습니다.');
+      throw new InvalidThumbnailMetadataException('썸네일 업로드 메타데이터가 손상되었습니다.');
     }
 
     if (
@@ -136,7 +144,9 @@ export class ProjectService {
       typeof (meta as any).memberId !== 'string' ||
       typeof (meta as any).objectKey !== 'string'
     ) {
-      throw new NotFoundException('썸네일 업로드 메타데이터 형식이 올바르지 않습니다.');
+      throw new InvalidThumbnailMetadataException(
+        '썸네일 업로드 메타데이터 형식이 올바르지 않습니다.',
+      );
     }
 
     return meta as ThumbnailMeta;
@@ -212,13 +222,13 @@ export class ProjectService {
 
     const exists = await this.projectRepository.exists(projectId);
     if (!exists) {
-      throw new NotFoundException('프로젝트를 찾을 수 없습니다.');
+      throw new ProjectNotFoundException(id);
     }
 
     // member.github_login 조회
     const member = await this.authRepository.findById(memberId);
     if (!member?.githubLogin) {
-      throw new NotFoundException('사용자 정보를 찾을 수 없습니다.');
+      throw new MemberNotFoundException();
     }
 
     // member.github_login 이 project_participants 조회 결과 들어있는지 확인
@@ -229,7 +239,7 @@ export class ProjectService {
 
     // 없으면 throw
     if (!canUpdate) {
-      throw new ForbiddenException('이 프로젝트를 수정할 권한이 없습니다.');
+      throw new ProjectForbiddenException('이 프로젝트를 수정할 권한이 없습니다.');
     }
 
     // 있으면 finalize
@@ -244,9 +254,26 @@ export class ProjectService {
   async delete(id: number, memberId: string) {
     const projectId = BigInt(id);
 
+    // 프로젝트 존재 여부 확인
     const exists = await this.projectRepository.exists(projectId);
     if (!exists) {
-      throw new NotFoundException('프로젝트를 찾을 수 없습니다.');
+      throw new ProjectNotFoundException(id);
+    }
+
+    // member.github_login 조회
+    const member = await this.authRepository.findById(memberId);
+    if (!member?.githubLogin) {
+      throw new MemberNotFoundException();
+    }
+
+    // member.github_login 이 project_participants에 조회 결과 들어있는지 확인
+    const canDelete = await this.projectRepository.canMemberUpdateProject(
+      projectId,
+      member.githubLogin,
+    );
+
+    if (!canDelete) {
+      throw new ProjectForbiddenException('이 프로젝트를 삭제할 권한이 없습니다.');
     }
 
     await this.projectRepository.deleteById(projectId);
