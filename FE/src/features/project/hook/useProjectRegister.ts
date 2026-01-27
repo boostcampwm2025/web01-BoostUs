@@ -9,6 +9,7 @@ import { registerProject } from '@/features/project/api/registerProject';
 import { updateProject } from '@/features/project/api/updateProject';
 import { fetchProjectDetail } from '@/entities/projectDetail/api/projectDetailAPI';
 import { useRouter } from 'next/navigation';
+import { uploadThumbnail } from '../api/uploadThumbnail';
 
 const getErrorMessage = (err: unknown): string => {
   if (err instanceof Error) return err.message;
@@ -175,9 +176,12 @@ export const useProjectRegister = (
   const submitValidForm = async (data: ProjectFormValues) => {
     try {
       let uploadedThumbnailUrl: string | null = previewUrl;
+      let thumbnailUploadId: string | undefined = undefined;
       if (data.thumbnail && data.thumbnail.length > 0) {
-        // TODO: 이미지 업로드 로직
-        uploadedThumbnailUrl = 'https://임시-이미지-주소.com/new-image.png';
+        const file = data.thumbnail[0];
+        const uploadResult = await uploadThumbnail(file);
+        uploadedThumbnailUrl = uploadResult.thumbnailUrl;
+        thumbnailUploadId = uploadResult.thumbnailUploadId;
       }
 
       const cohortStr =
@@ -186,6 +190,7 @@ export const useProjectRegister = (
 
       const requestBody = {
         thumbnailUrl: uploadedThumbnailUrl,
+        thumbnailUploadId: thumbnailUploadId,
         title: data.title,
         description: data.description ?? '',
         contents: Array.isArray(data.contents)

@@ -1,3 +1,5 @@
+import type { ApiResponse } from '@/shared/types/ApiResponseType';
+
 export interface UploadThumbnailResponse {
   thumbnailUploadId: string;
   thumbnailUrl: string;
@@ -18,8 +20,11 @@ export async function uploadThumbnail(
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(`썸네일 업로드 실패: ${response.status} - ${errorText}`);
+    throw new Error(
+      `썸네일 업로드 실패: ${String(response.status)} - ${errorText}`
+    );
   }
 
-  return await response.json();
+  const json = (await response.json()) as ApiResponse<UploadThumbnailResponse>;
+  return json.data;
 }

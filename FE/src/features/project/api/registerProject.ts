@@ -4,6 +4,8 @@ interface ParticipantInfo {
 }
 
 interface RegisterProjectRequest {
+  thumbnailUploadId?: string | null;
+
   thumbnailUrl?: string | null;
 
   title: string;
