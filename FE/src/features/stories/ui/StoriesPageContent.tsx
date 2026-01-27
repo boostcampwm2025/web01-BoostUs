@@ -11,6 +11,13 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
 import PageHeader from '@/shared/ui/PageHeader';
 import useRankingButtonVisibility from '@/features/stories/model/useRankingButtonVisibility';
+import { Link } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import CustomDialog from '@/shared/ui/Dialog/CustomDialog';
 
 interface StoriesPageContentProps {
   initialStories: Story[];
@@ -36,6 +43,37 @@ const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
           <div className="flex flex-row items-center gap-4">
             <StoriesSearchBar />
             <StoriesListDropdown />
+            <Tooltip>
+              <CustomDialog
+                dialogTrigger={
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      className="text-neutral-text-weak hover:text-brand-surface-default transition-colors duration-150 cursor-pointer"
+                    >
+                      <Link />
+                    </button>
+                  </TooltipTrigger>
+                }
+                dialogTitle="내 블로그 RSS URL 등록하기"
+                dialogDescription="내 블로그의 RSS URL을 등록하여, 블로그 글을 자동으로 가져올 수 있습니다."
+                dialogContent={
+                  <div className="flex flex-col gap-1 mt-2">
+                    <input
+                      id="rss-url"
+                      type="text"
+                      placeholder="https://example.com/rss"
+                      className="w-full border border-neutral-border-default placeholder:text-neutral-text-weak text-body-16 text-neutral-text-default px-4 py-2 rounded-lg focus:outline-none focus:ring focus:border-brand-surface-default"
+                    />
+                  </div>
+                }
+              />
+              <TooltipContent className={'bg-brand-surface-default'}>
+                <p className="text-body-12 text-brand-text-on-default">
+                  내 블로그 RSS URL 등록하기
+                </p>
+              </TooltipContent>
+            </Tooltip>
           </div>
           <StoriesList initialStories={initialStories} />
         </motion.div>
