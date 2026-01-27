@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma, Question } from 'src/generated/prisma/client';
+import { Prisma } from 'src/generated/prisma/client';
 import { decodeCursor, encodeCursor } from '../common/util/cursor.util';
 import { CreateQuestionDto } from './dto/req/create-question.dto';
 import { QuestionQueryDto, QuestionSort, QuestionStatus } from './dto/req/question-query.dto';
@@ -12,6 +12,9 @@ import { QuestionRepository } from './question.repository';
 import { QuestionResponseDto } from './dto/res/question-response.dto';
 import { UpdateQuestionDto } from './dto/req/update-question.dto';
 import { AnswerResponseDto } from 'src/answer/dto/res/answer-response.dto';
+
+const toHashtagsStringOrNull = (hashtags?: string[]): string | null =>
+  hashtags && hashtags.length ? hashtags.join(',') : null;
 
 @Injectable()
 export class QuestionService {
@@ -24,7 +27,7 @@ export class QuestionService {
       memberId,
       title: dto.title,
       contents: dto.contents,
-      hashtags: dto.hashtags ?? null,
+      hashtags: toHashtagsStringOrNull(dto.hashtags),
     });
   }
 
@@ -253,10 +256,13 @@ export class QuestionService {
       throw new ForbiddenException('수정권한이 없소');
     }
 
+    const hashtagsValue =
+      dto.hashtags === undefined ? undefined : toHashtagsStringOrNull(dto.hashtags);
+
     const updated = await this.questionRepo.update(id, {
       contents: dto.contents,
       title: dto.title,
-      hashtags: dto.hashtags,
+      hashtags: hashtagsValue,
     });
 
     return {

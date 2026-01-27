@@ -8,10 +8,9 @@ export interface StoriesRankingPeriodState {
   options: StoriesRankingPeriods[];
 }
 
-export interface StoriesCard {
+interface DefaultStoryOptions {
   id: string;
   title: string;
-  summary: string;
   thumbnailUrl: string;
   likeCount: number;
   viewCount: number;
@@ -20,38 +19,12 @@ export interface StoriesCard {
   member: Member;
 }
 
-export interface Story {
-  id: string;
-  title: string;
+export interface Story extends DefaultStoryOptions {
   summary: string;
-  thumbnailUrl: string;
-  likeCount: number;
-  viewCount: number;
-  originalUrl: string;
-  createdAt: string;
-  member: {
-    id: string;
-    nickname: string;
-    cohort: number;
-    avatarUrl: string;
-  };
 }
 
-export interface StoryDetail {
-  id: string;
-  title: string;
-  thumbnailUrl: string;
-  likeCount: number;
-  viewCount: number;
-  originalUrl: string;
-  createdAt: string;
+export interface StoryDetail extends DefaultStoryOptions {
   contents: string;
-  member: {
-    id: string;
-    nickname: string;
-    cohort: number;
-    avatarUrl: string;
-  };
 }
 
 export interface StoriesSortOption {

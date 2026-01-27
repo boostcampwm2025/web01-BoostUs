@@ -9,7 +9,7 @@ interface ProjectData {
   description?: string;
   memberId: bigint;
   repoUrl: string;
-  thumbnailUrl?: string;
+  thumbnailKey?: string | null;
   startDate?: Date | null;
   endDate?: Date | null;
   teamNumber?: number | null;
@@ -59,7 +59,8 @@ async function upsertProject(prisma: PrismaClient, projectData: ProjectData, con
     update: {
       title: project.title,
       description: project.description,
-      thumbnailUrl: project.thumbnailUrl,
+      // thumbnailKey: project.thumbnailKey,
+      thumbnailKey: null,
       startDate: project.startDate,
       endDate: project.endDate,
       teamNumber: project.teamNumber,
@@ -79,7 +80,8 @@ async function upsertProject(prisma: PrismaClient, projectData: ProjectData, con
       title: project.title,
       description: project.description,
       repoUrl: project.repoUrl,
-      thumbnailUrl: project.thumbnailUrl,
+      // thumbnailKey: project.thumbnailKey,
+      thumbnailKey: null,
       startDate: project.startDate,
       endDate: project.endDate,
       teamNumber: project.teamNumber,
@@ -191,7 +193,8 @@ export async function seedProjects(prisma: PrismaClient) {
       description: String(metadata.description ?? ''),
       memberId: 1n, // willy
       repoUrl: `https://github.com/boostcampwm2025/${repoSlug}`,
-      thumbnailUrl: metadata.thumbnailUrl ? String(metadata.thumbnailUrl) : undefined,
+      // thumbnailKey: metadata.thumbnailKey ? String(metadata.thumbnailKey) : undefined,
+      thumbnailKey: null,
       startDate: new Date('2025-12-08'),
       endDate: null,
       teamNumber: Number.parseInt(filename.split('.')[0], 10),

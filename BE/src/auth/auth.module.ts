@@ -1,13 +1,28 @@
-import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
+import { Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
+import { AuthRepository } from './auth.repository';
 import { AuthService } from './auth.service';
 import { GithubAuthClient } from './github-auth.client';
-import { AuthRepository } from './auth.repository';
+import { AuthGuard } from './guard/auth.guard';
 
 @Module({
-  imports: [HttpModule],
+  imports: [
+    HttpModule,
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        secret: config.getOrThrow('JWT_SECRET'),
+        signOptions: {
+          expiresIn: config.getOrThrow('JWT_ACCESS_EXPIRES_IN'), // 기본 expiresIn 설정 (각 토큰 생성 시 expiresIn을 개별적으로 오버라이드)
+        },
+      }),
+    }),
+  ],
   controllers: [AuthController],
-  providers: [AuthService, GithubAuthClient, AuthRepository],
+  providers: [AuthService, GithubAuthClient, AuthRepository, AuthGuard],
+  exports: [AuthGuard, JwtModule],
 })
-export class AuthModule {}
+export class AuthModule { }

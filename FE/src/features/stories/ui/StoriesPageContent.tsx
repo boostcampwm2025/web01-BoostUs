@@ -2,55 +2,38 @@
 
 import { StoriesProvider, useStoriesContext } from '@/features/stories/model';
 import { Story } from '@/features/stories/model/stories.type';
-import StoriesHeader from '@/features/stories/ui/Header/Header';
 import StoriesList from '@/features/stories/ui/List/List';
 import StoriesListDropdown from '@/features/stories/ui/ListDropdown/Dropdown';
 import StoriesSearchBar from '@/features/stories/ui/SearchBar/SearchBar';
 import StoriesRanking from '@/features/stories/ui/StoriesRanking/Ranking';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import {
-  AnimatePresence,
-  motion,
-  useMotionValueEvent,
-  useScroll,
-} from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
+import PageHeader from '@/shared/ui/PageHeader';
+import useRankingButtonVisibility from '@/features/stories/model/useRankingButtonVisibility';
+import { Link } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import CustomDialog from '@/shared/ui/Dialog/CustomDialog';
 
 interface StoriesPageContentProps {
   initialStories: Story[];
 }
 
-const StoriesLayout = ({ initialStories }: { initialStories: Story[] }) => {
+const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
   const { isRankingOpen, toggleRanking } = useStoriesContext();
 
-  const { scrollY } = useScroll();
-  const [isRankingButtonHidden, setIsRankingButtonHidden] = useState(false);
-  const [lastY, setLastY] = useState(0);
-
-  // 스크롤 감지 로직
-  useMotionValueEvent(scrollY, 'change', (latest) => {
-    const previous = lastY;
-    setLastY(latest);
-
-    // 1. 랭킹이 열려있으면 숨기지 않음
-    if (isRankingOpen) {
-      setIsRankingButtonHidden(false);
-      return;
-    }
-
-    // 2. 스크롤을 내리는 중이고(latest > previous), 스크롤이 일정 이상(100px) 내려갔을 때 -> 숨김
-    if (latest > previous && latest > 100) {
-      setIsRankingButtonHidden(true);
-    }
-    // 3. 스크롤을 올리는 중 -> 보임
-    else if (latest < previous) {
-      setIsRankingButtonHidden(false);
-    }
-  });
+  const isRankingButtonHidden = useRankingButtonVisibility(isRankingOpen);
 
   return (
     <div className="flex w-full max-w-7xl flex-col font-sans">
-      <StoriesHeader />
+      <PageHeader
+        title="캠퍼들의 이야기"
+        subtitle="캠퍼들의 기술, 경험, 회고, 면접 팁 등의 이야기"
+      />
       <motion.div
         layout
         className={`mt-8 grid items-start gap-8 ${isRankingOpen ? 'grid-cols-[7fr_3fr]' : 'grid-cols-1'}`}
@@ -60,6 +43,37 @@ const StoriesLayout = ({ initialStories }: { initialStories: Story[] }) => {
           <div className="flex flex-row items-center gap-4">
             <StoriesSearchBar />
             <StoriesListDropdown />
+            <Tooltip>
+              <CustomDialog
+                dialogTrigger={
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      className="text-neutral-text-weak hover:text-brand-surface-default transition-colors duration-150 cursor-pointer"
+                    >
+                      <Link />
+                    </button>
+                  </TooltipTrigger>
+                }
+                dialogTitle="내 블로그 RSS URL 등록하기"
+                dialogDescription="내 블로그의 RSS URL을 등록하여, 블로그 글을 자동으로 가져올 수 있습니다."
+                dialogContent={
+                  <div className="flex flex-col gap-1 mt-2">
+                    <input
+                      id="rss-url"
+                      type="text"
+                      placeholder="https://example.com/rss"
+                      className="w-full border border-neutral-border-default placeholder:text-neutral-text-weak text-body-16 text-neutral-text-default px-4 py-2 rounded-lg focus:outline-none focus:ring focus:border-brand-surface-default"
+                    />
+                  </div>
+                }
+              />
+              <TooltipContent className={'bg-brand-surface-default'}>
+                <p className="text-body-12 text-brand-text-on-default">
+                  내 블로그 RSS URL 등록하기
+                </p>
+              </TooltipContent>
+            </Tooltip>
           </div>
           <StoriesList initialStories={initialStories} />
         </motion.div>

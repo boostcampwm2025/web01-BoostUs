@@ -36,21 +36,6 @@ export class QuestionQueryDto {
   @IsEnum(QuestionSort)
   sort: QuestionSort = QuestionSort.LATEST;
 
-  // ✅ 커서 기반은 page 대신 limit을 쓰는게 정석
-  @ApiPropertyOptional({
-    description: '한 번에 가져올 개수 (cursor pagination)',
-    example: 20,
-    default: 20,
-    minimum: 1,
-    maximum: 100,
-  })
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  @Max(100)
-  limit: number = 20;
-
   @ApiPropertyOptional({
     description:
       '커서(base64url). 이전 응답의 meta.nextCursor 값을 그대로 넣으면 다음 페이지를 가져옵니다.',

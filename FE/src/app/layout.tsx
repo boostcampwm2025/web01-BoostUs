@@ -3,6 +3,7 @@ import localFont from 'next/font/local';
 import './globals.css';
 import Header from '@/widgets/Header';
 import Footer from '@/widgets/Footer';
+import { AuthProvider } from '@/features/login/model/auth.context';
 
 export const metadata: Metadata = {
   title: 'BoostUs - 부스트캠퍼들이 함께 기록하고, 함께 성장하는 커뮤니티 🌱',
@@ -24,11 +25,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={pretendard.variable}>
       <body className="flex flex-col min-h-screen font-sans antialiased">
-        <Header />
-        <main className="bg-neutral-surface-default flex w-full flex-1 flex-col items-center px-4 py-32">
-          {children}
-        </main>
-        <Footer />
+        <AuthProvider>
+          <Header />
+          <main className="bg-neutral-surface-default flex w-full flex-1 flex-col items-center px-4 py-32">
+            {children}
+          </main>
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );

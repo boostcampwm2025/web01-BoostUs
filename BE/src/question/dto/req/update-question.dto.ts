@@ -35,5 +35,5 @@ export class UpdateQuestionDto {
   @ArrayMaxSize(10)
   @IsString({ each: true })
   @MaxLength(30, { each: true })
-  hashtags?: string;
+  hashtags?: string[];
 }
