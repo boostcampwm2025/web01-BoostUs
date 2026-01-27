@@ -24,7 +24,7 @@ const StoriesCard = ({ id, story }: StoriesCardProps) => {
 
   return (
     <Link href={`/stories/${id}`}>
-      <div className="bg-neutral-surface-bold border-neutral-border-default shadow-default hover:shadow-hover grid w-full cursor-pointer grid-rows-[4fr_6fr] overflow-hidden rounded-2xl border transition-shadow duration-150">
+      <div className="bg-neutral-surface-bold border-neutral-border-default hover:border-neutral-border-active shadow-default hover:shadow-hover grid w-full cursor-pointer grid-rows-[4fr_6fr] overflow-hidden rounded-2xl border transition-colors duration-150">
         <div className="relative w-full">
           <Image
             src={currentSrc}
