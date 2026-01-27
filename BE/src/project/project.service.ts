@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, Inject, ForbiddenException } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { Prisma } from '../generated/prisma/client';
 import { CreateProjectDto } from './dto/create-project.dto';
