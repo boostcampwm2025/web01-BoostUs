@@ -1,4 +1,6 @@
+import { gfm } from '@truto/turndown-plugin-gfm';
 import Parser from 'rss-parser';
+import TurndownService from 'turndown';
 import { CreateStoryRequest, RssItem } from './types';
 
 /**
@@ -7,9 +9,67 @@ import { CreateStoryRequest, RssItem } from './types';
  */
 export class FeedParser {
   private parser: Parser;
+  private turndownService: TurndownService; // HTML -> Markdown 변환 라이브러리
 
   constructor() {
     this.parser = new Parser();
+    this.turndownService = new TurndownService({
+      headingStyle: 'atx',        // ### 스타일
+      bulletListMarker: '-',      // - 리스트
+      codeBlockStyle: 'fenced',   // ``` 코드블럭
+      fence: '```',
+      emDelimiter: '*',
+      strongDelimiter: '**',
+      br: '\n',                   // <br> → 줄바꿈
+    });
+    this.turndownService.use(gfm);
+    this.turndownService.addRule('lineBreak', {
+      filter: 'br',
+      replacement: () => '  \n'
+    });
+    this.turndownService.addRule('listItem', {
+      filter: 'li',
+      replacement: function (content, node, options) {
+        const marker = options.bulletListMarker + ' '
+        // 첫 줄 공백 제거 + 줄바꿈 정리
+        content = content
+          .replace(/^\s+/, '')
+          .replace(/\n+/g, ' ')
+          .trim()
+
+        return marker + content + '\n'
+      }
+    });
+    this.turndownService.addRule('safeCodeBlock', {
+      filter(node) {
+        return (
+          node.nodeName === 'PRE' &&
+          node.firstChild &&
+          node.firstChild.nodeName === 'CODE'
+        )
+      },
+      replacement(_, node, options) {
+        const code = node.textContent ?? ''
+        const fence = options.fence || '```'
+
+        return (
+          '\n\n' +
+          fence + '\n' +
+          code.replace(/\n$/, '') +
+          '\n' + fence +
+          '\n\n'
+        )
+      },
+    })
+    this.turndownService.addRule('safeHeading', {
+      filter: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+      replacement(content, node) {
+        const level = Number(node.nodeName.charAt(1))
+        return `\n\n${'#'.repeat(level)} ${content.trim()}\n\n`
+      },
+    })
+
+
   }
 
   /**
@@ -29,7 +89,6 @@ export class FeedParser {
         return [];
       }
 
-      console.log(`✅ Found ${feed.items.length} item(s) in feed`);
 
       // RSS 아이템을 Story 생성 요청 객체로 변환
       const convertedStories = feed.items.map((item) =>
@@ -69,6 +128,9 @@ export class FeedParser {
       return null;
     }
 
+    // 콘텐츠 HTML -> Markdown 변환
+    const markdownContents = this.convertToMarkdown(contents);
+
     // 요약 추출
     let summary = this.extractSummary(contents);
 
@@ -82,11 +144,20 @@ export class FeedParser {
       guid: item.guid,
       title: this.decodeHtmlEntities(item.title),
       summary,
-      contents,
+      contents: markdownContents,
       thumbnailUrl: this.extractImageUrl(contents),
       originalUrl: item.link,
       publishedAt,
     };
+  }
+
+  /**
+   * HTML 콘텐츠를 Markdown 콘텐츠로 변환
+   * @param html HTML 문자열
+   * @returns Markdown 문자열
+   */
+  private convertToMarkdown(html: string): string {
+    return this.turndownService.turndown(html);
   }
 
   /**
