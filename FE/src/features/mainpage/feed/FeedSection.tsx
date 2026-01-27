@@ -35,14 +35,18 @@ const FeedSection = () => {
   return (
     <>
       <FeedHeader />
-      <section className="gap-16 columns-3 mt-4 mb-8 w-full">
+      <section className="gap-16 columns-3 mt-4 mb-4 w-full">
         {Stories?.map((story) => (
           <div key={story.id} className={'mb-8'}>
             <StoriesCard id={story.id} key={story.id} story={story} />
           </div>
         ))}
       </section>
-      <section>{/* TODO: BoostAd 서비스 추가하기 */}</section>
+
+      {/*boostAd seciton*/}
+      <section>
+        <div data-boostad-zone style={{ width: '100%', height: '100%' }}></div>
+      </section>
 
       <section className="flex flex-col lg:flex-row gap-6 w-full">
         {/* 질문 & 답변 */}
