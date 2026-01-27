@@ -36,7 +36,7 @@ export default function MainQnaSection() {
 
   return (
     <section className="w-full h-full">
-      <div className="flex flex-col w-full h-full overflow-hidden border border-neutral-border-default rounded-2xl bg-neutral-surface-bold">
+      <div className="flex flex-col w-full  overflow-hidden border border-neutral-border-default rounded-2xl bg-neutral-surface-bold">
         <div className="flex items-center justify-end w-full px-6 py-3 border-b border-neutral-border-default bg-white">
           <div className="flex bg-neutral-100 p-1 rounded-lg gap-1 w-fit">
             <button
