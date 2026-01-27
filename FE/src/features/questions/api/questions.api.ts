@@ -105,3 +105,24 @@ export const createQuestion = async (
   return data.data;
 };
 
+export const createAnswer = async (
+  memberId: string,
+  questionId: string,
+  body: {
+    contents: string;
+  }
+) => {
+  const data = await customFetch<ApiResponse<QuestionDetail>>(
+    `/api/answers/${questionId}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        memberId,
+      },
+      body: JSON.stringify(body),
+    }
+  );
+
+  return data.data;
+};

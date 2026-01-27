@@ -10,22 +10,9 @@ import type { PreviewMode } from './QuestionModeButton';
 import QuestionPreview from '../Textarea/QuestionPreview';
 import QuestionEditor from '../Textarea/QuestionEditor';
 import HashTagInput from './HashTagInput';
+import { getClientMemberId } from '@/shared/utils/getClientMemberId';
 
 const MAX_TITLE_LENGTH = 200;
-
-const getClientMemberId = (): string | null => {
-  if (typeof window === 'undefined') return null;
-
-  // 1) localStorage
-  const ls = window.localStorage.getItem('memberId');
-  if (ls) return ls;
-
-  // 2) cookie (memberId=123)
-  const match = document.cookie.match(/(?:^|; )memberId=([^;]+)/);
-  if (match?.[1]) return decodeURIComponent(match[1]);
-
-  return null;
-};
 
 const normalizeTitle = (v: string) => v.replace(/\s+/g, ' ').trim();
 
