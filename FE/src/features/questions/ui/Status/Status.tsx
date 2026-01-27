@@ -16,7 +16,7 @@ const QuestionStatus = ({ status }: { status: boolean }) => {
     );
   } else {
     return (
-      <div className="flex flex-row items-center justify-center gap-1 px-2 py-1 bg-brand-surface-weak rounded-lg w-fit bg-grayscale-300">
+      <div className="flex flex-row items-center justify-center gap-1 px-2 py-1 bg-brand-surface-weak rounded-lg w-fit">
         <CircleQuestionMark
           className="text-neutral-text-weak"
           strokeWidth={2}
