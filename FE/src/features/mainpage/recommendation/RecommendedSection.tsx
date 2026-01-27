@@ -1,5 +1,3 @@
-import paint from '../../../../public/assets/paint.png';
-import Image from 'next/image';
 import RecommendedProjectSection from '@/features/main/reco/ui/RecoProejctSection';
 import RecommendStorySection from '@/features/main/reco/ui/RecoStorySection';
 

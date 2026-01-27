@@ -4,13 +4,13 @@ import StoriesCard from '@/features/stories/ui/Card/Card';
 import FeedHeader from '@/features/mainpage/feed/FeedHeader';
 import { useEffect, useState } from 'react';
 import { fetchRecoStory } from '@/features/main/reco/api/fetchRecoStory';
-import type { StoriesCard as StoriesCardType } from '@/features/stories/model/stories.type';
 import Contribute from '@/features/main/contribute/Contribute';
 import MainQnaSection from '@/features/main/qna/ui/MainQnaSection';
 import Link from 'next/link';
+import { Story } from '@/features/stories/model/stories.type';
 
 const FeedSection = () => {
-  const [Stories, setStories] = useState<StoriesCardType[] | null>(null);
+  const [Stories, setStories] = useState<Story[] | null>(null);
 
   useEffect(() => {
     const loadStories = async () => {
