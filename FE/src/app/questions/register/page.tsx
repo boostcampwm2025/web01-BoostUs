@@ -3,4 +3,3 @@ import QuestionRegister from '@/features/questions/ui/QuestionRegister/QuestionR
 export default function QuestionRegisterPage() {
   return <QuestionRegister />;
 }
-
