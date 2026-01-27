@@ -120,3 +120,122 @@ export const createAnswer = async (
 
   return data.data;
 };
+
+export const acceptAnswer = async (questionId: string, answerId: string) => {
+  const data = await customFetch<ApiResponse<null>>(
+    `api/questions/${questionId}/answers/${answerId}/accept`,
+    {
+      method: 'POST',
+    }
+  );
+
+  return data.data;
+};
+
+export const likeQuestion = async (questionId: string) => {
+  const data = await customFetch<ApiResponse<null>>(
+    `api/questions/${questionId}/like`,
+    {
+      method: 'POST',
+    }
+  );
+
+  return data.data;
+};
+
+export const dislikeQuestion = async (questionId: string) => {
+  const data = await customFetch<ApiResponse<null>>(
+    `api/questions/${questionId}/dislike`,
+    {
+      method: 'POST',
+    }
+  );
+
+  return data.data;
+};
+
+export const likeAnswer = async (answerId: string) => {
+  const data = await customFetch<ApiResponse<null>>(
+    `api/answers/${answerId}/like`,
+    {
+      method: 'POST',
+    }
+  );
+
+  return data.data;
+};
+
+export const dislikeAnswer = async (answerId: string) => {
+  const data = await customFetch<ApiResponse<null>>(
+    `api/answers/${answerId}/dislike/`,
+    {
+      method: 'POST',
+    }
+  );
+
+  return data.data;
+};
+
+export const editQuestion = async (
+  questionId: string,
+  body: {
+    title: string;
+    contents: string;
+    hashtags?: string[];
+  }
+) => {
+  const data = await customFetch<ApiResponse<QuestionDetail>>(
+    `/api/questions/${questionId}`,
+    {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    }
+  );
+
+  return data.data;
+};
+
+export const deleteQuestion = async (questionId: string) => {
+  const data = await customFetch<ApiResponse<null>>(
+    `/api/questions/${questionId}`,
+    {
+      method: 'DELETE',
+    }
+  );
+
+  return data.data;
+};
+
+export const editAnswer = async (
+  answerId: string,
+  body: {
+    contents: string;
+  }
+) => {
+  const data = await customFetch<ApiResponse<Answer>>(
+    `/api/answers/${answerId}`,
+    {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    }
+  );
+
+  return data.data;
+};
+
+export const deleteAnswer = async (answerId: string) => {
+  const data = await customFetch<ApiResponse<null>>(
+    `/api/answers/${answerId}`,
+    {
+      method: 'DELETE',
+    }
+  );
+
+  return data.data;
+};

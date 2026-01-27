@@ -10,8 +10,7 @@ import type { PreviewMode } from './QuestionModeButton';
 import QuestionPreview from '../Textarea/QuestionPreview';
 import QuestionEditor from '../Textarea/QuestionEditor';
 import HashTagInput from './HashTagInput';
-import { getClientMemberId } from '@/shared/utils/getClientMemberId';
-
+import { useAuth } from '@/features/login/model/auth.context';
 const MAX_TITLE_LENGTH = 200;
 
 const normalizeTitle = (v: string) => v.replace(/\s+/g, ' ').trim();
@@ -21,13 +20,13 @@ export default function QuestionRegister() {
 
   const [title, setTitle] = useState('');
   const [contents, setContents] = useState('');
-  const [techHashTagInput, setTechHashTagInput] = useState('');
+  const [hashTagInput, setHashTagInput] = useState('');
   const [hashTags, setHashTags] = useState<string[]>([]);
   const [mode, setMode] = useState<PreviewMode>('split');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isComposing, setIsComposing] = useState(false);
 
-  const memberId = useMemo(() => getClientMemberId(), []);
+  const { member } = useAuth();
 
   const normalizedTitle = useMemo(() => normalizeTitle(title), [title]);
   const titleError = useMemo(() => {
@@ -42,12 +41,11 @@ export default function QuestionRegister() {
     return null;
   }, [contents]);
 
-  const canSubmit =
-    !!memberId && !titleError && !contentsError && !isSubmitting;
+  const canSubmit = !!member && !titleError && !contentsError && !isSubmitting;
 
   const handleSubmit = async () => {
-    if (!memberId) {
-      alert('로그인이 필요해요. (memberId를 찾을 수 없습니다)');
+    if (!member) {
+      alert('로그인이 필요해요. (member를 찾을 수 없습니다)');
       return;
     }
 
@@ -82,10 +80,10 @@ export default function QuestionRegister() {
         <p className="text-neutral-text-default text-body-16">
           제목과 내용을 작성하고, 마크다운 미리보기로 확인하세요.
         </p>
-        {!memberId && (
+        {!member && (
           <div className="mt-2 rounded-xl border border-neutral-border-default bg-neutral-surface-strong px-4 py-3">
             <p className="text-neutral-text-weak text-body-14">
-              현재 로그인 정보(memberId)가 없어 등록이 비활성화되어 있어요.
+              현재 로그인 정보(member)가 없어 등록이 비활성화되어 있어요.
             </p>
           </div>
         )}
@@ -99,7 +97,7 @@ export default function QuestionRegister() {
             type="button"
             disabled={!canSubmit}
             onClick={handleSubmit}
-            className="h-10 px-4 rounded-xl bg-brand-surface-default text-brand-text-on-default disabled:opacity-50 disabled:cursor-not-allowed"
+            className="h-10 px-4 rounded-xl cursor-pointer bg-brand-surface-default text-brand-text-on-default disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? '등록 중...' : '등록하기'}
           </button>
@@ -145,8 +143,8 @@ export default function QuestionRegister() {
 
           {/* 해시 태그 */}
           <HashTagInput
-            value={techHashTagInput}
-            onChangeValue={setTechHashTagInput}
+            value={hashTagInput}
+            onChangeValue={setHashTagInput}
             hashTags={hashTags}
             onAdd={(v) => setHashTags((prev) => [...prev, v])}
             onRemove={(v) => setHashTags((prev) => prev.filter((x) => x !== v))}

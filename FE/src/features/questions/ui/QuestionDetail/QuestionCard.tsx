@@ -2,13 +2,18 @@ import ListCardChip from '@/features/questions/ui/ListCard/ListCardChip';
 import CardHeader from '@/features/questions/ui/QuestionDetail/CardHeader';
 import type { QuestionDetail as QuestionDetailType } from '@/features/questions/model/questions.type';
 import VoteButtons from '@/features/questions/ui/QuestionDetail/VoteButtons';
+import { likeQuestion, dislikeQuestion } from '../../api/questions.api';
 
 const QuestionCard = ({ question }: { question: QuestionDetailType }) => {
   return (
     <section className="mt-8 w-full rounded-2xl border border-neutral-border-default bg-neutral-surface-bold">
       <CardHeader question={question} />
       <div className="flex flex-row gap-6 w-full px-4 py-4 rounded-b-2xl">
-        <VoteButtons question={question} />
+        <VoteButtons
+          question={question}
+          onDownvote={() => dislikeQuestion(question.id)}
+          onUpvote={() => likeQuestion(question.id)}
+        />
         <div className="flex flex-col justify-between w-full">
           <div className="w-full">
             <p>{question.contents}</p>

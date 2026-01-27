@@ -8,14 +8,13 @@ import type { PreviewMode } from '../QuestionRegister/QuestionModeButton';
 import QuestionEditor from '../Textarea/QuestionEditor';
 import QuestionPreview from '../Textarea/QuestionPreview';
 import { createAnswer } from '../../api/questions.api';
-import { getClientMemberId } from '@/shared/utils/getClientMemberId';
+import { useAuth } from '@/features/login/model/auth.context';
 type Props = {
   questionId: string; // 또는 number/bigint string 형태로 맞춰
 };
 
 export default function AnswerRegister({ questionId }: Props) {
   const router = useRouter();
-  const memberId = useMemo(() => getClientMemberId(), []);
 
   const [contents, setContents] = useState('');
   const [mode, setMode] = useState<PreviewMode>('split');
@@ -53,7 +52,7 @@ export default function AnswerRegister({ questionId }: Props) {
         <button
           type="button"
           onClick={handleSubmit}
-          className="h-10 px-4 rounded-xl bg-brand-surface-default text-brand-text-on-default disabled:opacity-50 disabled:cursor-not-allowed"
+          className="h-10 px-4 rounded-xl cursor-pointer bg-brand-surface-default text-brand-text-on-default disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={!!contentsError || isSubmitting}
         >
           {isSubmitting ? '등록 중...' : '답변 등록'}
