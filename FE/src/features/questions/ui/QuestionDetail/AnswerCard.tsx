@@ -1,5 +1,5 @@
+'use client';
 import { Answer, Question } from '@/features/questions/model/questions.type';
-import CardHeader from '@/features/questions/ui/QuestionDetail/CardHeader';
 import VoteButtons from '@/features/questions/ui/QuestionDetail/VoteButtons';
 import { CircleCheck } from 'lucide-react';
 import {
@@ -8,6 +8,7 @@ import {
   acceptAnswer,
 } from '../../api/questions.api';
 import { useAuth } from '@/features/login/model';
+import MarkdownViewer from '@/shared/ui/MarkdownViewer';
 
 type Props = {
   answer: Answer;
@@ -36,7 +37,7 @@ const AnswerCard = ({ answer, question }: Props) => {
         />
         <div className="flex flex-col justify-between w-full">
           <div className="w-full">
-            <p>{answer.contents}</p>
+            <MarkdownViewer content={answer.contents} />
           </div>
           <div className="border-t border-neutral-border-default w-full flex flex-row pt-4 justify-between">
             {isQuestionAuthor && (
