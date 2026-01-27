@@ -24,7 +24,7 @@ const FilterSection = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const selectedField = searchParams.get('field') ?? '전체';
+  const selectedField = searchParams.get('field') ?? '';
   const selectedCohort = normalizeCohortSelected(searchParams.get('cohort'));
   const [isOpen, setIsOpen] = useState(true);
   const pushWithParams = (params: URLSearchParams) => {
