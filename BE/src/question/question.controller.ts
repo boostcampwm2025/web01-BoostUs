@@ -8,6 +8,7 @@ import { QuestionService } from './question.service';
 import { QuestionCountDto } from './dto/res/question-count.dto';
 import { responseMessage } from '../common/decorator/response-message.decorator';
 import { UpdateQuestionDto } from './dto/req/update-question.dto';
+import { CurrentMember } from 'src/auth/decorator/current-member.decorator';
 
 @ApiTags('질문')
 @Controller('questions')
@@ -36,7 +37,10 @@ export class QuestionController {
     status: 400,
     description: '잘못된 요청',
   })
-  create(@Body() createQuestionDto: CreateQuestionDto, @Headers('memberId') memberId: string) {
+  create(
+    @Body() createQuestionDto: CreateQuestionDto,
+    @Headers('memberId') @CurrentMember() memberId: string,
+  ) {
     return this.questionService.create(memberId, createQuestionDto);
   }
 
@@ -123,7 +127,7 @@ export class QuestionController {
   })
   update(
     @Param('id') id: string,
-    @Headers('memberId') memberId: string,
+    @Headers('memberId') @CurrentMember() memberId: string,
     @Body() UpdateQuestionDto: UpdateQuestionDto,
   ) {
     return this.questionService.update(id, memberId, UpdateQuestionDto);
@@ -148,7 +152,7 @@ export class QuestionController {
     status: 404,
     description: '질문을 찾을 수 없음',
   })
-  remove(@Param('id') id: string, @Headers('memberId') memberId: string) {
+  remove(@Param('id') id: string, @Headers('memberId') @CurrentMember() memberId: string) {
     return this.questionService.delete(id, memberId);
   }
 
@@ -168,7 +172,7 @@ export class QuestionController {
   accept(
     @Param('id') questionId: string,
     @Param('answerId') answerId: string,
-    @Headers('memberId') memberId: string,
+    @Headers('memberId') @CurrentMember() memberId: string,
   ) {
     return this.questionService.accept(questionId, answerId, memberId);
   }
@@ -186,7 +190,10 @@ export class QuestionController {
   })
   @ApiResponse({ status: 200, description: '질문 좋아요 성공' })
   @ApiResponse({ status: 404, description: '질문을 찾을 수 없음' })
-  async like(@Param('id') questionId: string, @Headers('memberId') memberId: string) {
+  async like(
+    @Param('id') questionId: string,
+    @Headers('memberId') @CurrentMember() memberId: string,
+  ) {
     return { questionId: await this.questionService.like(questionId, memberId) };
   }
 
@@ -203,7 +210,10 @@ export class QuestionController {
   })
   @ApiResponse({ status: 200, description: '질문 싫어요 성공' })
   @ApiResponse({ status: 404, description: '질문을 찾을 수 없음' })
-  async dislike(@Param('id') questionId: string, @Headers('memberId') memberId: string) {
+  async dislike(
+    @Param('id') questionId: string,
+    @Headers('memberId') @CurrentMember() memberId: string,
+  ) {
     return { questionId: await this.questionService.dislike(questionId, memberId) };
   }
 }

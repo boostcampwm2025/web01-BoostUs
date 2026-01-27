@@ -5,6 +5,7 @@ import { CreateAnswerDto } from './dto/req/create-answer.dto';
 import { UpdateAnswerDto } from './dto/req/update-answer.dto';
 import { AnswerResponseDto } from './dto/res/answer-response.dto';
 import { responseMessage } from '../common/decorator/response-message.decorator';
+import { CurrentMember } from 'src/auth/decorator/current-member.decorator';
 @ApiTags('답변')
 @Controller('answers')
 export class AnswerController {
@@ -35,7 +36,7 @@ export class AnswerController {
   })
   create(
     @Query('qid') qid: string,
-    @Headers('memberId') memberId: string,
+    @Headers('memberId') @CurrentMember() memberId: string,
     @Body() createAnswerDto: CreateAnswerDto,
   ) {
     return this.answerService.create(memberId, qid, createAnswerDto);
@@ -58,7 +59,7 @@ export class AnswerController {
   })
   update(
     @Param('id') id: string,
-    @Headers('memberId') memberId: string,
+    @Headers('memberId') @CurrentMember() memberId: string,
     @Body() updateAnswerDto: UpdateAnswerDto,
   ) {
     return this.answerService.update(id, memberId, updateAnswerDto);
@@ -78,7 +79,7 @@ export class AnswerController {
     status: 404,
     description: '답변을 찾을 수 없음',
   })
-  remove(@Param('id') id: string, @Headers('memberId') memberId: string) {
+  remove(@Param('id') id: string, @Headers('memberId') @CurrentMember() memberId: string) {
     return this.answerService.delete(id, memberId);
   }
 
@@ -95,7 +96,10 @@ export class AnswerController {
   })
   @ApiResponse({ status: 200, description: '답변 좋아요 성공' })
   @ApiResponse({ status: 404, description: '답변을 찾을 수 없음' })
-  async like(@Param('id') answerId: string, @Headers('memberId') memberId: string) {
+  async like(
+    @Param('id') answerId: string,
+    @Headers('memberId') @CurrentMember() memberId: string,
+  ) {
     return { answerId: await this.answerService.like(answerId, memberId) };
   }
 
@@ -112,7 +116,10 @@ export class AnswerController {
   })
   @ApiResponse({ status: 200, description: '답변 싫어요 성공' })
   @ApiResponse({ status: 404, description: '답변을 찾을 수 없음' })
-  async dislike(@Param('id') answerId: string, @Headers('memberId') memberId: string) {
+  async dislike(
+    @Param('id') answerId: string,
+    @Headers('memberId') @CurrentMember() memberId: string,
+  ) {
     return { answerId: await this.answerService.dislike(answerId, memberId) };
   }
 }
