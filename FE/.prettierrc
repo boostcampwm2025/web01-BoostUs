@@ -1,4 +1,5 @@
 {
+  "endOfLine": "auto",
   "semi": true,
   "trailingComma": "es5",
   "singleQuote": true,
@@ -6,3 +7,4 @@
   "useTabs": false,
   "plugins": []
 }
+
