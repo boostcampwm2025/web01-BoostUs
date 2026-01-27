@@ -10,6 +10,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Public } from '../auth/decorator/public.decorator';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectDetailItemDto } from './dto/project-detail-item.dto';
 import { ProjectListItemDto } from './dto/project-list-item.dto';
@@ -22,6 +23,7 @@ import { ProjectService } from './project.service';
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
+  @Public()
   @Get()
   @ApiOperation({
     summary: '프로젝트 목록 조회',
@@ -37,6 +39,7 @@ export class ProjectController {
     return this.projectService.findAll(query);
   }
 
+  @Public()
   @Get(':id')
   @ApiOperation({
     summary: '프로젝트 상세 조회',

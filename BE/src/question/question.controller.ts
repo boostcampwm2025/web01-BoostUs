@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, Headers, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiBody, ApiHeader, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Public } from '../auth/decorator/public.decorator';
 import { CreateQuestionDto } from './dto/req/create-question.dto';
 import { QuestionQueryDto } from './dto/req/question-query.dto';
 import { QuestionResponseDto } from './dto/res/question-response.dto';
@@ -39,6 +40,7 @@ export class QuestionController {
     return this.questionService.create(memberId, createQuestionDto);
   }
 
+  @Public()
   @Get('count')
   @ApiOperation({
     summary: '전체 질문 수 조회',
@@ -57,6 +59,7 @@ export class QuestionController {
     return this.questionService.getQuestionsCount();
   }
 
+  @Public()
   @Get()
   @responseMessage('질문 목록 조회')
   @ApiOperation({
@@ -73,6 +76,7 @@ export class QuestionController {
     return this.questionService.findAllCursor(query);
   }
 
+  @Public()
   @Get(':id')
   @responseMessage('질문 상세 조회 성공!')
   @ApiOperation({
