@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Query, Res } from '@nestjs/common';
+import { Controller, Get, Post, Query, Req, Res } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
+import { RefreshTokenExpiredException } from 'src/auth/exception/auth.exception';
 import { Public } from '../auth/decorator/public.decorator';
 import { MemberDto } from '../member/dto/member.dto';
 import { AuthService } from './auth.service';
@@ -70,14 +71,71 @@ export class AuthController {
     return await this.authService.getCurrentMember(memberId);
   }
 
-  @Get('reissue')
-  async reissueToken() { }
+  @Public()
+  @Post('refresh')
+  @ApiOperation({
+    summary: '액세스 토큰 재발급',
+    description: '리프레시 토큰을 사용하여 새로운 액세스 토큰과 리프레시 토큰을 발급합니다.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '토큰 재발급 성공',
+  })
+  @ApiResponse({
+    status: 400,
+    description: '액세스 토큰이 아직 만료되지 않음',
+  })
+  @ApiResponse({
+    status: 401,
+    description: '리프레시 토큰 만료 또는 유효하지 않음',
+  })
+  async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const accessToken = req.cookies?.accessToken;
+    const refreshToken = req.cookies?.refreshToken;
 
+    if (!refreshToken) {
+      throw new RefreshTokenExpiredException();
+    }
+
+    const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
+      await this.authService.refreshTokens(accessToken, refreshToken);
+
+    res.cookie('accessToken', newAccessToken, {
+      httpOnly: true,
+      secure: this.configService.getOrThrow('NODE_ENV') === 'production',
+      sameSite: 'lax',
+      maxAge: Number(this.configService.getOrThrow('JWT_ACCESS_EXPIRES_IN')) * 1000, // 초 -> 밀리초
+    });
+
+    res.cookie('refreshToken', newRefreshToken, {
+      httpOnly: true,
+      secure: this.configService.getOrThrow('NODE_ENV') === 'production',
+      sameSite: 'lax',
+      maxAge: Number(this.configService.getOrThrow('JWT_REFRESH_EXPIRES_IN')) * 1000, // 초 -> 밀리초
+    });
+
+    return null;
+  }
+
+  @Public()
   @Post('logout')
-  async logout(@Res() res: Response) {
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const refreshToken = req.cookies?.refreshToken;
+
+    // 리프레시 토큰이 있으면 Redis에서 삭제
+    if (refreshToken) {
+      try {
+        const { memberId } = await this.authService.verifyRefreshToken(refreshToken);
+        await this.authService.deleteRefreshTokenFromRedis(memberId);
+      } catch (error) {
+        // 리프레시 토큰이 유효하지 않거나 만료된 경우 무시하고 계속 진행
+        // (이미 만료되었거나 유효하지 않은 토큰이므로)
+      }
+    }
+
     res.clearCookie('accessToken');
     res.clearCookie('refreshToken');
 
-    return res.sendStatus(200);
+    return null;
   }
 }

@@ -5,9 +5,8 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { IS_PUBLIC_KEY } from '../decorator/public.decorator';
 import {
-  InvalidTokenException,
-  MissingTokenException,
-  TokenExpiredException,
+  AccessTokenExpiredException,
+  InvalidAccessTokenException
 } from '../exception/auth.exception';
 
 @Injectable()
@@ -33,7 +32,7 @@ export class AuthGuard implements CanActivate {
     const accessToken = this.extractAccessToken(request);
 
     if (!accessToken) {
-      throw new MissingTokenException();
+      throw new AccessTokenExpiredException();
     }
 
     try {
@@ -42,7 +41,7 @@ export class AuthGuard implements CanActivate {
 
       // 액세스 토큰인지 확인
       if (payload.type !== 'access') {
-        throw new InvalidTokenException();
+        throw new InvalidAccessTokenException();
       }
 
       // 요청 객체에 사용자 정보 추가
@@ -53,9 +52,9 @@ export class AuthGuard implements CanActivate {
       return true;
     } catch (error) {
       if (error.name === 'TokenExpiredError') {
-        throw new TokenExpiredException();
+        throw new AccessTokenExpiredException();
       }
-      throw new InvalidTokenException();
+      throw new InvalidAccessTokenException();
     }
   }
 
