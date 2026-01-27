@@ -1,6 +1,5 @@
 import type { Answer, QuestionDetail } from '@/features/questions/model/';
 import { Calendar1 } from 'lucide-react';
-import Image from 'next/image';
 import UserProfile from '@/shared/ui/UserProfile';
 import extractDate from '@/shared/utils/extractDate';
 

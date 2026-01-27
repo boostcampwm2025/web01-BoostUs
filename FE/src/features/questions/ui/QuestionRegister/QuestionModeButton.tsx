@@ -32,4 +32,3 @@ export default function ModeButton({ label, value, mode, onChange }: Props) {
     </button>
   );
 }
-
