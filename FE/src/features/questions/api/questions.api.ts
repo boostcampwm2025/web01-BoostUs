@@ -82,7 +82,7 @@ export const getQuestionCounts = async () => {
   return response.data;
 };
 
-export const CreateQuestion = async (
+export const createQuestion = async (
   memberId: string,
   body: {
     title: string;
@@ -104,3 +104,4 @@ export const CreateQuestion = async (
 
   return data.data;
 };
+
