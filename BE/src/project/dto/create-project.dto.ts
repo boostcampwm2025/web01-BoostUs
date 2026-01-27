@@ -28,8 +28,18 @@ export class CreateProjectDto {
   repoUrl: string;
 
   @ApiPropertyOptional({
-    description: '썸네일 이미지 URL',
-    example: 'https://example.com/thumbnail.jpg',
+    description:
+      '썸네일 이미지 식별자(uploadId). POST /projects/uploads/thumbnails 응답의 uploadId 를 그대로 사용하면 됩니다.',
+    example: 'cc67be56-9026-4600-8444-b9c1fe399cf0',
+  })
+  @IsOptional()
+  @IsString()
+  thumbnailUploadId?: string;
+
+  @ApiPropertyOptional({
+    description:
+      '썸네일 이미지 미리보기 URL. POST /projects/uploads/thumbnails 응답의 thumbnailUrl 을 그대로 사용하면 됩니다. ',
+    example: 'temp/projects/thumbnail/cc67be56-9026-4600-8444-b9c1fe399cf0.png',
   })
   @IsOptional()
   @IsUrl()

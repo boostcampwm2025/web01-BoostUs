@@ -10,33 +10,32 @@ import { ApiResponse } from '@/shared/types/ApiResponseType';
 import { Meta } from '@/shared/types/PaginationType';
 import { customFetch } from '@/shared/utils/fetcher';
 
+/**
+ * 초기 질문 목록 조회
+ */
 export const getInitialQuestions = async (params?: {
   status?: QuestionsStatusFilter;
   sort?: QuestionsSortBy;
 }) => {
-  const searchParams = new URLSearchParams();
+  const status = params?.status === 'all' ? undefined : params?.status;
 
-  if (params?.status && params.status !== 'all') {
-    searchParams.append('status', params.status.toUpperCase());
-  }
-
-  if (params?.sort) {
-    searchParams.append('sort', params.sort.toUpperCase());
-  }
-
-  const queryString = searchParams.toString();
-  const path = queryString ? `/api/questions?${queryString}` : `/api/questions`;
-
-  const data = await customFetch<
+  return await customFetch<
     ApiResponse<{
       items: Question[];
       meta: Meta;
     }>
-  >(path, { cache: 'no-store' });
-
-  return data;
+  >('/api/questions', {
+    params: {
+      status,
+      sort: params?.sort,
+    },
+    cache: 'no-store',
+  });
 };
 
+/**
+ * 특정 질문 상세 조회
+ */
 export const getQuestionById = async (id: string) => {
   const data = await customFetch<
     ApiResponse<{
@@ -48,46 +47,39 @@ export const getQuestionById = async (id: string) => {
   return data.data;
 };
 
+/**
+ * 커서 기반 질문 목록 조회
+ */
 export const fetchQuestionsByCursor = async (
   cursor: Base64URLString | null
 ) => {
-  const currentParams = new URLSearchParams(window.location.search);
+  const searchParams = new URLSearchParams(window.location.search);
 
-  const statusParam = currentParams.get('status');
-  if (statusParam) {
-    if (statusParam === 'all') {
-      currentParams.delete('status');
-    } else {
-      currentParams.set('status', statusParam.toUpperCase());
-    }
-  }
+  const params = Object.fromEntries(searchParams.entries());
 
-  const sortParam = currentParams.get('sort');
-  if (sortParam) {
-    currentParams.set('sort', sortParam.toUpperCase());
-  }
+  if (params.status === 'all') delete params.status;
+  if (cursor) params.cursor = cursor;
+  else delete params.cursor;
 
-  currentParams.delete('cursor');
-  if (cursor) {
-    currentParams.append('cursor', cursor);
-  }
-
-  const data = await customFetch<
+  const response = await customFetch<
     ApiResponse<{
       items: Question[];
       meta: Meta;
     }>
-  >(`/api/questions?${currentParams.toString()}`, { cache: 'no-store' });
+  >('/api/questions', {
+    params,
+    cache: 'no-store',
+  });
 
-  return data.data;
+  return response.data;
 };
 
 export const getQuestionCounts = async () => {
-  const data = await customFetch<ApiResponse<QuestionCounts>>(
+  const response = await customFetch<ApiResponse<QuestionCounts>>(
     `/api/questions/count`,
     { cache: 'no-store' }
   );
-  return data.data;
+  return response.data;
 };
 
 export const CreateQuestion = async (

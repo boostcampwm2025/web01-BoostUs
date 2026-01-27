@@ -1,5 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Public } from '../auth/decorator/public.decorator';
 import { TechStackGroupedResponseDto } from './dto/tech-stack-response.dto';
 import { TechStackService } from './tech-stack.service';
 
@@ -8,6 +9,7 @@ import { TechStackService } from './tech-stack.service';
 export class TechStackController {
   constructor(private readonly techStackService: TechStackService) {}
 
+  @Public()
   @Get()
   @ApiOperation({
     summary: '기술 스택 전체 조회',

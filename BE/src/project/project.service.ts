@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { Prisma } from '../generated/prisma/client';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -7,10 +7,167 @@ import { ProjectListItemDto } from './dto/project-list-item.dto';
 import { ProjectListQueryDto } from './dto/project-list-query.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectRepository } from './project.repository';
+import { ConfigService } from '@nestjs/config';
+import { CopyObjectCommand, DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
+import { randomUUID } from 'node:crypto';
+import type Redis from 'ioredis';
+import { REDIS } from '../redis/redis.provider';
+import { ThumbnailMeta } from './type/upload-image-meta.type';
 
 @Injectable()
 export class ProjectService {
-  constructor(private readonly projectRepository: ProjectRepository) {}
+  private readonly s3: S3Client;
+  private readonly endpoint: string;
+  private readonly bucket: string;
+
+  constructor(
+    private readonly projectRepository: ProjectRepository,
+    private readonly config: ConfigService,
+    @Inject(REDIS) private readonly redis: Redis,
+  ) {
+    this.endpoint = this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_ENDPOINT');
+    this.bucket = this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_BUCKET');
+
+    this.s3 = new S3Client({
+      region: this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_REGION'),
+      endpoint: this.endpoint,
+      credentials: {
+        accessKeyId: this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_ACCESS_KEY'),
+        secretAccessKey: this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_SECRET_KEY'),
+      },
+      forcePathStyle: true,
+      // false (default) : Virtual-hosted style
+      // https://버킷이름.kr.object.ncloudstorage.com/파일경로
+      // true : Path style -> NCP 는 path style 권장
+      // https://kr.object.ncloudstorage.com/버킷이름/파일경로
+    });
+  }
+
+  private toPublicUrl(keyOrUrl: string | null | undefined): string | null {
+    if (!keyOrUrl) return null;
+    if (keyOrUrl.startsWith('http://') || keyOrUrl.startsWith('https://')) return keyOrUrl;
+    return `${this.endpoint}/${this.bucket}/${keyOrUrl}`;
+  }
+
+  async uploadTempThumbnail(file: Express.Multer.File, memberId: bigint) {
+    const uploadId = randomUUID();
+    const ext = (file.originalname.split('.').pop() || 'png').toLocaleLowerCase();
+    const tempKey = `temp/projects/thumbnail/${uploadId}.${ext}`;
+
+    const thumbnailUrl = await this.uploadImage(file, tempKey);
+
+    const redisKey = `upload:thumbnail:${uploadId}`;
+    await this.redis.set(
+      redisKey,
+      JSON.stringify({
+        uploadId,
+        memberId: memberId.toString(),
+        objectKey: tempKey,
+        contentType: file.mimetype,
+      }),
+      'EX',
+      3600,
+    );
+
+    return { thumbnailUploadId: uploadId, thumbnailUrl };
+  }
+
+  /**
+   * Redis에 저장된 TEMP 썸네일 메타를 검증한 뒤, Object Storage의 temp key -> final key 로 확정합니다.
+   * 성공 시: Redis 메타 삭제 + finalKey 반환
+   */
+  private async finalizeThumbnailOrThrow(
+    uploadId: string | undefined,
+    memberId: bigint,
+  ): Promise<string> {
+    const redisKey = `upload:thumbnail:${uploadId}`;
+
+    const rawMeta = await this.redis.get(redisKey);
+    if (!rawMeta) {
+      throw new NotFoundException('썸네일 업로드 정보가 만료되어 찾을 수 없습니다.');
+    }
+
+    const meta = this.parseThumbnailMetaOrThrow(rawMeta);
+    if (meta.uploadId !== uploadId) {
+      throw new NotFoundException('썸네일 업로드 정보를 찾을 수 없습니다.');
+    }
+
+    // if (meta.memberId !== memberId.toString()) {
+    //   throw new NotFoundException(
+    //     `본인이 업로드한 썸네일이 아닙니다. meta.memberId : ${memberId} | memberId : ${memberId}`,
+    //   );
+    // }
+
+    const ext = (meta.objectKey.split('.').pop() || 'png').toLowerCase();
+    const finalKey = `projects/thumbnail/${randomUUID()}.${ext}`;
+
+    // temp -> final 복사
+    await this.s3.send(
+      new CopyObjectCommand({
+        Bucket: this.bucket,
+        Key: finalKey,
+        CopySource: `${this.bucket}/${encodeURI(meta.objectKey)}`,
+        ACL: 'public-read',
+        MetadataDirective: 'COPY',
+      }),
+    );
+
+    // temp 삭제
+    await this.s3.send(
+      new DeleteObjectCommand({
+        Bucket: this.bucket,
+        Key: meta.objectKey,
+      }),
+    );
+
+    await this.redis.del(redisKey);
+
+    return finalKey;
+  }
+
+  private parseThumbnailMetaOrThrow(raw: string): ThumbnailMeta {
+    let meta: unknown;
+
+    try {
+      meta = JSON.parse(raw);
+    } catch {
+      throw new NotFoundException('썸네일 업로드 메타데이터가 손상되었습니다.');
+    }
+
+    if (
+      !meta ||
+      typeof meta !== 'object' ||
+      typeof (meta as any).uploadId !== 'string' ||
+      typeof (meta as any).memberId !== 'string' ||
+      typeof (meta as any).objectKey !== 'string'
+    ) {
+      throw new NotFoundException('썸네일 업로드 메타데이터 형식이 올바르지 않습니다.');
+    }
+
+    return meta as ThumbnailMeta;
+  }
+
+  async uploadImage(file: Express.Multer.File, key: string): Promise<string> {
+    const uploader = new Upload({
+      client: this.s3,
+      params: {
+        Bucket: this.bucket,
+        Key: key,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+        ACL: 'public-read',
+        // 'private' (default): 본인만 접근 가능, URL로 직접 접근 불가
+        // 'public-read': 누구나 읽기 가능, URL로 직접 접근 가능
+        // 'public-read-write': 누구나 읽기/쓰기 가능 (위험)
+        // 'authenticated-read': 인증된 사용자만 읽기 가능
+      },
+    });
+
+    await uploader.done();
+
+    return `${this.endpoint}/${this.bucket}/${key}`;
+  }
 
   async findAll(query: ProjectListQueryDto) {
     const where: Prisma.ProjectWhereInput = {};
@@ -47,14 +204,15 @@ export class ProjectService {
     return data;
   }
 
-  async create(dto: CreateProjectDto) {
-    // 프로젝트 등록자 memberId는 인증 사용자에서 주입해야 함 -> 커스텀 데코레이터?
-    const memberId = BigInt(1); // 임시 값
+  async create(memberId: bigint, dto: CreateProjectDto) {
+    const finalKey = await this.finalizeThumbnailOrThrow(dto.thumbnailUploadId, memberId);
 
-    return await this.projectRepository.create(memberId, dto);
+    const project = await this.projectRepository.create(memberId, dto, finalKey);
+
+    return plainToInstance(ProjectDetailItemDto, project, { excludeExtraneousValues: true });
   }
 
-  async update(id: number, dto: UpdateProjectDto) {
+  async update(id: number, memberId: bigint, dto: UpdateProjectDto) {
     const projectId = BigInt(id);
 
     const exists = await this.projectRepository.exists(projectId);
@@ -62,7 +220,12 @@ export class ProjectService {
       throw new NotFoundException('프로젝트를 찾을 수 없습니다.');
     }
 
-    return this.projectRepository.update(projectId, dto);
+    const finalKey = dto.thumbnailUploadId
+      ? await this.finalizeThumbnailOrThrow(dto.thumbnailUploadId, memberId)
+      : undefined;
+
+    const updated = await this.projectRepository.update(projectId, dto, finalKey);
+    return plainToInstance(ProjectDetailItemDto, updated, { excludeExtraneousValues: true });
   }
 
   async delete(id: number) {

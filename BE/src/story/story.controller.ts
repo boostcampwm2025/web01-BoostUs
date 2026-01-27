@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Public } from '../auth/decorator/public.decorator';
 import { ParseBigIntPipe } from '../common/pipe/parse-bigint.pipe';
 import {
   CreateStoryRequestDto,
@@ -15,6 +16,7 @@ import { StoryService } from './story.service';
 export class StoryController {
   constructor(private readonly storyService: StoryService) {}
 
+  @Public()
   @Get()
   @ApiOperation({
     summary: '스토리 목록 조회',
@@ -29,6 +31,7 @@ export class StoryController {
     return await this.storyService.findAllPublishedStories(query);
   }
 
+  @Public()
   @Get(':id')
   @ApiOperation({
     summary: '스토리 상세 조회',
