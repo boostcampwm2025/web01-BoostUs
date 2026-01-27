@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Headers, Param, Patch, Post, Query } from '@nestjs/common';
-import { ApiBody, ApiHeader, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Public } from '../auth/decorator/public.decorator';
 import { CreateQuestionDto } from './dto/req/create-question.dto';
 import { QuestionQueryDto } from './dto/req/question-query.dto';
@@ -20,11 +20,6 @@ export class QuestionController {
     summary: '질문 생성',
     description: '새로운 질문을 생성합니다.',
   })
-  @ApiHeader({
-    name: 'memberId',
-    description: '작성자 멤버 ID',
-    required: true,
-  })
   @ApiBody({
     type: CreateQuestionDto,
   })
@@ -37,10 +32,7 @@ export class QuestionController {
     status: 400,
     description: '잘못된 요청',
   })
-  create(
-    @Body() createQuestionDto: CreateQuestionDto,
-    @Headers('memberId') @CurrentMember() memberId: string,
-  ) {
+  create(@Body() createQuestionDto: CreateQuestionDto, @CurrentMember() memberId: string) {
     return this.questionService.create(memberId, createQuestionDto);
   }
 
@@ -111,11 +103,6 @@ export class QuestionController {
     summary: '질문 수정',
     description: '기존 질문을 수정합니다.',
   })
-  @ApiHeader({
-    name: 'memberId',
-    description: '작성자 멤버 ID',
-    required: true,
-  })
   @ApiResponse({
     status: 200,
     description: '질문 수정 성공',
@@ -127,7 +114,7 @@ export class QuestionController {
   })
   update(
     @Param('id') id: string,
-    @Headers('memberId') @CurrentMember() memberId: string,
+    @CurrentMember() memberId: string,
     @Body() UpdateQuestionDto: UpdateQuestionDto,
   ) {
     return this.questionService.update(id, memberId, UpdateQuestionDto);
@@ -135,11 +122,6 @@ export class QuestionController {
 
   @Delete(':id')
   @responseMessage('질문 삭제 성공')
-  @ApiHeader({
-    name: 'memberId',
-    description: '작성자 멤버 ID',
-    required: true,
-  })
   @ApiOperation({
     summary: '질문 삭제',
     description: '기존 질문을 삭제합니다.',
@@ -152,17 +134,12 @@ export class QuestionController {
     status: 404,
     description: '질문을 찾을 수 없음',
   })
-  remove(@Param('id') id: string, @Headers('memberId') @CurrentMember() memberId: string) {
+  remove(@Param('id') id: string, @CurrentMember() memberId: string) {
     return this.questionService.delete(id, memberId);
   }
 
   @Post(':id/answers/:answerId/accept')
   @responseMessage('답변 채택 성공')
-  @ApiHeader({
-    name: 'memberId',
-    description: '작성자 멤버 ID',
-    required: true,
-  })
   @ApiOperation({
     summary: '답변 채택',
     description: '질문에 달린 답변을 채택합니다.',
@@ -172,48 +149,32 @@ export class QuestionController {
   accept(
     @Param('id') questionId: string,
     @Param('answerId') answerId: string,
-    @Headers('memberId') @CurrentMember() memberId: string,
+    @CurrentMember() memberId: string,
   ) {
     return this.questionService.accept(questionId, answerId, memberId);
   }
 
   @Post(':id/like')
   @responseMessage('질문 좋아요 성공')
-  @ApiHeader({
-    name: 'memberId',
-    description: '작성자 멤버 ID',
-    required: true,
-  })
   @ApiOperation({
     summary: '질문 좋아요',
     description: '질문에 좋아요를 누릅니다.',
   })
   @ApiResponse({ status: 200, description: '질문 좋아요 성공' })
   @ApiResponse({ status: 404, description: '질문을 찾을 수 없음' })
-  async like(
-    @Param('id') questionId: string,
-    @Headers('memberId') @CurrentMember() memberId: string,
-  ) {
+  async like(@Param('id') questionId: string, @CurrentMember() memberId: string) {
     return { questionId: await this.questionService.like(questionId, memberId) };
   }
 
   @Post(':id/dislike')
   @responseMessage('질문 싫어요 성공')
-  @ApiHeader({
-    name: 'memberId',
-    description: '작성자 멤버 ID',
-    required: true,
-  })
   @ApiOperation({
     summary: '질문 싫어요',
     description: '질문에 싫어요를 누릅니다.',
   })
   @ApiResponse({ status: 200, description: '질문 싫어요 성공' })
   @ApiResponse({ status: 404, description: '질문을 찾을 수 없음' })
-  async dislike(
-    @Param('id') questionId: string,
-    @Headers('memberId') @CurrentMember() memberId: string,
-  ) {
+  async dislike(@Param('id') questionId: string, @CurrentMember() memberId: string) {
     return { questionId: await this.questionService.dislike(questionId, memberId) };
   }
 }
