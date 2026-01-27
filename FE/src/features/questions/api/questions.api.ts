@@ -107,7 +107,7 @@ export const createAnswer = async (
     contents: string;
   }
 ) => {
-  const data = await customFetch<ApiResponse<QuestionDetail>>(
+  const data = await customFetch<ApiResponse<Answer>>(
     `/api/answers/${questionId}`,
     {
       method: 'POST',

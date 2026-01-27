@@ -5,14 +5,28 @@ import VoteButtons from '@/features/questions/ui/QuestionDetail/VoteButtons';
 import { likeQuestion, dislikeQuestion } from '../../api/questions.api';
 
 const QuestionCard = ({ question }: { question: QuestionDetailType }) => {
+  const handleUpvote = async () => {
+    try {
+      await likeQuestion(question.id);
+    } catch (error) {
+      console.error('Error upvoting question:', error);
+    }
+  };
+  const handleDownvote = async () => {
+    try {
+      await dislikeQuestion(question.id);
+    } catch (error) {
+      console.error('Error downvoting question:', error);
+    }
+  };
   return (
     <section className="mt-8 w-full rounded-2xl border border-neutral-border-default bg-neutral-surface-bold">
       <CardHeader question={question} />
       <div className="flex flex-row gap-6 w-full px-4 py-4 rounded-b-2xl">
         <VoteButtons
           question={question}
-          onDownvote={() => dislikeQuestion(question.id)}
-          onUpvote={() => likeQuestion(question.id)}
+          onDownvote={handleDownvote}
+          onUpvote={handleUpvote}
         />
         <div className="flex flex-col justify-between w-full">
           <div className="w-full">

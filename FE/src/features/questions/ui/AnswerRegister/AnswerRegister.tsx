@@ -15,7 +15,7 @@ type Props = {
 
 export default function AnswerRegister({ questionId }: Props) {
   const router = useRouter();
-
+  const { member } = useAuth();
   const [contents, setContents] = useState('');
   const [mode, setMode] = useState<PreviewMode>('split');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -26,8 +26,12 @@ export default function AnswerRegister({ questionId }: Props) {
   }, [contents]);
 
   const handleSubmit = async () => {
+    if (!member) {
+      alert('로그인이 필요해요. (member를 찾을 수 없습니다)');
+      return;
+    }
     if (contentsError) return;
-
+    if (isSubmitting || contentsError) return;
     setIsSubmitting(true);
     try {
       const created = await createAnswer(questionId, {
