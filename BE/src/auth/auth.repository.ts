@@ -44,6 +44,7 @@ export class AuthRepository {
         nickname: true,
         avatarUrl: true,
         cohort: true,
+        githubLogin: true,
       },
     });
   }

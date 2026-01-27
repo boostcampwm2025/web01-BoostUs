@@ -129,6 +129,15 @@ export class ProjectRepository {
     });
   }
 
+  async canMemberUpdateProject(projectId: bigint, memberGithubLogin: string): Promise<boolean> {
+    const participants = await this.prisma.projectParticipant.findMany({
+      where: { projectId },
+      select: { githubId: true },
+    });
+
+    return participants.some((p) => p.githubId === memberGithubLogin);
+  }
+
   async update(id: bigint, dto: UpdateProjectDto, thumbnailKey: string | undefined) {
     return this.prisma.$transaction(async (tx) => {
       // 1. participants 업데이트 (전체 교체)

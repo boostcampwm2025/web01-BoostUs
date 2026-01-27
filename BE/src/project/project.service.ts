@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, Inject } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject, ForbiddenException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { Prisma } from '../generated/prisma/client';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -7,6 +7,7 @@ import { ProjectListItemDto } from './dto/project-list-item.dto';
 import { ProjectListQueryDto } from './dto/project-list-query.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectRepository } from './project.repository';
+import { AuthRepository } from 'src/auth/auth.repository';
 import { ConfigService } from '@nestjs/config';
 import { CopyObjectCommand, DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
@@ -23,6 +24,7 @@ export class ProjectService {
 
   constructor(
     private readonly projectRepository: ProjectRepository,
+    private readonly authRepository: AuthRepository,
     private readonly config: ConfigService,
     @Inject(REDIS) private readonly redis: Redis,
   ) {
@@ -50,7 +52,7 @@ export class ProjectService {
     return `${this.endpoint}/${this.bucket}/${keyOrUrl}`;
   }
 
-  async uploadTempThumbnail(file: Express.Multer.File, memberId: bigint) {
+  async uploadTempThumbnail(file: Express.Multer.File, memberId: string) {
     const uploadId = randomUUID();
     const ext = (file.originalname.split('.').pop() || 'png').toLocaleLowerCase();
     const tempKey = `temp/projects/thumbnail/${uploadId}.${ext}`;
@@ -62,7 +64,7 @@ export class ProjectService {
       redisKey,
       JSON.stringify({
         uploadId,
-        memberId: memberId.toString(),
+        memberId: memberId,
         objectKey: tempKey,
         contentType: file.mimetype,
       }),
@@ -79,7 +81,7 @@ export class ProjectService {
    */
   private async finalizeThumbnailOrThrow(
     uploadId: string | undefined,
-    memberId: bigint,
+    memberId: string,
   ): Promise<string> {
     const redisKey = `upload:thumbnail:${uploadId}`;
 
@@ -93,11 +95,9 @@ export class ProjectService {
       throw new NotFoundException('썸네일 업로드 정보를 찾을 수 없습니다.');
     }
 
-    // if (meta.memberId !== memberId.toString()) {
-    //   throw new NotFoundException(
-    //     `본인이 업로드한 썸네일이 아닙니다. meta.memberId : ${memberId} | memberId : ${memberId}`,
-    //   );
-    // }
+    if (meta.memberId !== memberId.toString()) {
+      throw new NotFoundException('본인이 업로드한 썸네일이 아닙니다.');
+    }
 
     const ext = (meta.objectKey.split('.').pop() || 'png').toLowerCase();
     const finalKey = `projects/thumbnail/${randomUUID()}.${ext}`;
@@ -204,15 +204,16 @@ export class ProjectService {
     return data;
   }
 
-  async create(memberId: bigint, dto: CreateProjectDto) {
+  async create(memberId: string, dto: CreateProjectDto) {
     const finalKey = await this.finalizeThumbnailOrThrow(dto.thumbnailUploadId, memberId);
 
-    const project = await this.projectRepository.create(memberId, dto, finalKey);
+    const memberIdBigint = BigInt(memberId);
+    const project = await this.projectRepository.create(memberIdBigint, dto, finalKey);
 
     return plainToInstance(ProjectDetailItemDto, project, { excludeExtraneousValues: true });
   }
 
-  async update(id: number, memberId: bigint, dto: UpdateProjectDto) {
+  async update(id: number, memberId: string, dto: UpdateProjectDto) {
     const projectId = BigInt(id);
 
     const exists = await this.projectRepository.exists(projectId);
@@ -220,6 +221,24 @@ export class ProjectService {
       throw new NotFoundException('프로젝트를 찾을 수 없습니다.');
     }
 
+    // member.github_login 조회
+    const member = await this.authRepository.findById(memberId);
+    if (!member?.githubLogin) {
+      throw new NotFoundException('사용자 정보를 찾을 수 없습니다.');
+    }
+
+    // member.github_login 이 project_participants 조회 결과 들어있는지 확인
+    const canUpdate = await this.projectRepository.canMemberUpdateProject(
+      projectId,
+      member.githubLogin,
+    );
+
+    // 없으면 throw
+    if (!canUpdate) {
+      throw new ForbiddenException('이 프로젝트를 수정할 권한이 없습니다.');
+    }
+
+    // 있으면 finalize
     const finalKey = dto.thumbnailUploadId
       ? await this.finalizeThumbnailOrThrow(dto.thumbnailUploadId, memberId)
       : undefined;
@@ -228,7 +247,7 @@ export class ProjectService {
     return plainToInstance(ProjectDetailItemDto, updated, { excludeExtraneousValues: true });
   }
 
-  async delete(id: number) {
+  async delete(id: number, memberId: string) {
     const projectId = BigInt(id);
 
     const exists = await this.projectRepository.exists(projectId);
