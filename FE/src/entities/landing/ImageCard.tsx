@@ -29,6 +29,7 @@ const ImageCard = ({
           fill
           className="object-contain" // 이미지 비율 유지
           sizes="(max-width: 768px) 100vw, 486px"
+          unoptimized
         />
       </div>
       <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
