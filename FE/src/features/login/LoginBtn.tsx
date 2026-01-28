@@ -24,13 +24,11 @@ export default function LoginBtn() {
   if (isAuthenticated && member) {
     return (
       <div className="w-full max-w-[1280px] mx-auto p-4 flex flex-col md:flex-row items-start gap-6">
-        {/* 2. 좌측 컬럼: 너비 고정 (약 380px ~ 400px), 줄어들지 않음(shrink-0) */}
         <div className="w-full md:w-[380px] flex flex-col gap-6 shrink-0">
           <MemberInfoMangeSections />
           <MyBadge />
         </div>
 
-        {/* 3. 우측 컬럼: 남은 공간 꽉 채우기 (flex-1) */}
         <div className="w-full flex-1 flex flex-col gap-6">
           <ActivityGraph />
           <MyViews />

@@ -1,5 +1,5 @@
 import { atom, useAtom } from 'jotai';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   getCurrentMember,
@@ -30,6 +30,7 @@ export const useAuth = () => {
       setMember(memberData);
     } catch (error) {
       // TODO: 401 등 에러 발생 시 로그인 안 된 상태로 처리
+      console.log('API 오류 발생:', error);
       setMember(null);
     } finally {
       setIsLoading(false);

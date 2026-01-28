@@ -29,40 +29,40 @@ export default function ActivityGraph() {
       </div>
 
       <div className="flex justify-center">
-        <ActivityCalendar
-          colorScheme="light"
-          data={data}
-          theme={theme}
-          blockSize={12} // 박스 크기
-          blockRadius={2} // 박스 둥글기
-          blockMargin={4} // 박스 간 간격
-          fontSize={12} // 폰트 크기
-          // 한글 월/요일 표시 설정
-          labels={{
-            months: [
-              '1월',
-              '2월',
-              '3월',
-              '4월',
-              '5월',
-              '6월',
-              '7월',
-              '8월',
-              '9월',
-              '10월',
-              '11월',
-              '12월',
-            ],
-            weekdays: ['일', '월', '화', '수', '목', '금', '토'],
-            totalCount: '{{count}}개의 활동',
-            legend: {
-              less: '적음',
-              more: '많음',
-            },
-          }}
-          // Shadcn Tooltip 적용
-          renderBlock={(block, activity) => (
-            <TooltipProvider delayDuration={0}>
+        <TooltipProvider delayDuration={0}>
+          <ActivityCalendar
+            colorScheme="light"
+            data={data}
+            theme={theme}
+            blockSize={12} // 박스 크기
+            blockRadius={2} // 박스 둥글기
+            blockMargin={4} // 박스 간 간격
+            fontSize={12} // 폰트 크기
+            // 한글 월/요일 표시 설정
+            labels={{
+              months: [
+                '1월',
+                '2월',
+                '3월',
+                '4월',
+                '5월',
+                '6월',
+                '7월',
+                '8월',
+                '9월',
+                '10월',
+                '11월',
+                '12월',
+              ],
+              weekdays: ['일', '월', '화', '수', '목', '금', '토'],
+              totalCount: '{{count}}개의 활동',
+              legend: {
+                less: '적음',
+                more: '많음',
+              },
+            }}
+            // Shadcn Tooltip 적용
+            renderBlock={(block, activity) => (
               <Tooltip>
                 <TooltipTrigger asChild>{block}</TooltipTrigger>
                 <TooltipContent>
@@ -72,9 +72,9 @@ export default function ActivityGraph() {
                   </div>
                 </TooltipContent>
               </Tooltip>
-            </TooltipProvider>
-          )}
-        />
+            )}
+          />
+        </TooltipProvider>
       </div>
     </div>
   );
