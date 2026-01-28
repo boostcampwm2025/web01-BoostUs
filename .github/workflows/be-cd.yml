@@ -81,14 +81,6 @@ jobs:
               echo "⚠️ Image pull failed, attempting to use cached image..."
             fi
 
-            echo "🔄 Running database migrations..."
-            timeout 60s docker compose -f docker-compose.prod.yml \
-              --env-file .env.prod \
-              run --rm backend npx prisma migrate deploy || {
-                echo "❌ Migration failed!"
-                exit 1
-              }
-
             echo "🚀 Deploying BE..."
             docker compose -f docker-compose.prod.yml \
               --env-file .env.prod \
