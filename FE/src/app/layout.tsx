@@ -3,7 +3,8 @@ import localFont from 'next/font/local';
 import './globals.css';
 import Header from '@/widgets/Header';
 import Footer from '@/widgets/Footer';
-import { AuthProvider } from '@/features/login/model/auth.context';
+import { AuthInitializer } from '@/features/login/AuthInitializer';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: 'BoostUs - 부스트캠퍼들이 함께 기록하고, 함께 성장하는 커뮤니티 🌱',
@@ -25,13 +26,19 @@ export default function RootLayout({
   return (
     <html lang="en" className={pretendard.variable}>
       <body className="flex flex-col min-h-screen font-sans antialiased">
-        <AuthProvider>
-          <Header />
-          <main className="bg-neutral-surface-default flex w-full flex-1 flex-col items-center px-4 py-32">
-            {children}
-          </main>
-          <Footer />
-        </AuthProvider>
+        <AuthInitializer />
+        <Header />
+        <main className="bg-neutral-surface-default flex w-full flex-1 flex-col items-center px-4 py-32">
+          {children}
+
+          <script
+            src="https://kr.object.ncloudstorage.com/boostad-sdk-dev/sdk/sdk.js"
+            data-blog-key="d88f304b-6eae-4010-9f1a-2c5963085a9b"
+            data-auto="false"
+            async
+          ></script>
+        </main>
+        <Footer />
       </body>
     </html>
   );

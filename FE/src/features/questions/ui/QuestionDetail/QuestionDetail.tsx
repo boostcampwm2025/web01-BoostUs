@@ -1,6 +1,6 @@
 'use client';
 
-import { useAuth } from '@/features/login/model/auth.context';
+import { useAuth } from '@/features/login/model/auth.store';
 import type { Answer, QuestionDetail } from '@/features/questions/model';
 import AnswerCard from '@/features/questions/ui/QuestionDetail/AnswerCard';
 import QuestionCard from '@/features/questions/ui/QuestionDetail/QuestionCard';

@@ -7,7 +7,7 @@ import {
   dislikeAnswer,
   acceptAnswer,
 } from '../../api/questions.api';
-import { useAuth } from '@/features/login/model';
+import { useAuth } from '@/features/login/model/auth.store';
 import MarkdownViewer from '@/shared/ui/MarkdownViewer';
 
 type Props = {
