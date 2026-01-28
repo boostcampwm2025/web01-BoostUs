@@ -2,15 +2,8 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import ModalOverlay from '@/shared/ui/ModalOverlay';
-import { ImageUp } from 'lucide-react';
+import { ImageUp, X } from 'lucide-react';
 import { useProjectRegister } from '@/features/project/hook/useProjectRegister';
-import {
-  Combobox,
-  ComboboxInput,
-  ComboboxContent,
-  ComboboxList,
-  ComboboxItem,
-} from '@/components/ui/combobox';
 
 import { fetchStacks } from '@/entities/TechStackSelector/api/getTechStack';
 import TechStackSelector from '@/entities/TechStackSelector/ui/TechStackSelector';
@@ -18,6 +11,12 @@ import {
   TechStackItem,
   TechStackResponse,
 } from '@/entities/TechStackSelector/model/types';
+
+const FIELD_OPTIONS = [
+  { label: '웹 풀스택', value: 'WEB' },
+  { label: 'iOS', value: 'IOS' },
+  { label: 'Android', value: 'ANDROID' },
+] as const;
 
 // API 데이터 정규화 함수
 const normalizeStacks = (data: unknown): TechStackResponse => {
@@ -109,7 +108,9 @@ export default function RegisterModalPage() {
   return (
     <ModalOverlay>
       <div className="w-full rounded-2xl bg-neutral-surface-default">
-        <h2 className="mb-4 text-display-24">프로젝트 등록</h2>
+        <h2 className="mb-4 text-display-24 text-neutral-text-strong">
+          프로젝트 등록
+        </h2>
         <form onSubmit={onSubmit} className="space-y-4">
           {/* 썸네일 업로드 */}
           <div className="flex flex-col gap-2">
@@ -181,14 +182,14 @@ export default function RegisterModalPage() {
             <div className="flex-1">
               <label
                 htmlFor="cohort"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-neutral-text-default text-string-16"
               >
                 기수
               </label>
               <select
                 id="cohort"
                 {...register('cohort')}
-                className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
               >
                 {Array.from({ length: 10 }).map((_, i) => {
                   const generation = String(i + 1);
@@ -203,18 +204,18 @@ export default function RegisterModalPage() {
             <div className="flex-1">
               <label
                 htmlFor="field"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-neutral-text-default text-string-16"
               >
                 분야
               </label>
               <select
                 id="field"
                 {...register('field')}
-                className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
               >
-                {['WEB', 'IOS', 'ANDROID'].map((field) => (
-                  <option key={field} value={field}>
-                    {field}
+                {FIELD_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
                   </option>
                 ))}
               </select>
@@ -234,7 +235,7 @@ export default function RegisterModalPage() {
                 id="startDate"
                 type="date"
                 {...register('startDate', { valueAsDate: true })}
-                className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
               />
               {errors.startDate && (
                 <p className="mt-1 text-xs text-red-500">
@@ -253,7 +254,7 @@ export default function RegisterModalPage() {
                 id="endDate"
                 type="date"
                 {...register('endDate', { valueAsDate: true })}
-                className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
               />
               {errors.endDate && (
                 <p className="mt-1 text-xs text-red-500">
@@ -276,7 +277,7 @@ export default function RegisterModalPage() {
                 id="repoUrl"
                 type="url"
                 {...register('repoUrl')}
-                className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
                 placeholder="GitHub Repository URL을 입력하세요"
               />
               {errors.repoUrl && (
@@ -296,7 +297,7 @@ export default function RegisterModalPage() {
                 id="demoUrl"
                 type="url"
                 {...register('demoUrl')}
-                className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
                 placeholder="데모 URL을 입력하세요"
               />
               {errors.demoUrl && (
@@ -319,7 +320,7 @@ export default function RegisterModalPage() {
               id="title"
               type="text"
               {...register('title')}
-              className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
               placeholder="제목을 입력하세요"
             />
             {errors.title && (
@@ -340,7 +341,7 @@ export default function RegisterModalPage() {
             <input
               id="description"
               {...register('description')}
-              className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
               placeholder="프로젝트 요약을 입력하세요"
             />
             {errors.description && (
@@ -362,7 +363,7 @@ export default function RegisterModalPage() {
               id="contents"
               {...register('contents.0')}
               rows={4}
-              className="mt-1 block w-full resize-none overflow-hidden rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full resize-none overflow-hidden rounded-md border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
               placeholder="프로젝트 내용을 입력하세요"
               {...contentsRest}
               ref={(el) => {
@@ -396,7 +397,7 @@ export default function RegisterModalPage() {
                 id="participantsInput"
                 type="text"
                 {...register('participantsInput')}
-                className="block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="block w-full rounded-md border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
                 placeholder="이름을 입력하세요"
                 onCompositionStart={() => setIsComposing(true)}
                 onCompositionEnd={() => setIsComposing(false)}
@@ -410,7 +411,7 @@ export default function RegisterModalPage() {
               <button
                 type="button"
                 onClick={addParticipant}
-                className="shrink-0 rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+                className="shrink-0 cursor-pointer rounded-lg bg-brand-surface-default px-4 py-2 text-brand-text-on-default transition-colors hover:bg-brand-dark"
               >
                 등록
               </button>
@@ -424,15 +425,17 @@ export default function RegisterModalPage() {
               {participants.map((name, index) => (
                 <div
                   key={`${name}-${index}`}
-                  className="flex items-center justify-between gap-2 rounded-md border border-gray-200 bg-gray-50 px-3 py-2"
+                  className="flex items-center justify-between gap-2 rounded-full border border-neutral-border-default bg-neutral-surface-bold px-3 py-2"
                 >
-                  <span className="text-sm text-gray-800">{name}</span>
+                  <span className="text-body-14 text-neutral-text-default">
+                    {name}
+                  </span>
                   <button
                     type="button"
                     onClick={() => removeParticipant(index)}
-                    className="text-sm text-red-600 hover:underline"
+                    className="text-body-14 text-neutral-text-default  cursor-pointer"
                   >
-                    X
+                    <X size={16} />
                   </button>
                 </div>
               ))}
@@ -451,13 +454,13 @@ export default function RegisterModalPage() {
                 onChange={setTechStack}
               />
             ) : (
-              <div className="h-20 flex items-center justify-center bg-gray-50 rounded text-gray-400 text-sm">
+              <div className="h-20 flex items-center justify-center bg-neutral-surface-default rounded text-neutral-text-weak text-body-14">
                 로딩 중...
               </div>
             )}
             <input type="hidden" {...register('techStack')} />
             {errors.techStack && (
-              <p className="mt-1 text-xs text-red-500">
+              <p className="mt-1 text-string-12 text-danger-text-default">
                 {errors.techStack.message!}
               </p>
             )}
@@ -466,7 +469,7 @@ export default function RegisterModalPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+            className="rounded-lg cursor-pointer w-full bg-brand-surface-default px-4 py-2 text-brand-text-on-default transition-colors hover:bg-brand-dark duration-150 disabled:opacity-50"
           >
             {isSubmitting ? '등록 중...' : '등록하기'}
           </button>

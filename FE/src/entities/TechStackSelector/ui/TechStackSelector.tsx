@@ -5,6 +5,7 @@ import {
   TechStackResponse,
   TechStackItem,
 } from '@/entities/TechStackSelector/model/types';
+import { X } from 'lucide-react';
 
 // 탭 이름 매핑
 const CATEGORY_LABELS: Record<string, string> = {
@@ -24,7 +25,7 @@ interface TechStackSelectorProps {
 
 export default function TechStackSelector({
   data,
-  selectedStack = [],
+  selectedStack,
   onChange,
 }: TechStackSelectorProps) {
   const [activeTab, setActiveTab] = useState<string>('FRONTEND');
@@ -52,42 +53,42 @@ export default function TechStackSelector({
   };
 
   return (
-    <div className="w-full rounded-md border border-gray-300 p-4">
+    <div className="w-full rounded-xl border border-neutral-border-default p-4">
       {/* 상단 선택된 아이템 영역 */}
-      <div className="flex flex-wrap gap-2 mb-4 min-h-[40px] bg-gray-50 p-3 rounded-lg border border-gray-100">
+      <div className="flex flex-wrap gap-2 mb-4 min-h-10 bg-transparent">
         {selectedStack.length === 0 && (
-          <span className="text-gray-400 text-sm py-1">
+          <span className="text-body-14 text-neutral-text-weak py-1">
             아래에서 기술 스택을 선택해주세요.
           </span>
         )}
         {selectedStack.map((name) => (
           <div
             key={name}
-            className="flex items-center gap-1 px-3 py-1 bg-white border border-gray-200 rounded-full text-blue-600 text-sm font-medium shadow-sm"
+            className="flex items-center gap-1 px-3 py-1 bg-neutral-surface-bold border border-neutral-border-default rounded-full text-neutral-text-default text-body-14  "
           >
+            {name}
             <button
               type="button" // form submit 방지
               onClick={() => removeItem(name)}
-              className="hover:text-red-500 mr-1 text-gray-400 font-bold"
+              className="hover:text-neutral-text-strong text-neutral-text-weak cursor-pointer"
             >
-              ×
+              <X size={16} />
             </button>
-            {name}
           </div>
         ))}
       </div>
 
       {/* 중간 탭 네비게이션 */}
-      <div className="flex items-center gap-4 mb-4 overflow-x-auto border-b border-gray-200">
+      <div className="flex items-center gap-4 mb-4 overflow-x-auto border-b border-neutral-border-default">
         {tabs.map((key) => (
           <button
             key={key}
             type="button"
             onClick={() => setActiveTab(key)}
-            className={`text-sm font-semibold pb-2 whitespace-nowrap transition-colors ${
+            className={`cursor-pointer text-string-16 pb-2 whitespace-nowrap transition-colors duration-150 ${
               activeTab === key
-                ? 'text-blue-600 border-b-2 border-blue-600'
-                : 'text-gray-400 hover:text-gray-600'
+                ? 'text-brand-text-default border-b border-brand-border-default'
+                : 'text-neutral-text-weak hover:text-brand-text-default'
             }`}
           >
             {CATEGORY_LABELS[key] || key}
@@ -96,7 +97,7 @@ export default function TechStackSelector({
       </div>
 
       {/* 하단 아이템 리스트  */}
-      <div className="flex flex-wrap gap-2 max-h-[200px] overflow-y-auto pr-2">
+      <div className="flex flex-wrap gap-2 max-h-50 overflow-y-auto pr-2">
         {data[activeTab]?.map((item) => {
           const isSelected = selectedStack.includes(item.name);
 
@@ -105,10 +106,10 @@ export default function TechStackSelector({
               key={item.id}
               type="button"
               onClick={() => toggleItem(item)}
-              className={`px-3 py-1.5 rounded-full border text-sm transition-all ${
+              className={`px-3 py-1.5 rounded-full border text-string-14 transition-colors duration-150 cursor-pointer ${
                 isSelected
-                  ? 'border-blue-500 text-blue-600 bg-blue-50 font-semibold'
-                  : 'border-gray-200 text-gray-600 hover:bg-gray-100'
+                  ? 'border-brand-border-default text-brand-text-default bg-brand-surface-weak text-display-16'
+                  : 'border-neutral-border-default text-neutral-text-default hover:bg-brand-surface-weak'
               }`}
             >
               {item.name}
