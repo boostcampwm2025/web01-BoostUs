@@ -67,23 +67,6 @@ export function convertBlogUrlToRss(
 }
 
 /**
- * RSS URL에서 블로그 플랫폼을 자동 감지
- * @param rssUrl RSS URL
- * @returns 감지된 플랫폼 또는 null
- */
-export function detectPlatformFromRssUrl(rssUrl: string): BlogPlatform | null {
-  if (rssUrl.includes('v2.velog.io/rss')) {
-    return 'velog';
-  }
-
-  if (rssUrl.includes('.tistory.com/rss')) {
-    return 'tistory';
-  }
-
-  return 'custom';
-}
-
-/**
  * RSS URL에서 원본 블로그 URL 추출 (역변환)
  * @param rssUrl RSS URL
  * @returns 원본 블로그 URL 또는 null

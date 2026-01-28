@@ -5,7 +5,7 @@ export interface FeedDetail {
   id: number;
   feedUrl: string;
   memberId: number;
-  state: 'ACTIVE' | 'INACTIVE' | string;
+  state: 'ACTIVE' | 'INACTIVE';
   createdAt: string;
   lastFetchedAt: string | null;
 }
@@ -27,10 +27,3 @@ export const createOrUpdateFeed = async (body: { feedUrl: string }) => {
 
   return response.data;
 };
-
-export const deleteFeed = async (id: number) => {
-  await customFetch<ApiResponse<null>>(`/api/feeds/${id}`, {
-    method: 'DELETE',
-  });
-};
-

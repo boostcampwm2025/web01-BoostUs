@@ -91,7 +91,7 @@ const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [member]);
 
   // 블로그 URL 변경 시 RSS URL 자동 변환 (플랫폼 자동 감지)
   useEffect(() => {
@@ -140,7 +140,7 @@ const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
     setSuccessMessage(null);
     setConversionError(null);
 
-    if (!blogUrl) {
+    if (!blogUrl.trim()) {
       setServerError('블로그 주소를 입력해주세요.');
       setIsSubmitting(false);
       return;
@@ -331,11 +331,9 @@ const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
                   )}
                   <TooltipContent className={'bg-brand-surface-default'}>
                     <p className="text-body-12 text-brand-text-on-default">
-                      {!member || !member.cohort
-                        ? '캠퍼 인증 후 블로그를 등록할 수 있어요'
-                        : hasRssFeed
-                          ? '내 블로그 등록하기'
-                          : '블로그를 등록하고 내 글을 공유해보세요!'}
+                      {hasRssFeed
+                        ? '내 블로그 등록하기'
+                        : '블로그를 등록하고 내 글을 공유해보세요!'}
                     </p>
                   </TooltipContent>
                 </>
