@@ -84,12 +84,17 @@ jobs:
               echo "BE_IMAGE=${BE_IMAGE}" >> .env.prod
             fi
 
-            docker pull "$BE_IMAGE" || true
+            if ! docker pull "$BE_IMAGE"; then
+              echo "⚠️ Image pull failed, attempting to use cached image..."
+            fi
 
             echo "🔄 Running database migrations..."
             docker compose -f docker-compose.prod.yml \
               --env-file .env.prod \
-              run --rm backend npx prisma migrate deploy
+              run --rm --timeout 1m backend npx prisma migrate deploy || {
+                echo "❌ Migration failed!"
+                exit 1
+              }
 
             echo "🚀 Deploying BE..."
             docker compose -f docker-compose.prod.yml \

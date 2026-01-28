@@ -82,7 +82,9 @@ jobs:
               echo "FE_IMAGE=${FE_IMAGE}" >> .env.prod
             fi
 
-            docker pull "$FE_IMAGE" || true
+            if ! docker pull "$FE_IMAGE"; then
+              echo "⚠️ Image pull failed, attempting to use cached image..."
+            fi
 
             echo "🚀 Deploying FE..."
             docker compose -f docker-compose.prod.yml \

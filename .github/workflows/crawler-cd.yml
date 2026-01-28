@@ -84,7 +84,9 @@ jobs:
               echo "CRAWLER_IMAGE=${CRAWLER_IMAGE}" >> .env.prod
             fi
 
-            docker pull "$CRAWLER_IMAGE" || true
+            if ! docker pull "$CRAWLER_IMAGE"; then
+              echo "⚠️ Image pull failed, attempting to use cached image..."
+            fi
 
             echo "🚀 Deploying Crawler..."
             docker compose -f docker-compose.prod.yml \
