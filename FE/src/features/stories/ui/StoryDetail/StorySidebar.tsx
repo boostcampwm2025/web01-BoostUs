@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Heart, Share2 } from 'lucide-react';
 import { useAuth } from '@/features/login/model/auth.store';
 import { likeStory, unlikeStory } from '@/features/stories/api/stories.api';
+import { Heart, Share2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface StorySidebarProps {
   storyId: string;
@@ -43,7 +43,7 @@ export default function StorySidebar({
     const newIsLiked = !previousIsLiked;
     const newLikeCount = newIsLiked
       ? previousLikeCount + 1
-      : previousLikeCount - 1;
+      : Math.max(previousLikeCount - 1, 0);
 
     setIsLiked(newIsLiked);
     setLikeCount(newLikeCount);

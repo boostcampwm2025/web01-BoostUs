@@ -22,7 +22,7 @@ const StoryDetail = ({ story }: { story: StoryDetail }) => {
   useEffect(() => {
     setLikeCount(story.likeCount);
     setIsLiked(false);
-  }, [story.likeCount]);
+  }, [story.id, story.likeCount]);
 
   // 클라이언트 사이드에서 좋아요 상태 확인
   useEffect(() => {
