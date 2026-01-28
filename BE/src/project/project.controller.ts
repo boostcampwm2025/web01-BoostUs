@@ -8,8 +8,12 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Public } from '../auth/decorator/public.decorator';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectDetailItemDto } from './dto/project-detail-item.dto';
 import { ProjectListItemDto } from './dto/project-list-item.dto';
@@ -22,6 +26,15 @@ import { ProjectService } from './project.service';
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
+  @Public()
+  @Post('uploads/thumbnails')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadTempThumbnail(@UploadedFile() file: Express.Multer.File) {
+    const memberId = BigInt(1); // authGuard 에서 주입? (req.user.id)
+    return this.projectService.uploadTempThumbnail(file, memberId);
+  }
+
+  @Public()
   @Get()
   @ApiOperation({
     summary: '프로젝트 목록 조회',
@@ -37,6 +50,7 @@ export class ProjectController {
     return this.projectService.findAll(query);
   }
 
+  @Public()
   @Get(':id')
   @ApiOperation({
     summary: '프로젝트 상세 조회',
@@ -60,6 +74,7 @@ export class ProjectController {
     return this.projectService.findOne(id);
   }
 
+  @Public()
   @Post()
   @ApiOperation({
     summary: '프로젝트 생성',
@@ -78,9 +93,12 @@ export class ProjectController {
     description: '잘못된 요청',
   })
   create(@Body() dto: CreateProjectDto) {
-    return this.projectService.create(dto);
+    const memberId = BigInt(1);
+    console.log(dto);
+    return this.projectService.create(memberId, dto);
   }
 
+  @Public()
   @Patch(':id')
   @ApiOperation({
     summary: '프로젝트 수정',
@@ -108,9 +126,11 @@ export class ProjectController {
     description: '프로젝트를 찾을 수 없음',
   })
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateProjectDto) {
-    return this.projectService.update(id, dto);
+    const memberId = BigInt(1);
+    return this.projectService.update(id, memberId, dto);
   }
 
+  @Public()
   @Delete(':id')
   @ApiOperation({
     summary: '프로젝트 삭제',

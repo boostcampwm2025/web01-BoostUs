@@ -6,12 +6,12 @@ import {
 } from '@/features/questions/model/questions.type';
 import { QuestionsProvider } from '@/features/questions/model';
 import QuestionButton from '@/features/questions/ui/Button/QuestionButton';
-import QuestionsHeader from '@/features/questions/ui/Header/Header';
 import QuestionsList from '@/features/questions/ui/List/List';
 import QuestionsSearchBar from '@/features/questions/ui/SearchBar/SearchBar';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Meta } from '@/shared/types/PaginationType';
 import { useQuestionPagination } from '@/features/questions/model/useQuestionsPagination';
+import PageHeader from '@/shared/ui/PageHeader';
 
 interface QuestionsPageContentProps {
   initialQuestions: Question[];
@@ -37,7 +37,10 @@ const QuestionsPageContent = ({
   return (
     <QuestionsProvider>
       <div className="flex flex-col w-full font-sans max-w-270">
-        <QuestionsHeader />
+        <PageHeader
+          title="질문 & 답변"
+          subtitle="부스트캠프, 기술, 커리어 등 모든 질문과 답변을 한 곳에서"
+        />
         <div className="flex flex-row gap-4 mt-8">
           <QuestionsSearchBar />
           <QuestionButton />

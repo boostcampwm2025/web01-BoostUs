@@ -1,35 +1,30 @@
 'use client';
 
 import Image from 'next/image';
-import { Eye, Heart } from 'lucide-react';
+import { Calendar1, Eye, Heart } from 'lucide-react';
 import Link from 'next/link';
-import type { StoriesCard as StoriesCardType } from '@/features/stories/model/stories.type';
-import { useState } from 'react';
+import type { Story } from '@/features/stories/model/stories.type';
+import useImageError from '@/shared/model/useImageError';
+import UserProfile from '@/shared/ui/UserProfile';
+import extractDate from '@/shared/utils/extractDate';
 
 interface StoriesCardProps {
   id: string;
-  story: StoriesCardType;
+  story: Story;
 }
 
-const DEFAULT_THUMBNAIL = '/FE/public/assets/NoImage.png';
+const DEFAULT_THUMBNAIL = '/assets/NoImage.png';
 
 const StoriesCard = ({ id, story }: StoriesCardProps) => {
-  const [isImageError, setIsImageError] = useState(false);
+  const { isError, setIsError } = useImageError(story.thumbnailUrl);
 
-  const [prevUrl, setPrevUrl] = useState(story.thumbnailUrl);
-
-  if (story.thumbnailUrl !== prevUrl) {
-    setPrevUrl(story.thumbnailUrl);
-    setIsImageError(false);
-  }
-
-  const currentSrc = isImageError
+  const currentSrc = isError
     ? DEFAULT_THUMBNAIL
     : (story.thumbnailUrl ?? DEFAULT_THUMBNAIL);
 
   return (
     <Link href={`/stories/${id}`}>
-      <div className="bg-neutral-surface-bold border-neutral-border-default hover:shadow-default grid w-full cursor-pointer grid-rows-[4fr_6fr] overflow-hidden rounded-2xl border transition-shadow duration-150">
+      <div className="bg-neutral-surface-bold border-neutral-border-default hover:border-neutral-border-active shadow-default hover:shadow-hover grid w-full cursor-pointer grid-rows-[4fr_6fr] overflow-hidden rounded-2xl border transition-colors duration-150">
         <div className="relative w-full">
           <Image
             src={currentSrc}
@@ -37,47 +32,40 @@ const StoriesCard = ({ id, story }: StoriesCardProps) => {
             fill
             className="object-cover"
             priority
-            onError={() => setIsImageError(true)}
+            onError={() => setIsError(true)}
           />
         </div>
         <div className="px-3 py-2">
-          <div className="flex flex-row items-center justify-start gap-2">
-            <div className="bg-grayscale-300 h-8 w-8 rounded-full" />
-            <div className="flex flex-col">
-              <span className="text-body-14 text-neutral-text-default">
-                {story.member.nickname}
-              </span>
-              {story.member.cohort && (
-                <span className="text-body-12 text-neutral-text-weak">
-                  {story.member.cohort}기
-                </span>
-              )}
-            </div>
-          </div>
-          <h3 className="text-neutral-text-strong text-display-20 mt-4 line-clamp-1">
+          <UserProfile
+            imageSrc={story.member.avatarUrl}
+            nickname={story.member.nickname}
+            cohort={story.member.cohort}
+          />
+          <h3 className="text-neutral-text-strong text-display-16 mt-4 line-clamp-1">
             {story.title}
           </h3>
           <div className="text-body-14 text-neutral-text-weak mt-2 mb-2 h-18 leading-6">
             <p className="line-clamp-3">{story.summary}</p>
           </div>
-          <div className="mt-3 flex w-full flex-row items-center justify-between">
-            <div className="flex flex-row items-center gap-2">
-              <div className="flex flex-row items-center gap-1">
-                <Heart className="text-neutral-text-weak h-3 w-3" />
-                <span className="text-body-12 text-neutral-text-weak">
-                  {story.likeCount}
-                </span>
-              </div>
-              <div className="flex flex-row items-center gap-1">
-                <Eye className="text-neutral-text-weak h-3 w-3" />
-                <span className="text-body-12 text-neutral-text-weak">
-                  {story.viewCount}
-                </span>
-              </div>
+          <div className="mt-3 flex w-full flex-row items-center gap-2">
+            <div className="flex flex-row items-center gap-1">
+              <Heart className="text-neutral-text-weak h-3 w-3" />
+              <span className="text-body-12 text-neutral-text-weak">
+                {story.likeCount}
+              </span>
             </div>
-            <span className="text-body-12 text-neutral-text-weak">
-              {story.createdAt.slice(0, 10)}
-            </span>
+            <div className="flex flex-row items-center gap-1">
+              <Eye className="text-neutral-text-weak h-3 w-3" />
+              <span className="text-body-12 text-neutral-text-weak">
+                {story.viewCount}
+              </span>
+            </div>
+            <div className="flex flex-row items-center gap-1">
+              <Calendar1 className="text-neutral-text-weak h-3 w-3" />
+              <span className="text-body-12 text-neutral-text-weak">
+                {extractDate(story.createdAt)}
+              </span>
+            </div>
           </div>
         </div>
       </div>

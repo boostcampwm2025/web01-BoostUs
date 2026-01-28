@@ -1,5 +1,7 @@
 'use client';
 
+import { useAuth } from '@/features/login/model/auth.store';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -14,6 +16,8 @@ const NAV_ITEMS = [
 const Header = () => {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
+  const { member, isAuthenticated, isLoading } = useAuth();
+  const [avatarError, setAvatarError] = useState(false);
 
   useEffect(() => {
     let ticking = false;
@@ -42,6 +46,10 @@ const Header = () => {
     };
   }, []);
 
+  useEffect(() => {
+    setAvatarError(false);
+  }, [member?.avatarUrl]);
+
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname.startsWith(href);
 
@@ -62,8 +70,10 @@ const Header = () => {
             <Link
               key={href}
               href={href}
-              className={`flex items-center h-full border-b-2 transition-colors hover:text-accent-blue ${
-                isActive(href) ? 'border-accent-blue' : 'border-transparent'
+              className={`flex items-center text-string-16 h-full border-b-2 transition-colors text-neutral-text-default hover:text-brand-text-default ${
+                isActive(href)
+                  ? 'border-brand-border-default'
+                  : 'border-transparent'
               }`}
               aria-current={isActive(href) ? 'page' : undefined}
             >
@@ -71,12 +81,37 @@ const Header = () => {
             </Link>
           ))}
         </nav>
-        <Link
-          href="/login"
-          className="transition-colors text-string-16 text-neutral-text-strong hover:text-accent-blue"
-        >
-          로그인
-        </Link>
+        {!isLoading && (
+          <>
+            {isAuthenticated && member ? (
+              <Link
+                href="/login"
+                className="flex items-center transition-opacity hover:opacity-80"
+              >
+                <div className="relative w-9 h-9 rounded-full overflow-hidden">
+                  <Image
+                    src={
+                      avatarError || !member.avatarUrl
+                        ? '/assets/NoImage.png'
+                        : member.avatarUrl
+                    }
+                    alt={`${member.nickname}의 프로필 사진`}
+                    className="object-cover"
+                    fill
+                    onError={() => setAvatarError(true)}
+                  />
+                </div>
+              </Link>
+            ) : (
+              <Link
+                href="/login"
+                className="transition-colors text-string-16 text-neutral-text-default hover:text-brand-text-default"
+              >
+                로그인
+              </Link>
+            )}
+          </>
+        )}
       </div>
     </header>
   );

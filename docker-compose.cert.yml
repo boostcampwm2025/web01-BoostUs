@@ -1,0 +1,14 @@
+services:
+  certbot:
+    image: certbot/certbot
+    container_name: boostus_certbot
+    volumes:
+      - ./certbot-data/conf:/etc/letsencrypt
+      - ./certbot-data/logs:/var/log/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    networks:
+      - boostus_network
+
+networks:
+  boostus_network:
+    external: true

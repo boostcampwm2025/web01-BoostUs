@@ -10,33 +10,32 @@ import { ApiResponse } from '@/shared/types/ApiResponseType';
 import { Meta } from '@/shared/types/PaginationType';
 import { customFetch } from '@/shared/utils/fetcher';
 
+/**
+ * 초기 질문 목록 조회
+ */
 export const getInitialQuestions = async (params?: {
   status?: QuestionsStatusFilter;
   sort?: QuestionsSortBy;
 }) => {
-  const searchParams = new URLSearchParams();
+  const status = params?.status === 'all' ? undefined : params?.status;
 
-  if (params?.status && params.status !== 'all') {
-    searchParams.append('status', params.status.toUpperCase());
-  }
-
-  if (params?.sort) {
-    searchParams.append('sort', params.sort.toUpperCase());
-  }
-
-  const queryString = searchParams.toString();
-  const path = queryString ? `/api/questions?${queryString}` : `/api/questions`;
-
-  const data = await customFetch<
+  return await customFetch<
     ApiResponse<{
       items: Question[];
       meta: Meta;
     }>
-  >(path, { cache: 'no-store' });
-
-  return data;
+  >('/api/questions', {
+    params: {
+      status,
+      sort: params?.sort,
+    },
+    cache: 'no-store',
+  });
 };
 
+/**
+ * 특정 질문 상세 조회
+ */
 export const getQuestionById = async (id: string) => {
   const data = await customFetch<
     ApiResponse<{
@@ -48,44 +47,195 @@ export const getQuestionById = async (id: string) => {
   return data.data;
 };
 
+/**
+ * 커서 기반 질문 목록 조회
+ */
 export const fetchQuestionsByCursor = async (
   cursor: Base64URLString | null
 ) => {
-  const currentParams = new URLSearchParams(window.location.search);
+  const searchParams = new URLSearchParams(window.location.search);
 
-  const statusParam = currentParams.get('status');
-  if (statusParam) {
-    if (statusParam === 'all') {
-      currentParams.delete('status');
-    } else {
-      currentParams.set('status', statusParam.toUpperCase());
-    }
-  }
+  const params = Object.fromEntries(searchParams.entries());
 
-  const sortParam = currentParams.get('sort');
-  if (sortParam) {
-    currentParams.set('sort', sortParam.toUpperCase());
-  }
+  if (params.status === 'all') delete params.status;
+  if (cursor) params.cursor = cursor;
+  else delete params.cursor;
 
-  currentParams.delete('cursor');
-  if (cursor) {
-    currentParams.append('cursor', cursor);
-  }
-
-  const data = await customFetch<
+  const response = await customFetch<
     ApiResponse<{
       items: Question[];
       meta: Meta;
     }>
-  >(`/api/questions?${currentParams.toString()}`, { cache: 'no-store' });
+  >('/api/questions', {
+    params,
+    cache: 'no-store',
+  });
+
+  return response.data;
+};
+
+export const getQuestionCounts = async () => {
+  const response = await customFetch<ApiResponse<QuestionCounts>>(
+    `/api/questions/count`,
+    { cache: 'no-store' }
+  );
+  return response.data;
+};
+
+export const createQuestion = async (body: {
+  title: string;
+  contents: string;
+  hashtags?: string[];
+}) => {
+  const data = await customFetch<ApiResponse<QuestionDetail>>(
+    `/api/questions`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    }
+  );
 
   return data.data;
 };
 
-export const getQuestionCounts = async () => {
-  const data = await customFetch<ApiResponse<QuestionCounts>>(
-    `/api/questions/count`,
-    { cache: 'no-store' }
+export const createAnswer = async (
+  questionId: string,
+  body: {
+    contents: string;
+  }
+) => {
+  const data = await customFetch<ApiResponse<Answer>>(
+    `/api/answers/${questionId}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    }
   );
+
+  return data.data;
+};
+
+export const acceptAnswer = async (questionId: string, answerId: string) => {
+  const data = await customFetch<ApiResponse<null>>(
+    `api/questions/${questionId}/answers/${answerId}/accept`,
+    {
+      method: 'POST',
+    }
+  );
+
+  return data.data;
+};
+
+export const likeQuestion = async (questionId: string) => {
+  const data = await customFetch<ApiResponse<null>>(
+    `api/questions/${questionId}/like`,
+    {
+      method: 'POST',
+    }
+  );
+
+  return data.data;
+};
+
+export const dislikeQuestion = async (questionId: string) => {
+  const data = await customFetch<ApiResponse<null>>(
+    `api/questions/${questionId}/dislike`,
+    {
+      method: 'POST',
+    }
+  );
+
+  return data.data;
+};
+
+export const likeAnswer = async (answerId: string) => {
+  const data = await customFetch<ApiResponse<null>>(
+    `api/answers/${answerId}/like`,
+    {
+      method: 'POST',
+    }
+  );
+
+  return data.data;
+};
+
+export const dislikeAnswer = async (answerId: string) => {
+  const data = await customFetch<ApiResponse<null>>(
+    `api/answers/${answerId}/dislike/`,
+    {
+      method: 'POST',
+    }
+  );
+
+  return data.data;
+};
+
+export const editQuestion = async (
+  questionId: string,
+  body: {
+    title: string;
+    contents: string;
+    hashtags?: string[];
+  }
+) => {
+  const data = await customFetch<ApiResponse<QuestionDetail>>(
+    `/api/questions/${questionId}`,
+    {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    }
+  );
+
+  return data.data;
+};
+
+export const deleteQuestion = async (questionId: string) => {
+  const data = await customFetch<ApiResponse<null>>(
+    `/api/questions/${questionId}`,
+    {
+      method: 'DELETE',
+    }
+  );
+
+  return data.data;
+};
+
+export const editAnswer = async (
+  answerId: string,
+  body: {
+    contents: string;
+  }
+) => {
+  const data = await customFetch<ApiResponse<Answer>>(
+    `/api/answers/${answerId}`,
+    {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    }
+  );
+
+  return data.data;
+};
+
+export const deleteAnswer = async (answerId: string) => {
+  const data = await customFetch<ApiResponse<null>>(
+    `/api/answers/${answerId}`,
+    {
+      method: 'DELETE',
+    }
+  );
+
   return data.data;
 };

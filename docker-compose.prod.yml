@@ -11,6 +11,8 @@ services:
       - backend
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certbot-data/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
     networks:
       - boostus_network
 
@@ -28,7 +30,16 @@ services:
     networks:
       - boostus_network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}"]
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "127.0.0.1",
+          "-u${MYSQL_USER}",
+          "-p${MYSQL_PASSWORD}",
+        ]
       interval: 5s
       timeout: 3s
       retries: 20
@@ -54,6 +65,8 @@ services:
       # db 미기동 상태에서 뜨지 않도록
       db:
         condition: service_healthy
+      redis:
+        condition: service_started
     networks:
       - boostus_network
 
@@ -84,6 +97,15 @@ services:
       - boostus_network
     depends_on:
       - backend
+
+  redis:
+    image: redis:7-alpine
+    container_name: boostus_redis
+    restart: unless-stopped
+    expose:
+      - "6379"
+    networks:
+      - boostus_network
 
 networks:
   boostus_network:

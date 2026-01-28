@@ -18,6 +18,13 @@ const QuestionsList = ({
       {initialQuestions.map((question) => (
         <ListCard key={question.id} question={question} />
       ))}
+      {initialQuestions.length === 0 && (
+        <div className="flex items-center justify-center w-full h-32 bg-neutral-surface-bold">
+          <p className="text-neutral-text-weak text-body-16">
+            질문이 없습니다.
+          </p>
+        </div>
+      )}
     </div>
   );
 };
