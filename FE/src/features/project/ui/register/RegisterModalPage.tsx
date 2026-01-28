@@ -4,6 +4,13 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import ModalOverlay from '@/shared/ui/ModalOverlay';
 import { ImageUp } from 'lucide-react';
 import { useProjectRegister } from '@/features/project/hook/useProjectRegister';
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxContent,
+  ComboboxList,
+  ComboboxItem,
+} from '@/components/ui/combobox';
 
 import { fetchStacks } from '@/entities/TechStackSelector/api/getTechStack';
 import TechStackSelector from '@/entities/TechStackSelector/ui/TechStackSelector';
@@ -67,7 +74,7 @@ export default function RegisterModalPage() {
   const [stackData, setStackData] = useState<TechStackResponse | null>(null);
 
   // 1. techStack 값을 실시간 감시 (초기값 [] 방어)
-  const currentTechStack = watch('techStack') || [];
+  const currentTechStack = watch('techStack') ?? [];
 
   useEffect(() => {
     const loadStacks = async () => {
@@ -90,7 +97,7 @@ export default function RegisterModalPage() {
     const el = contentsRef.current;
     if (!el) return;
     el.style.height = '0px';
-    el.style.height = `${el.scrollHeight}px`;
+    el.style.height = `${el.scrollHeight.toString()}px`;
   }, [contentsValue]);
 
   const {
@@ -101,8 +108,8 @@ export default function RegisterModalPage() {
 
   return (
     <ModalOverlay>
-      <div className="w-full rounded-lg bg-white">
-        <h2 className="mb-4 text-xl font-bold">프로젝트 등록</h2>
+      <div className="w-full rounded-2xl bg-neutral-surface-default">
+        <h2 className="mb-4 text-display-24">프로젝트 등록</h2>
         <form onSubmit={onSubmit} className="space-y-4">
           {/* 썸네일 업로드 */}
           <div className="flex flex-col gap-2">
@@ -111,10 +118,10 @@ export default function RegisterModalPage() {
               {...dragHandlers}
               className={`relative flex aspect-video w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border transition-all duration-200 ${
                 isDragging
-                  ? 'scale-[0.99] border-blue-500 bg-blue-50 ring-2 ring-blue-200'
+                  ? 'scale-[0.99] border-brand-border-default bg-brand-surface-weak ring-2 ring-brand-border-default'
                   : errors.thumbnail
-                    ? 'border-red-500 bg-red-50'
-                    : 'border-gray-300 bg-gray-100 hover:bg-gray-200'
+                    ? 'border-danger-border-default bg-danger-surface-default'
+                    : 'border-neutral-border-default bg-neutral-surface-default hover:bg-neutral-surface-strong hover:border-neutral-border-active'
               } `}
             >
               {previewUrl ? (
@@ -125,7 +132,7 @@ export default function RegisterModalPage() {
                     className="h-full w-full object-cover"
                   />
                   {isDragging && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 font-bold text-white">
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 font-bold text-brand-text-on-default">
                       이미지 변경하기
                     </div>
                   )}
@@ -133,23 +140,23 @@ export default function RegisterModalPage() {
               ) : (
                 <div className="pointer-events-none flex flex-col items-center gap-4 p-4 text-center">
                   <div
-                    className={`flex h-20 w-20 items-center justify-center rounded-2xl transition-colors ${isDragging ? 'bg-blue-200 text-blue-600' : 'bg-gray-300 text-gray-500'}`}
+                    className={`flex h-20 w-20 items-center justify-center rounded-2xl transition-colors ${isDragging ? 'bg-brand-dark text-brand-text-on-default' : 'bg-brand-surface-default text-brand-text-on-default'}`}
                   >
                     <ImageUp size={48} />
                   </div>
                   <div className="flex flex-col gap-1">
                     <span
-                      className={`text-lg font-bold transition-colors ${isDragging ? 'text-blue-600' : 'text-gray-800'}`}
+                      className={`text-display-20 transition-colors ${isDragging ? 'text-brand-text-default' : 'text-neutral-text-strong'}`}
                     >
                       {isDragging
                         ? '여기에 놓으세요!'
                         : '이미지를 여기로 드래그하여 업로드 하세요'}
                     </span>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-body-14 text-neutral-text-weak">
                       PNG, JPG, JPEG, GIF 형식의 이미지를 1개 업로드할 수 있어요
                     </span>
                   </div>
-                  <div className="mt-2 rounded-lg bg-blue-100 px-6 py-2.5 text-sm font-semibold text-blue-600">
+                  <div className="mt-2 rounded-xl bg-brand-surface-default px-4 py-3 text-string-16 text-brand-text-on-default">
                     파일 또는 폴더 선택
                   </div>
                 </div>
@@ -219,7 +226,7 @@ export default function RegisterModalPage() {
             <div className="flex-1">
               <label
                 htmlFor="startDate"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-string-16 text-neutral-text-default"
               >
                 시작 날짜
               </label>
@@ -238,7 +245,7 @@ export default function RegisterModalPage() {
             <div className="flex-1">
               <label
                 htmlFor="endDate"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-string-16 text-neutral-text-default"
               >
                 종료 날짜
               </label>
@@ -261,7 +268,7 @@ export default function RegisterModalPage() {
             <div className="flex-1">
               <label
                 htmlFor="repoUrl"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-string-16 text-neutral-text-default"
               >
                 깃허브 Repository
               </label>
@@ -281,7 +288,7 @@ export default function RegisterModalPage() {
             <div className="flex-1">
               <label
                 htmlFor="demoUrl"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-string-16 text-neutral-text-default"
               >
                 데모 URL
               </label>
@@ -304,7 +311,7 @@ export default function RegisterModalPage() {
           <div>
             <label
               htmlFor="title"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-string-16 text-neutral-text-default"
             >
               프로젝트 제목
             </label>
@@ -326,7 +333,7 @@ export default function RegisterModalPage() {
           <div>
             <label
               htmlFor="description"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-string-16 text-neutral-text-default"
             >
               프로젝트 요약내용
             </label>
@@ -347,7 +354,7 @@ export default function RegisterModalPage() {
           <div>
             <label
               htmlFor="contents"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-string-16 text-neutral-text-default"
             >
               프로젝트 상세내용
             </label>
@@ -380,7 +387,7 @@ export default function RegisterModalPage() {
           <div>
             <label
               htmlFor="participantsInput"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-string-16 text-neutral-text-default"
             >
               프로젝트 참여자
             </label>
@@ -410,7 +417,7 @@ export default function RegisterModalPage() {
             </div>
             {errors.participants && (
               <p className="mt-1 text-xs text-red-500">
-                {errors.participants.message as string}
+                {errors.participants.message!}
               </p>
             )}
             <div className="mt-3 flex flex-row gap-2">
@@ -434,7 +441,7 @@ export default function RegisterModalPage() {
 
           {/*  기술 스택 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-string-16 text-neutral-text-default mb-2">
               기술 스택
             </label>
             {stackData ? (
@@ -451,7 +458,7 @@ export default function RegisterModalPage() {
             <input type="hidden" {...register('techStack')} />
             {errors.techStack && (
               <p className="mt-1 text-xs text-red-500">
-                {errors.techStack.message as string}
+                {errors.techStack.message!}
               </p>
             )}
           </div>
