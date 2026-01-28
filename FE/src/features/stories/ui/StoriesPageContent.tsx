@@ -11,6 +11,7 @@ import {
   detectPlatformFromBlogUrl,
   extractBlogUrlFromRss,
 } from '@/features/feed/utils/blog-rss-converter';
+import { memberAtom } from '@/features/login/model/auth.store';
 import { StoriesProvider, useStoriesContext } from '@/features/stories/model';
 import { Story } from '@/features/stories/model/stories.type';
 import useRankingButtonVisibility from '@/features/stories/model/useRankingButtonVisibility';
@@ -22,7 +23,9 @@ import CustomDialog from '@/shared/ui/Dialog/CustomDialog';
 import PageHeader from '@/shared/ui/PageHeader';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useAtomValue } from 'jotai';
 import { Link } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 interface StoriesPageContentProps {
@@ -34,6 +37,9 @@ const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
 
   const isRankingButtonHidden = useRankingButtonVisibility(isRankingOpen);
 
+  const member = useAtomValue(memberAtom);
+  const router = useRouter();
+
   const [blogUrl, setBlogUrl] = useState('');
   const [rssUrl, setRssUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -41,6 +47,11 @@ const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
   const [serverError, setServerError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [conversionError, setConversionError] = useState<string | null>(null);
+  const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
+
+  // RSS 등록 여부 확인 (로그인한 유저만)
+  const hasRssFeed = !!rssUrl;
+  const shouldHighlight = !member || (member && !hasRssFeed);
 
   useEffect(() => {
     let isMounted = true;
@@ -177,71 +188,153 @@ const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
             <StoriesSearchBar />
             <StoriesListDropdown />
             <Tooltip>
-              <CustomDialog
-                dialogTrigger={
+              {member ? (
+                <>
+                  <CustomDialog
+                    dialogTrigger={
+                      <TooltipTrigger asChild>
+                        <motion.button
+                          type="button"
+                          className={`relative cursor-pointer transition-colors duration-150 ${
+                            shouldHighlight
+                              ? 'text-brand-surface-default'
+                              : 'text-neutral-text-weak hover:text-brand-surface-default'
+                          }`}
+                          animate={
+                            shouldHighlight
+                              ? {
+                                  scale: [1, 1.1, 1],
+                                  opacity: [0.7, 1, 0.7],
+                                }
+                              : {}
+                          }
+                          transition={
+                            shouldHighlight
+                              ? {
+                                  duration: 2,
+                                  repeat: Infinity,
+                                  ease: 'easeInOut',
+                                }
+                              : {}
+                          }
+                        >
+                          <Link />
+                          {shouldHighlight && (
+                            <motion.span
+                              className="absolute inset-0 rounded-full bg-brand-surface-default/20"
+                              animate={{
+                                scale: [1, 1.5, 1],
+                                opacity: [0.5, 0, 0.5],
+                              }}
+                              transition={{
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: 'easeOut',
+                              }}
+                            />
+                          )}
+                        </motion.button>
+                      </TooltipTrigger>
+                    }
+                    dialogTitle="내 블로그 등록하기"
+                    dialogDescription="내 블로그를 등록하면 캠퍼들의 이야기에 내 글을 게시할 수 있어요."
+                    dialogContent={
+                      <div className="mt-4 flex flex-col gap-4">
+                        {/* 블로그 주소 */}
+                        <div className="flex flex-col gap-2">
+                          <label
+                            htmlFor="blog-url"
+                            className="text-body-14 font-medium text-neutral-text-default"
+                          >
+                            블로그 주소
+                          </label>
+                          <input
+                            id="blog-url"
+                            type="text"
+                            value={blogUrl}
+                            onChange={(e) => setBlogUrl(e.target.value)}
+                            placeholder="https://myblog.tistory.com 또는 https://velog.io/@myblog"
+                            className="w-full border border-neutral-border-default placeholder:text-neutral-text-weak text-body-16 text-neutral-text-default px-4 py-2 rounded-lg focus:outline-none focus:ring focus:border-brand-surface-default disabled:bg-neutral-50 disabled:text-neutral-400"
+                            disabled={isLoading || isSubmitting}
+                          />
+                        </div>
+
+                        {/* 메시지 영역 (고정 높이) */}
+                        <div className="min-h-[60px] flex flex-col gap-1">
+                          {/* 변환된 RSS URL 미리보기 (선택적) */}
+                          {blogUrl && !conversionError && rssUrl && (
+                            <p className="text-body-12 text-neutral-text-weak">
+                              변환된 RSS: {rssUrl}
+                            </p>
+                          )}
+
+                          {conversionError && (
+                            <p className="text-body-12 text-red-500">
+                              {conversionError}
+                            </p>
+                          )}
+                          {serverError && (
+                            <p className="text-body-12 text-red-500">
+                              {serverError}
+                            </p>
+                          )}
+                          {successMessage && (
+                            <p className="text-body-12 text-emerald-600">
+                              {successMessage}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    }
+                    onSubmit={handleSubmitRss}
+                  />
+                  <TooltipContent className={'bg-brand-surface-default'}>
+                    <p className="text-body-12 text-brand-text-on-default">
+                      {hasRssFeed
+                        ? '내 블로그 등록하기'
+                        : '블로그를 등록하고 내 글을 공유해보세요!'}
+                    </p>
+                  </TooltipContent>
+                </>
+              ) : (
+                <>
                   <TooltipTrigger asChild>
-                    <button
+                    <motion.button
                       type="button"
-                      className="text-neutral-text-weak hover:text-brand-surface-default transition-colors duration-150 cursor-pointer"
+                      className="relative cursor-pointer text-brand-surface-default"
+                      animate={{
+                        scale: [1, 1.1, 1],
+                        opacity: [0.7, 1, 0.7],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                      }}
+                      onClick={() => router.push('/login')}
                     >
                       <Link />
-                    </button>
-                  </TooltipTrigger>
-                }
-                dialogTitle="내 블로그 등록하기"
-                dialogDescription="내 블로그를 등록하면 캠퍼들의 이야기에 내 글을 게시할 수 있어요."
-                dialogContent={
-                  <div className="mt-4 flex flex-col gap-4">
-                    {/* 블로그 주소 */}
-                    <div className="flex flex-col gap-2">
-                      <label
-                        htmlFor="blog-url"
-                        className="text-body-14 font-medium text-neutral-text-default"
-                      >
-                        블로그 주소
-                      </label>
-                      <input
-                        id="blog-url"
-                        type="text"
-                        value={blogUrl}
-                        onChange={(e) => setBlogUrl(e.target.value)}
-                        placeholder="https://myblog.tistory.com 또는 https://velog.io/@myblog"
-                        className="w-full border border-neutral-border-default placeholder:text-neutral-text-weak text-body-16 text-neutral-text-default px-4 py-2 rounded-lg focus:outline-none focus:ring focus:border-brand-surface-default disabled:bg-neutral-50 disabled:text-neutral-400"
-                        disabled={isLoading || isSubmitting}
+                      <motion.span
+                        className="absolute inset-0 rounded-full bg-brand-surface-default/20"
+                        animate={{
+                          scale: [1, 1.5, 1],
+                          opacity: [0.5, 0, 0.5],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: 'easeOut',
+                        }}
                       />
-                    </div>
-
-                    {/* 변환된 RSS URL 미리보기 (선택적) */}
-                    {blogUrl && !conversionError && rssUrl && (
-                      <p className="text-body-12 text-neutral-text-weak">
-                        변환된 RSS: {rssUrl}
-                      </p>
-                    )}
-
-                    {conversionError && (
-                      <p className="mt-1 text-body-12 text-red-500">
-                        {conversionError}
-                      </p>
-                    )}
-                    {serverError && (
-                      <p className="mt-1 text-body-12 text-red-500">
-                        {serverError}
-                      </p>
-                    )}
-                    {successMessage && (
-                      <p className="mt-1 text-body-12 text-emerald-600">
-                        {successMessage}
-                      </p>
-                    )}
-                  </div>
-                }
-                onSubmit={handleSubmitRss}
-              />
-              <TooltipContent className={'bg-brand-surface-default'}>
-                <p className="text-body-12 text-brand-text-on-default">
-                  내 블로그 등록하기
-                </p>
-              </TooltipContent>
+                    </motion.button>
+                  </TooltipTrigger>
+                  <TooltipContent className={'bg-brand-surface-default'}>
+                    <p className="text-body-12 text-brand-text-on-default">
+                      로그인 후 블로그를 등록할 수 있어요
+                    </p>
+                  </TooltipContent>
+                </>
+              )}
             </Tooltip>
           </div>
           <StoriesList initialStories={initialStories} />
