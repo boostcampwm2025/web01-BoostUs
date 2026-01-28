@@ -68,7 +68,6 @@ export class ProjectService {
         uploadId,
         memberId: memberId,
         objectKey: tempKey,
-        contentType: file.mimetype,
       }),
       'EX',
       3600,
@@ -137,38 +136,68 @@ export class ProjectService {
       throw new InvalidThumbnailMetadataException('썸네일 업로드 메타데이터가 손상되었습니다.');
     }
 
-    if (
-      !meta ||
-      typeof meta !== 'object' ||
-      typeof (meta as any).uploadId !== 'string' ||
-      typeof (meta as any).memberId !== 'string' ||
-      typeof (meta as any).objectKey !== 'string'
-    ) {
-      throw new InvalidThumbnailMetadataException(
-        '썸네일 업로드 메타데이터 형식이 올바르지 않습니다.',
-      );
-    }
+    // if (
+    //   !meta ||
+    //   typeof meta !== 'object' ||
+    //   typeof (meta as any).uploadId !== 'string' ||
+    //   typeof (meta as any).memberId !== 'string' ||
+    //   typeof (meta as any).objectKey !== 'string'
+    // ) {
+    //   throw new InvalidThumbnailMetadataException(
+    //     '썸네일 업로드 메타데이터 형식이 올바르지 않습니다.',
+    //   );
+    // }
 
     return meta as ThumbnailMeta;
   }
 
-  async uploadImage(file: Express.Multer.File, key: string): Promise<string> {
-    const uploader = new Upload({
-      client: this.s3,
-      params: {
-        Bucket: this.bucket,
-        Key: key,
-        Body: file.buffer,
-        ContentType: file.mimetype,
-        ACL: 'public-read',
-        // 'private' (default): 본인만 접근 가능, URL로 직접 접근 불가
-        // 'public-read': 누구나 읽기 가능, URL로 직접 접근 가능
-        // 'public-read-write': 누구나 읽기/쓰기 가능 (위험)
-        // 'authenticated-read': 인증된 사용자만 읽기 가능
+  private _createS3Client() {
+    return new S3Client({
+      region: this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_REGION'),
+      endpoint: this.endpoint,
+      credentials: {
+        accessKeyId: this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_ACCESS_KEY'),
+        secretAccessKey: this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_SECRET_KEY'),
       },
+      forcePathStyle: true,
     });
+  }
 
-    await uploader.done();
+  private _isTimeSkewError(e: any) {
+    return (
+      e?.name === 'RequestTimeTooSkewed' ||
+      String(e?.message || '').includes('RequestTimeTooSkewed')
+    );
+  }
+
+  async uploadImage(file: Express.Multer.File, key: string): Promise<string> {
+    const run = async (client: S3Client) => {
+      const uploader = new Upload({
+        client,
+        params: {
+          Bucket: this.bucket,
+          Key: key,
+          Body: file.buffer,
+          ContentType: file.mimetype,
+          ACL: 'public-read',
+          // 'private' (default): 본인만 접근 가능, URL로 직접 접근 불가
+          // 'public-read': 누구나 읽기 가능, URL로 직접 접근 가능
+          // 'public-read-write': 누구나 읽기/쓰기 가능 (위험)
+          // 'authenticated-read': 인증된 사용자만 읽기 가능
+        },
+      });
+      await uploader.done();
+    };
+
+    try {
+      await run(this.s3);
+    } catch (e: any) {
+      if (!this._isTimeSkewError(e)) throw e;
+
+      // client 재생성 후 1회 재시도
+      (this as any).s3 = this._createS3Client();
+      await run((this as any).s3);
+    }
 
     return `${this.endpoint}/${this.bucket}/${key}`;
   }
