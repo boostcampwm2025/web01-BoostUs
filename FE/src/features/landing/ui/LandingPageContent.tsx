@@ -78,7 +78,7 @@ const LandingPageContent = () => {
           description="부스트캠프와 기술, 커리어 등 궁금한 모든 것들을 해결하고, 많은 사람들과 함께 성장해요."
         />
       </section>
-      <section className="flex flex-col items-center pt-100">
+      <section className="flex flex-col items-center pt-100 min-h-screen">
         <p className="text-neutral-text-strong text-string-20">
           지금 바로 시작해보세요
         </p>
