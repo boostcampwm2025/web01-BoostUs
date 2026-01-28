@@ -42,7 +42,11 @@ const FeedSection = () => {
           </div>
         ))}
       </section>
-      <section>{/* TODO: BoostAd 서비스 추가하기 */}</section>
+
+      {/*boostAd seciton*/}
+      <section>
+        <div data-boostad-zone style={{ width: '100%', height: '100%' }}></div>
+      </section>
 
       <section className="flex flex-col lg:flex-row gap-6 w-full">
         {/* 질문 & 답변 */}

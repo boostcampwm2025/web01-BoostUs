@@ -5,10 +5,7 @@ import { plainToInstance } from 'class-transformer';
 import { MemberDto } from '../member/dto/member.dto';
 import { AuthRepository } from './auth.repository';
 import { GithubLoginUpsertDto } from './dto/github-login-upsert.dto';
-import {
-  InvalidTokenException,
-  TokenExpiredException,
-} from './exception/auth.exception';
+import { InvalidTokenException, TokenExpiredException } from './exception/auth.exception';
 import { GithubAuthClient } from './github-auth.client';
 import { COHORT_ORG_MAP } from './type/cohort.type';
 
@@ -19,7 +16,7 @@ export class AuthService {
     private readonly authRepository: AuthRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) { }
+  ) {}
 
   async handleCallback(code: string) {
     const githubAccessToken = await this.githubAuthClient.exchangeCodeForToken(code);
