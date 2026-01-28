@@ -8,7 +8,7 @@ import { PenToolIcon } from '@/components/ui/pen-tool';
 import { GithubIcon } from '@/components/ui/github';
 import CheckCircleIcon from '@/components/ui/CheckCircleIcon';
 import AlertCircleIcon from '@/components/ui/AlertCircleIcon';
-import { logout } from '@/features/login/api/auth.api';
+import { useAuth } from '@/features/login/model/auth.store';
 
 // 폼 데이터 타입 정의
 interface RssFormValues {
@@ -18,9 +18,10 @@ interface RssFormValues {
 export default function MemberInfoMangeSections() {
   const authState = useAtomValue(memberAtom);
   const member = authState?.member;
+  const { logout } = useAuth();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
   };
   // react-hook-form 설정
   const {
