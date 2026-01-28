@@ -30,14 +30,14 @@ export default function RootLayout({
         <Header />
         <main className="bg-neutral-surface-default flex w-full flex-1 flex-col items-center px-4 py-32">
           {children}
-
           <Script
             src="https://kr.object.ncloudstorage.com/boostad-sdk-dev/sdk/sdk.js"
-            strategy="afterInteractive"
+            strategy="afterInteractive" // 페이지 로드 후 실행 (성능 최적화)
             data-blog-key="d88f304b-6eae-4010-9f1a-2c5963085a9b"
-            data-auto="false"
-            async
-          ></Script>
+            data-context="부스트어스"
+            data-auto="false" // 수동 모드 설정 (필수)
+            async // 가이드에 있는 async 속성
+          />
         </main>
         <Footer />
       </body>
