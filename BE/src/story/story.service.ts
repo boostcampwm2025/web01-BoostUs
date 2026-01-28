@@ -11,6 +11,11 @@ import {
   StoryListResponseDto,
   StoryResponseDto,
 } from './dto';
+import {
+  StoryAlreadyLikedException,
+  StoryNotFoundException,
+  StoryNotLikedException,
+} from './exception/story.exception';
 import { StoryRepository } from './story.repository';
 import { StorySortBy } from './type/story-query.type';
 
@@ -96,9 +101,10 @@ export class StoryService {
   /**
    * ID로 캠퍼들의 이야기 상세 조회
    * @param id bigint
+   * @param memberId string (선택적) - 로그인한 사용자 ID
    * @returns StoryResponseDto
    */
-  async findStoryById(id: bigint): Promise<StoryResponseDto> {
+  async findStoryById(id: bigint, memberId?: string): Promise<StoryResponseDto> {
     const story = await this.storyRepository.findStoryById(id);
 
     // 글이 없거나 삭제된 상태인 경우 404 에러 발생
@@ -107,9 +113,20 @@ export class StoryService {
       throw new NotFoundException(`글을 찾을 수 없습니다. id: ${id}`);
     }
 
-    return plainToInstance(StoryResponseDto, story, {
+    // StoryResponseDto로 변환
+    const storyDto = plainToInstance(StoryResponseDto, story, {
       excludeExtraneousValues: true,
     });
+
+    // isLikedByMe 설정
+    if (memberId) {
+      const memberIdBigInt = BigInt(memberId);
+      storyDto.isLikedByMe = await this.storyRepository.checkStoryLikeExists(id, memberIdBigInt);
+    } else {
+      storyDto.isLikedByMe = false;
+    }
+
+    return storyDto;
   }
 
   /**
@@ -138,5 +155,65 @@ export class StoryService {
     });
 
     return plainToInstance(CreateStoryResponseDto, story, { excludeExtraneousValues: true });
+  }
+
+  /**
+   * 캠퍼들의 이야기 좋아요 등록
+   * @param storyId bigint
+   * @param memberId string
+   * @returns string (storyId)
+   */
+  async likeStory(storyId: bigint, memberId: string): Promise<string> {
+    const memberIdBigInt = BigInt(memberId);
+
+    // Story 존재 여부 확인
+    const storyExists = await this.storyRepository.checkStoryExists(storyId);
+    if (!storyExists) {
+      throw new StoryNotFoundException(storyId);
+    }
+
+    // 이미 좋아요한 경우 확인
+    const alreadyLiked = await this.storyRepository.checkStoryLikeExists(
+      storyId,
+      memberIdBigInt,
+    );
+    if (alreadyLiked) {
+      throw new StoryAlreadyLikedException(storyId);
+    }
+
+    // 좋아요 등록
+    await this.storyRepository.likeStory(storyId, memberIdBigInt);
+
+    return storyId.toString();
+  }
+
+  /**
+   * 캠퍼들의 이야기 좋아요 취소
+   * @param storyId bigint
+   * @param memberId string
+   * @returns string (storyId)
+   */
+  async unlikeStory(storyId: bigint, memberId: string): Promise<string> {
+    const memberIdBigInt = BigInt(memberId);
+
+    // Story 존재 여부 확인
+    const storyExists = await this.storyRepository.checkStoryExists(storyId);
+    if (!storyExists) {
+      throw new StoryNotFoundException(storyId);
+    }
+
+    // 좋아요하지 않은 경우 확인
+    const notLiked = !(await this.storyRepository.checkStoryLikeExists(
+      storyId,
+      memberIdBigInt,
+    ));
+    if (notLiked) {
+      throw new StoryNotLikedException(storyId);
+    }
+
+    // 좋아요 취소
+    await this.storyRepository.unlikeStory(storyId, memberIdBigInt);
+
+    return storyId.toString();
   }
 }

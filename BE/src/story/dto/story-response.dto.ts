@@ -13,4 +13,12 @@ export class StoryResponseDto extends StoryBaseDto {
   })
   @Expose()
   contents: string;
+
+  @ApiProperty({
+    description: '현재 로그인한 사용자가 좋아요한 여부',
+    example: true,
+    default: false,
+  })
+  @Expose()
+  isLikedByMe: boolean;
 }
