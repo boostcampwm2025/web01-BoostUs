@@ -5,10 +5,10 @@ import {
   getCurrentMember,
   logout as logoutApi,
 } from '@/features/login/api/auth.api'; // 기존 API 그대로 사용
-import type { Member } from './auth.types'; // 기존 타입 그대로 사용
+import type { AuthResponse } from './auth.types'; // 기존 타입 그대로 사용
 
 // 상태 정의 memberAtom: 로그인한 사용자 정보 (초기값 null)
-export const memberAtom = atom<Member | null>(null);
+export const memberAtom = atom<AuthResponse | null>(null);
 
 // authLoadingAtom: 로딩 상태 (초기값 true - 첫 로드 시 깜빡임 방지)
 export const authLoadingAtom = atom<boolean>(true);
