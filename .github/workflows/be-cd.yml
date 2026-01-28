@@ -6,6 +6,7 @@ on:
     paths:
       - "BE/**"
       - ".github/workflows/be-cd.yml"
+      - "docker-compose.prod.yml"
   workflow_dispatch:
 
 permissions:
@@ -48,6 +49,16 @@ jobs:
           secrets: |
             DB_URL=${{ secrets.DB_URL }}
 
+      - name: Copy docker-compose.prod.yml
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          source: "docker-compose.prod.yml"
+          target: "${{ secrets.DEPLOY_DIR || '/srv/boostus' }}"
+
       - name: Deploy BE via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -74,5 +85,16 @@ jobs:
             fi
 
             docker pull "$BE_IMAGE" || true
-            docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --remove-orphans
+
+            echo "🔄 Running database migrations..."
+            docker compose -f docker-compose.prod.yml \
+              --env-file .env.prod \
+              run --rm backend npx prisma migrate deploy
+
+            echo "🚀 Deploying BE..."
+            docker compose -f docker-compose.prod.yml \
+              --env-file .env.prod \
+              up -d backend --no-deps
+              
+            echo "🔄 Pruning unused Docker images..."
             docker image prune -f
