@@ -10,7 +10,7 @@ import type { PreviewMode } from './QuestionModeButton';
 import QuestionPreview from '../Textarea/QuestionPreview';
 import QuestionEditor from '../Textarea/QuestionEditor';
 import HashTagInput from './HashTagInput';
-import { useAuth } from '@/features/login/model/auth.context';
+import { useAuth } from '@/features/login/model/auth.store';
 const MAX_TITLE_LENGTH = 200;
 
 const normalizeTitle = (v: string) => v.replace(/\s+/g, ' ').trim();
