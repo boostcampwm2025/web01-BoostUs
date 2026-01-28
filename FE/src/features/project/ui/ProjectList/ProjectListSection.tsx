@@ -113,7 +113,7 @@ const ProjectListSection = () => {
         </div>
       </div>
 
-      <div className="grid w-full grid-cols-4 gap-8">
+      <div className="grid w-full grid-cols-4 gap-4 lg:gap-8">
         {filteredProjects.map((project) => (
           <ProjectListCard key={project.id} project={project} />
         ))}
