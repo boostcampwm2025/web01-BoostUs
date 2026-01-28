@@ -80,7 +80,7 @@ const ProjectListSection = () => {
         </span>
 
         {/* TODO: SlidingFilter로 리팩토링 필요 */}
-        <div className="flex flex-row flex-wrap gap-2 bg-neutral-surface-strong rounded-lg px-1 py-1">
+        <div className="flex flex-row flex-wrap gap-1 bg-neutral-surface-strong rounded-lg px-1 py-1">
           {sortOptions.map((option) => {
             const isSelected = sortOrder === option.key;
 
@@ -89,7 +89,7 @@ const ProjectListSection = () => {
                 key={option.key}
                 type="button"
                 onClick={() => setSortOrder(option.key)}
-                className="relative flex w-auto cursor-pointer items-center justify-center rounded-lg p-1 transition-colors duration-300"
+                className="relative flex w-auto cursor-pointer items-center justify-center rounded-lg px-2 py-1 transition-colors duration-300"
               >
                 {isSelected && (
                   <motion.div
