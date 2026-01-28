@@ -42,9 +42,13 @@ export class QuestionRepository {
   findAll(args: Prisma.QuestionFindManyArgs) {
     return this.prisma.question.findMany({
       ...args,
+      where: {
+        ...args.where,
+        state: ContentState.PUBLISHED,
+      },
       include: {
         member: true,
-        _count: { select: { answers: true } },
+        _count: { select: { answers: { where: { state: ContentState.PUBLISHED } } } },
       },
     });
   }
@@ -62,7 +66,7 @@ export class QuestionRepository {
           member: {
             select: { id: true, nickname: true, avatarUrl: true, cohort: true },
           },
-          _count: { select: { answers: true } },
+          _count: { select: { answers: { where: { state: ContentState.PUBLISHED } } } },
         },
       }),
       this.prisma.question.count({ where }),
@@ -85,29 +89,32 @@ export class QuestionRepository {
             },
           },
         },
-        _count: { select: { answers: true } },
+        _count: { select: { answers: { where: { state: ContentState.PUBLISHED } } } },
       },
     });
   }
 
   async countByAnswerAndResolution() {
-    const total = await this.prisma.question.count(); // 전체 질문 수
+    const total = await this.prisma.question.count({ where: { state: ContentState.PUBLISHED } }); // 전체 질문 수
 
     const noAnswer = await this.prisma.question.count({
       where: {
         answers: { none: {} },
+        state: ContentState.PUBLISHED,
       },
     });
 
     const unsolved = await this.prisma.question.count({
       where: {
         isResolved: false,
+        state: ContentState.PUBLISHED,
       },
     });
 
     const solved = await this.prisma.question.count({
       where: {
         isResolved: true,
+        state: ContentState.PUBLISHED,
       },
     });
 
@@ -191,6 +198,20 @@ export class QuestionRepository {
         where: { id: questionId },
         data: { upCount: { increment: 1 } },
       });
+    } else if (existing.voteType === VoteType.UP) {
+      await this.prisma.questionVote.delete({
+        where: {
+          memberId_questionId: {
+            memberId,
+            questionId,
+          },
+        },
+      });
+
+      await this.prisma.question.update({
+        where: { id: questionId },
+        data: { upCount: { decrement: 1 } },
+      });
     }
   }
   async dislike(questionId: bigint, memberId: bigint) {
@@ -215,6 +236,19 @@ export class QuestionRepository {
       await this.prisma.question.update({
         where: { id: questionId },
         data: { downCount: { increment: 1 } },
+      });
+    } else if (existing.voteType === VoteType.DOWN) {
+      await this.prisma.questionVote.delete({
+        where: {
+          memberId_questionId: {
+            memberId,
+            questionId,
+          },
+        },
+      });
+      await this.prisma.question.update({
+        where: { id: questionId },
+        data: { downCount: { decrement: 1 } },
       });
     }
   }
