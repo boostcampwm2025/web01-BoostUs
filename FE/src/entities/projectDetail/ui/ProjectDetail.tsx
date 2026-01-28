@@ -4,14 +4,14 @@
 
 import Image from 'next/image';
 import { fetchProjectDetail } from '@/entities/projectDetail/api/projectDetailAPI';
-import { Github, ExternalLink, Users, Calendar, Pencil } from 'lucide-react';
+import { Github, ExternalLink, Users, Pencil, Calendar1 } from 'lucide-react';
 import CloseButton from '@/shared/ui/CloseButton';
 import { useParams } from 'next/navigation';
 import { Participant, ProjectData } from '@/entities/projectDetail/model/types';
 import { useEffect, useState } from 'react';
 import paint from '@/assets/NoImage.png';
 import MarkdownViewer from '@/shared/ui/MarkdownViewer';
-import Link from 'next/link';
+import extractDate from '@/shared/utils/extractDate';
 
 interface Props {
   projectId: number;
@@ -62,97 +62,104 @@ export default function ProjectDetail() {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-2xl font-bold">프로젝트 상세</h2>
+        <h2 className="text-display-24">프로젝트 상세</h2>
         <CloseButton />
       </div>
 
-      <div className="flex flex-col gap-2">
-        <div className="relative aspect-video max-h-[600px] w-full overflow-hidden rounded-md bg-gray-100">
+      <div className="flex flex-col">
+        <div className="relative aspect-video max-h-150 w-full overflow-hidden rounded-xl bg-neutral-surface-default border-neutral-border-default shadow-default">
           <Image
             src={data.thumbnailUrl ?? paint}
             alt={data.title}
             fill
-            className="rounded-md object-cover"
+            className="rounded-xl object-cover"
             unoptimized
           />
         </div>
 
-        <div className="mt-4 mb-2">
-          <span className="mr-2 rounded-4xl bg-blue-600 px-3 py-1.5 text-sm text-white">
+        <div className="mt-8 mb-2">
+          <span className="rounded-full bg-brand-surface-default px-3 h-8 w-fit flex items-center justify-center text-string-14 text-brand-text-on-default">
             {data.cohort}기
           </span>
         </div>
 
-        <div>
-          <h3 className="inline align-middle text-3xl font-bold">
-            {data.title}
-          </h3>
-        </div>
+        <h3 className="text-display-20 text-neutral-text-strong mb-1">
+          {data.title}
+        </h3>
 
-        <p className="text-lg text-gray-600">{data.description}</p>
+        <p className="text-string-16 text-neutral-text-weak mb-1">
+          {data.description}
+        </p>
 
-        <div className="mt-4 flex flex-wrap items-center gap-2 text-center text-gray-500">
-          <Calendar size={20} />
+        <div className="flex flex-wrap items-center gap-2 text-center text-body-14 text-neutral-text-weak">
+          <Calendar1 size={16} />
           <span>
-            {data.startDate} ~ {data.endDate}
+            {extractDate(data.startDate)} ~ {extractDate(data.endDate)}
           </span>
-          <Users size={20} className={'ml-2'} />
+          <Users size={16} className={'ml-2'} />
           <span>{data.participants.length}명</span>
         </div>
 
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="mt-2 flex flex-wrap gap-2">
           {techStack.map((stack) => (
-            <span key={stack} className="rounded bg-gray-200 px-5 py-2 text-lg">
+            <span
+              key={stack}
+              className="rounded-full bg-brand-surface-weak border border-neutral-border-default px-4 py-1 text-body-14 text-neutral-text-weak"
+            >
               {stack}
             </span>
           ))}
         </div>
 
-        <div className="mt-4 flex gap-2">
+        <div className="mt-8 flex gap-2">
           <a
             href={data.repoUrl}
             target="_blank"
-            className="flex items-center gap-2 rounded-xl border bg-black px-5 py-3 text-lg text-white hover:bg-gray-800"
+            className="flex items-center gap-2 rounded-xl border bg-brand-surface-github px-4 py-3 text-brand-text-on-default text-string-16 hover:bg-brand-surface-github/90 transition-colors duration-150"
             rel="noreferrer"
           >
             {/* eslint-disable-next-line @typescript-eslint/no-deprecated */}
-            <Github size={16} color={'white'} /> GitHub
+            <Github size={16} color={'white'} /> GitHub Repository
           </a>
           <a
             href={data.demoUrl}
             target="_blank"
-            className="flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-lg text-white hover:bg-blue-500"
+            className="flex items-center gap-2 rounded-xl bg-brand-surface-default px-4 py-3 text-brand-text-on-default text-string-16 hover:bg-brand-dark transition-colors duration-150"
             rel="noreferrer"
           >
             <ExternalLink size={16} /> 데모 보기
           </a>
         </div>
 
-        <div className="mt-8 rounded-xl bg-blue-50 p-4">
-          <h4 className="mb-4 text-lg font-bold text-gray-800">
+        <div className="mt-16">
+          <h2 className="mb-8 text-display-24 text-neutral-text-strong">
             프로젝트 개요
-          </h4>
-          <MarkdownViewer content={data.contents} />
+          </h2>
+          <div className="p-4">
+            <MarkdownViewer content={data.contents} />
+          </div>
         </div>
 
         {/* 팀원 리스트 */}
         {data.participants && data.participants.length > 0 && (
-          <div className="mt-4 border-t border-gray-100 pt-6">
-            <h4 className="mb-4 text-lg font-bold text-gray-800">팀원</h4>
+          <div className="mt-4 border-t border-neutral-border-default pt-8">
+            <h2 className="mb-8 text-display-24 text-neutral-text-strong">
+              팀원
+            </h2>
 
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-5 gap-4">
               {data.participants.map((participant: Participant) => (
                 <div
                   key={participant.githubId}
                   className="group flex cursor-default flex-col items-center text-center"
                 >
-                  <div className="mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-50 ring-2 ring-gray-100 transition-all duration-200 group-hover:ring-blue-500">
-                    <span className="text-lg font-bold text-indigo-500 group-hover:text-blue-600">
+                  <div className="mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-neutral-surface-strong ring-2 ring-brand-light transition-all duration-200 group-hover:ring-brand-border-default">
+                    <span className="text-display-16 text-brand-text-default">
                       {participant.githubId.charAt(0)}
                     </span>
                   </div>
 
-                  <div className="text-xs font-medium text-gray-700 transition-colors group-hover:text-blue-600">
+                  <div className="text-body-12 text-neutral-text-default transition-colors">
                     {participant.githubId}
                   </div>
                 </div>
@@ -161,10 +168,10 @@ export default function ProjectDetail() {
           </div>
         )}
 
-        <div className="mt-6 flex justify-center">
+        <div className="mt-8 flex justify-center">
           <a
-            href={`/project/edit/${id}`}
-            className="flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100"
+            href={`/project/edit/${id.toString()}`}
+            className="flex items-center gap-1 text-string-16 text-neutral-text-weak hover:text-neutral-text-strong transition-colors duration-150"
           >
             <Pencil size={16} />
             수정하기

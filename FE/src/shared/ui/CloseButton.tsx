@@ -8,8 +8,9 @@ export default function CloseButton() {
 
   return (
     <button
+      type="button"
       onClick={() => router.push('/project')}
-      className="rounded px-3 py-1 hover:bg-gray-300"
+      className="rounded text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong transition-colors duration-150"
     >
       <X size={24} />
     </button>
