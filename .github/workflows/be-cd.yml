@@ -89,9 +89,9 @@ jobs:
             fi
 
             echo "🔄 Running database migrations..."
-            docker compose -f docker-compose.prod.yml \
+            timeout 60s docker compose -f docker-compose.prod.yml \
               --env-file .env.prod \
-              run --rm --timeout 1m backend npx prisma migrate deploy || {
+              run --rm backend npx prisma migrate deploy || {
                 echo "❌ Migration failed!"
                 exit 1
               }
