@@ -12,6 +12,7 @@ import { ProjectModule } from './project/project.module';
 import { QuestionModule } from './question/question.module';
 import { StoryModule } from './story/story.module';
 import { TechStackModule } from './tech-stack/tech-stack.module';
+import { MemberModule } from './member/member.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { TechStackModule } from './tech-stack/tech-stack.module';
     TechStackModule,
     AuthModule,
     AnswerModule,
+    MemberModule,
   ],
   providers: [
     Logger,

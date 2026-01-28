@@ -1,6 +1,6 @@
 'use client';
 
-import { useAuth } from '@/features/login/model/auth.context';
+import { useAuth } from '@/features/login/model/auth.store';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -70,8 +70,10 @@ const Header = () => {
             <Link
               key={href}
               href={href}
-              className={`flex items-center h-full border-b-2 transition-colors hover:text-accent-blue ${
-                isActive(href) ? 'border-accent-blue' : 'border-transparent'
+              className={`flex items-center text-string-16 h-full border-b-2 transition-colors text-neutral-text-default hover:text-brand-text-default ${
+                isActive(href)
+                  ? 'border-brand-border-default'
+                  : 'border-transparent'
               }`}
               aria-current={isActive(href) ? 'page' : undefined}
             >
@@ -86,7 +88,7 @@ const Header = () => {
                 href="/login"
                 className="flex items-center transition-opacity hover:opacity-80"
               >
-                <div className="relative w-10 h-10 rounded-full overflow-hidden">
+                <div className="relative w-9 h-9 rounded-full overflow-hidden">
                   <Image
                     src={
                       avatarError || !member.avatarUrl
@@ -103,7 +105,7 @@ const Header = () => {
             ) : (
               <Link
                 href="/login"
-                className="transition-colors text-string-16 text-neutral-text-strong hover:text-accent-blue"
+                className="transition-colors text-string-16 text-neutral-text-default hover:text-brand-text-default"
               >
                 로그인
               </Link>
