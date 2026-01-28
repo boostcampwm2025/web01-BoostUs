@@ -9,6 +9,7 @@ import {
 } from '../../api/questions.api';
 import { useAuth } from '@/features/login/model/auth.store';
 import MarkdownViewer from '@/shared/ui/MarkdownViewer';
+import CardHeader from './CardHeader';
 
 type Props = {
   answer: Answer;
@@ -51,6 +52,7 @@ const AnswerCard = ({ answer, question }: Props) => {
     }
   `}
     >
+      <CardHeader answer={answer} />
       <div className="flex flex-row gap-6 w-full px-4 py-4 rounded-b-2xl">
         <VoteButtons
           answer={answer}
