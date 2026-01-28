@@ -7,7 +7,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/features/login/model/auth.store';
 
 export default function QuestionEditPage() {
-  const { id } = useParams<{ id: string }>();
+  const { questionId: id } = useParams<{ questionId: string }>();
   const router = useRouter();
   const { member } = useAuth();
 
