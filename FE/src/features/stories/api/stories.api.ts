@@ -64,3 +64,16 @@ export const unlikeStory = async (storyId: string) => {
 
   return data.data;
 };
+
+/**
+ * 캠퍼들의 이야기 좋아요 상태 확인
+ * @param storyId 스토리 ID
+ * @returns 좋아요 여부
+ */
+export const checkStoryLikeStatus = async (storyId: string): Promise<boolean> => {
+  const data = await customFetch<ApiResponse<{ isLiked: boolean }>>(
+    `/api/stories/${storyId}/like/status`
+  );
+
+  return data.data.isLiked;
+};

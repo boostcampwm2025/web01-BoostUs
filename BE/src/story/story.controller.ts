@@ -152,4 +152,44 @@ export class StoryController {
   ): Promise<{ storyId: string }> {
     return { storyId: await this.storyService.unlikeStory(id, memberId) };
   }
+
+  @Get(':id/like/status')
+  @ApiOperation({
+    summary: '캠퍼들의 이야기 좋아요 상태 확인',
+    description: '로그인한 사용자가 특정 스토리에 좋아요를 눌렀는지 확인합니다.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: '스토리 ID',
+    example: '1',
+    type: 'string',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '좋아요 상태 확인 성공',
+    schema: {
+      type: 'object',
+      properties: {
+        isLiked: {
+          type: 'boolean',
+          example: true,
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: '인증 실패',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '스토리를 찾을 수 없음',
+  })
+  async checkStoryLikeStatus(
+    @Param('id', ParseBigIntPipe) id: bigint,
+    @CurrentMember() memberId: string,
+  ): Promise<{ isLiked: boolean }> {
+    const isLiked = await this.storyService.checkStoryLikeStatus(id, memberId);
+    return { isLiked };
+  }
 }

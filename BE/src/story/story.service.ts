@@ -118,14 +118,6 @@ export class StoryService {
       excludeExtraneousValues: true,
     });
 
-    // isLikedByMe 설정
-    if (memberId) {
-      const memberIdBigInt = BigInt(memberId);
-      storyDto.isLikedByMe = await this.storyRepository.checkStoryLikeExists(id, memberIdBigInt);
-    } else {
-      storyDto.isLikedByMe = false;
-    }
-
     return storyDto;
   }
 
@@ -215,5 +207,24 @@ export class StoryService {
     await this.storyRepository.unlikeStory(storyId, memberIdBigInt);
 
     return storyId.toString();
+  }
+
+  /**
+   * 캠퍼들의 이야기 좋아요 상태 확인
+   * @param storyId bigint
+   * @param memberId string
+   * @returns boolean
+   */
+  async checkStoryLikeStatus(storyId: bigint, memberId: string): Promise<boolean> {
+    const memberIdBigInt = BigInt(memberId);
+
+    // Story 존재 여부 확인
+    const storyExists = await this.storyRepository.checkStoryExists(storyId);
+    if (!storyExists) {
+      throw new StoryNotFoundException(storyId);
+    }
+
+    // 좋아요 상태 확인
+    return await this.storyRepository.checkStoryLikeExists(storyId, memberIdBigInt);
   }
 }

@@ -1,6 +1,8 @@
 'use client';
 
 import type { StoryDetail } from '@/features/stories/model/stories.type';
+import { checkStoryLikeStatus } from '@/features/stories/api/stories.api';
+import { useAuth } from '@/features/login/model/auth.store';
 import BackButton from '@/shared/ui/BackButton';
 import MarkdownViewer from '@/shared/ui/MarkdownViewer';
 import UserProfile from '@/shared/ui/UserProfile';
@@ -12,16 +14,38 @@ import { useEffect, useState } from 'react';
 import StorySidebar from './StorySidebar';
 
 const StoryDetail = ({ story }: { story: StoryDetail }) => {
+  const { isAuthenticated } = useAuth();
   const [likeCount, setLikeCount] = useState(story.likeCount);
   const [isLiked, setIsLiked] = useState(story.isLikedByMe);
 
-  console.log(isLiked, likeCount);
-
   // story prop이 변경될 때 상태 업데이트
   useEffect(() => {
-    setIsLiked(story.isLikedByMe);
     setLikeCount(story.likeCount);
+    // 서버에서 받은 초기값 설정 (기본값 false)
+    setIsLiked(story.isLikedByMe);
   }, [story.isLikedByMe, story.likeCount]);
+
+  // 클라이언트 사이드에서 좋아요 상태 확인
+  useEffect(() => {
+    const fetchLikeStatus = async () => {
+      // 로그인 상태일 때만 API 호출
+      if (isAuthenticated) {
+        try {
+          const liked = await checkStoryLikeStatus(story.id);
+          setIsLiked(liked);
+        } catch (error) {
+          // 에러 발생 시 초기값 유지 (로그인하지 않은 상태로 처리)
+          console.error('좋아요 상태 확인 실패:', error);
+          setIsLiked(false);
+        }
+      } else {
+        // 로그인하지 않은 경우 false로 설정
+        setIsLiked(false);
+      }
+    };
+
+    fetchLikeStatus();
+  }, [story.id, isAuthenticated]);
 
   const handleLikeChange = (newIsLiked: boolean, newLikeCount: number) => {
     setIsLiked(newIsLiked);
