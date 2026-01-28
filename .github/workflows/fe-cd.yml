@@ -6,7 +6,6 @@ on:
     paths:
       - "FE/**"
       - ".github/workflows/fe-cd.yml"
-      - "docker-compose.prod.yml"
   workflow_dispatch:
 
 permissions:
@@ -47,16 +46,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Copy docker-compose.prod.yml
-        uses: appleboy/scp-action@v1
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          port: ${{ secrets.DEPLOY_PORT }}
-          source: "docker-compose.prod.yml"
-          target: "${{ secrets.DEPLOY_DIR || '/srv/boostus' }}"
-
       - name: Deploy FE via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -68,7 +57,11 @@ jobs:
             set -e
 
             DEPLOY_DIR="${{ secrets.DEPLOY_DIR }}"
-            [ -z "$DEPLOY_DIR" ] && DEPLOY_DIR="/srv/boostus"
+            if [ -z "$DEPLOY_DIR" ]; then
+              echo "❌ DEPLOY_DIR is not set"
+              exit 1
+            fi
+
             cd "$DEPLOY_DIR"
 
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ${{ env.REGISTRY }} -u "${{ secrets.GHCR_USERNAME }}" --password-stdin
