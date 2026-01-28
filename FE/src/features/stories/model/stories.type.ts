@@ -25,6 +25,7 @@ export interface Story extends DefaultStoryOptions {
 
 export interface StoryDetail extends DefaultStoryOptions {
   contents: string;
+  isLikedByMe: boolean;
 }
 
 export interface StoriesSortOption {

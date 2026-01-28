@@ -57,6 +57,7 @@ export class StoryController {
     @Param('id', ParseBigIntPipe) id: bigint,
     @CurrentMember() memberId?: string,
   ): Promise<StoryResponseDto> {
+    console.log('memberId:', memberId);
     return await this.storyService.findStoryById(id, memberId);
   }
 
