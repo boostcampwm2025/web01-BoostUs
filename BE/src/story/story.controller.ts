@@ -14,7 +14,7 @@ import { StoryService } from './story.service';
 @ApiTags('캠퍼들의 이야기')
 @Controller('stories')
 export class StoryController {
-  constructor(private readonly storyService: StoryService) {}
+  constructor(private readonly storyService: StoryService) { }
 
   @Public()
   @Get()
@@ -56,6 +56,7 @@ export class StoryController {
     return await this.storyService.findStoryById(id);
   }
 
+  @Public()
   @Post()
   async createStory(@Body() dto: CreateStoryRequestDto): Promise<CreateStoryResponseDto> {
     return await this.storyService.createStory(dto);
