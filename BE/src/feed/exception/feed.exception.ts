@@ -36,3 +36,16 @@ export class InvalidFeedUrlException extends BaseException {
     super('INVALID_FEED_URL', message, HttpStatus.BAD_REQUEST, details);
   }
 }
+
+/**
+ * 캠퍼 미인증 시 발생하는 예외
+ */
+export class UnauthorizedCohortException extends BaseException {
+  constructor() {
+    super(
+      'UNAUTHORIZED_COHORT',
+      '캠퍼 인증이 완료된 수료자만 RSS 피드를 등록할 수 있습니다.',
+      HttpStatus.FORBIDDEN,
+    );
+  }
+}
