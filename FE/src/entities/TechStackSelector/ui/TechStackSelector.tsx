@@ -33,6 +33,7 @@ export default function TechStackSelector({
 
   // 아이템 토글 (이름 기반으로 비교)
   const toggleItem = (item: TechStackItem) => {
+    /* TODO: 콘솔 지우기!! */
     console.log('클릭한 아이템:', item); // 여기서 name 속성이 진짜 있는지 확인!
     console.log('현재 스택:', selectedStack);
     const isSelected = selectedStack.includes(item.name);
@@ -64,7 +65,7 @@ export default function TechStackSelector({
         {selectedStack.map((name) => (
           <div
             key={name}
-            className="flex items-center gap-1 px-3 py-1 bg-neutral-surface-bold border border-neutral-border-default rounded-full text-neutral-text-default text-body-14  "
+            className="flex items-center gap-1 px-3 py-1 bg-neutral-surface-bold border border-neutral-border-default rounded-full text-neutral-text-default text-string-14"
           >
             {name}
             <button
@@ -109,7 +110,7 @@ export default function TechStackSelector({
               className={`px-3 py-1.5 rounded-full border text-string-14 transition-colors duration-150 cursor-pointer ${
                 isSelected
                   ? 'border-brand-border-default text-brand-text-default bg-brand-surface-weak text-display-16'
-                  : 'border-neutral-border-default text-neutral-text-default hover:bg-brand-surface-weak'
+                  : 'border-neutral-border-default bg-neutral-surface-bold text-neutral-text-default hover:bg-brand-surface-weak'
               }`}
             >
               {item.name}

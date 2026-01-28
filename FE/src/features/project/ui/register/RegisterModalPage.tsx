@@ -171,7 +171,7 @@ export default function RegisterModalPage() {
               />
             </label>
             {errors.thumbnail && (
-              <p className="mt-1 text-sm text-red-500">
+              <p className="mt-1 text-string-12 text-danger-text-default">
                 {errors.thumbnail.message}
               </p>
             )}
@@ -189,7 +189,7 @@ export default function RegisterModalPage() {
               <select
                 id="cohort"
                 {...register('cohort')}
-                className="mt-1 block w-full rounded-md border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
+                className="mt-1 block w-full rounded-lg border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
               >
                 {Array.from({ length: 10 }).map((_, i) => {
                   const generation = String(i + 1);
@@ -211,7 +211,7 @@ export default function RegisterModalPage() {
               <select
                 id="field"
                 {...register('field')}
-                className="mt-1 block w-full rounded-md border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
+                className="mt-1 block w-full rounded-lg border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
               >
                 {FIELD_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -235,7 +235,7 @@ export default function RegisterModalPage() {
                 id="startDate"
                 type="date"
                 {...register('startDate', { valueAsDate: true })}
-                className="mt-1 block w-full rounded-md border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
+                className="mt-1 block w-full rounded-lg border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
               />
               {errors.startDate && (
                 <p className="mt-1 text-xs text-red-500">
@@ -254,7 +254,7 @@ export default function RegisterModalPage() {
                 id="endDate"
                 type="date"
                 {...register('endDate', { valueAsDate: true })}
-                className="mt-1 block w-full rounded-md border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
+                className="mt-1 block w-full rounded-lg border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
               />
               {errors.endDate && (
                 <p className="mt-1 text-xs text-red-500">
@@ -277,7 +277,7 @@ export default function RegisterModalPage() {
                 id="repoUrl"
                 type="url"
                 {...register('repoUrl')}
-                className="mt-1 block w-full rounded-md border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
+                className="mt-1 block w-full rounded-lg border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
                 placeholder="GitHub Repository URL을 입력하세요"
               />
               {errors.repoUrl && (
@@ -297,7 +297,7 @@ export default function RegisterModalPage() {
                 id="demoUrl"
                 type="url"
                 {...register('demoUrl')}
-                className="mt-1 block w-full rounded-md border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
+                className="mt-1 block w-full rounded-lg border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
                 placeholder="데모 URL을 입력하세요"
               />
               {errors.demoUrl && (
@@ -320,7 +320,7 @@ export default function RegisterModalPage() {
               id="title"
               type="text"
               {...register('title')}
-              className="mt-1 block w-full rounded-md border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
+              className="mt-1 block w-full rounded-lg border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
               placeholder="제목을 입력하세요"
             />
             {errors.title && (
@@ -341,7 +341,7 @@ export default function RegisterModalPage() {
             <input
               id="description"
               {...register('description')}
-              className="mt-1 block w-full rounded-md border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
+              className="mt-1 block w-full rounded-lg border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
               placeholder="프로젝트 요약을 입력하세요"
             />
             {errors.description && (
@@ -363,7 +363,7 @@ export default function RegisterModalPage() {
               id="contents"
               {...register('contents.0')}
               rows={4}
-              className="mt-1 block w-full resize-none overflow-hidden rounded-md border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
+              className="mt-1 block w-full resize-none overflow-hidden rounded-lg border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
               placeholder="프로젝트 내용을 입력하세요"
               {...contentsRest}
               ref={(el) => {
@@ -397,7 +397,7 @@ export default function RegisterModalPage() {
                 id="participantsInput"
                 type="text"
                 {...register('participantsInput')}
-                className="block w-full rounded-md border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
+                className="block w-full rounded-lg border border-neutral-border-default p-2  focus:border-neutral-border-active focus:ring-brand-border-default"
                 placeholder="이름을 입력하세요"
                 onCompositionStart={() => setIsComposing(true)}
                 onCompositionEnd={() => setIsComposing(false)}
