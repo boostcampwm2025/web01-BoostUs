@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import Image from 'next/image';
 
 interface ImageCardProps {
@@ -14,7 +15,13 @@ const ImageCard = ({
   description,
 }: ImageCardProps) => {
   return (
-    <div className="flex flex-row items-center justify-center gap-20">
+    <motion.div
+      className="flex flex-row items-center justify-center gap-20"
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
+    >
       <Image
         src={imageSrc}
         alt={`${subtitle} 소개 이미지`}
@@ -30,7 +37,7 @@ const ImageCard = ({
           {description}
         </p>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
