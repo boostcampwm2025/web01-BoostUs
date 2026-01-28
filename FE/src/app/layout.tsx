@@ -33,6 +33,7 @@ export default function RootLayout({
 
           <script
             src="https://kr.object.ncloudstorage.com/boostad-sdk-dev/sdk/sdk.js"
+            strategy="afterInteractive"
             data-blog-key="d88f304b-6eae-4010-9f1a-2c5963085a9b"
             data-auto="false"
             async
