@@ -159,7 +159,7 @@ export default function MemberInfoMangeSections() {
           )}
         </section>
 
-        <div className="mt-6 flex justify-end">
+        <div className="mt-5 flex justify-end mr-2">
           <button
             onClick={handleLogout}
             className="text-string-14 text-neutral-text-weak hover:text-neutral-text-strong hover:underline underline-offset-4"
