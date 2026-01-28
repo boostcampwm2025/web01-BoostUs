@@ -1,6 +1,7 @@
 interface UpdateProjectBody {
   title: string;
   repoUrl: string;
+  thumbnailUploadId: string | null;
   thumbnailUrl: string | null;
   description: string;
   contents: string;
