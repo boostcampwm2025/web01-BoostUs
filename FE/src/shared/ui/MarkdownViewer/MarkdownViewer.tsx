@@ -116,14 +116,14 @@ export const MarkdownViewer = ({ content }: { content: string }) => {
           const isInline = !className;
           return isInline ? (
             <code
-              className="text-neutral-text-strong bg-grayscale-300 rounded px-1 py-0.5 font-mono text-sm"
+              className="text-neutral-text-strong bg-brand-surface-weak rounded px-1 py-0.5 font-mono text-sm"
               {...props}
             >
               {children}
             </code>
           ) : (
             <code
-              className={`bg-grayscale-300 text-neutral-text-default my-4 block w-full overflow-x-auto rounded-lg p-4 text-sm ${className}`}
+              className={`bg-brand-surface-weak text-neutral-text-default my-4 block w-full overflow-x-auto rounded-lg p-4 text-sm ${className}`}
               {...props}
             >
               {children}
