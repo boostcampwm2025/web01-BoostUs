@@ -8,7 +8,7 @@ import type { PreviewMode } from '../QuestionRegister/QuestionModeButton';
 import QuestionEditor from '../Textarea/QuestionEditor';
 import QuestionPreview from '../Textarea/QuestionPreview';
 import { createAnswer } from '../../api/questions.api';
-import { useAuth } from '@/features/login/model/auth.context';
+import { useAuth } from '@/features/login/model/auth.store';
 type Props = {
   questionId: string; // 또는 number/bigint string 형태로 맞춰
 };
