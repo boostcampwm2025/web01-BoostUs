@@ -55,7 +55,7 @@ export class ProjectRepository {
     return { totalItems, projects };
   }
 
-  async create(memberId: bigint, dto: CreateProjectDto, thumbnailKey: string) {
+  async create(memberId: bigint, dto: CreateProjectDto, thumbnailKey: string | undefined) {
     return this.prisma.$transaction(async (tx) => {
       // 1, project 생성
       const project = await tx.project.create({
@@ -75,21 +75,32 @@ export class ProjectRepository {
         select: { id: true },
       });
 
-      // 2. project_participants 생성
-      if (dto.participants?.length) {
-        // 중복 제거
-        const uniqueGithubIds = [...new Set(dto.participants)];
+      // 2. 프로젝트 등록자 정보 조회
+      const registerMember = await tx.member.findUnique({
+        where: { id: memberId },
+        select: { githubLogin: true },
+      });
 
-        await tx.projectParticipant.createMany({
-          data: uniqueGithubIds.map((githubId) => ({
+      if (!registerMember) {
+        throw new BadRequestException('프로젝트 소유자 정보를 찾을 수 없습니다.');
+      }
+
+      // 3. project_participants 생성 (등록자 정보 포함)
+      const participantGithubIds = dto.participants?.length
+        ? [...new Set([registerMember.githubLogin, ...dto.participants])]
+        : [registerMember.githubLogin];
+
+      await tx.projectParticipant.createMany({
+        data: participantGithubIds
+          .filter((githubId): githubId is string => githubId !== null && githubId !== undefined)
+          .map((githubId) => ({
             projectId: project.id,
             githubId,
             avatarUrl: null,
           })),
-        });
-      }
+      });
 
-      // 3. project_tech_stacks 생성
+      // 4. project_tech_stacks 생성
       const techStackNames = [...new Set(dto.techStack ?? [])];
 
       if (techStackNames.length) {

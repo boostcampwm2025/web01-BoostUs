@@ -209,7 +209,9 @@ export class ProjectService {
   }
 
   async create(memberId: string, dto: CreateProjectDto) {
-    const finalKey = await this.finalizeThumbnailOrThrow(dto.thumbnailUploadId, memberId);
+    const finalKey = dto.thumbnailUploadId
+      ? await this.finalizeThumbnailOrThrow(dto.thumbnailUploadId, memberId)
+      : undefined;
 
     const memberIdBigint = BigInt(memberId);
     const project = await this.projectRepository.create(memberIdBigint, dto, finalKey);
