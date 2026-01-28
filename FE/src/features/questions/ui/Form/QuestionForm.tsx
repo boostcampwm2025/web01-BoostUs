@@ -148,7 +148,7 @@ export default function QuestionForm({
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                maxLength={MAX_TITLE_LENGTH + 20}
+                maxLength={MAX_TITLE_LENGTH}
                 placeholder="질문 제목을 입력해 주세요"
                 className="mt-2 w-full rounded-xl border border-neutral-border-default px-4 py-3 text-body-16 outline-none focus:border-neutral-border-strong"
               />

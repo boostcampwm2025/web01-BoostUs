@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import AnswerForm from '../Form/AnswerFrom';
+import AnswerForm from '../Form/AnswerForm';
 import { editAnswer } from '../../api/questions.api';
 import { useAuth } from '@/features/login/model/auth.store';
 import { getAnswerById } from '@/features/questions/api/questions.api';
@@ -27,18 +27,22 @@ export default function AnswerEditPage() {
     if (!member) return; // member hydration 문제 최소 방어
 
     void (async () => {
-      const a = await getAnswerById(answerId);
-      console.log('답변 데이터:', a);
-      if (member.id !== a.member.id) {
-        alert('수정 권한이 없어요.');
-        router.replace(`/questions/${questionId}`);
-        return;
-      }
+      try {
+        const a = await getAnswerById(answerId);
+        if (member.id !== a.member.id) {
+          alert('수정 권한이 없어요.');
+          router.replace(`/questions/${questionId}`);
+          return;
+        }
 
-      setInitialValues({
-        contents: a.contents,
-        authorId: a.member.id,
-      });
+        setInitialValues({
+          contents: a.contents,
+          authorId: a.member.id,
+        });
+      } catch (error) {
+        alert('답변을 불러오는데 실패했습니다.');
+        router.replace('questions/${questionId}');
+      }
     })();
   }, [questionId, answerId, member, router]);
 

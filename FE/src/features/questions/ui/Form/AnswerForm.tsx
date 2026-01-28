@@ -3,7 +3,7 @@
 
 import { useMemo, useState, useEffect } from 'react';
 import ModeToggle from '../ViewMode/ModeToggle';
-import type { PreviewMode } from '../Form/QuestionModeButton';
+import type { PreviewMode } from './QuestionModeButton';
 import QuestionEditor from '../Textarea/QuestionEditor';
 import QuestionPreview from '../Textarea/QuestionPreview';
 import { useAuth } from '@/features/login/model/auth.store';

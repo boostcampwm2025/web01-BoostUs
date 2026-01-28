@@ -40,8 +40,13 @@ const QuestionDetail = ({
       alert('로그인이 필요해요.');
       return;
     }
-    await deleteQuestion(question.id);
-    router.push(`/questions`);
+    if (!confirm('정말 삭제하시겠어요?')) return;
+    try {
+      await deleteQuestion(question.id);
+      router.push(`/questions`);
+    } catch (error) {
+      alert('질문 삭제에 실패했습니다.');
+    }
   };
 
   return (

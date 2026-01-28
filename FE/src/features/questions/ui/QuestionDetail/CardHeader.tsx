@@ -21,6 +21,7 @@ const CardHeader = ({
       alert('로그인이 필요해요.');
       return;
     }
+    if (!answer) return;
     router.push(`/questions/${answer?.questionId}/answers/${answer?.id}/edit`);
   };
 
@@ -29,8 +30,14 @@ const CardHeader = ({
       alert('로그인이 필요해요.');
       return;
     }
-    await deleteAnswer(answer!.id);
-    router.push(`/questions/${answer?.questionId}`);
+    if (!answer) return;
+    if (!confirm('정말 삭제하시겠어요?')) return;
+    try {
+      await deleteAnswer(answer!.id);
+      router.push(`/questions/${answer?.questionId}`);
+    } catch (error) {
+      alert('삭제가 실패했습니다.');
+    }
   };
 
   return (

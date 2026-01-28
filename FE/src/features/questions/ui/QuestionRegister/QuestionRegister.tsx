@@ -1,6 +1,6 @@
 'use client';
 
-import QuestionForm from '../Form/QuestionFrom';
+import QuestionForm from '../Form/QuestionForm';
 import { createQuestion } from '@/features/questions/api/questions.api';
 import { useRouter } from 'next/navigation';
 
