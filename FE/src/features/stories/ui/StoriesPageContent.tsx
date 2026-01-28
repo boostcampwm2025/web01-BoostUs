@@ -11,10 +11,10 @@ import {
   detectPlatformFromBlogUrl,
   extractBlogUrlFromRss,
 } from '@/features/feed/utils/blog-rss-converter';
-import { memberAtom } from '@/features/login/model/auth.store';
+import { useAuth } from '@/features/login/model/auth.store';
 import { StoriesProvider, useStoriesContext } from '@/features/stories/model';
 import { Story } from '@/features/stories/model/stories.type';
-import useRankingButtonVisibility from '@/features/stories/model/useRankingButtonVisibility';
+import { useRankingButtonVisibility } from '@/features/stories/model/useRankingButtonVisibility';
 import StoriesList from '@/features/stories/ui/List/List';
 import StoriesListDropdown from '@/features/stories/ui/ListDropdown/Dropdown';
 import StoriesSearchBar from '@/features/stories/ui/SearchBar/SearchBar';
@@ -23,7 +23,6 @@ import CustomDialog from '@/shared/ui/Dialog/CustomDialog';
 import PageHeader from '@/shared/ui/PageHeader';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useAtomValue } from 'jotai';
 import { Link } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -35,9 +34,10 @@ interface StoriesPageContentProps {
 const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
   const { isRankingOpen, toggleRanking } = useStoriesContext();
 
-  const isRankingButtonHidden = useRankingButtonVisibility(isRankingOpen);
+  const isRankingButtonHidden: boolean =
+    useRankingButtonVisibility(isRankingOpen);
 
-  const member = useAtomValue(memberAtom);
+  const { member } = useAuth();
   const router = useRouter();
 
   const [blogUrl, setBlogUrl] = useState('');
@@ -47,7 +47,6 @@ const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
   const [serverError, setServerError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [conversionError, setConversionError] = useState<string | null>(null);
-  const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
 
   // RSS 등록 여부 확인 (로그인한 유저만)
   const hasRssFeed = !!rssUrl;
