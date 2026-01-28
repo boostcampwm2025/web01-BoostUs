@@ -154,7 +154,7 @@ const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
       setSuccessMessage('RSS URL이 등록/수정되었어요.');
     } catch {
       setServerError(
-        'RSS URL 등록에 실패했어요. 로그인 상태와 주소를 확인해 주세요.'
+        '내 블로그 등록에 실패했어요. 티스토리 또는 Velog 주소를 확인해 주세요.'
       );
     } finally {
       setIsSubmitting(false);
