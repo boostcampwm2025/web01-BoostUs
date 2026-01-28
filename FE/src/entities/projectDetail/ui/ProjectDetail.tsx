@@ -9,7 +9,7 @@ import CloseButton from '@/shared/ui/CloseButton';
 import { useParams } from 'next/navigation';
 import { Participant, ProjectData } from '@/entities/projectDetail/model/types';
 import { useEffect, useState } from 'react';
-import paint from '@/assets/NoImage.png';
+import paint from 'public/assets/NoImage.png';
 import MarkdownViewer from '@/shared/ui/MarkdownViewer';
 import extractDate from '@/shared/utils/extractDate';
 

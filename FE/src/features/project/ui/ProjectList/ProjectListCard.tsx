@@ -1,9 +1,9 @@
 import Image from 'next/image';
-import paint from '@/assets/NoImage.png';
 import Link from 'next/link';
 import TogglePill from '@/shared/ui/TogglePill';
 import { Eye } from 'lucide-react';
 import TechList from '@/features/project/ui/ProjectList/TechList';
+import paint from 'public/assets/NoImage.png';
 
 interface ProjectCardProps {
   project: {

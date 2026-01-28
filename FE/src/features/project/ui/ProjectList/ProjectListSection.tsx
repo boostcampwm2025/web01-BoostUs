@@ -71,9 +71,9 @@ const ProjectListSection = () => {
   return (
     <section className="mt-8 mb-20 flex w-full flex-col gap-4">
       <div className="flex justify-between">
-        <span className="text-strong-16 text-black">
+        <span className="text-string-16 text-neutral-text-default">
           총{' '}
-          <span className="text-strong-16 font-semibold text-brand-text-default">
+          <span className="text-display-16 text-brand-text-default">
             {filteredProjects.length}
           </span>
           개의 프로젝트
