@@ -8,6 +8,21 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 export class ProjectRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  async incrementViewCountAndFind(id: bigint) {
+    return this.prisma.project.update({
+      where: { id },
+      data: { viewCount: { increment: 1 } },
+      include: {
+        participants: {
+          select: { githubId: true, avatarUrl: true },
+        },
+        techStacks: {
+          select: { techStack: { select: { name: true } } },
+        },
+      },
+    });
+  }
+
   async findById(id: bigint) {
     return this.prisma.project.findUnique({
       where: { id },

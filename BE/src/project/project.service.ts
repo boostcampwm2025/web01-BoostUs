@@ -237,6 +237,28 @@ export class ProjectService {
     return data;
   }
 
+  async findOneWithViewCount(id: number, viewerKey: string) {
+    const projectId = BigInt(id);
+
+    const redisKey = `view:project:${id}:${viewerKey}`;
+
+    /*
+     * 'NX' (Not eXists)
+     * 이 key가 존재하지 않을 때만 SET 하라
+     * -> key 없음 + SET 성공 = 'OK' 반환
+     * -> key 이미 존재 + NX 조건 때문에 SET 스킵 = null 반환
+     */
+    const firstView = await this.redis.set(redisKey, 'true', 'EX', 60 * 30, 'NX');
+
+    if (firstView === 'OK') {
+      const project = await this.projectRepository.incrementViewCountAndFind(projectId);
+      return plainToInstance(ProjectDetailItemDto, project, { excludeExtraneousValues: true });
+    }
+
+    const project = await this.projectRepository.findById(projectId);
+    return plainToInstance(ProjectDetailItemDto, project, { excludeExtraneousValues: true });
+  }
+
   async create(memberId: string, dto: CreateProjectDto) {
     const finalKey = dto.thumbnailUploadId
       ? await this.finalizeThumbnailOrThrow(dto.thumbnailUploadId, memberId)
