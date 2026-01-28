@@ -1,3 +1,5 @@
+import { customFetch } from '@/shared/utils/fetcher';
+
 export type SortOrder = 'TEAM_NUM' | 'VIEW_COUNT';
 
 export interface Project {
@@ -28,18 +30,13 @@ export interface ProjectsData {
   meta: ProjectsMeta;
 }
 
-export interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  error: unknown;
-  data: T;
-}
-
 export async function fetchProjects(): Promise<ProjectsData> {
-  const res = await fetch('/api/projects');
-  if (!res.ok) throw new Error('프로젝트 조회 실패');
-
-  const json = (await res.json()) as ApiResponse<ProjectsData>;
+  const json = await customFetch<{
+    success: boolean;
+    message: string;
+    error: unknown;
+    data: ProjectsData;
+  }>('/api/projects');
 
   return {
     ...json.data,
