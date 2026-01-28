@@ -31,13 +31,13 @@ export default function RootLayout({
         <main className="bg-neutral-surface-default flex w-full flex-1 flex-col items-center px-4 py-32">
           {children}
 
-          <script
+          <Script
             src="https://kr.object.ncloudstorage.com/boostad-sdk-dev/sdk/sdk.js"
             strategy="afterInteractive"
             data-blog-key="d88f304b-6eae-4010-9f1a-2c5963085a9b"
             data-auto="false"
             async
-          ></script>
+          ></Script>
         </main>
         <Footer />
       </body>
