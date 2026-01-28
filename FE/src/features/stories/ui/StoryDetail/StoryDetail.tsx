@@ -1,8 +1,8 @@
 'use client';
 
-import type { StoryDetail } from '@/features/stories/model/stories.type';
-import { checkStoryLikeStatus } from '@/features/stories/api/stories.api';
 import { useAuth } from '@/features/login/model/auth.store';
+import { checkStoryLikeStatus } from '@/features/stories/api/stories.api';
+import type { StoryDetail } from '@/features/stories/model/stories.type';
 import BackButton from '@/shared/ui/BackButton';
 import MarkdownViewer from '@/shared/ui/MarkdownViewer';
 import UserProfile from '@/shared/ui/UserProfile';
@@ -16,14 +16,13 @@ import StorySidebar from './StorySidebar';
 const StoryDetail = ({ story }: { story: StoryDetail }) => {
   const { isAuthenticated } = useAuth();
   const [likeCount, setLikeCount] = useState(story.likeCount);
-  const [isLiked, setIsLiked] = useState(story.isLikedByMe);
+  const [isLiked, setIsLiked] = useState(false);
 
   // story prop이 변경될 때 상태 업데이트
   useEffect(() => {
     setLikeCount(story.likeCount);
-    // 서버에서 받은 초기값 설정 (기본값 false)
-    setIsLiked(story.isLikedByMe);
-  }, [story.isLikedByMe, story.likeCount]);
+    setIsLiked(false);
+  }, [story.likeCount]);
 
   // 클라이언트 사이드에서 좋아요 상태 확인
   useEffect(() => {
