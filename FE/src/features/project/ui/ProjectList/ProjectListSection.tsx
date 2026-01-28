@@ -16,10 +16,10 @@ type SortOrderType = (typeof SORT_ORDER)[keyof typeof SORT_ORDER];
 
 type SortOrderKey = keyof typeof SORT_ORDER;
 
-type SortOption = {
+interface SortOption {
   key: SortOrderType;
   label: string;
-};
+}
 
 const ProjectListSection = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -71,15 +71,16 @@ const ProjectListSection = () => {
   return (
     <section className="mt-8 mb-20 flex w-full flex-col gap-4">
       <div className="flex justify-between">
-        <span className="text-strong-medium16 text-black">
+        <span className="text-strong-16 text-black">
           총{' '}
-          <span className="text-strong-medium16 font-semibold text-blue-700">
+          <span className="text-strong-16 font-semibold text-brand-text-default">
             {filteredProjects.length}
           </span>
           개의 프로젝트
         </span>
 
-        <div className="flex flex-row flex-wrap gap-2">
+        {/* TODO: SlidingFilter로 리팩토링 필요 */}
+        <div className="flex flex-row flex-wrap gap-2 bg-neutral-surface-strong rounded-lg px-1 py-1">
           {sortOptions.map((option) => {
             const isSelected = sortOrder === option.key;
 

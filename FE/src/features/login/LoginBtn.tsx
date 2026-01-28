@@ -2,7 +2,8 @@
 
 import { Github } from 'lucide-react';
 import { navigateToGithubLogin } from './LoginFetch';
-import { useAuth } from './model/auth.context';
+import { useAuth } from '@/features/login/model/auth.store';
+import MemberInfoMangeSections from '@/features/myPage/ui/MemberInfoMangeSections';
 
 export default function LoginBtn() {
   const { member, isAuthenticated, isLoading, logout } = useAuth();
@@ -24,9 +25,32 @@ export default function LoginBtn() {
   if (isAuthenticated && member) {
     return (
       <div className="flex flex-col items-center gap-2">
-        <p className="text-string-16">
-          {member.nickname || '사용자'}님 반갑소!
-        </p>
+        <MemberInfoMangeSections />
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '20px',
+            right: '20px',
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            color: 'white',
+            padding: '10px',
+            borderRadius: '8px',
+            fontSize: '12px',
+            zIndex: 9999,
+          }}
+        >
+          <h3>🔑 Auth 상태 모니터링</h3>
+          <p>
+            <strong>로딩 중:</strong> {isLoading ? 'YES' : 'NO'}
+          </p>
+          <p>
+            <strong>로그인 여부:</strong> {isAuthenticated ? 'YES' : 'NO'}
+          </p>
+          <p>
+            <strong>유저 정보:</strong>
+          </p>
+          <pre>{JSON.stringify(member, null, 2)}</pre>
+        </div>
         <button
           onClick={handleLogout}
           className="text-string-14 text-neutral-text-weak hover:text-neutral-text-strong"

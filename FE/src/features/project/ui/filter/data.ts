@@ -11,6 +11,17 @@ const cohort = [
   '2기',
   '1기',
 ];
-const field = ['전체', 'WEB', 'IOS', 'ANDROID'];
+
+interface FieldOption {
+  label: string;
+  value: string;
+}
+
+const field: FieldOption[] = [
+  { label: '전체', value: '' },
+  { label: '웹 풀스택', value: 'WEB' },
+  { label: 'iOS', value: 'IOS' },
+  { label: 'Android', value: 'ANDROID' },
+];
 
 export { cohort, field };
