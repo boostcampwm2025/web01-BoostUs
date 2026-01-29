@@ -40,12 +40,12 @@ export default function ModalOverlay({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-10"
       onClick={() => router.back()} // 배경 클릭 시 닫기
       style={{ overscrollBehavior: 'contain' }}
     >
       <div
-        className="scrollbar-hide h-full w-full max-w-5xl overflow-y-auto rounded-xl bg-white p-8 shadow-lg"
+        className="scrollbar-hide h-full w-full max-w-5xl overflow-y-auto rounded-2xl bg-neutral-surface-default p-8 shadow-lg"
         onClick={(e) => e.stopPropagation()} // 내부 클릭 시 닫기 방지
         style={{ overscrollBehavior: 'contain' }}
       >
