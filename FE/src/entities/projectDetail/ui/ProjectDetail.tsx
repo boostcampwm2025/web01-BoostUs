@@ -164,8 +164,8 @@ export default function ProjectDetail() {
                   <div className="mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-neutral-surface-strong ring-2 ring-brand-light transition-all duration-200 group-hover:ring-brand-border-default">
                     <Image
                       className="rounded-full"
-                      width="100"
-                      height="100"
+                      width={100}
+                      height={100}
                       sizes="100px"
                       src={participant.avatarUrl ?? paint}
                       alt={participant.githubId}
