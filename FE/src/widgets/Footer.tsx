@@ -1,6 +1,45 @@
+import { Icon } from '@iconify/react';
+import Link from 'next/link';
+
 const Footer = () => {
   return (
-    <footer className="flex bg-neutral-surface-default w-full min-w-360 h-80"></footer>
+    <footer className="border-t border-neutral-border-default gap-8 flex items-center justify-center bg-neutral-surface-default w-full min-w-360 h-20">
+      <h1 className="text-display-32 text-neutral-text-weak">BoostUs</h1>
+      <div className="flex flex-col gap-1">
+        <span className="text-body-12 text-neutral-text-weak">
+          © 2026 BoostUs. All rights reserved.
+        </span>
+        <span className="text-body-12 text-neutral-text-weak">
+          Made by Team{' '}
+          <span className="text-brand-text-default text-body-12">
+            Pole Position
+          </span>{' '}
+          with 💚
+        </span>
+      </div>
+      <div className="flex flex-row gap-3">
+        <Link
+          href="https://github.com/boostcampwm2025/web01-BoostUs"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Icon
+            icon="mdi:github"
+            className="w-10 h-10 cursor-pointer text-neutral-text-weak hover:text-neutral-text-strong transition-colors duration-150"
+          />
+        </Link>
+        <Link
+          href="https://pole-position.notion.site/Pole-Position-2c3d4705e03f80f7bba0c5264dc7be36"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Icon
+            icon="ri:notion-fill"
+            className="w-10 h-10 cursor-pointer text-neutral-text-weak hover:text-neutral-text-strong transition-colors duration-150"
+          />
+        </Link>
+      </div>
+    </footer>
   );
 };
 
