@@ -25,19 +25,10 @@ export const useOptimisticVote = <T extends string | number>({
   api,
 }: UseOptimisticVoteProps<T>) => {
   const router = useRouter();
-
-  // 현재 보여지는 카운트 상태
   const [stats, setStats] = useState(initialStats);
+  const [myVote, setMyVote] = useState<'up' | 'down' | null>(null);
 
-  // 내 투표 상태 ('up' | 'down' | null)
-  // 초기 데이터에 isLiked/isDisliked가 없다면 null로 시작
-  const [myVote, setMyVote] = useState<'up' | 'down' | null>(() => {
-    if (initialStats.isLiked) return 'up';
-    if (initialStats.isDisliked) return 'down';
-    return null;
-  });
-
-  // 부모 컴포넌트에서 데이터가 갱신되면 로컬 상태 동기화
+  // 초기 데이터 동기화
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setStats(initialStats);
@@ -47,41 +38,46 @@ export const useOptimisticVote = <T extends string | number>({
   }, [initialStats]);
 
   const handleVote = async (type: 'up' | 'down') => {
-    // 1. 이전 상태 저장 (롤백용)
     const prevStats = { ...stats };
     const prevVote = myVote;
 
-    // 2. 낙관적 업데이트 (Optimistic Update)
-    // 단순히 카운트를 1 올리는 로직 유지 (토글 로직이 필요하다면 여기에 추가)
-    setStats((prev) => ({
-      ...prev,
-      upCount: type === 'up' ? prev.upCount + 1 : prev.upCount,
-      downCount: type === 'down' ? prev.downCount + 1 : prev.downCount,
-    }));
-    setMyVote(type);
+    // 1. 새로운 상태 계산 (낙관적 업데이트)
+    let nextUpCount = stats.upCount;
+    let nextDownCount = stats.downCount;
+    let nextVote: 'up' | 'down' | null = type;
+
+    if (myVote === type) {
+      // 이미 투표한 버튼을 다시 클릭 -> 취소
+      nextVote = null;
+      if (type === 'up') nextUpCount--;
+      else nextDownCount--;
+    } else {
+      // 새로운 투표 혹은 전환
+      if (type === 'up') {
+        nextUpCount++;
+        if (myVote === 'down') nextDownCount--; // down -> up 전환
+      } else {
+        nextDownCount++;
+        if (myVote === 'up') nextUpCount--; // up -> down 전환
+      }
+    }
+
+    setStats({ ...stats, upCount: nextUpCount, downCount: nextDownCount });
+    setMyVote(nextVote);
 
     try {
-      // 3. API 호출
-      if (type === 'up') {
-        await api.voteUp(id);
-      } else {
-        await api.voteDown(id);
-      }
+      // API 호출 (백엔드 API가 토글 방식으로 작동한다고 가정)
+      if (type === 'up') await api.voteUp(id);
+      else await api.voteDown(id);
 
-      // 4. 서버 데이터 갱신 요청
       router.refresh();
     } catch (error) {
       console.error(`Error ${type}voting:`, error);
-      // 5. 실패 시 롤백
       setStats(prevStats);
       setMyVote(prevVote);
       alert('투표 처리에 실패했습니다.');
     }
   };
 
-  return {
-    stats,
-    myVote,
-    handleVote,
-  };
+  return { stats, myVote, handleVote };
 };
