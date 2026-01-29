@@ -20,6 +20,7 @@ const StoryDetail = ({ story }: { story: StoryDetail }) => {
 
   // story prop이 변경될 때 상태 업데이트
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLikeCount(story.likeCount);
     setIsLiked(false);
   }, [story.id, story.likeCount]);
@@ -43,7 +44,7 @@ const StoryDetail = ({ story }: { story: StoryDetail }) => {
       }
     };
 
-    fetchLikeStatus();
+    void fetchLikeStatus();
   }, [story.id, isAuthenticated]);
 
   const handleLikeChange = (newIsLiked: boolean, newLikeCount: number) => {
@@ -56,7 +57,7 @@ const StoryDetail = ({ story }: { story: StoryDetail }) => {
       <div className="flex justify-center gap-16 -ml-20">
         {/* 좌측 사이드바 */}
         <aside className="hidden lg:block">
-          <div className="sticky top-24 h-fit mt-[200px]">
+          <div className="sticky top-24 h-fit mt-50">
             <StorySidebar
               storyId={story.id}
               initialIsLiked={isLiked}
@@ -68,7 +69,7 @@ const StoryDetail = ({ story }: { story: StoryDetail }) => {
 
         {/* 우측 콘텐츠 영역 */}
         <article className="w-full max-w-2xl flex flex-col items-start justify-center">
-          <BackButton />
+          <BackButton url="/stories" />
           <h1 className="text-neutral-text-strong text-display-32 w-full mt-4 leading-tight wrap-break-word">
             {story.title}
           </h1>

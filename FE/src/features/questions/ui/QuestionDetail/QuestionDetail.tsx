@@ -29,7 +29,7 @@ const QuestionDetail = ({
 
   return (
     <article className="mx-auto flex w-full max-w-270 flex-col items-start justify-center">
-      <BackButton />
+      <BackButton url="/questions" />
 
       <h1 className="mt-4 text-display-32 text-neutral-text-strong">
         {question.title}

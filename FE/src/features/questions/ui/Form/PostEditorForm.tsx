@@ -117,7 +117,7 @@ export default function PostEditorForm({
     <div className="flex flex-col w-full font-sans max-w-270">
       {/* 1. 상단 네비게이션 및 헤더 */}
       <div className="mt-8">
-        <BackButton />
+        <BackButton url="/questions" />
       </div>
 
       <div className="flex flex-col gap-2 mt-6">
