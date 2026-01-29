@@ -11,10 +11,17 @@ import AlertCircleIcon from '@/components/ui/AlertCircleIcon';
 import { useAuth } from '@/features/login/model/auth.store';
 import { UsersIcon } from '@/components/ui/users';
 import { FolderGit2Icon } from '@/components/ui/folder-git-2';
+import { useState } from 'react';
+
+import { createOrUpdateFeed } from '@/features/feed/api/feed.api';
+import {
+  convertBlogUrlToRss,
+  detectPlatformFromBlogUrl,
+} from '@/features/feed/utils/blog-rss-converter';
 
 // 폼 데이터 타입 정의
 interface RssFormValues {
-  rssUrl: string;
+  blogUrl: string;
 }
 
 export default function MemberInfoMangeSections() {
@@ -24,25 +31,58 @@ export default function MemberInfoMangeSections() {
   const feed = authState?.feed;
   const { logout } = useAuth();
 
+  // 피드백 메세지
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
   const handleLogout = async () => {
     await logout();
   };
-  // react-hook-form 설정
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting }, // 로딩 상태
   } = useForm<RssFormValues>({
     defaultValues: {
-      rssUrl: feed ?? '',
+      blogUrl: feed?.feedUrl ?? '', // 기존 값이 있으면 보여줌
     },
   });
 
   // 폼 제출 핸들러
   const onSubmit = async (data: RssFormValues) => {
-    console.log('제출된 RSS URL:', data.rssUrl);
-    // TODO: 여기서 API 호출하여 RSS URL 업데이트 로직 추가
-    // await updateRssUrl(data.rssUrl);
+    setServerError(null);
+    setSuccessMessage(null);
+
+    const inputUrl = data.blogUrl.trim();
+
+    // 1. 플랫폼 감지 및 RSS 변환 로직
+    let finalRssUrl = inputUrl;
+    const autoPlatform = detectPlatformFromBlogUrl(inputUrl);
+
+    if (autoPlatform && autoPlatform !== 'custom') {
+      try {
+        finalRssUrl = convertBlogUrlToRss(autoPlatform, inputUrl);
+      } catch (error) {
+        setServerError('URL 변환에 실패했습니다. 올바른 블로그 주소인가요?');
+        return;
+      }
+    }
+
+    // 2. API 호출
+    try {
+      await createOrUpdateFeed({ feedUrl: finalRssUrl });
+
+      // 성공 처리
+      if (finalRssUrl !== inputUrl) {
+        setSuccessMessage(`RSS로 자동 변환되어 등록되었어요! (${finalRssUrl})`);
+      } else {
+        setSuccessMessage('블로그 주소(RSS)가 성공적으로 등록되었어요.');
+      }
+    } catch (error) {
+      setServerError('등록에 실패했습니다. 다시 시도해 주세요.');
+      console.error(error);
+    }
   };
 
   if (!member) return null;
@@ -141,43 +181,62 @@ export default function MemberInfoMangeSections() {
           </div>
         </div>
 
-        {/* 하단: RSS 관리 섹션 */}
+        {/* RSS 관리 섹션 */}
         <section>
           <div className="mb-4">
             <h3 className="text-lg font-bold text-neutral-900 mb-1">
-              블로그 RSS URL 관리
+              블로그 주소 관리
             </h3>
             <p className="text-sm text-neutral-500">
-              블로그 RSS를 연동하면 새 글이 자동으로 공유돼요
+              블로그 주소를 입력하면 자동으로 RSS를 찾아 등록해요.
             </p>
           </div>
 
           {/* react-hook-form 영역 */}
           <form onSubmit={handleSubmit(onSubmit)} className="flex gap-2">
             <input
-              {...register('rssUrl', {
-                required: 'URL을 입력해주세요',
+              {...register('blogUrl', {
+                required: '블로그 주소를 입력해주세요',
                 pattern: {
                   value: /^(http|https):\/\/[^ "]+$/,
                   message: '올바른 URL 형식이 아닙니다.',
                 },
               })}
               type="text"
-              placeholder="https://example.com/rss"
-              className="flex-1 border border-neutral-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all placeholder:text-neutral-300"
+              disabled={isSubmitting} // 제출 중엔 비활성화
+              placeholder="https://velog.io/@id 또는 티스토리 주소"
+              className="flex-1 border border-neutral-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all placeholder:text-neutral-300 disabled:bg-neutral-50"
             />
             <button
               type="submit"
-              className="bg-brand-surface-default text-white font-medium rounded-lg px-6 py-3 text-sm transition-colors whitespace-nowrap"
+              disabled={isSubmitting} // 제출 중엔 비활성화
+              className={`bg-brand-surface-default text-white font-medium rounded-lg px-6 py-3 text-sm transition-colors whitespace-nowrap ${
+                isSubmitting
+                  ? 'opacity-70 cursor-not-allowed'
+                  : 'hover:bg-brand-surface-strong'
+              }`}
             >
-              등록하기
+              {isSubmitting ? '등록 중...' : '등록하기'}
             </button>
           </form>
-          {errors.rssUrl && (
-            <p className="text-red-500 text-xs mt-2 ml-1">
-              {errors.rssUrl.message}
-            </p>
-          )}
+
+          {/* 메시지 피드백 영역 */}
+          <div className="mt-2 min-h-[20px]">
+            {/* 1. 폼 유효성 에러 */}
+            {errors.blogUrl && (
+              <p className="text-red-500 text-xs ml-1">
+                {errors.blogUrl.message}
+              </p>
+            )}
+            {/* 2. 서버/로직 에러 */}
+            {!errors.blogUrl && serverError && (
+              <p className="text-red-500 text-xs ml-1">{serverError}</p>
+            )}
+            {/* 3. 성공 메시지 */}
+            {!errors.blogUrl && !serverError && successMessage && (
+              <p className="text-green-600 text-xs ml-1">{successMessage}</p>
+            )}
+          </div>
         </section>
 
         <div className="mt-5 flex justify-end mr-2">
