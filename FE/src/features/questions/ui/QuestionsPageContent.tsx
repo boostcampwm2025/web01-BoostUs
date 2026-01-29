@@ -54,10 +54,10 @@ const QuestionsPageContent = ({
           <button
             onClick={handlePrev}
             disabled={!hasPrev || isLoading}
-            className={`flex flex-row cursor-pointer text-neutral-text-weak hover:text-neutral-text-strong ${
-              hasPrev
-                ? 'text-neutral-text-default'
-                : 'cursor-not-allowed opacity-50'
+            className={`flex flex-row text-neutral-text-weak hover:text-neutral-text-strong ${
+              hasPrev && !isLoading
+                ? 'cursor-pointer text-neutral-text-default'
+                : 'cursor-not-allowed opacity-50 hover:text-neutral-text-weak'
             }`}
           >
             <ChevronLeft strokeWidth={1} />
@@ -69,9 +69,9 @@ const QuestionsPageContent = ({
           <button
             onClick={handleNext}
             disabled={!hasNext || isLoading}
-            className={`flex flex-row cursor-pointer text-neutral-text-weak hover:text-neutral-text-strong ${
-              hasNext
-                ? 'text-neutral-text-default'
+            className={`flex flex-row text-neutral-text-weak hover:text-neutral-text-strong ${
+              hasNext && !isLoading
+                ? 'cursor-pointer text-neutral-text-default'
                 : 'cursor-not-allowed opacity-50'
             }`}
           >

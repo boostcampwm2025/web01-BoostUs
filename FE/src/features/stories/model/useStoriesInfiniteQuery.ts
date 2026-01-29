@@ -22,7 +22,7 @@ export const useStoriesInfiniteQuery = ({
       fetchStories({
         sortBy,
         period,
-        query: searchQuery,
+        ...(searchQuery && { query: searchQuery }),
         cursor: pageParam,
       }),
 

@@ -1,7 +1,10 @@
 'use client';
 
 import { useAuth } from '@/features/login/model/auth.store';
-import { checkStoryLikeStatus } from '@/features/stories/api/stories.api';
+import {
+  checkStoryLikeStatus,
+  incrementStoryView,
+} from '@/features/stories/api/stories.api';
 import type { StoryDetail } from '@/features/stories/model/stories.type';
 import BackButton from '@/shared/ui/BackButton';
 import MarkdownViewer from '@/shared/ui/MarkdownViewer';
@@ -17,12 +20,28 @@ const StoryDetail = ({ story }: { story: StoryDetail }) => {
   const { isAuthenticated } = useAuth();
   const [likeCount, setLikeCount] = useState(story.likeCount);
   const [isLiked, setIsLiked] = useState(false);
+  const [viewCount, setViewCount] = useState(story.viewCount);
 
   // story prop이 변경될 때 상태 업데이트
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLikeCount(story.likeCount);
     setIsLiked(false);
-  }, [story.id, story.likeCount]);
+    setViewCount(story.viewCount);
+  }, [story.id, story.likeCount, story.viewCount]);
+
+  // 스토리 상세 진입 시 조회수 증가 (bid 쿠키로 중복 방지)
+  useEffect(() => {
+    const incrementView = async () => {
+      try {
+        await incrementStoryView(story.id);
+        setViewCount((prev) => prev + 1);
+      } catch {
+        // 조회수 증가 실패 시 무시
+      }
+    };
+    void incrementView();
+  }, [story.id]);
 
   // 클라이언트 사이드에서 좋아요 상태 확인
   useEffect(() => {
@@ -43,7 +62,7 @@ const StoryDetail = ({ story }: { story: StoryDetail }) => {
       }
     };
 
-    fetchLikeStatus();
+    void fetchLikeStatus();
   }, [story.id, isAuthenticated]);
 
   const handleLikeChange = (newIsLiked: boolean, newLikeCount: number) => {
@@ -56,7 +75,7 @@ const StoryDetail = ({ story }: { story: StoryDetail }) => {
       <div className="flex justify-center gap-16 -ml-20">
         {/* 좌측 사이드바 */}
         <aside className="hidden lg:block">
-          <div className="sticky top-24 h-fit mt-[200px]">
+          <div className="sticky top-24 h-fit mt-50">
             <StorySidebar
               storyId={story.id}
               initialIsLiked={isLiked}
@@ -68,7 +87,7 @@ const StoryDetail = ({ story }: { story: StoryDetail }) => {
 
         {/* 우측 콘텐츠 영역 */}
         <article className="w-full max-w-2xl flex flex-col items-start justify-center">
-          <BackButton />
+          <BackButton url="/stories" />
           <h1 className="text-neutral-text-strong text-display-32 w-full mt-4 leading-tight wrap-break-word">
             {story.title}
           </h1>
@@ -81,7 +100,7 @@ const StoryDetail = ({ story }: { story: StoryDetail }) => {
             <div className="flex flex-row items-center gap-1">
               <Eye className="text-neutral-text-weak h-3 w-3" />
               <span className="text-body-12 text-neutral-text-weak">
-                {story.viewCount}
+                {viewCount}
               </span>
             </div>
             <div className="flex flex-row items-center gap-1">

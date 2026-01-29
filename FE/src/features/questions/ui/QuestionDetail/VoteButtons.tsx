@@ -1,52 +1,39 @@
-import type { QuestionDetail, Answer } from '@/features/questions/model';
 import { ArrowBigDown, ArrowBigUp } from 'lucide-react';
 
-type Props = {
-  question?: QuestionDetail;
-  answer?: Answer;
+interface Props {
+  upCount: number;
+  myVote: 'up' | 'down' | null;
   onUpvote?: () => void;
   onDownvote?: () => void;
-};
+}
 
-const VoteButtons = ({ question, answer, onUpvote, onDownvote }: Props) => {
-  if (!question) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-2">
-        <button
-          className="w-9 h-9 items-center justify-center flex bg-neutral-surface-strong text-neutral-text-default rounded-lg cursor-pointer hover:text-brand-text-on-default hover:bg-brand-surface-default/80 transition-colors duration-150"
-          onClick={onUpvote}
-        >
-          <ArrowBigUp className="" strokeWidth={2} size={24} />
-        </button>
-        <span className="text-neutral-text-default text-display-16">
-          {answer?.upCount}
-        </span>
-        <button
-          className="w-9 h-9 items-center justify-center flex bg-neutral-surface-strong text-neutral-text-default rounded-lg cursor-pointer hover:text-brand-text-on-default hover:bg-brand-surface-default/80 transition-colors duration-150"
-          onClick={onDownvote}
-        >
-          <ArrowBigDown className="" strokeWidth={2} size={24} />
-        </button>
-      </div>
-    );
-  }
+const VoteButtons = ({ upCount, myVote, onUpvote, onDownvote }: Props) => {
+  const baseBtnClass =
+    'w-9 h-9 items-center justify-center flex rounded-lg cursor-pointer transition-colors duration-150';
+  const inactiveClass =
+    'bg-neutral-surface-strong text-neutral-text-default hover:text-brand-text-on-default hover:bg-brand-surface-default/80';
+  const activeClass = 'bg-brand-surface-default text-brand-text-on-default'; // 활성화 시 스타일
 
   return (
     <div className="flex flex-col items-center justify-center gap-2">
       <button
-        className="w-9 h-9 items-center justify-center flex bg-neutral-surface-strong text-neutral-text-default rounded-lg cursor-pointer hover:text-brand-text-on-default hover:bg-brand-surface-default/80 transition-colors duration-150"
+        className={`${baseBtnClass} ${myVote === 'up' ? activeClass : inactiveClass}`}
         onClick={onUpvote}
+        aria-label="Upvote"
       >
-        <ArrowBigUp className="" strokeWidth={2} size={24} />
+        <ArrowBigUp strokeWidth={2} size={24} />
       </button>
+
       <span className="text-neutral-text-default text-display-16">
-        {question?.upCount}
+        {upCount}
       </span>
+
       <button
-        className="w-9 h-9 items-center justify-center flex bg-neutral-surface-strong text-neutral-text-default rounded-lg cursor-pointer hover:text-brand-text-on-default hover:bg-brand-surface-default/80 transition-colors duration-150"
+        className={`${baseBtnClass} ${myVote === 'down' ? activeClass : inactiveClass}`}
         onClick={onDownvote}
+        aria-label="Downvote"
       >
-        <ArrowBigDown className="" strokeWidth={2} size={24} />
+        <ArrowBigDown strokeWidth={2} size={24} />
       </button>
     </div>
   );

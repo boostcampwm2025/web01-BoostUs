@@ -6,7 +6,7 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 
 @Injectable()
 export class ProjectRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async incrementViewCountAndFind(id: bigint) {
     return this.prisma.project.update({
@@ -177,7 +177,7 @@ export class ProjectRepository {
             data: uniqueGithubIds.map((githubId) => ({
               projectId: id,
               githubId,
-              avatarUrl: null,
+              avatarUrl: `https://avatars.githubusercontent.com/${githubId}?v=4`, // TODO: 깃허브 아바타 이미지 base url 상수화
             })),
           });
         }

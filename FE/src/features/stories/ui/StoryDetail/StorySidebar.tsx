@@ -79,7 +79,7 @@ export default function StorySidebar({
   };
 
   return (
-    <aside className="h-fit flex flex-col gap-4 bg-neutral-surface-strong rounded-2xl p-4">
+    <aside className="h-fit flex flex-col gap-4 bg-neutral-surface-strong border border-neutral-border-default shadow-default rounded-full p-4">
       <div className="flex flex-col items-center gap-2">
         <button
           onClick={handleLikeClick}
@@ -87,7 +87,7 @@ export default function StorySidebar({
           className={`w-12 h-12 flex items-center justify-center rounded-full transition-all duration-200 ${
             isLiked
               ? 'bg-brand-surface-default text-brand-text-on-default'
-              : 'bg-white text-neutral-text-default'
+              : 'bg-neutral-surface-bold text-neutral-text-default'
           } ${
             !isAuthenticated
               ? 'opacity-50 cursor-not-allowed'

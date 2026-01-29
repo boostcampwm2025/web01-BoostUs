@@ -90,12 +90,12 @@ export default function MemberInfoMangeSections() {
   return (
     <div className="w-full max-w-md mx-auto">
       {/* 전체 카드 컨테이너 */}
-      <div className="bg-neutral-surface-bold border border-neutral-200 rounded-3xl p-6 shadow-sm">
+      <div className="bg-neutral-surface-bold border border-neutral-border-default rounded-2xl p-6 shadow-default">
         {/* 프로필 섹션 */}
         <section className="flex flex-row gap-5 mb-5">
           {/* 아바타  */}
-          <div className="flex-shrink-0">
-            <div className="group relative w-24 h-24 rounded-full overflow-hidden border border-neutral-100 cursor-pointer">
+          <div className="shrink-0">
+            <div className="group relative w-24 h-24 rounded-full overflow-hidden border border-neutral-border-default cursor-pointer">
               <Image
                 src={member.avatarUrl ?? '/assets/NoImage.png'}
                 alt="프로필 사진"
@@ -105,7 +105,7 @@ export default function MemberInfoMangeSections() {
 
               {/* 오버레이 */}
               <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <span className="text-black text-display-24 font-bold">
+                <span className="text-brand-text-on-default text-display-20">
                   수정
                 </span>
               </div>
@@ -116,12 +116,12 @@ export default function MemberInfoMangeSections() {
           <div className="flex flex-col justify-center gap-2 flex-1">
             {/* 닉네임 + 수정 아이콘 */}
             <div className="flex flex-row items-center gap-2">
-              <span className="text-xl font-bold text-neutral-900">
+              <span className="text-display-20 text-neutral-text-strong">
                 {member.nickname}
               </span>
               <button
                 type="button"
-                className="text-neutral-400 hover:text-neutral-600"
+                className="text-neutral-text-weak hover:text-neutral-text-strong cursor-pointer transition-colors duration-150"
               >
                 <PenToolIcon size={16} />
               </button>
@@ -144,13 +144,13 @@ export default function MemberInfoMangeSections() {
             <div className="mt-1">
               {member.cohort ? (
                 // 기수 정보가 있을 때 (인증 완료)
-                <div className="flex items-center gap-1 text-blue-500 text-sm font-bold">
+                <div className="flex items-center gap-1 text-blue-500 text-string-14">
                   <CheckCircleIcon />
                   <span>캠퍼 인증 완료 ({member.cohort}기)</span>
                 </div>
               ) : (
                 // 기수 정보가 없을 때 (미인증)
-                <div className="flex items-center gap-1 text-red-500 text-sm font-medium">
+                <div className="flex items-center gap-1 text-danger-text-default text-string-14">
                   <AlertCircleIcon /> {/* 회색 아이콘 */}
                   <span>캠퍼 인증 미완료</span>
                 </div>
@@ -161,21 +161,21 @@ export default function MemberInfoMangeSections() {
 
         {/*<hr className="border-neutral-100 my-6" />*/}
         <div className={'flex flex-col gap-2 mb-5'}>
-          <div className="flex flex-row items-center gap-1 ">
+          <div className="flex flex-row items-center gap-2">
             <UsersIcon size={20} />
-            <span className={'text-string-16 mb-1 text-neutral-text-strong'}>
-              현재 소속된 팀 :
+            <span className={'text-string-16 text-neutral-text-strong'}>
+              현재 소속된 팀
             </span>
-            <span className={'text-neutral-text-default'}>
+            <span className={'text-neutral-text-default text-body-16'}>
               {latestProject?.teamName ?? '없음'}
             </span>
           </div>
           <div className={'flex flex-row items-center gap-2'}>
             <FolderGit2Icon size={20} />
             <p className={'text-string-16 text-neutral-text-strong'}>
-              내 프로젝트 :
+              내 프로젝트
             </p>
-            <span className={'text-neutral-text-default'}>
+            <span className={'text-neutral-text-default text-body-16'}>
               {latestProject?.title ?? '없음'}
             </span>
           </div>
@@ -184,10 +184,10 @@ export default function MemberInfoMangeSections() {
         {/* RSS 관리 섹션 */}
         <section>
           <div className="mb-4">
-            <h3 className="text-lg font-bold text-neutral-900 mb-1">
+            <h3 className="text-display-20 text-neutral-text-strong mb-1">
               블로그 주소 관리
             </h3>
-            <p className="text-sm text-neutral-500">
+            <p className="text-body-14 text-neutral-text-weak">
               블로그 주소를 입력하면 자동으로 RSS를 찾아 등록해요.
             </p>
           </div>
@@ -205,12 +205,12 @@ export default function MemberInfoMangeSections() {
               type="text"
               disabled={isSubmitting} // 제출 중엔 비활성화
               placeholder="https://velog.io/@id 또는 티스토리 주소"
-              className="flex-1 border border-neutral-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all placeholder:text-neutral-300 disabled:bg-neutral-50"
+              className="flex-1 border border-neutral-border-default rounded-lg px-4 py-2 text-body-14 focus:outline-none focus:border-brand-border-default transition-colors placeholder:text-neutral-text-weak disabled:bg-neutral-50"
             />
             <button
               type="submit"
               disabled={isSubmitting} // 제출 중엔 비활성화
-              className={`bg-brand-surface-default text-white font-medium rounded-lg px-6 py-3 text-sm transition-colors whitespace-nowrap ${
+              className={`bg-brand-surface-default text-brand-text-on-default text-string-16 rounded-lg px-4 py-2 text-sm transition-colors whitespace-nowrap ${
                 isSubmitting
                   ? 'opacity-70 cursor-not-allowed'
                   : 'hover:bg-brand-surface-strong'
@@ -221,20 +221,24 @@ export default function MemberInfoMangeSections() {
           </form>
 
           {/* 메시지 피드백 영역 */}
-          <div className="mt-2 min-h-[10px]">
+          <div className="mt-2 min-h-2.5">
             {/* 1. 폼 유효성 에러 */}
             {errors.blogUrl && (
-              <p className="text-red-500 text-xs ml-1">
+              <p className="text-danger-text-default text-string-12 ml-1">
                 {errors.blogUrl.message}
               </p>
             )}
             {/* 2. 서버/로직 에러 */}
             {!errors.blogUrl && serverError && (
-              <p className="text-red-500 text-xs ml-1">{serverError}</p>
+              <p className="text-danger-text-default text-string-12 ml-1">
+                {serverError}
+              </p>
             )}
             {/* 3. 성공 메시지 */}
             {!errors.blogUrl && !serverError && successMessage && (
-              <p className="text-green-600 text-xs ml-1">{successMessage}</p>
+              <p className="text-brand-text-default text-string-12 ml-1">
+                {successMessage}
+              </p>
             )}
           </div>
         </section>
@@ -242,7 +246,7 @@ export default function MemberInfoMangeSections() {
         <div className="flex justify-end mr-2">
           <button
             onClick={handleLogout}
-            className="text-string-14 text-neutral-text-weak hover:text-neutral-text-strong hover:underline underline-offset-4"
+            className="text-string-16 text-neutral-text-weak hover:text-neutral-text-strong cursor-pointer duration-150 transition-colors"
           >
             로그아웃
           </button>
