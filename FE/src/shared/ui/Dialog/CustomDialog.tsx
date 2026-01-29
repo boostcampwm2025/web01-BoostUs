@@ -1,4 +1,4 @@
-import { JSX, ReactNode } from 'react';
+import { FormEvent, JSX, ReactNode } from 'react';
 import {
   Dialog,
   DialogClose,
@@ -16,6 +16,7 @@ interface customDialogProps {
   dialogDescription?: ReactNode;
   dialogContent?: ReactNode;
   dialogFooter?: ReactNode;
+  onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
 }
 
 const CustomDialog = ({
@@ -24,12 +25,13 @@ const CustomDialog = ({
   dialogDescription,
   dialogContent,
   dialogFooter,
+  onSubmit,
 }: customDialogProps): JSX.Element => {
   return (
     <Dialog>
       <DialogTrigger asChild>{dialogTrigger}</DialogTrigger>
-      <form>
-        <DialogContent>
+      <DialogContent>
+        <form onSubmit={onSubmit}>
           <DialogHeader>
             <DialogTitle>{dialogTitle}</DialogTitle>
             <DialogDescription>{dialogDescription}</DialogDescription>
@@ -55,8 +57,8 @@ const CustomDialog = ({
               </>
             )}
           </DialogFooter>
-        </DialogContent>
-      </form>
+        </form>
+      </DialogContent>
     </Dialog>
   );
 };
