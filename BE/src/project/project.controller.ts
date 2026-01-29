@@ -10,6 +10,8 @@ import {
   Query,
   UploadedFile,
   UseInterceptors,
+  Req,
+  Res,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -21,6 +23,8 @@ import { ProjectListQueryDto } from './dto/project-list-query.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectService } from './project.service';
 import { CurrentMember } from 'src/auth/decorator/current-member.decorator';
+import type { Request, Response } from 'express';
+import { randomUUID } from 'node:crypto';
 
 @ApiTags('프로젝트')
 @Controller('projects')
@@ -72,8 +76,21 @@ export class ProjectController {
     status: 404,
     description: '프로젝트를 찾을 수 없음',
   })
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.projectService.findOne(id);
+  findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    let viewerKey = req.cookies?.bid as string | undefined;
+    if (!viewerKey) {
+      viewerKey = randomUUID();
+      res.cookie('bid', viewerKey, {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+      });
+    }
+    return this.projectService.findOneWithViewCount(id, viewerKey);
   }
 
   @Post()
