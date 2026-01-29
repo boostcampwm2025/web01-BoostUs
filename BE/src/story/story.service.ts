@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { CursorPayload, decodeCursor, encodeCursor } from '../common/util/cursor.util';
 import { FeedRepository } from '../feed/feed.repository';
 import { ContentState } from '../generated/prisma/client';
+import { ViewService } from '../view/view.service';
 import {
   CreateStoryRequestDto,
   CreateStoryResponseDto,
@@ -24,6 +25,7 @@ export class StoryService {
   constructor(
     private readonly storyRepository: StoryRepository,
     private readonly feedRepository: FeedRepository,
+    private readonly viewService: ViewService,
   ) { }
 
   /**
@@ -99,26 +101,44 @@ export class StoryService {
   }
 
   /**
-   * ID로 캠퍼들의 이야기 상세 조회
+   * ID로 캠퍼들의 이야기 상세 조회 
    * @param id bigint
-   * @param memberId string (선택적) - 로그인한 사용자 ID
    * @returns StoryResponseDto
    */
-  async findStoryById(id: bigint, memberId?: string): Promise<StoryResponseDto> {
+  async findStoryById(id: bigint): Promise<StoryResponseDto> {
     const story = await this.storyRepository.findStoryById(id);
 
     // 글이 없거나 삭제된 상태인 경우 404 에러 발생
     // TODO: 작성자 본인은 비공개 상태의 글도 조회 가능하도록 수정 필요 (state가 PRIVATE인 경우)
     if (!story || story.state !== ContentState.PUBLISHED) {
-      throw new NotFoundException(`글을 찾을 수 없습니다. id: ${id}`);
+      throw new StoryNotFoundException(id);
     }
 
-    // StoryResponseDto로 변환
-    const storyDto = plainToInstance(StoryResponseDto, story, {
+    return plainToInstance(StoryResponseDto, story, {
       excludeExtraneousValues: true,
     });
+  }
 
-    return storyDto;
+  /**
+   * 스토리 조회수 증가 (viewerKey 기반 중복 방지)
+   * @param id bigint
+   * @param viewerKey string (bid 쿠키 등)
+   */
+  async incrementStoryView(id: bigint, viewerKey: string): Promise<void> {
+    const storyExists = await this.storyRepository.checkStoryExists(id);
+    if (!storyExists) {
+      throw new StoryNotFoundException(id);
+    }
+
+    const shouldIncrement = await this.viewService.shouldIncrementView(
+      'story',
+      id,
+      viewerKey,
+      60 * 60,
+    );
+    if (shouldIncrement) {
+      await this.storyRepository.incrementViewCount(id);
+    }
   }
 
   /**
@@ -130,7 +150,7 @@ export class StoryService {
     // feedId로 Feed 조회하여 memberId 추출
     const feed = await this.feedRepository.findFeedById(dto.feedId);
     if (!feed) {
-      throw new NotFoundException(`피드를 찾을 수 없습니다. feedId: ${dto.feedId}`);
+      throw new StoryNotFoundException(dto.feedId);
     }
 
     // Story upsert 및 Feed lastFetchedAt 업데이트 (트랜잭션)
