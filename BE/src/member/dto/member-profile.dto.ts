@@ -2,6 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 
 export class MemberProfileDto {
+  @Expose()
+  id: bigint;
+
   @ApiProperty({
     description: '프로필 이미지 URL',
     example: 'https://example.com/avatar.jpg',

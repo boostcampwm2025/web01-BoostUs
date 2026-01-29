@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from '@/features/login/model/auth.store';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';

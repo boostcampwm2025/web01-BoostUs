@@ -125,7 +125,7 @@ const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
 
   const handleClickRssButton = () => {
     // 캠퍼 인증 확인 - 버튼 클릭 시 바로 체크
-    if (!member || !member.cohort) {
+    if (!member || !member?.member.cohort) {
       router.push('/login'); // TODO: 캠퍼 인증 페이지로 이동
       return;
     }
@@ -198,7 +198,7 @@ const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
             <Tooltip>
               {member ? (
                 <>
-                  {member.cohort ? (
+                  {member?.member.cohort ? (
                     <CustomDialog
                       dialogTrigger={
                         <TooltipTrigger asChild>

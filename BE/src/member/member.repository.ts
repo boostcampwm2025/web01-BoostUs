@@ -3,7 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class MemberRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   /**
    * 프로필 조회용 멤버 정보 조회
@@ -17,6 +17,7 @@ export class MemberRepository {
     const member = await this.prisma.member.findUnique({
       where: { id },
       select: {
+        id: true,
         githubId: true,
         avatarUrl: true,
         githubLogin: true,
@@ -63,9 +64,10 @@ export class MemberRepository {
         createdAt: true,
       },
       orderBy: { createdAt: 'desc' },
-    })
+    });
 
     return {
+      id: member.id,
       avatarUrl: member.avatarUrl,
       githubLogin: member.githubLogin,
       nickname: member.nickname,
