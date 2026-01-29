@@ -63,8 +63,14 @@ const Header = () => {
       }`}
     >
       <div className="flex items-center justify-between w-full h-full max-w-7xl">
-        <Link href="/" className="text-display-32 text-neutral-text-strong">
-          BoostUs
+        <Link href="/">
+          <Image
+            src="/assets/Logo.svg"
+            alt="boostus 로고"
+            width={120}
+            height={40}
+            className="h-8 w-auto"
+          />
         </Link>
         <nav className="flex h-full gap-10 text-string-16 text-neutral-text-strong">
           {NAV_ITEMS.map(({ href, label }) => (
