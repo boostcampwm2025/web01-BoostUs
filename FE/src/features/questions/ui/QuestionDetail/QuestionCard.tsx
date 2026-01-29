@@ -6,46 +6,28 @@ import type { QuestionDetail as QuestionDetailType } from '@/features/questions/
 import VoteButtons from '@/features/questions/ui/QuestionDetail/VoteButtons';
 import { likeQuestion, dislikeQuestion } from '../../api/questions.api';
 import { MarkdownViewer } from '@/shared/ui/MarkdownViewer/MarkdownViewer';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useOptimisticVote } from '@/features/questions/model/useOptimisticVote';
 
 const QuestionCard = ({ question }: { question: QuestionDetailType }) => {
-  const router = useRouter();
-  const [localQuestion, setLocalQuestion] = useState(question);
-
-  useEffect(() => {
-    setLocalQuestion(question);
-  }, [question]);
-
-  const handleVote = async (type: 'up' | 'down') => {
-    const previousQuestion = { ...localQuestion };
-
-    setLocalQuestion((prev) => ({
-      ...prev,
-      upCount: type === 'up' ? prev.upCount + 1 : prev.upCount,
-      downCount: type === 'down' ? prev.downCount + 1 : prev.downCount,
-    }));
-
-    try {
-      if (type === 'up') {
-        await likeQuestion(question.id);
-      } else {
-        await dislikeQuestion(question.id);
-      }
-      router.refresh();
-    } catch (error) {
-      console.error(`Error ${type}voting question:`, error);
-      setLocalQuestion(previousQuestion); // 실패 시 롤백
-      alert('투표 처리에 실패했습니다.');
-    }
-  };
+  const { stats, myVote, handleVote } = useOptimisticVote({
+    id: question.id,
+    initialStats: {
+      upCount: question.upCount,
+      downCount: question.downCount,
+    },
+    api: {
+      voteUp: likeQuestion,
+      voteDown: dislikeQuestion,
+    },
+  });
 
   return (
     <section className="mt-8 w-full rounded-2xl border border-neutral-border-default bg-neutral-surface-bold">
       <CardHeader question={question} />
       <div className="flex flex-row gap-6 w-full px-4 py-4 rounded-b-2xl">
         <VoteButtons
-          question={question}
+          upCount={stats.upCount}
+          myVote={myVote}
           onUpvote={() => handleVote('up')}
           onDownvote={() => handleVote('down')}
         />

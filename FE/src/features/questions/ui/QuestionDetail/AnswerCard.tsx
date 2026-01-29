@@ -13,6 +13,7 @@ import MarkdownViewer from '@/shared/ui/MarkdownViewer';
 import CardHeader from './CardHeader';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useOptimisticVote } from '@/features/questions/model/useOptimisticVote';
 
 interface Props {
   answer: Answer;
@@ -23,46 +24,31 @@ const AnswerCard = ({ answer, question }: Props) => {
   const { member } = useAuth();
   const router = useRouter();
 
+  const { stats, myVote, handleVote } = useOptimisticVote({
+    id: answer.id,
+    initialStats: {
+      upCount: answer.upCount,
+      downCount: answer.downCount,
+    },
+    api: {
+      voteUp: likeAnswer,
+      voteDown: dislikeAnswer,
+    },
+  });
+
   const [isAccepted, setIsAccepted] = useState(answer.isAccepted);
-  const [localAnswer, setLocalAnswer] = useState(answer); // 낙관적 업데이트 실패 시 복구를 위한 이전 상태 저장
 
   useEffect(() => {
     if (answer.isAccepted !== isAccepted) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsAccepted(answer.isAccepted);
-      setLocalAnswer(answer);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [answer.isAccepted]);
+  }, [answer.isAccepted, isAccepted]);
 
   const isQuestionAuthor = member?.member?.id === question.member.id;
 
   const showAcceptButton =
     isQuestionAuthor && !question.isResolved && !isAccepted;
-
-  const handleVote = async (type: 'up' | 'down') => {
-    const previousAnswer = { ...localAnswer }; // 실패 시 복구를 위한 이전 상태 저장
-
-    setLocalAnswer((prev) => ({
-      ...prev,
-      upCount: type === 'up' ? prev.upCount + 1 : prev.upCount,
-      downCount: type === 'down' ? prev.downCount + 1 : prev.downCount,
-    }));
-
-    try {
-      if (type === 'up') {
-        await likeAnswer(answer.id);
-      } else {
-        await dislikeAnswer(answer.id);
-      }
-
-      // 서버 데이터와 클라이언트의 Server Component 상태를 동기화
-      router.refresh();
-    } catch (error) {
-      console.error(`Error ${type}voting answer:`, error);
-      setLocalAnswer(previousAnswer);
-      alert('투표 처리에 실패했습니다. 다시 시도해주세요.');
-    }
-  };
 
   const handleAccept = async () => {
     if (question.isResolved) return;
@@ -96,7 +82,8 @@ const AnswerCard = ({ answer, question }: Props) => {
 
       <div className="flex flex-row gap-6 w-full px-4 py-4 rounded-b-2xl">
         <VoteButtons
-          answer={answer}
+          upCount={stats.upCount}
+          myVote={myVote}
           onUpvote={() => handleVote('up')}
           onDownvote={() => handleVote('down')}
         />
