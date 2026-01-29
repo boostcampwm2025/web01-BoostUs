@@ -10,8 +10,6 @@ import {
   Query,
   UploadedFile,
   UseInterceptors,
-  Req,
-  Res,
   UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -24,8 +22,6 @@ import { ProjectListQueryDto } from './dto/project-list-query.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectService } from './project.service';
 import { CurrentMember } from 'src/auth/decorator/current-member.decorator';
-import type { Request, Response } from 'express';
-import { randomUUID } from 'node:crypto';
 import { ViewerKeyGuard } from 'src/view/guard/view.guard';
 import { ViewerKey } from 'src/view/decorator/viewer-key.decorator';
 
