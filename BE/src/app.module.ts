@@ -13,6 +13,7 @@ import { QuestionModule } from './question/question.module';
 import { StoryModule } from './story/story.module';
 import { TechStackModule } from './tech-stack/tech-stack.module';
 import { MemberModule } from './member/member.module';
+import { LandingModule } from './landing/landing.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { MemberModule } from './member/member.module';
     AuthModule,
     AnswerModule,
     MemberModule,
+    LandingModule,
   ],
   providers: [
     Logger,

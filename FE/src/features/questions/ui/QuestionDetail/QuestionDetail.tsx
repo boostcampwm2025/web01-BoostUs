@@ -8,6 +8,8 @@ import QuestionStatus from '@/features/questions/ui/Status/Status';
 import BackButton from '@/shared/ui/BackButton';
 import { Eye, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { incrementQuestionView } from '../../api/questions.api';
 
 const QuestionDetail = ({
   data,
@@ -19,6 +21,11 @@ const QuestionDetail = ({
   const router = useRouter();
 
   const hasAcceptedAnswer = answers.some((answer) => answer.isAccepted);
+
+  // 질문 상세 진입 시 조회수 증가
+  useEffect(() => {
+    void incrementQuestionView(question.id);
+  }, [question.id]);
 
   const handleSubmit = () => {
     if (!member) {

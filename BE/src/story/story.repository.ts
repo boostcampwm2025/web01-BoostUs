@@ -58,6 +58,17 @@ export class StoryRepository {
   }
 
   /**
+   * 스토리 조회수만 증가
+   * @param id bigint
+   */
+  async incrementViewCount(id: bigint): Promise<void> {
+    await this.prisma.story.update({
+      where: { id },
+      data: { viewCount: { increment: 1 } },
+    });
+  }
+
+  /**
    * Story 생성 (upsert) 및 Feed lastFetchedAt 업데이트 (트랜잭션)
    * @param data Story 생성 데이터
    * @returns Story
