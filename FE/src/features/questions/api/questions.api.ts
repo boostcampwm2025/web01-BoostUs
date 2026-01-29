@@ -33,12 +33,13 @@ export const getInitialQuestions = async (params?: {
   });
 };
 
-export const incrementQuestionView = async (
-  questionId: string
-): Promise<void> => {
-  customFetch<ApiResponse<void>>(`/api/questions/${questionId}/view`, {
-    method: 'POST',
-  });
+export const incrementQuestionView = async (questionId: string) => {
+  return await customFetch<ApiResponse<void>>(
+    `/api/questions/${questionId}/view`,
+    {
+      method: 'POST',
+    }
+  );
 };
 
 /**

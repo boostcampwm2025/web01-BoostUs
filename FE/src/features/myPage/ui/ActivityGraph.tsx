@@ -10,6 +10,10 @@ import {
 } from '@/components/ui/tooltip'; // Shadcn Tooltip 경로 확인
 import { generateMockData } from '@/features/myPage/utils/mock-data';
 import { CircleHelpIcon } from '@/components/ui/circle-help';
+import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
+
+const TOOLTIP_CONTENT =
+  '최근 1년 간의 활동을 보여주는 그래프로, 각 칸은 하루를 나타냅니다. 칸의 색깔은 그 날의 활동량을 나타내며, 색이 진할수록 활동량이 많음을 의미합니다. 활동량은 질문 & 답변 작성, 좋아요 등 다양한 활동을 포함합니다.';
 
 export default function ActivityGraph() {
   const data = generateMockData();
@@ -21,11 +25,17 @@ export default function ActivityGraph() {
   };
 
   return (
-    <div className="w-full p-6 bg-white rounded-xl border border-neutral-200">
+    <div className="w-full p-6 bg-neutral-surface-bold rounded-xl border border-neutral-border-default">
       <div className="mb-4 flex items-center gap-1 text-neutral-text-week">
         {/* 설명 */}
-        <h3 className="text-display-20">활동 그래프</h3>
-        <CircleHelpIcon size={16} />
+        <h3 className="text-display-20 text-neutral-text-strong">
+          활동 그래프
+        </h3>
+        <CircleHelpIcon
+          size={16}
+          className="text-neutral-text-weak cursor-pointer transition-colors hover:text-neutral-text-strong duration-150"
+        />
+        {/* TODO: CustomTooltip으로 감싸기, CustomTooltip을 그냥 사용하니 아래 ActivityCalendar에서 무한 리렌더링 오류 발생 */}
       </div>
 
       <div className="flex justify-center">

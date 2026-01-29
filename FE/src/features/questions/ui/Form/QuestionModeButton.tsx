@@ -6,14 +6,14 @@ export const MODES = [
   { label: '작성', value: 'write' },
   { label: '미리보기', value: 'preview' },
   { label: '분할', value: 'split' },
-] as const satisfies ReadonlyArray<{ label: string; value: PreviewMode }>;
+] as const satisfies readonly { label: string; value: PreviewMode }[];
 
-type Props = {
+interface Props {
   label: string;
   value: PreviewMode;
   mode: PreviewMode;
   onChange: (mode: PreviewMode) => void;
-};
+}
 
 export default function ModeButton({ label, value, mode, onChange }: Props) {
   const isActive = mode === value;
@@ -22,10 +22,10 @@ export default function ModeButton({ label, value, mode, onChange }: Props) {
     <button
       type="button"
       onClick={() => onChange(value)}
-      className={`px-3 py-2 rounded-xl text-body-14 transition-colors ${
+      className={`px-3 py-2 rounded-lg transition-colors cursor-pointer ${
         isActive
-          ? 'bg-neutral-surface-bold text-neutral-text-strong'
-          : 'text-neutral-text-weak hover:text-neutral-text-strong'
+          ? 'bg-neutral-surface-bold text-neutral-text-strong text-string-16'
+          : 'text-neutral-text-weak hover:text-neutral-text-strong text-body-16'
       }`}
     >
       {label}

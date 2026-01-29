@@ -1,12 +1,12 @@
-/* eslint-disable no-alert */
 'use client';
 
 import { useState } from 'react';
+import { X } from 'lucide-react';
 
 const MAX_Hash_TAG = 10;
 const MAX_Hash_TAG_LENGTH = 30;
 
-type Props = {
+interface Props {
   value: string;
   onChangeValue: (v: string) => void;
 
@@ -20,7 +20,7 @@ type Props = {
 
   maxCount?: number;
   maxLength?: number;
-};
+}
 
 export default function HashTagInput({
   value,
@@ -42,14 +42,14 @@ export default function HashTagInput({
     if (!next) return;
 
     if (next.length > maxLength) {
-      const msg = `해시태그는 최대 ${maxLength}자까지 입력할 수 있어요.`;
+      const msg = `태그는 최대 ${maxLength.toString()}자까지 입력할 수 있어요.`;
       setLocalError(msg);
       alert(msg);
       return;
     }
 
     if (hashTags.length >= maxCount) {
-      const msg = `해시태그는 최대 ${maxCount}개까지 추가할 수 있어요.`;
+      const msg = `태그는 최대 ${maxCount.toString()}개까지 추가할 수 있어요.`;
       setLocalError(msg);
       alert(msg);
       return;
@@ -66,11 +66,9 @@ export default function HashTagInput({
   };
 
   return (
-    <div className="mb-6">
+    <div className="mb-6 mt-4">
       <div className="flex items-end justify-between">
-        <label className="text-neutral-text-strong text-body-14">
-          해시 태그
-        </label>
+        <label className="text-neutral-text-strong text-string-16">태그</label>
         <span className="text-neutral-text-weak text-body-12">
           {hashTags.length}/{maxCount}
         </span>
@@ -88,11 +86,13 @@ export default function HashTagInput({
           tryAdd(value);
         }}
         placeholder="예) React (Enter로 추가)"
-        className="mt-2 w-full rounded-xl border border-neutral-border-default px-4 py-3 text-body-16 outline-none focus:border-neutral-border-strong"
+        className="mt-2 w-full rounded-lg placeholder:text-neutral-text-weak border border-neutral-border-default px-3 py-3 text-body-16 outline-none focus:border-brand-border-default transition-colors duration-150"
       />
 
       {localError && (
-        <p className="mt-2 text-body-12 text-red-600">{localError}</p>
+        <p className="mt-2 text-body-12 text-danger-text-default">
+          {localError}
+        </p>
       )}
 
       {hashTags.length > 0 && (
@@ -100,18 +100,18 @@ export default function HashTagInput({
           {hashTags.map((t) => (
             <div
               key={t}
-              className="flex items-center gap-2 rounded-xl border border-neutral-border-default bg-neutral-surface-strong px-3 py-2"
+              className="flex items-center gap-2 rounded-full border border-neutral-border-default bg-neutral-surface-strong px-3 py-2"
             >
-              <span className="text-body-14 text-neutral-text-default">
+              <span className="text-string-14 text-neutral-text-default">
                 {t}
               </span>
               <button
                 type="button"
                 onClick={() => onRemove(t)}
-                className="text-body-14 text-neutral-text-weak hover:text-neutral-text-strong"
+                className="text-body-14 text-neutral-text-weak hover:text-neutral-text-strong cursor-pointer"
                 aria-label={`${t} 제거`}
               >
-                X
+                <X size={20} />
               </button>
             </div>
           ))}

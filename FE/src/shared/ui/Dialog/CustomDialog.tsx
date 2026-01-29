@@ -50,7 +50,7 @@ const CustomDialog = ({
                 </DialogClose>
                 <button
                   type="submit"
-                  className="bg-brand-surface-default text-string-16 text-brand-text-on-default px-4 py-2 rounded-lg cursor-pointer"
+                  className="bg-brand-surface-default hover:bg-brand-dark transition-colors duration-150 text-string-16 text-brand-text-on-default px-4 py-2 rounded-lg cursor-pointer"
                 >
                   저장
                 </button>

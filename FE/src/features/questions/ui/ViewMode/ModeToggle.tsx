@@ -1,10 +1,11 @@
 'use client';
 import type { PreviewMode as Mode } from '../Form/QuestionModeButton';
 import ModeButton, { MODES } from '../Form/QuestionModeButton';
-type Props = {
+
+interface Props {
   mode: Mode;
   onChange: (mode: Mode) => void;
-};
+}
 
 export default function ModeToggle({ mode, onChange }: Props) {
   return (
