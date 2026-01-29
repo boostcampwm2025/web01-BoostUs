@@ -21,6 +21,7 @@ import { UpdateQuestionDto } from './dto/req/update-question.dto';
 import { CurrentMember } from 'src/auth/decorator/current-member.decorator';
 import { ViewerKeyGuard } from 'src/view/guard/view.guard';
 import { ViewerKey } from 'src/view/decorator/viewer-key.decorator';
+import { ParseBigIntPipe } from 'src/common/pipe/parse-bigint.pipe';
 
 @ApiTags('질문')
 @Controller('questions')
@@ -85,7 +86,6 @@ export class QuestionController {
   }
 
   @Public()
-  @UseGuards(ViewerKeyGuard)
   @Get(':id')
   @responseMessage('질문 상세 조회 성공!')
   @ApiOperation({
@@ -106,9 +106,18 @@ export class QuestionController {
     status: 404,
     description: '질문을 찾을 수 없음',
   })
-  async findOne(@Param('id') id: string, @ViewerKey() viewerKey: string) {
-    // return await this.questionService.findOne(id);
-    return await this.questionService.findOneWithViewCount(id, viewerKey);
+  async findOne(@Param('id') id: string) {
+    return await this.questionService.findOne(id);
+  }
+
+  @Public()
+  @Post(':id/view')
+  @UseGuards(ViewerKeyGuard)
+  async incrementStoryView(
+    @Param('id', ParseBigIntPipe) id: bigint,
+    @ViewerKey() viewerKey: string,
+  ): Promise<void> {
+    await this.questionService.incrementStoryView(id, viewerKey);
   }
 
   @Patch(':id')

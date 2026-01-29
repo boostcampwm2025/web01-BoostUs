@@ -15,6 +15,7 @@ import { AnswerResponseDto } from 'src/answer/dto/res/answer-response.dto';
 import { ViewService } from 'src/view/view.service';
 import { plainToInstance } from 'class-transformer';
 import { QuestionDetailItemDto } from './dto/question-detail-item.dto';
+import { QuestionNotFoundException } from './exception/question.exception';
 
 const toHashtagsStringOrNull = (hashtags?: string[]): string | null =>
   hashtags && hashtags.length ? hashtags.join(',') : null;
@@ -245,22 +246,22 @@ export class QuestionService {
     };
   }
 
-  async findOneWithViewCount(id: string, viewerKey: string): Promise<QuestionDetailItemDto> {
+  async incrementStoryView(id: bigint, viewerKey: string): Promise<void> {
     const questionId = BigInt(id);
 
-    const firstView = await this.viewService.shouldIncrementView('question', questionId, viewerKey);
-
-    if (firstView) {
-      const question = await this.questionRepo.incrementViewCountAndFindOne(questionId);
-      if (!question) throw new Error('Question not found');
-      const plain = { question: question, answers: question.answers };
-      return plainToInstance(QuestionDetailItemDto, plain, { excludeExtraneousValues: true });
+    const questionExists = await this.questionRepo.checkQuestionExists(questionId);
+    if (!questionExists) {
+      throw new QuestionNotFoundException(questionId);
     }
 
-    const question = await this.questionRepo.findOne(questionId);
-    if (!question) throw new Error('Question not found');
-    const plain = { question: question, answers: question.answers };
-    return plainToInstance(QuestionDetailItemDto, plain, { excludeExtraneousValues: true });
+    const shouldIncrement = await this.viewService.shouldIncrementView(
+      'question',
+      questionId,
+      viewerKey,
+    );
+    if (shouldIncrement) {
+      await this.questionRepo.incrementViewCount(id);
+    }
   }
 
   async update(
