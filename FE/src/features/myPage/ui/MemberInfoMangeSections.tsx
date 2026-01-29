@@ -8,6 +8,7 @@ import { PenToolIcon } from '@/components/ui/pen-tool';
 import { GithubIcon } from '@/components/ui/github';
 import CheckCircleIcon from '@/components/ui/CheckCircleIcon';
 import AlertCircleIcon from '@/components/ui/AlertCircleIcon';
+import { useAuth } from '@/features/login/model/auth.store';
 
 // 폼 데이터 타입 정의
 interface RssFormValues {
@@ -15,8 +16,13 @@ interface RssFormValues {
 }
 
 export default function MemberInfoMangeSections() {
-  const member = useAtomValue(memberAtom);
+  const authState = useAtomValue(memberAtom);
+  const member = authState?.member;
+  const { logout } = useAuth();
 
+  const handleLogout = async () => {
+    await logout();
+  };
   // react-hook-form 설정
   const {
     register,
@@ -40,9 +46,9 @@ export default function MemberInfoMangeSections() {
   return (
     <div className="w-full max-w-md mx-auto">
       {/* 전체 카드 컨테이너 */}
-      <div className="bg-white border border-neutral-200 rounded-3xl p-6 shadow-sm">
+      <div className="bg-neutral-surface-bold border border-neutral-200 rounded-3xl p-6 shadow-sm">
         {/* 프로필 섹션 */}
-        <section className="flex flex-row gap-5 mb-8">
+        <section className="flex flex-row gap-5 mb-5">
           {/* 아바타  */}
           <div className="flex-shrink-0">
             <div className="group relative w-24 h-24 rounded-full overflow-hidden border border-neutral-100 cursor-pointer">
@@ -55,7 +61,9 @@ export default function MemberInfoMangeSections() {
 
               {/* 오버레이 */}
               <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <span className="text-white text-sm font-bold">수정</span>
+                <span className="text-black text-display-24 font-bold">
+                  수정
+                </span>
               </div>
             </div>
           </div>
@@ -84,7 +92,7 @@ export default function MemberInfoMangeSections() {
                 className="inline-flex items-center gap-1.5 bg-neutral-900 text-white px-3 py-1 rounded-full text-xs font-medium hover:bg-neutral-800 transition-colors"
               >
                 <GithubIcon size={14} className="fill-current" />
-                <span>@{member.nickname ?? '깃허브ID'}</span>
+                <span>@ {member.githubLogin ?? '깃허브ID'}</span>
               </a>
             </div>
 
@@ -108,6 +116,10 @@ export default function MemberInfoMangeSections() {
         </section>
 
         {/*<hr className="border-neutral-100 my-6" />*/}
+        <div className={'flex flex-col gap-2 mb-5'}>
+          <p className={'text-string-16 mb-1'}>현재 소속된 팀 : web01</p>
+          <p className={'text-string-16'}>내 프로젝트 : BoostUs</p>
+        </div>
 
         {/* 하단: RSS 관리 섹션 */}
         <section>
@@ -136,7 +148,7 @@ export default function MemberInfoMangeSections() {
             />
             <button
               type="submit"
-              className="bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-lg px-6 py-3 text-sm transition-colors whitespace-nowrap"
+              className="bg-brand-surface-default text-white font-medium rounded-lg px-6 py-3 text-sm transition-colors whitespace-nowrap"
             >
               등록하기
             </button>
@@ -147,6 +159,15 @@ export default function MemberInfoMangeSections() {
             </p>
           )}
         </section>
+
+        <div className="mt-5 flex justify-end mr-2">
+          <button
+            onClick={handleLogout}
+            className="text-string-14 text-neutral-text-weak hover:text-neutral-text-strong hover:underline underline-offset-4"
+          >
+            로그아웃
+          </button>
+        </div>
       </div>
     </div>
   );

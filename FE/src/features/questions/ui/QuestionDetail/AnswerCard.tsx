@@ -18,7 +18,7 @@ type Props = {
 
 const AnswerCard = ({ answer, question }: Props) => {
   const { member } = useAuth();
-  const isQuestionAuthor = member?.id === question.member.id;
+  const isQuestionAuthor = member?.member?.id === question.member.id;
 
   const handleUpvote = async () => {
     try {
