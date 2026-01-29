@@ -4,8 +4,9 @@
  */
 export interface Member {
   id: string; // bigint는 JSON에서 string으로 직렬화됨
-  nickname: string;
+  githubLogin: string | null;
   avatarUrl: string | null;
+  nickname: string;
   cohort: number | null;
 }
 
@@ -18,4 +19,14 @@ export interface AuthContextType {
   isAuthenticated: boolean;
   fetchCurrentMember: () => Promise<void>;
   logout: () => void;
+}
+
+export interface AuthResponse {
+  member: Member;
+  latestProject: {
+    title: string;
+    teamName: string;
+    field: string;
+  } | null;
+  feed: string | null;
 }

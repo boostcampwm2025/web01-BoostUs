@@ -239,3 +239,12 @@ export const deleteAnswer = async (answerId: string) => {
 
   return data.data;
 };
+
+export const getAnswerById = async (answerId: string) => {
+  const data = await customFetch<ApiResponse<Answer>>(
+    `/api/answers/${answerId}`,
+    { cache: 'no-store' }
+  );
+
+  return data.data;
+};

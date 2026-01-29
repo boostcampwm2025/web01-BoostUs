@@ -24,13 +24,15 @@ export class AuthGuard implements CanActivate {
       context.getClass(),
     ]);
 
-    if (isPublic) {
-      return true;
-    }
-
     const request = context.switchToHttp().getRequest<Request>();
     const accessToken = this.extractAccessToken(request);
 
+    // Public 엔드포인트이고 토큰이 없는 경우 바로 통과 (Pubic 엔드포인트이지만 토큰이 있는 경우에는 토큰 검증 시도)
+    if (isPublic && !accessToken) {
+      return true;
+    }
+
+    // Public 엔드포인트가 아니고 토큰이 없는 경우 에러 발생
     if (!accessToken) {
       throw new AccessTokenExpiredException();
     }

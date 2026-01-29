@@ -1,6 +1,6 @@
 'use client';
-import type { PreviewMode as Mode } from '../QuestionRegister/QuestionModeButton';
-import ModeButton, { MODES } from '../QuestionRegister/QuestionModeButton';
+import type { PreviewMode as Mode } from '../Form/QuestionModeButton';
+import ModeButton, { MODES } from '../Form/QuestionModeButton';
 type Props = {
   mode: Mode;
   onChange: (mode: Mode) => void;
@@ -21,4 +21,3 @@ export default function ModeToggle({ mode, onChange }: Props) {
     </div>
   );
 }
-

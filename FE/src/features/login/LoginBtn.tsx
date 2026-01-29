@@ -4,13 +4,12 @@ import { Github } from 'lucide-react';
 import { navigateToGithubLogin } from './LoginFetch';
 import { useAuth } from '@/features/login/model/auth.store';
 import MemberInfoMangeSections from '@/features/myPage/ui/MemberInfoMangeSections';
+import ActivityGraph from '@/features/myPage/ui/ActivityGraph';
+import MyBadge from '@/features/myPage/ui/MyBadge';
+import MyViews from '@/features/myPage/ui/MyViews';
 
 export default function LoginBtn() {
   const { member, isAuthenticated, isLoading, logout } = useAuth();
-
-  const handleLogout = () => {
-    logout();
-  };
 
   // 로딩 중일 때
   if (isLoading) {
@@ -24,8 +23,18 @@ export default function LoginBtn() {
   // 로그인 된 상태
   if (isAuthenticated && member) {
     return (
-      <div className="flex flex-col items-center gap-2">
-        <MemberInfoMangeSections />
+      <div className="w-full max-w-[1280px] mx-auto p-4 flex flex-col md:flex-row items-start gap-6">
+        <div className="w-full md:w-[380px] flex flex-col gap-6 shrink-0">
+          <MemberInfoMangeSections />
+          <MyBadge />
+        </div>
+
+        <div className="w-full flex-1 flex flex-col gap-6">
+          <ActivityGraph />
+          <MyViews />
+        </div>
+
+        {/* 아래 member 보여주기 */}
         <div
           style={{
             position: 'fixed',
@@ -39,7 +48,7 @@ export default function LoginBtn() {
             zIndex: 9999,
           }}
         >
-          <h3>🔑 Auth 상태 모니터링</h3>
+          <h3>🔑 Auth 상태 모니터링 dd</h3>
           <p>
             <strong>로딩 중:</strong> {isLoading ? 'YES' : 'NO'}
           </p>
@@ -51,12 +60,6 @@ export default function LoginBtn() {
           </p>
           <pre>{JSON.stringify(member, null, 2)}</pre>
         </div>
-        <button
-          onClick={handleLogout}
-          className="text-string-14 text-neutral-text-weak hover:text-neutral-text-strong"
-        >
-          로그아웃
-        </button>
       </div>
     );
   }

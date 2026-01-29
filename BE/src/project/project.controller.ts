@@ -10,6 +10,8 @@ import {
   Query,
   UploadedFile,
   UseInterceptors,
+  Req,
+  Res,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -20,17 +22,21 @@ import { ProjectListItemDto } from './dto/project-list-item.dto';
 import { ProjectListQueryDto } from './dto/project-list-query.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectService } from './project.service';
+import { CurrentMember } from 'src/auth/decorator/current-member.decorator';
+import type { Request, Response } from 'express';
+import { randomUUID } from 'node:crypto';
 
 @ApiTags('프로젝트')
 @Controller('projects')
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
-  @Public()
   @Post('uploads/thumbnails')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadTempThumbnail(@UploadedFile() file: Express.Multer.File) {
-    const memberId = BigInt(1); // authGuard 에서 주입? (req.user.id)
+  async uploadTempThumbnail(
+    @CurrentMember() memberId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
     return this.projectService.uploadTempThumbnail(file, memberId);
   }
 
@@ -70,11 +76,23 @@ export class ProjectController {
     status: 404,
     description: '프로젝트를 찾을 수 없음',
   })
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.projectService.findOne(id);
+  findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    let viewerKey = req.cookies?.bid as string | undefined;
+    if (!viewerKey) {
+      viewerKey = randomUUID();
+      res.cookie('bid', viewerKey, {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+      });
+    }
+    return this.projectService.findOneWithViewCount(id, viewerKey);
   }
 
-  @Public()
   @Post()
   @ApiOperation({
     summary: '프로젝트 생성',
@@ -92,13 +110,10 @@ export class ProjectController {
     status: 400,
     description: '잘못된 요청',
   })
-  create(@Body() dto: CreateProjectDto) {
-    const memberId = BigInt(1);
-    console.log(dto);
+  create(@CurrentMember() memberId: string, @Body() dto: CreateProjectDto) {
     return this.projectService.create(memberId, dto);
   }
 
-  @Public()
   @Patch(':id')
   @ApiOperation({
     summary: '프로젝트 수정',
@@ -113,7 +128,6 @@ export class ProjectController {
     type: UpdateProjectDto,
   })
   @ApiResponse({
-    status: 200,
     description: '프로젝트 수정 성공',
     type: ProjectDetailItemDto,
   })
@@ -125,8 +139,11 @@ export class ProjectController {
     status: 404,
     description: '프로젝트를 찾을 수 없음',
   })
-  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateProjectDto) {
-    const memberId = BigInt(1);
+  update(
+    @CurrentMember() memberId: string,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateProjectDto,
+  ) {
     return this.projectService.update(id, memberId, dto);
   }
 
@@ -149,7 +166,7 @@ export class ProjectController {
     status: 404,
     description: '프로젝트를 찾을 수 없음',
   })
-  delete(@Param('id', ParseIntPipe) id: number) {
-    return this.projectService.delete(id);
+  delete(@CurrentMember() memberId: string, @Param('id', ParseIntPipe) id: number) {
+    return this.projectService.delete(id, memberId);
   }
 }

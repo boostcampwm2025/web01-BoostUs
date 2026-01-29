@@ -48,7 +48,7 @@ const Header = () => {
 
   useEffect(() => {
     setAvatarError(false);
-  }, [member?.avatarUrl]);
+  }, [member?.member?.avatarUrl]);
 
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname.startsWith(href);
@@ -91,11 +91,11 @@ const Header = () => {
                 <div className="relative w-9 h-9 rounded-full overflow-hidden">
                   <Image
                     src={
-                      avatarError || !member.avatarUrl
+                      avatarError || !member.member.avatarUrl
                         ? '/assets/NoImage.png'
-                        : member.avatarUrl
+                        : member.member.avatarUrl
                     }
-                    alt={`${member.nickname}의 프로필 사진`}
+                    alt={`${member.member.nickname}의 프로필 사진`}
                     className="object-cover"
                     fill
                     onError={() => setAvatarError(true)}
