@@ -18,6 +18,8 @@ interface Props {
   onEditClick?: () => void;
 }
 
+import { useAuth } from '@/features/login/model/auth.store';
+
 export default function ProjectDetail() {
   const params = useParams<{ id: string }>();
   const rawId = params?.id;
@@ -27,6 +29,12 @@ export default function ProjectDetail() {
 
   const [data, setData] = useState<ProjectData | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const { member } = useAuth();
+
+  const isMember = data?.participants?.find(
+    (m) => m.githubId === member?.member?.githubLogin
+  )?.githubId;
 
   useEffect(() => {
     if (!isValidId) {
@@ -167,16 +175,17 @@ export default function ProjectDetail() {
             </div>
           </div>
         )}
-
-        <div className="mt-8 flex justify-center">
-          <a
-            href={`/project/edit/${id.toString()}`}
-            className="flex items-center gap-1 text-string-16 text-neutral-text-weak hover:text-neutral-text-strong transition-colors duration-150"
-          >
-            <Pencil size={16} />
-            수정하기
-          </a>
-        </div>
+        {isMember && (
+          <div className="mt-8 flex justify-center">
+            <a
+              href={`/project/edit/${id.toString()}`}
+              className="flex items-center gap-1 text-string-16 text-neutral-text-weak hover:text-neutral-text-strong transition-colors duration-150"
+            >
+              <Pencil size={16} />
+              수정하기
+            </a>
+          </div>
+        )}
       </div>
     </div>
   );
