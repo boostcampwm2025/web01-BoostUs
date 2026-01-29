@@ -70,7 +70,7 @@ const CardHeader = ({
           </span>
         </div>
       </div>
-      {member && answer?.member.id === member.id && (
+      {member && answer?.member.id === member.member.id && (
         <div className="ml-auto flex flex-row items-center justify-center gap-2">
           <button
             className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150"

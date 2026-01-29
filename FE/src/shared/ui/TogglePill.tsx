@@ -17,7 +17,7 @@ export default function TogglePill({
 
         // 2. 선택 여부에 따른 색상 및 인터랙션 처리
         isSelected
-          ? 'bg-brand-surface-default text-brand-text-on-default' // 선택됨
+          ? 'bg-brand-surface-default text-brand-text-on-default border-none' // 선택됨
           : 'bg-brand-surface-weak text-neutral-text-default hover:bg-brand-surface-default hover:text-brand-text-on-default', // 선택 안됨
       ].join(' ')}
     >

@@ -1,5 +1,5 @@
 import { ApiResponse } from '@/shared/types/ApiResponseType';
-import type { Member } from '../model/auth.types';
+import type { Member, AuthResponse } from '../model/auth.types';
 
 /**
  * 현재 로그인한 멤버 정보를 가져옵니다.
@@ -8,14 +8,14 @@ import type { Member } from '../model/auth.types';
  * @returns {Promise<Member>} 멤버 정보
  * @throws {Error} 401 인증 에러는 'UNAUTHORIZED'로 변환, 다른 에러는 그대로 throw
  */
-export async function getCurrentMember(): Promise<Member> {
-  const response = await fetch('/api/auth/me', {
+export async function getCurrentMember(): Promise<AuthResponse> {
+  const response = await fetch('/api/members/me/profile', {
     method: 'GET',
     credentials: 'include',
   });
 
   if (response.ok) {
-    const data = (await response.json()) as ApiResponse<Member>;
+    const data = (await response.json()) as ApiResponse<AuthResponse>;
     return data.data;
   }
 

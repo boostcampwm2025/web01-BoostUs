@@ -29,7 +29,7 @@ export default function AnswerEditPage() {
     void (async () => {
       try {
         const a = await getAnswerById(answerId);
-        if (member.id !== a.member.id) {
+        if (member.member.id !== a.member.id) {
           alert('수정 권한이 없어요.');
           router.replace(`/questions/${questionId}`);
           return;

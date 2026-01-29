@@ -6,7 +6,7 @@ import { MemberNotFoundException } from './exception/member.exception';
 
 @Injectable()
 export class MemberService {
-  constructor(private readonly memberRepository: MemberRepository) { }
+  constructor(private readonly memberRepository: MemberRepository) {}
 
   /**
    * 현재 로그인한 사용자의 마이페이지 프로필 조회
@@ -20,6 +20,7 @@ export class MemberService {
 
     const response = {
       member: {
+        id: profile.id,
         avatarUrl: profile.avatarUrl,
         githubLogin: profile.githubLogin,
         nickname: profile.nickname,

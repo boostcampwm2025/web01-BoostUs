@@ -28,7 +28,7 @@ export default function QuestionEditPage() {
       const q = data.question; // ✅ 핵심
 
       // ✅ 작성자만 수정 가능
-      if (!member || member.id !== q.member.id) {
+      if (!member || member?.member.id !== q.member.id) {
         alert('수정 권한이 없어요.');
         router.replace(`/questions/${questionId}`);
         return;

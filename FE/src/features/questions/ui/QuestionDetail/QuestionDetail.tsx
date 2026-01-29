@@ -56,7 +56,8 @@ const QuestionDetail = ({
         <h1 className="mt-4 text-display-32 text-neutral-text-strong">
           {question.title}
         </h1>
-        {member?.id === question.member.id && (
+
+        {member?.member.id === question.member.id && (
           <div className="flex flex-row gap-4">
             <button
               type="button"

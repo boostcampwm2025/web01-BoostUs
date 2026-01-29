@@ -8,15 +8,21 @@ import {
   FeedListResponseDto,
   UpdateFeedDto,
 } from './dto';
-import { FeedForbiddenException, FeedNotFoundException } from './exception/feed.exception';
+import {
+  FeedForbiddenException,
+  FeedNotFoundException,
+  UnauthorizedCohortException,
+} from './exception/feed.exception';
 import { FeedValidatorService } from './feed-validator.service';
 import { FeedRepository } from './feed.repository';
+import { MemberRepository } from '../member/member.repository';
 
 @Injectable()
 export class FeedService {
   constructor(
     private readonly feedRepository: FeedRepository,
     private readonly feedValidatorService: FeedValidatorService,
+    private readonly memberRepository: MemberRepository,
   ) { }
 
   /**
@@ -49,6 +55,12 @@ export class FeedService {
    */
   async create(memberIdStr: string, dto: CreateFeedDto): Promise<FeedDetailDto> {
     const memberId = BigInt(memberIdStr);
+
+    // 캠퍼 인증 확인 (cohort가 있어야 함)
+    const member = await this.memberRepository.findProfileById(memberIdStr);
+    if (!member || !member.cohort) {
+      throw new UnauthorizedCohortException();
+    }
 
     // RSS URL 유효성 검증
     await this.feedValidatorService.validateFeedUrl(dto.feedUrl);
