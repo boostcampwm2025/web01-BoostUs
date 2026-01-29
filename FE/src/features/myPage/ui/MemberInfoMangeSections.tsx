@@ -21,7 +21,7 @@ import {
 
 // 폼 데이터 타입 정의
 interface RssFormValues {
-  blogUrl: string;
+  blogUrl: string | null;
 }
 
 export default function MemberInfoMangeSections() {
@@ -54,7 +54,7 @@ export default function MemberInfoMangeSections() {
     setServerError(null);
     setSuccessMessage(null);
 
-    const inputUrl = data.blogUrl.trim();
+    const inputUrl = (data.blogUrl ?? '').trim();
 
     // 1. 플랫폼 감지 및 RSS 변환 로직
     let finalRssUrl = inputUrl;

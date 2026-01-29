@@ -33,5 +33,7 @@ export interface AuthResponse {
     teamName: string;
     field: string;
   } | null;
-  feed: string | null;
+  feed: {
+    feedUrl: string;
+  } | null;
 }
