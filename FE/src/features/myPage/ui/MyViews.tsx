@@ -1,12 +1,7 @@
 'use client';
 
 import { HelpCircle } from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
 
 export default function MyViews() {
   // 모의 데이터 (막대 높이 %)
@@ -20,21 +15,16 @@ export default function MyViews() {
         <h3 className="text-display-20 text-neutral-text-strong">
           내 이야기 조회수
         </h3>
-        {/* 툴팁 (선택 사항) */}
-        {/* TODO: CustomTooltip으로 변경 */}
-        <TooltipProvider delayDuration={0}>
-          <Tooltip>
-            <TooltipTrigger>
-              <HelpCircle
-                size={16}
-                className="text-neutral-text-weak cursor-pointer transition-colors hover:text-neutral-text-strong duration-150"
-              />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p className="text-xs">최근 7일간의 조회수 통계입니다.</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <CustomTooltip
+          content="최근 7일간의 조회수 통계입니다."
+          contentClassName="bg-brand-surface-default text-brand-text-on-default"
+          side="top"
+        >
+          <HelpCircle
+            size={16}
+            className="text-neutral-text-weak cursor-pointer transition-colors hover:text-neutral-text-strong duration-150"
+          />
+        </CustomTooltip>
       </div>
 
       {/* 그래프 영역 (Flex로 꽉 채우기) */}
