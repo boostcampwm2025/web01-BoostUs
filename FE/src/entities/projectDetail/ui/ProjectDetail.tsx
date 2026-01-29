@@ -159,12 +159,17 @@ export default function ProjectDetail() {
               {data.participants.map((participant: Participant) => (
                 <div
                   key={participant.githubId}
-                  className="group flex cursor-default flex-col items-center text-center"
+                  className="group flex cursor-default flex-col items-center text-center justify-center"
                 >
                   <div className="mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-neutral-surface-strong ring-2 ring-brand-light transition-all duration-200 group-hover:ring-brand-border-default">
-                    <span className="text-display-16 text-brand-text-default">
-                      {participant.githubId.charAt(0)}
-                    </span>
+                    <Image
+                      className="rounded-full"
+                      width={100}
+                      height={100}
+                      sizes="100px"
+                      src={participant.avatarUrl ?? paint}
+                      alt={participant.githubId}
+                    />
                   </div>
 
                   <div className="text-body-12 text-neutral-text-default transition-colors">
