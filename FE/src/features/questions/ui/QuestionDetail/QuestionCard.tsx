@@ -1,34 +1,41 @@
+'use client';
+
 import ListCardChip from '@/features/questions/ui/ListCard/ListCardChip';
 import CardHeader from '@/features/questions/ui/QuestionDetail/CardHeader';
 import type { QuestionDetail as QuestionDetailType } from '@/features/questions/model/questions.type';
 import VoteButtons from '@/features/questions/ui/QuestionDetail/VoteButtons';
 import { likeQuestion, dislikeQuestion } from '../../api/questions.api';
 import { MarkdownViewer } from '@/shared/ui/MarkdownViewer/MarkdownViewer';
+import { useOptimisticVote } from '@/features/questions/model/useOptimisticVote';
 
-const QuestionCard = ({ question }: { question: QuestionDetailType }) => {
-  const handleUpvote = async () => {
-    try {
-      await likeQuestion(question.id);
-    } catch (error) {
-      console.error('Error upvoting question:', error);
-    }
-  };
-  const handleDownvote = async () => {
-    try {
-      await dislikeQuestion(question.id);
-    } catch (error) {
-      console.error('Error downvoting question:', error);
-    }
-  };
+const QuestionCard = ({
+  question,
+  hasAcceptedAnswer,
+}: {
+  question: QuestionDetailType;
+  hasAcceptedAnswer: boolean;
+}) => {
+  const { stats, myVote, handleVote } = useOptimisticVote({
+    id: question.id,
+    initialStats: {
+      upCount: question.upCount,
+      downCount: question.downCount,
+    },
+    api: {
+      voteUp: likeQuestion,
+      voteDown: dislikeQuestion,
+    },
+  });
 
   return (
     <section className="mt-8 w-full rounded-2xl border border-neutral-border-default bg-neutral-surface-bold">
-      <CardHeader question={question} />
+      <CardHeader question={question} hasAcceptedAnswer={hasAcceptedAnswer} />
       <div className="flex flex-row gap-6 w-full px-4 py-4 rounded-b-2xl">
         <VoteButtons
-          question={question}
-          onDownvote={handleDownvote}
-          onUpvote={handleUpvote}
+          upCount={stats.upCount}
+          myVote={myVote}
+          onUpvote={() => handleVote('up')}
+          onDownvote={() => handleVote('down')}
         />
         <div className="flex flex-col justify-between w-full">
           <div className="w-full">

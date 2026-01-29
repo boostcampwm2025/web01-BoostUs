@@ -3,10 +3,10 @@
 import { ChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-const BackButton = () => {
+const BackButton = ({ url }: { url: string }) => {
   const router = useRouter();
   const handleGoBack = (): void => {
-    router.back();
+    router.push(url);
   };
 
   return (

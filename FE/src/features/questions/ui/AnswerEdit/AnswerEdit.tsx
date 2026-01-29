@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import AnswerForm from '../Form/AnswerForm';
 import { editAnswer } from '../../api/questions.api';
 import { useAuth } from '@/features/login/model/auth.store';
 import { getAnswerById } from '@/features/questions/api/questions.api';
+import PostEditorForm, {
+  PostFormValues,
+} from '@/features/questions/ui/Form/PostEditorForm';
 
 export default function AnswerEditPage() {
   const router = useRouter();
@@ -17,10 +19,9 @@ export default function AnswerEditPage() {
     answerId: string;
   }>();
 
-  const [initialValues, setInitialValues] = useState<{
-    contents: string;
-    authorId: string;
-  } | null>(null);
+  const [initialValues, setInitialValues] = useState<PostFormValues | null>(
+    null
+  );
 
   useEffect(() => {
     if (!questionId || !answerId) return;
@@ -37,11 +38,12 @@ export default function AnswerEditPage() {
 
         setInitialValues({
           contents: a.contents,
-          authorId: a.member.id,
         });
       } catch (error) {
-        alert('답변을 불러오는데 실패했습니다.');
-        router.replace('questions/${questionId}');
+        if (error instanceof Error) {
+          alert('답변을 불러오는데 실패했습니다.');
+          router.replace(`/questions/${questionId}`);
+        }
       }
     })();
   }, [questionId, answerId, member, router]);
@@ -49,13 +51,15 @@ export default function AnswerEditPage() {
   if (!initialValues) return <div className="p-6">로딩 중...</div>;
 
   return (
-    <AnswerForm
+    <PostEditorForm
+      type="answer"
       variant="edit"
-      initialValues={{ contents: initialValues.contents }}
-      onSubmit={async (body) => {
-        await editAnswer(answerId, body);
+      initialValues={initialValues}
+      onSubmit={async (values) => {
+        await editAnswer(answerId, { contents: values.contents });
         router.push(`/questions/${questionId}`);
         router.refresh();
+        return undefined;
       }}
     />
   );
