@@ -1,7 +1,10 @@
 'use client';
 
 import { useAuth } from '@/features/login/model/auth.store';
-import { checkStoryLikeStatus } from '@/features/stories/api/stories.api';
+import {
+  checkStoryLikeStatus,
+  incrementStoryView,
+} from '@/features/stories/api/stories.api';
 import type { StoryDetail } from '@/features/stories/model/stories.type';
 import BackButton from '@/shared/ui/BackButton';
 import MarkdownViewer from '@/shared/ui/MarkdownViewer';
@@ -23,6 +26,13 @@ const StoryDetail = ({ story }: { story: StoryDetail }) => {
     setLikeCount(story.likeCount);
     setIsLiked(false);
   }, [story.id, story.likeCount]);
+
+  // 스토리 상세 진입 시 조회수 증가 (bid 쿠키로 중복 방지)
+  useEffect(() => {
+    incrementStoryView(story.id).catch(() => {
+      // 조회수 증가 실패 시 사용자에게 노출하지 않음
+    });
+  }, [story.id]);
 
   // 클라이언트 사이드에서 좋아요 상태 확인
   useEffect(() => {

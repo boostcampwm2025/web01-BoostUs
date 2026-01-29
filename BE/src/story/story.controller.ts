@@ -1,8 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ViewerKey } from '../view/decorator/viewer-key.decorator';
 import { CurrentMember } from '../auth/decorator/current-member.decorator';
 import { Public } from '../auth/decorator/public.decorator';
 import { ParseBigIntPipe } from '../common/pipe/parse-bigint.pipe';
+import { ViewerKeyGuard } from '../view/guard/view.guard';
 import {
   CreateStoryRequestDto,
   CreateStoryResponseDto,
@@ -36,7 +38,7 @@ export class StoryController {
   @Get(':id')
   @ApiOperation({
     summary: '스토리 상세 조회',
-    description: '특정 스토리의 상세 정보를 조회합니다. 로그인한 사용자의 경우 isLikedByMe 필드가 포함됩니다.',
+    description: '특정 스토리의 상세 정보를 조회합니다. 조회수 증가는 POST /stories/:id/view 를 사용하세요.',
   })
   @ApiParam({
     name: 'id',
@@ -53,11 +55,37 @@ export class StoryController {
     status: 404,
     description: '스토리를 찾을 수 없음',
   })
-  async getStory(
+  async getStory(@Param('id', ParseBigIntPipe) id: bigint): Promise<StoryResponseDto> {
+    return await this.storyService.findStoryById(id);
+  }
+
+  @Public()
+  @Post(':id/view')
+  @UseGuards(ViewerKeyGuard)
+  @ApiOperation({
+    summary: '스토리 조회수 증가',
+    description:
+      '특정 스토리의 조회수를 1 증가시킵니다. bid 쿠키 기반으로 동일 뷰어의 중복 증가를 방지합니다.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: '스토리 ID',
+    example: '1',
+    type: 'string',
+  })
+  @ApiResponse({
+    status: 201,
+    description: '조회수 증가 처리 완료',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '스토리를 찾을 수 없음',
+  })
+  async incrementStoryView(
     @Param('id', ParseBigIntPipe) id: bigint,
-    @CurrentMember() memberId?: string,
-  ): Promise<StoryResponseDto> {
-    return await this.storyService.findStoryById(id, memberId);
+    @ViewerKey() viewerKey: string,
+  ): Promise<void> {
+    await this.storyService.incrementStoryView(id, viewerKey);
   }
 
   @Public()
