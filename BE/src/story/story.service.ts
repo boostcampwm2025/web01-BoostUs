@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { CursorPayload, decodeCursor, encodeCursor } from '../common/util/cursor.util';
+import { FeedNotFoundException } from '../feed/exception/feed.exception';
 import { FeedRepository } from '../feed/feed.repository';
 import { ContentState } from '../generated/prisma/client';
 import { ViewService } from '../view/view.service';
@@ -150,7 +151,7 @@ export class StoryService {
     // feedId로 Feed 조회하여 memberId 추출
     const feed = await this.feedRepository.findFeedById(dto.feedId);
     if (!feed) {
-      throw new StoryNotFoundException(dto.feedId);
+      throw new FeedNotFoundException(dto.feedId);
     }
 
     // Story upsert 및 Feed lastFetchedAt 업데이트 (트랜잭션)

@@ -40,7 +40,7 @@ export const getStoryById = async (id: string) => {
  * @param storyId 스토리 ID
  */
 export const incrementStoryView = async (storyId: string): Promise<void> => {
-  customFetch<ApiResponse<void>>(`/api/stories/${storyId}/view`, {
+  await customFetch<ApiResponse<void>>(`/api/stories/${storyId}/view`, {
     method: 'POST',
   });
 };
