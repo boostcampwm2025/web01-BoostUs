@@ -70,9 +70,11 @@ const QuestionDetail = ({
           <h2 className="mt-12 text-display-24 text-neutral-text-strong">
             {question.answerCount}개의 답변
           </h2>
-          {answers.map((answer) => (
-            <AnswerCard key={answer.id} answer={answer} question={question} />
-          ))}
+          {answers
+            .map((answer) => (
+              <AnswerCard key={answer.id} answer={answer} question={question} />
+            ))
+            .reverse()}
         </>
       ) : (
         <p className="w-full flex items-center justify-center mt-12 text-string-16 text-neutral-text-weak">
