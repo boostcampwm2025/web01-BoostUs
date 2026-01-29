@@ -1,11 +1,8 @@
-// `src/features/project/ui/ProjectDetail.tsx`
-
 'use client';
 
 import Image from 'next/image';
 import { fetchProjectDetail } from '@/entities/projectDetail/api/projectDetailAPI';
 import { Github, ExternalLink, Users, Pencil, Calendar1 } from 'lucide-react';
-import CloseButton from '@/shared/ui/CloseButton';
 import { useParams } from 'next/navigation';
 import { Participant, ProjectData } from '@/entities/projectDetail/model/types';
 import { useEffect, useState } from 'react';
