@@ -20,17 +20,27 @@ const StoryDetail = ({ story }: { story: StoryDetail }) => {
   const { isAuthenticated } = useAuth();
   const [likeCount, setLikeCount] = useState(story.likeCount);
   const [isLiked, setIsLiked] = useState(false);
+  const [viewCount, setViewCount] = useState(story.viewCount);
 
   // story prop이 변경될 때 상태 업데이트
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLikeCount(story.likeCount);
     setIsLiked(false);
-  }, [story.id, story.likeCount]);
+    setViewCount(story.viewCount);
+  }, [story.id, story.likeCount, story.viewCount]);
 
   // 스토리 상세 진입 시 조회수 증가 (bid 쿠키로 중복 방지)
   useEffect(() => {
-    void incrementStoryView(story.id);
+    const incrementView = async () => {
+      try {
+        await incrementStoryView(story.id);
+        setViewCount((prev) => prev + 1);
+      } catch {
+        // 조회수 증가 실패 시 무시
+      }
+    };
+    void incrementView();
   }, [story.id]);
 
   // 클라이언트 사이드에서 좋아요 상태 확인
@@ -90,7 +100,7 @@ const StoryDetail = ({ story }: { story: StoryDetail }) => {
             <div className="flex flex-row items-center gap-1">
               <Eye className="text-neutral-text-weak h-3 w-3" />
               <span className="text-body-12 text-neutral-text-weak">
-                {story.viewCount}
+                {viewCount}
               </span>
             </div>
             <div className="flex flex-row items-center gap-1">

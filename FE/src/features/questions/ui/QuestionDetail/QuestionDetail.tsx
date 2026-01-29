@@ -8,7 +8,7 @@ import QuestionStatus from '@/features/questions/ui/Status/Status';
 import BackButton from '@/shared/ui/BackButton';
 import { Eye, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { incrementQuestionView } from '../../api/questions.api';
 
 const QuestionDetail = ({
@@ -19,12 +19,21 @@ const QuestionDetail = ({
   const { question, answers } = data;
   const { member } = useAuth();
   const router = useRouter();
+  const [viewCount, setViewCount] = useState(question.viewCount);
 
   const hasAcceptedAnswer = answers.some((answer) => answer.isAccepted);
 
   // 질문 상세 진입 시 조회수 증가
   useEffect(() => {
-    void incrementQuestionView(question.id);
+    const incrementView = async () => {
+      try {
+        await incrementQuestionView(question.id);
+        setViewCount((prev) => prev + 1);
+      } catch {
+        // 조회수 증가 실패 시 무시
+      }
+    };
+    void incrementView();
   }, [question.id]);
 
   const handleSubmit = () => {
@@ -60,7 +69,7 @@ const QuestionDetail = ({
           <div className="flex flex-row items-center justify-center gap-1">
             <Eye className="text-neutral-text-weak" strokeWidth={2} size={14} />
             <span className="text-neutral-text-weak text-body-12">
-              {question.viewCount}
+              {viewCount}
             </span>
           </div>
         </div>
