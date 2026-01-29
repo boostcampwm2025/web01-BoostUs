@@ -11,7 +11,7 @@ const ServiceStats = () => {
   useEffect(() => {
     void (async () => {
       const res = await getLandingCount();
-      setData(res.landingdata);
+      setData(res);
     })();
   }, []);
 
