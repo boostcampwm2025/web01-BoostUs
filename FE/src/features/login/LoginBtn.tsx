@@ -35,31 +35,31 @@ export default function LoginBtn() {
         </div>
 
         {/* 아래 member 보여주기 */}
-        <div
-          style={{
-            position: 'fixed',
-            bottom: '20px',
-            right: '20px',
-            backgroundColor: 'rgba(0,0,0,0.8)',
-            color: 'white',
-            padding: '10px',
-            borderRadius: '8px',
-            fontSize: '12px',
-            zIndex: 9999,
-          }}
-        >
-          <h3>🔑 Auth 상태 모니터링 dd</h3>
-          <p>
-            <strong>로딩 중:</strong> {isLoading ? 'YES' : 'NO'}
-          </p>
-          <p>
-            <strong>로그인 여부:</strong> {isAuthenticated ? 'YES' : 'NO'}
-          </p>
-          <p>
-            <strong>유저 정보:</strong>
-          </p>
-          <pre>{JSON.stringify(member, null, 2)}</pre>
-        </div>
+        {/*<div*/}
+        {/*  style={{*/}
+        {/*    position: 'fixed',*/}
+        {/*    bottom: '20px',*/}
+        {/*    right: '20px',*/}
+        {/*    backgroundColor: 'rgba(0,0,0,0.8)',*/}
+        {/*    color: 'white',*/}
+        {/*    padding: '10px',*/}
+        {/*    borderRadius: '8px',*/}
+        {/*    fontSize: '12px',*/}
+        {/*    zIndex: 9999,*/}
+        {/*  }}*/}
+        {/*>*/}
+        {/*  <h3>🔑 Auth 상태 모니터링 dd</h3>*/}
+        {/*  <p>*/}
+        {/*    <strong>로딩 중:</strong> {isLoading ? 'YES' : 'NO'}*/}
+        {/*  </p>*/}
+        {/*  <p>*/}
+        {/*    <strong>로그인 여부:</strong> {isAuthenticated ? 'YES' : 'NO'}*/}
+        {/*  </p>*/}
+        {/*  <p>*/}
+        {/*    <strong>유저 정보:</strong>*/}
+        {/*  </p>*/}
+        {/*  <pre>{JSON.stringify(member, null, 2)}</pre>*/}
+        {/*</div>*/}
       </div>
     );
   }
