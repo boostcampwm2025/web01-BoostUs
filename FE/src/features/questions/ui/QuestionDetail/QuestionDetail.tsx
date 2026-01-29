@@ -9,6 +9,9 @@ import BackButton from '@/shared/ui/BackButton';
 import { Eye, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { deleteQuestion } from '../../api/questions.api';
+import { useEffect } from 'react';
+import { incrementQuestionView } from '../../api/questions.api';
+
 const QuestionDetail = ({
   data,
 }: {
@@ -17,6 +20,11 @@ const QuestionDetail = ({
   const { question, answers } = data;
   const { member } = useAuth();
   const router = useRouter();
+
+  // 질문 상세 진입 시 조회수 증가
+  useEffect(() => {
+    incrementQuestionView(question.id).catch(() => {});
+  }, [question.id]);
 
   const handleSubmit = () => {
     if (!member) {

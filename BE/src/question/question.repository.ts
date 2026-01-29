@@ -75,6 +75,21 @@ export class QuestionRepository {
     return { items, totalItems };
   }
 
+  async checkQuestionExists(id: bigint): Promise<boolean> {
+    const story = await this.prisma.question.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+    return story !== null;
+  }
+
+  async incrementViewCount(id: bigint): Promise<void> {
+    await this.prisma.question.update({
+      where: { id },
+      data: { viewCount: { increment: 1 } },
+    });
+  }
+
   async findOne(id: bigint) {
     return this.prisma.question.findUnique({
       where: { id },
