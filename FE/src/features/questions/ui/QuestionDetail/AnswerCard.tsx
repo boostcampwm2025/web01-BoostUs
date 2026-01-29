@@ -24,10 +24,12 @@ const AnswerCard = ({ answer, question }: Props) => {
   const router = useRouter();
 
   const [isAccepted, setIsAccepted] = useState(answer.isAccepted);
+  const [localAnswer, setLocalAnswer] = useState(answer); // 낙관적 업데이트 실패 시 복구를 위한 이전 상태 저장
 
   useEffect(() => {
     if (answer.isAccepted !== isAccepted) {
       setIsAccepted(answer.isAccepted);
+      setLocalAnswer(answer);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [answer.isAccepted]);
@@ -37,21 +39,28 @@ const AnswerCard = ({ answer, question }: Props) => {
   const showAcceptButton =
     isQuestionAuthor && !question.isResolved && !isAccepted;
 
-  const handleUpvote = async () => {
-    try {
-      await likeAnswer(answer.id);
-      router.refresh(); /* TODO: 낙관적 업데이트로 개선 필요 */
-    } catch (error) {
-      console.error('Error upvoting answer:', error);
-    }
-  };
+  const handleVote = async (type: 'up' | 'down') => {
+    const previousAnswer = { ...localAnswer }; // 실패 시 복구를 위한 이전 상태 저장
 
-  const handleDownvote = async () => {
+    setLocalAnswer((prev) => ({
+      ...prev,
+      upCount: type === 'up' ? prev.upCount + 1 : prev.upCount,
+      downCount: type === 'down' ? prev.downCount + 1 : prev.downCount,
+    }));
+
     try {
-      await dislikeAnswer(answer.id);
-      router.refresh(); /* TODO: 낙관적 업데이트로 개선 필요 */
+      if (type === 'up') {
+        await likeAnswer(answer.id);
+      } else {
+        await dislikeAnswer(answer.id);
+      }
+
+      // 서버 데이터와 클라이언트의 Server Component 상태를 동기화
+      router.refresh();
     } catch (error) {
-      console.error('Error downvoting answer:', error);
+      console.error(`Error ${type}voting answer:`, error);
+      setLocalAnswer(previousAnswer);
+      alert('투표 처리에 실패했습니다. 다시 시도해주세요.');
     }
   };
 
@@ -71,6 +80,7 @@ const AnswerCard = ({ answer, question }: Props) => {
       alert('답변 채택에 실패했습니다.');
     }
   };
+
   return (
     <section
       className={`
@@ -87,8 +97,8 @@ const AnswerCard = ({ answer, question }: Props) => {
       <div className="flex flex-row gap-6 w-full px-4 py-4 rounded-b-2xl">
         <VoteButtons
           answer={answer}
-          onDownvote={handleDownvote}
-          onUpvote={handleUpvote}
+          onUpvote={() => handleVote('up')}
+          onDownvote={() => handleVote('down')}
         />
         <div className="flex flex-col justify-between w-full">
           <div className="w-full">

@@ -1,23 +1,42 @@
+'use client';
+
 import ListCardChip from '@/features/questions/ui/ListCard/ListCardChip';
 import CardHeader from '@/features/questions/ui/QuestionDetail/CardHeader';
 import type { QuestionDetail as QuestionDetailType } from '@/features/questions/model/questions.type';
 import VoteButtons from '@/features/questions/ui/QuestionDetail/VoteButtons';
 import { likeQuestion, dislikeQuestion } from '../../api/questions.api';
 import { MarkdownViewer } from '@/shared/ui/MarkdownViewer/MarkdownViewer';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 const QuestionCard = ({ question }: { question: QuestionDetailType }) => {
-  const handleUpvote = async () => {
+  const router = useRouter();
+  const [localQuestion, setLocalQuestion] = useState(question);
+
+  useEffect(() => {
+    setLocalQuestion(question);
+  }, [question]);
+
+  const handleVote = async (type: 'up' | 'down') => {
+    const previousQuestion = { ...localQuestion };
+
+    setLocalQuestion((prev) => ({
+      ...prev,
+      upCount: type === 'up' ? prev.upCount + 1 : prev.upCount,
+      downCount: type === 'down' ? prev.downCount + 1 : prev.downCount,
+    }));
+
     try {
-      await likeQuestion(question.id);
+      if (type === 'up') {
+        await likeQuestion(question.id);
+      } else {
+        await dislikeQuestion(question.id);
+      }
+      router.refresh();
     } catch (error) {
-      console.error('Error upvoting question:', error);
-    }
-  };
-  const handleDownvote = async () => {
-    try {
-      await dislikeQuestion(question.id);
-    } catch (error) {
-      console.error('Error downvoting question:', error);
+      console.error(`Error ${type}voting question:`, error);
+      setLocalQuestion(previousQuestion); // 실패 시 롤백
+      alert('투표 처리에 실패했습니다.');
     }
   };
 
@@ -27,8 +46,8 @@ const QuestionCard = ({ question }: { question: QuestionDetailType }) => {
       <div className="flex flex-row gap-6 w-full px-4 py-4 rounded-b-2xl">
         <VoteButtons
           question={question}
-          onDownvote={handleDownvote}
-          onUpvote={handleUpvote}
+          onUpvote={() => handleVote('up')}
+          onDownvote={() => handleVote('down')}
         />
         <div className="flex flex-col justify-between w-full">
           <div className="w-full">
