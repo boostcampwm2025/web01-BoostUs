@@ -42,7 +42,7 @@ export default function AnswerEditPage() {
       } catch (error) {
         if (error instanceof Error) {
           alert('답변을 불러오는데 실패했습니다.');
-          router.replace('questions/${questionId}');
+          router.replace(`/questions/${questionId}`);
         }
       }
     })();
@@ -59,6 +59,7 @@ export default function AnswerEditPage() {
         await editAnswer(answerId, { contents: values.contents });
         router.push(`/questions/${questionId}`);
         router.refresh();
+        return undefined;
       }}
     />
   );

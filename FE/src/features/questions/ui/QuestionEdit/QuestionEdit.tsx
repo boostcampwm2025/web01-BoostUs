@@ -51,13 +51,14 @@ export default function QuestionEditPage() {
       variant="edit"
       initialValues={initialValues}
       onSubmit={async (values) => {
-        if (!values.title) return;
+        if (!values.title) return undefined;
         await editQuestion(questionId, {
           title: values.title,
           contents: values.contents,
           hashtags: values.hashtags,
         });
         router.push(`/questions/${questionId}`);
+        return undefined;
       }}
     />
   );

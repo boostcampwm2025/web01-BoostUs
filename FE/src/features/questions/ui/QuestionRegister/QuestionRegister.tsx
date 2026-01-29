@@ -17,6 +17,7 @@ export default function QuestionRegisterPage() {
           hashtags: values.hashtags,
         });
         if (res?.id) router.push(`/questions/${res.id}`);
+        return res;
       }}
     />
   );
