@@ -30,7 +30,9 @@ const StatusButton = ({
           : 'text-neutral-text-weak hover:text-neutral-text-strong'
       }`}
     >
-      <span className="text-body-16">{label}</span>
+      <span className={isActive ? 'text-string-16' : 'text-body-16'}>
+        {label}
+      </span>
       <div className="flex items-center justify-center bg-neutral-surface-bold rounded-full px-2">
         <span className="text-neutral-text-weak text-body-12">{count}</span>
       </div>

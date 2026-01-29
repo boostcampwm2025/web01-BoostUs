@@ -8,7 +8,7 @@ import QuestionStatus from '@/features/questions/ui/Status/Status';
 import BackButton from '@/shared/ui/BackButton';
 import { Eye, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { deleteQuestion } from '../../api/questions.api';
+
 const QuestionDetail = ({
   data,
 }: {
@@ -27,57 +27,15 @@ const QuestionDetail = ({
     router.push(`/questions/${question.id}/answers`);
   };
 
-  const handleCorrection = () => {
-    if (!member) {
-      alert('로그인이 필요해요.');
-      return;
-    }
-    router.push(`/questions/${question.id}/edit`);
-  };
-
-  const handleDelete = async () => {
-    if (!member) {
-      alert('로그인이 필요해요.');
-      return;
-    }
-    if (!confirm('정말 삭제하시겠어요?')) return;
-    try {
-      await deleteQuestion(question.id);
-      router.push(`/questions`);
-    } catch (error) {
-      alert('질문 삭제에 실패했습니다.');
-    }
-  };
-
   return (
     <article className="mx-auto flex w-full max-w-270 flex-col items-start justify-center">
       <BackButton />
-      <div className="flex items-center justify-between w-full mt-4 mb-6">
-        <h1 className="mt-4 text-display-32 text-neutral-text-strong">
-          {question.title}
-        </h1>
 
-        {member?.member.id === question.member.id && (
-          <div className="flex flex-row gap-4">
-            <button
-              type="button"
-              onClick={handleCorrection}
-              className="h-10 px-4 rounded-x cursor-pointer bg-brand-surface-default text-brand-text-on-default disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              수정하기
-            </button>
-            <button
-              type="button"
-              onClick={handleDelete}
-              className="h-10 px-4 rounded-x cursor-pointer bg-brand-surface-default text-brand-text-on-default disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              삭제하기
-            </button>
-          </div>
-        )}
-      </div>
+      <h1 className="mt-4 text-display-32 text-neutral-text-strong">
+        {question.title}
+      </h1>
 
-      <div className="flex items-center justify-between w-full mt-4 mb-6">
+      <div className="flex items-center justify-between w-full">
         <div className="flex flex-row gap-4 mt-3">
           <QuestionStatus status={question.isResolved} />
           <div className="flex flex-row items-center justify-center gap-1">
@@ -101,7 +59,7 @@ const QuestionDetail = ({
           type="button"
           disabled={!member}
           onClick={handleSubmit}
-          className="h-10 px-4 rounded-x cursor-pointer bg-brand-surface-default text-brand-text-on-default disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 rounded-lg cursor-pointer bg-brand-surface-default hover:bg-brand-dark transition-colors duration-150 text-brand-text-on-default disabled:opacity-50 disabled:cursor-not-allowed"
         >
           답변하기
         </button>

@@ -4,7 +4,7 @@ import UserProfile from '@/shared/ui/UserProfile';
 import extractDate from '@/shared/utils/extractDate';
 import { useAuth } from '@/features/login/model/auth.store';
 import { useRouter } from 'next/navigation';
-import { deleteAnswer } from '../../api/questions.api';
+import { deleteAnswer, deleteQuestion } from '../../api/questions.api';
 
 const CardHeader = ({
   question,
@@ -16,13 +16,22 @@ const CardHeader = ({
   const { member } = useAuth();
   const router = useRouter();
 
+  const targetMemberId = question ? question.member.id : answer?.member.id;
+  const isAuthor = member && targetMemberId === member.member.id;
+
   const handleCorrection = () => {
     if (!member) {
       alert('로그인이 필요해요.');
       return;
     }
-    if (!answer) return;
-    router.push(`/questions/${answer?.questionId}/answers/${answer?.id}/edit`);
+
+    if (question) {
+      // 질문 수정 페이지 이동
+      router.push(`/questions/${question.id}/edit`);
+    } else if (answer) {
+      // 답변 수정 페이지 이동
+      router.push(`/questions/${answer.questionId}/answers/${answer.id}/edit`);
+    }
   };
 
   const handleDelete = async () => {
@@ -30,13 +39,21 @@ const CardHeader = ({
       alert('로그인이 필요해요.');
       return;
     }
-    if (!answer) return;
+
+    if (!question && !answer) return;
+
     if (!confirm('정말 삭제하시겠어요?')) return;
+
     try {
-      await deleteAnswer(answer!.id);
-      router.push(`/questions/${answer?.questionId}`);
+      if (question) {
+        await deleteQuestion(question.id);
+        router.push('/questions');
+      } else if (answer) {
+        await deleteAnswer(answer.id);
+        router.refresh();
+      }
     } catch (error) {
-      alert('삭제가 실패했습니다.');
+      if (error instanceof Error) alert('삭제에 실패했습니다.');
     }
   };
 
@@ -70,7 +87,7 @@ const CardHeader = ({
           </span>
         </div>
       </div>
-      {member && answer?.member.id === member.member.id && (
+      {isAuthor && (
         <div className="ml-auto flex flex-row items-center justify-center gap-2">
           <button
             className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150"

@@ -1,22 +1,21 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import QuestionForm from '../Form/QuestionForm';
 import { getQuestionById, editQuestion } from '../../api/questions.api';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/features/login/model/auth.store';
+import PostEditorForm, {
+  PostFormValues,
+} from '@/features/questions/ui/Form/PostEditorForm';
 
 export default function QuestionEditPage() {
   const { questionId } = useParams<{ questionId: string }>();
   const router = useRouter();
   const { member, isLoading } = useAuth();
 
-  const [initialValues, setInitialValues] = useState<{
-    title: string;
-    contents: string;
-    hashtags: string[];
-    authorId: string;
-  } | null>(null);
+  const [initialValues, setInitialValues] = useState<PostFormValues | null>(
+    null
+  );
 
   useEffect(() => {
     // member가 아직 로딩 전(null)일 수 있으면,
@@ -38,7 +37,6 @@ export default function QuestionEditPage() {
         title: q.title,
         contents: q.contents,
         hashtags: q.hashtags ?? [],
-        authorId: q.member.id,
       });
     })();
   }, [questionId, member, isLoading, router]);
@@ -48,11 +46,17 @@ export default function QuestionEditPage() {
   }
 
   return (
-    <QuestionForm
+    <PostEditorForm
+      type="question"
       variant="edit"
       initialValues={initialValues}
-      onSubmit={async (payload) => {
-        await editQuestion(questionId, payload); // ✅ editQuestion
+      onSubmit={async (values) => {
+        if (!values.title) return;
+        await editQuestion(questionId, {
+          title: values.title,
+          contents: values.contents,
+          hashtags: values.hashtags,
+        });
         router.push(`/questions/${questionId}`);
       }}
     />

@@ -1,4 +1,5 @@
 'use client';
+
 import { Answer, Question } from '@/features/questions/model/questions.type';
 import VoteButtons from '@/features/questions/ui/QuestionDetail/VoteButtons';
 import { CircleCheck } from 'lucide-react';
@@ -10,35 +11,64 @@ import {
 import { useAuth } from '@/features/login/model/auth.store';
 import MarkdownViewer from '@/shared/ui/MarkdownViewer';
 import CardHeader from './CardHeader';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-type Props = {
+interface Props {
   answer: Answer;
   question: Question;
-};
+}
 
 const AnswerCard = ({ answer, question }: Props) => {
   const { member } = useAuth();
+  const router = useRouter();
+
+  const [isAccepted, setIsAccepted] = useState(answer.isAccepted);
+
+  useEffect(() => {
+    if (answer.isAccepted !== isAccepted) {
+      setIsAccepted(answer.isAccepted);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [answer.isAccepted]);
+
   const isQuestionAuthor = member?.member?.id === question.member.id;
+
+  const showAcceptButton =
+    isQuestionAuthor && !question.isResolved && !isAccepted;
 
   const handleUpvote = async () => {
     try {
       await likeAnswer(answer.id);
+      router.refresh(); /* TODO: 낙관적 업데이트로 개선 필요 */
     } catch (error) {
       console.error('Error upvoting answer:', error);
     }
   };
+
   const handleDownvote = async () => {
     try {
       await dislikeAnswer(answer.id);
+      router.refresh(); /* TODO: 낙관적 업데이트로 개선 필요 */
     } catch (error) {
       console.error('Error downvoting answer:', error);
     }
   };
+
   const handleAccept = async () => {
+    if (question.isResolved) return;
+
+    const previousState = isAccepted; // 롤백용 이전 상태 저장
+    setIsAccepted(true);
+
     try {
       await acceptAnswer(question.id, answer.id);
+
+      router.refresh();
     } catch (error) {
       console.error('Error accepting answer:', error);
+      setIsAccepted(previousState);
+      alert('답변 채택에 실패했습니다.');
     }
   };
   return (
@@ -46,7 +76,7 @@ const AnswerCard = ({ answer, question }: Props) => {
       className={`
     mt-6 w-full rounded-2xl border
     ${
-      answer.isAccepted
+      isAccepted
         ? 'border-green-500 bg-green-50'
         : 'border-neutral-border-default bg-neutral-surface-bold'
     }
@@ -65,7 +95,7 @@ const AnswerCard = ({ answer, question }: Props) => {
             <MarkdownViewer content={answer.contents} />
           </div>
           <div className="border-t border-neutral-border-default w-full flex flex-row pt-4 justify-between">
-            {isQuestionAuthor && (
+            {showAcceptButton && (
               <button
                 className="gap-1 flex flex-row items-center justify-center text-neutral-text-default cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150"
                 onClick={handleAccept}
