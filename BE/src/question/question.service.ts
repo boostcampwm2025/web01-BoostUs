@@ -12,13 +12,20 @@ import { QuestionRepository } from './question.repository';
 import { QuestionResponseDto } from './dto/res/question-response.dto';
 import { UpdateQuestionDto } from './dto/req/update-question.dto';
 import { AnswerResponseDto } from 'src/answer/dto/res/answer-response.dto';
+import { ViewService } from 'src/view/view.service';
+import { plainToInstance } from 'class-transformer';
+import { QuestionDetailItemDto } from './dto/question-detail-item.dto';
+import { QuestionNotFoundException } from './exception/question.exception';
 
 const toHashtagsStringOrNull = (hashtags?: string[]): string | null =>
   hashtags && hashtags.length ? hashtags.join(',') : null;
 
 @Injectable()
 export class QuestionService {
-  constructor(private readonly questionRepo: QuestionRepository) {}
+  constructor(
+    private readonly questionRepo: QuestionRepository,
+    private readonly viewService: ViewService,
+  ) {}
 
   async create(memberIdStr: string, dto: CreateQuestionDto) {
     const memberId = BigInt(memberIdStr);
@@ -237,6 +244,24 @@ export class QuestionService {
         },
       })),
     };
+  }
+
+  async incrementStoryView(id: bigint, viewerKey: string): Promise<void> {
+    const questionId = BigInt(id);
+
+    const questionExists = await this.questionRepo.checkQuestionExists(questionId);
+    if (!questionExists) {
+      throw new QuestionNotFoundException(questionId);
+    }
+
+    const shouldIncrement = await this.viewService.shouldIncrementView(
+      'question',
+      questionId,
+      viewerKey,
+    );
+    if (shouldIncrement) {
+      await this.questionRepo.incrementViewCount(id);
+    }
   }
 
   async update(

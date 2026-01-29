@@ -33,6 +33,14 @@ export const getInitialQuestions = async (params?: {
   });
 };
 
+export const incrementQuestionView = async (
+  questionId: string
+): Promise<void> => {
+  customFetch<ApiResponse<void>>(`/api/questions/${questionId}/view`, {
+    method: 'POST',
+  });
+};
+
 /**
  * 특정 질문 상세 조회
  */

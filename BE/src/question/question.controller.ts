@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Public } from '../auth/decorator/public.decorator';
 import { CreateQuestionDto } from './dto/req/create-question.dto';
@@ -9,6 +19,9 @@ import { QuestionCountDto } from './dto/res/question-count.dto';
 import { responseMessage } from '../common/decorator/response-message.decorator';
 import { UpdateQuestionDto } from './dto/req/update-question.dto';
 import { CurrentMember } from 'src/auth/decorator/current-member.decorator';
+import { ViewerKeyGuard } from 'src/view/guard/view.guard';
+import { ViewerKey } from 'src/view/decorator/viewer-key.decorator';
+import { ParseBigIntPipe } from 'src/common/pipe/parse-bigint.pipe';
 
 @ApiTags('질문')
 @Controller('questions')
@@ -95,6 +108,16 @@ export class QuestionController {
   })
   async findOne(@Param('id') id: string) {
     return await this.questionService.findOne(id);
+  }
+
+  @Public()
+  @Post(':id/view')
+  @UseGuards(ViewerKeyGuard)
+  async incrementStoryView(
+    @Param('id', ParseBigIntPipe) id: bigint,
+    @ViewerKey() viewerKey: string,
+  ): Promise<void> {
+    await this.questionService.incrementStoryView(id, viewerKey);
   }
 
   @Patch(':id')
