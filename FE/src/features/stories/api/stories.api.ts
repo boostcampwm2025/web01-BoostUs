@@ -36,6 +36,16 @@ export const getStoryById = async (id: string) => {
 };
 
 /**
+ * 스토리 조회수 증가 (bid 쿠키 기반, 클라이언트에서 호출)
+ * @param storyId 스토리 ID
+ */
+export const incrementStoryView = async (storyId: string): Promise<void> => {
+  customFetch<ApiResponse<void>>(`/api/stories/${storyId}/view`, {
+    method: 'POST',
+  });
+};
+
+/**
  * 캠퍼들의 이야기 좋아요 등록
  * @param storyId 스토리 ID
  */
