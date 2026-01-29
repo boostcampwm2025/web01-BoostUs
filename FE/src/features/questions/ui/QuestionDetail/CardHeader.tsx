@@ -95,7 +95,7 @@ const CardHeader = ({
       </div>
       {isAuthor && (
         <div className="ml-auto flex flex-row items-center justify-center gap-2">
-          {question && (
+          {question && !hasAcceptedAnswer && (
             <>
               <button
                 className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150"

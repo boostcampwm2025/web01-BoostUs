@@ -8,7 +8,13 @@ import { likeQuestion, dislikeQuestion } from '../../api/questions.api';
 import { MarkdownViewer } from '@/shared/ui/MarkdownViewer/MarkdownViewer';
 import { useOptimisticVote } from '@/features/questions/model/useOptimisticVote';
 
-const QuestionCard = ({ question }: { question: QuestionDetailType }) => {
+const QuestionCard = ({
+  question,
+  hasAcceptedAnswer,
+}: {
+  question: QuestionDetailType;
+  hasAcceptedAnswer: boolean;
+}) => {
   const { stats, myVote, handleVote } = useOptimisticVote({
     id: question.id,
     initialStats: {
@@ -23,7 +29,7 @@ const QuestionCard = ({ question }: { question: QuestionDetailType }) => {
 
   return (
     <section className="mt-8 w-full rounded-2xl border border-neutral-border-default bg-neutral-surface-bold">
-      <CardHeader question={question} />
+      <CardHeader question={question} hasAcceptedAnswer={hasAcceptedAnswer} />
       <div className="flex flex-row gap-6 w-full px-4 py-4 rounded-b-2xl">
         <VoteButtons
           upCount={stats.upCount}

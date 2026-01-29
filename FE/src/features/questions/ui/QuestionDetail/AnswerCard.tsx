@@ -14,12 +14,15 @@ import CardHeader from './CardHeader';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useOptimisticVote } from '@/features/questions/model/useOptimisticVote';
+import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
 
 interface Props {
   answer: Answer;
   question: Question;
   hasAcceptedAnswer: boolean;
 }
+
+const TOOLTIP_MESSAGE = '답변을 채택하면 수정이나 삭제가 불가능해요';
 
 const AnswerCard = ({ answer, question, hasAcceptedAnswer }: Props) => {
   const { member } = useAuth();
@@ -93,17 +96,22 @@ const AnswerCard = ({ answer, question, hasAcceptedAnswer }: Props) => {
             <MarkdownViewer content={answer.contents} />
           </div>
           <div className="border-t border-neutral-border-default w-full flex flex-row pt-4 justify-between">
-            <button
-              className={`gap-1 flex flex-row items-center justify-center text-neutral-text-default cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150 ${
-                showAcceptButton ? 'visible' : 'invisible pointer-events-none'
-              }`}
-              onClick={handleAccept}
-              aria-hidden={!showAcceptButton}
-              disabled={!showAcceptButton}
+            <CustomTooltip
+              content={TOOLTIP_MESSAGE}
+              contentClassName="bg-brand-surface-default text-brand-text-on-default"
             >
-              <CircleCheck size={16} />
-              <span>채택하기</span>
-            </button>
+              <button
+                className={`gap-1 flex flex-row items-center justify-center text-neutral-text-default cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150 ${
+                  showAcceptButton ? 'visible' : 'invisible pointer-events-none'
+                }`}
+                onClick={handleAccept}
+                aria-hidden={!showAcceptButton}
+                disabled={!showAcceptButton}
+              >
+                <CircleCheck size={16} />
+                <span>채택하기</span>
+              </button>
+            </CustomTooltip>
 
             <div className="flex flex-row items-center justify-center gap-2">
               <button className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150">

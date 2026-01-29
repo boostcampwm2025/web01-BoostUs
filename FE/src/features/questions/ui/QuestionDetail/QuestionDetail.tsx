@@ -66,7 +66,7 @@ const QuestionDetail = ({
           답변하기
         </button>
       </div>
-      <QuestionCard question={question} />
+      <QuestionCard question={question} hasAcceptedAnswer={hasAcceptedAnswer} />
       {answers.length > 0 ? (
         <>
           <h2 className="mt-12 text-display-24 text-neutral-text-strong">

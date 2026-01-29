@@ -12,7 +12,9 @@ import type { PreviewMode } from './QuestionModeButton';
 import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
 
 const MAX_TITLE_LENGTH = 200;
-const TOOLTIP_MESSAGE = '답변이 채택되면 수정이나 삭제가 불가능해요';
+const TOOLTIP_MESSAGE_ANSWER = '답변이 채택되면 수정이나 삭제가 불가능해요';
+const TOOLTIP_MESSAGE_QUESTION = '답변을 채택하면 수정이나 삭제가 불가능해요';
+
 const normalizeTitle = (v: string) => v.replace(/\s+/g, ' ').trim();
 
 export interface PostFormValues {
@@ -144,21 +146,14 @@ export default function PostEditorForm({
         {/* 툴바 */}
         <div className="flex items-center justify-between px-6 py-3 border-b border-neutral-border-default bg-neutral-surface-strong">
           <ModeToggle mode={mode} onChange={setMode} />
-          {type === 'answer' ? (
-            <CustomTooltip
-              content={TOOLTIP_MESSAGE}
-              contentClassName="bg-brand-surface-default text-brand-text-on-default"
-            >
-              <button
-                type="button"
-                disabled={!canSubmit}
-                onClick={handleSubmit}
-                className="px-4 py-2 rounded-lg cursor-pointer bg-brand-surface-default hover:bg-brand-dark transition-colors duration-150 text-brand-text-on-default disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {buttonLabel}
-              </button>
-            </CustomTooltip>
-          ) : (
+          <CustomTooltip
+            content={
+              type === 'answer'
+                ? TOOLTIP_MESSAGE_ANSWER
+                : TOOLTIP_MESSAGE_QUESTION
+            }
+            contentClassName="bg-brand-surface-default text-brand-text-on-default"
+          >
             <button
               type="button"
               disabled={!canSubmit}
@@ -167,7 +162,7 @@ export default function PostEditorForm({
             >
               {buttonLabel}
             </button>
-          )}
+          </CustomTooltip>
         </div>
 
         {/* 입력 영역 */}
