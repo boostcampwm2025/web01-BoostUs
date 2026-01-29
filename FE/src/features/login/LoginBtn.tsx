@@ -7,9 +7,10 @@ import MemberInfoMangeSections from '@/features/myPage/ui/MemberInfoMangeSection
 import ActivityGraph from '@/features/myPage/ui/ActivityGraph';
 import MyBadge from '@/features/myPage/ui/MyBadge';
 import MyViews from '@/features/myPage/ui/MyViews';
+import PageHeader from '@/shared/ui/PageHeader';
 
 export default function LoginBtn() {
-  const { member, isAuthenticated, isLoading, logout } = useAuth();
+  const { member, isAuthenticated, isLoading } = useAuth();
 
   // 로딩 중일 때
   if (isLoading) {
@@ -23,8 +24,8 @@ export default function LoginBtn() {
   // 로그인 된 상태
   if (isAuthenticated && member) {
     return (
-      <div className="w-full max-w-[1280px] mx-auto p-4 flex flex-col md:flex-row items-start gap-6">
-        <div className="w-full md:w-[380px] flex flex-col gap-6 shrink-0">
+      <div className="w-full max-w-7xl mx-auto p-4 flex flex-col md:flex-row items-start gap-6">
+        <div className="w-full md:w-95 flex flex-col gap-6 shrink-0">
           <MemberInfoMangeSections />
           <MyBadge />
         </div>
@@ -66,13 +67,17 @@ export default function LoginBtn() {
 
   // 로그인 안 된 상태
   return (
-    <div className="flex flex-col items-center gap-2 bg-black rounded-lg">
-      <button
-        className="flex flex-row items-center gap-2 text-white p-2 text-string-16"
-        onClick={navigateToGithubLogin}
-      >
-        <Github /> GitHub로 계속하기
-      </button>
+    <div className="w-full max-w-270">
+      <PageHeader title="로그인" subtitle="BoostUs에 어서오세요!" />
+      <div className="flex flex-col items-center w-full mt-20">
+        <button
+          type="button"
+          className="flex flex-row items-center gap-2 text-brand-text-on-default cursor-pointer bg-brand-surface-github rounded-lg px-4 py-2 text-string-16"
+          onClick={navigateToGithubLogin}
+        >
+          <Github /> GitHub로 계속하기
+        </button>
+      </div>
     </div>
   );
 }

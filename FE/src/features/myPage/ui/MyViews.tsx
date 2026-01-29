@@ -14,16 +14,21 @@ export default function MyViews() {
   const days = ['월', '화', '수', '목', '금', '토', '일'];
 
   return (
-    <div className="w-full h-full bg-white border border-neutral-200 rounded-3xl p-6 shadow-sm flex flex-col">
+    <div className="w-full h-full bg-bold border border-neutral-border-default rounded-2xl p-6 shadow-default flex flex-col">
       {/* 헤더 영역 */}
       <div className="mb-6 flex items-center gap-1.5">
-        <h3 className="text-lg font-bold text-neutral-900">내 이야기 조회수</h3>
-
+        <h3 className="text-display-20 text-neutral-text-strong">
+          내 이야기 조회수
+        </h3>
         {/* 툴팁 (선택 사항) */}
+        {/* TODO: CustomTooltip으로 변경 */}
         <TooltipProvider delayDuration={0}>
           <Tooltip>
             <TooltipTrigger>
-              <HelpCircle size={14} className="text-neutral-400" />
+              <HelpCircle
+                size={16}
+                className="text-neutral-text-weak cursor-pointer transition-colors hover:text-neutral-text-strong duration-150"
+              />
             </TooltipTrigger>
             <TooltipContent>
               <p className="text-xs">최근 7일간의 조회수 통계입니다.</p>
@@ -49,7 +54,7 @@ export default function MyViews() {
               {/* 막대 (Bar) */}
               <div
                 className="w-full bg-neutral-100 rounded-t-lg relative overflow-hidden group-hover:bg-emerald-50 transition-colors duration-300"
-                style={{ height: `${height}%` }}
+                style={{ height: `${height.toString()}%` }}
               >
                 {/* 막대 안의 채워진 부분 애니메이션 효과 (옵션) */}
                 <div className="absolute bottom-0 left-0 w-full bg-emerald-500/80 h-0 group-hover:h-full transition-all duration-500 ease-out rounded-t-lg" />
@@ -57,7 +62,7 @@ export default function MyViews() {
               </div>
 
               {/* 요일 라벨 */}
-              <span className="text-xs text-neutral-400 font-medium">
+              <span className="text-body-12 text-neutral-text-weak">
                 {days[index]}
               </span>
             </div>
