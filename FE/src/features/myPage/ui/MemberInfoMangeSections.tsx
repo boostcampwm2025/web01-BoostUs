@@ -221,7 +221,7 @@ export default function MemberInfoMangeSections() {
           </form>
 
           {/* 메시지 피드백 영역 */}
-          <div className="mt-2 min-h-[20px]">
+          <div className="mt-2 min-h-[10px]">
             {/* 1. 폼 유효성 에러 */}
             {errors.blogUrl && (
               <p className="text-red-500 text-xs ml-1">
@@ -239,7 +239,7 @@ export default function MemberInfoMangeSections() {
           </div>
         </section>
 
-        <div className="mt-5 flex justify-end mr-2">
+        <div className="flex justify-end mr-2">
           <button
             onClick={handleLogout}
             className="text-string-14 text-neutral-text-weak hover:text-neutral-text-strong hover:underline underline-offset-4"
