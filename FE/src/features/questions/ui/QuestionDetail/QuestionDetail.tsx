@@ -18,6 +18,8 @@ const QuestionDetail = ({
   const { member } = useAuth();
   const router = useRouter();
 
+  const hasAcceptedAnswer = answers.some((answer) => answer.isAccepted);
+
   const handleSubmit = () => {
     if (!member) {
       alert('로그인이 필요해요.');
@@ -72,7 +74,12 @@ const QuestionDetail = ({
           </h2>
           {answers
             .map((answer) => (
-              <AnswerCard key={answer.id} answer={answer} question={question} />
+              <AnswerCard
+                key={answer.id}
+                answer={answer}
+                question={question}
+                hasAcceptedAnswer={hasAcceptedAnswer}
+              />
             ))
             .reverse()}
         </>

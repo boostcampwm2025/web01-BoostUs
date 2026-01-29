@@ -18,9 +18,10 @@ import { useOptimisticVote } from '@/features/questions/model/useOptimisticVote'
 interface Props {
   answer: Answer;
   question: Question;
+  hasAcceptedAnswer: boolean;
 }
 
-const AnswerCard = ({ answer, question }: Props) => {
+const AnswerCard = ({ answer, question, hasAcceptedAnswer }: Props) => {
   const { member } = useAuth();
   const router = useRouter();
 
@@ -78,7 +79,7 @@ const AnswerCard = ({ answer, question }: Props) => {
     }
   `}
     >
-      <CardHeader answer={answer} />
+      <CardHeader answer={answer} hasAcceptedAnswer={hasAcceptedAnswer} />
 
       <div className="flex flex-row gap-6 w-full px-4 py-4 rounded-b-2xl">
         <VoteButtons
