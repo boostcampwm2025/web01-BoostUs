@@ -21,6 +21,7 @@ export default function MemberInfoMangeSections() {
   const authState = useAtomValue(memberAtom);
   const member = authState?.member;
   const latestProject = authState?.latestProject;
+  const feed = authState?.feed;
   const { logout } = useAuth();
 
   const handleLogout = async () => {
@@ -33,7 +34,7 @@ export default function MemberInfoMangeSections() {
     formState: { errors },
   } = useForm<RssFormValues>({
     defaultValues: {
-      rssUrl: '',
+      rssUrl: feed ?? '',
     },
   });
 
@@ -89,7 +90,7 @@ export default function MemberInfoMangeSections() {
             {/* 깃허브 배지 */}
             <div>
               <a
-                href={`https://github.com/${member.nickname}`} // 깃허브 링크 예시
+                href={`https://github.com/${member.githubLogin ?? '깃허브ID'}`} // 깃허브 링크 예시
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-1.5 bg-neutral-900 text-white px-3 py-1 rounded-full text-xs font-medium hover:bg-neutral-800 transition-colors"
