@@ -78,7 +78,10 @@ export default function ProjectEditPage() {
     removeParticipant,
     techStack,
     setTechStack,
-  } = useProjectRegister(projectId, () => router.push(`/project`));
+  } = useProjectRegister(projectId, () => {
+    router.refresh();
+    router.push(`/project`);
+  });
 
   const [stackData, setStackData] = useState<TechStackResponse | null>(null);
 
@@ -460,7 +463,7 @@ export default function ProjectEditPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            onClick={() => router.push(`/project`)}
+            // onClick={() => router.push(`/project`)}
             className="cursor-pointer rounded-lg bg-brand-surface-default px-4 py-2 text-string-16 text-brand-text-on-default hover:bg-brand-dark disabled:opacity-50 duration-150 transition-colors"
           >
             {isSubmitting ? '저장 중...' : '수정 완료'}
