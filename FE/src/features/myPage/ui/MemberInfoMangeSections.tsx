@@ -9,6 +9,8 @@ import { GithubIcon } from '@/components/ui/github';
 import CheckCircleIcon from '@/components/ui/CheckCircleIcon';
 import AlertCircleIcon from '@/components/ui/AlertCircleIcon';
 import { useAuth } from '@/features/login/model/auth.store';
+import { UsersIcon } from '@/components/ui/users';
+import { FolderGit2Icon } from '@/components/ui/folder-git-2';
 
 // 폼 데이터 타입 정의
 interface RssFormValues {
@@ -18,6 +20,7 @@ interface RssFormValues {
 export default function MemberInfoMangeSections() {
   const authState = useAtomValue(memberAtom);
   const member = authState?.member;
+  const latestProject = authState?.latestProject;
   const { logout } = useAuth();
 
   const handleLogout = async () => {
@@ -117,8 +120,24 @@ export default function MemberInfoMangeSections() {
 
         {/*<hr className="border-neutral-100 my-6" />*/}
         <div className={'flex flex-col gap-2 mb-5'}>
-          <p className={'text-string-16 mb-1'}>현재 소속된 팀 : web01</p>
-          <p className={'text-string-16'}>내 프로젝트 : BoostUs</p>
+          <div className="flex flex-row items-center gap-1 ">
+            <UsersIcon size={20} />
+            <span className={'text-string-16 mb-1 text-neutral-text-strong'}>
+              현재 소속된 팀 :
+            </span>
+            <span className={'text-neutral-text-default'}>
+              {latestProject?.teamName ?? '없음'}
+            </span>
+          </div>
+          <div className={'flex flex-row items-center gap-2'}>
+            <FolderGit2Icon size={20} />
+            <p className={'text-string-16 text-neutral-text-strong'}>
+              내 프로젝트 :
+            </p>
+            <span className={'text-neutral-text-default'}>
+              {latestProject?.title ?? '없음'}
+            </span>
+          </div>
         </div>
 
         {/* 하단: RSS 관리 섹션 */}
