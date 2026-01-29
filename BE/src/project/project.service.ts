@@ -23,6 +23,7 @@ import {
   ThumbnailOwnershipException,
   MemberNotFoundException,
 } from './exception/project.exception';
+import { ViewService } from 'src/view/view.service';
 
 @Injectable()
 export class ProjectService {
@@ -34,6 +35,7 @@ export class ProjectService {
     private readonly projectRepository: ProjectRepository,
     private readonly authRepository: AuthRepository,
     private readonly config: ConfigService,
+    private readonly viewService: ViewService,
     @Inject(REDIS) private readonly redis: Redis,
   ) {
     this.endpoint = this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_ENDPOINT');
@@ -240,17 +242,9 @@ export class ProjectService {
   async findOneWithViewCount(id: number, viewerKey: string) {
     const projectId = BigInt(id);
 
-    const redisKey = `view:project:${id}:${viewerKey}`;
+    const firstView = await this.viewService.shouldIncrementView('project', id, viewerKey);
 
-    /*
-     * 'NX' (Not eXists)
-     * 이 key가 존재하지 않을 때만 SET 하라
-     * -> key 없음 + SET 성공 = 'OK' 반환
-     * -> key 이미 존재 + NX 조건 때문에 SET 스킵 = null 반환
-     */
-    const firstView = await this.redis.set(redisKey, 'true', 'EX', 60 * 30, 'NX');
-
-    if (firstView === 'OK') {
+    if (firstView) {
       const project = await this.projectRepository.incrementViewCountAndFind(projectId);
       return plainToInstance(ProjectDetailItemDto, project, { excludeExtraneousValues: true });
     }

@@ -9,6 +9,11 @@ export interface Member {
   nickname: string;
   cohort: number | null;
 }
+export interface latestProject {
+  title: string;
+  teamName: string;
+  field: string;
+}
 
 /**
  * AuthContext의 타입 정의
@@ -28,5 +33,7 @@ export interface AuthResponse {
     teamName: string;
     field: string;
   } | null;
-  feed: string | null;
+  feed: {
+    feedUrl: string;
+  } | null;
 }
