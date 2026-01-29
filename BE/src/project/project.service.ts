@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, Inject } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { Prisma } from '../generated/prisma/client';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -7,6 +7,7 @@ import { ProjectListItemDto } from './dto/project-list-item.dto';
 import { ProjectListQueryDto } from './dto/project-list-query.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectRepository } from './project.repository';
+import { AuthRepository } from 'src/auth/auth.repository';
 import { ConfigService } from '@nestjs/config';
 import { CopyObjectCommand, DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
@@ -14,6 +15,14 @@ import { randomUUID } from 'node:crypto';
 import type Redis from 'ioredis';
 import { REDIS } from '../redis/redis.provider';
 import { ThumbnailMeta } from './type/upload-image-meta.type';
+import {
+  ProjectNotFoundException,
+  ProjectForbiddenException,
+  ThumbnailUploadNotFoundException,
+  InvalidThumbnailMetadataException,
+  ThumbnailOwnershipException,
+  MemberNotFoundException,
+} from './exception/project.exception';
 
 @Injectable()
 export class ProjectService {
@@ -23,6 +32,7 @@ export class ProjectService {
 
   constructor(
     private readonly projectRepository: ProjectRepository,
+    private readonly authRepository: AuthRepository,
     private readonly config: ConfigService,
     @Inject(REDIS) private readonly redis: Redis,
   ) {
@@ -44,13 +54,7 @@ export class ProjectService {
     });
   }
 
-  private toPublicUrl(keyOrUrl: string | null | undefined): string | null {
-    if (!keyOrUrl) return null;
-    if (keyOrUrl.startsWith('http://') || keyOrUrl.startsWith('https://')) return keyOrUrl;
-    return `${this.endpoint}/${this.bucket}/${keyOrUrl}`;
-  }
-
-  async uploadTempThumbnail(file: Express.Multer.File, memberId: bigint) {
+  async uploadTempThumbnail(file: Express.Multer.File, memberId: string) {
     const uploadId = randomUUID();
     const ext = (file.originalname.split('.').pop() || 'png').toLocaleLowerCase();
     const tempKey = `temp/projects/thumbnail/${uploadId}.${ext}`;
@@ -62,9 +66,8 @@ export class ProjectService {
       redisKey,
       JSON.stringify({
         uploadId,
-        memberId: memberId.toString(),
+        memberId: memberId,
         objectKey: tempKey,
-        contentType: file.mimetype,
       }),
       'EX',
       3600,
@@ -79,25 +82,23 @@ export class ProjectService {
    */
   private async finalizeThumbnailOrThrow(
     uploadId: string | undefined,
-    memberId: bigint,
+    memberId: string,
   ): Promise<string> {
     const redisKey = `upload:thumbnail:${uploadId}`;
 
     const rawMeta = await this.redis.get(redisKey);
     if (!rawMeta) {
-      throw new NotFoundException('썸네일 업로드 정보가 만료되어 찾을 수 없습니다.');
+      throw new ThumbnailUploadNotFoundException();
     }
 
     const meta = this.parseThumbnailMetaOrThrow(rawMeta);
     if (meta.uploadId !== uploadId) {
-      throw new NotFoundException('썸네일 업로드 정보를 찾을 수 없습니다.');
+      throw new ThumbnailUploadNotFoundException();
     }
 
-    // if (meta.memberId !== memberId.toString()) {
-    //   throw new NotFoundException(
-    //     `본인이 업로드한 썸네일이 아닙니다. meta.memberId : ${memberId} | memberId : ${memberId}`,
-    //   );
-    // }
+    if (meta.memberId !== memberId.toString()) {
+      throw new ThumbnailOwnershipException();
+    }
 
     const ext = (meta.objectKey.split('.').pop() || 'png').toLowerCase();
     const finalKey = `projects/thumbnail/${randomUUID()}.${ext}`;
@@ -132,39 +133,71 @@ export class ProjectService {
     try {
       meta = JSON.parse(raw);
     } catch {
-      throw new NotFoundException('썸네일 업로드 메타데이터가 손상되었습니다.');
+      throw new InvalidThumbnailMetadataException('썸네일 업로드 메타데이터가 손상되었습니다.');
     }
 
-    if (
-      !meta ||
-      typeof meta !== 'object' ||
-      typeof (meta as any).uploadId !== 'string' ||
-      typeof (meta as any).memberId !== 'string' ||
-      typeof (meta as any).objectKey !== 'string'
-    ) {
-      throw new NotFoundException('썸네일 업로드 메타데이터 형식이 올바르지 않습니다.');
-    }
+    // if (
+    //   !meta ||
+    //   typeof meta !== 'object' ||
+    //   typeof (meta as any).uploadId !== 'string' ||
+    //   typeof (meta as any).memberId !== 'string' ||
+    //   typeof (meta as any).objectKey !== 'string'
+    // ) {
+    //   throw new InvalidThumbnailMetadataException(
+    //     '썸네일 업로드 메타데이터 형식이 올바르지 않습니다.',
+    //   );
+    // }
 
     return meta as ThumbnailMeta;
   }
 
-  async uploadImage(file: Express.Multer.File, key: string): Promise<string> {
-    const uploader = new Upload({
-      client: this.s3,
-      params: {
-        Bucket: this.bucket,
-        Key: key,
-        Body: file.buffer,
-        ContentType: file.mimetype,
-        ACL: 'public-read',
-        // 'private' (default): 본인만 접근 가능, URL로 직접 접근 불가
-        // 'public-read': 누구나 읽기 가능, URL로 직접 접근 가능
-        // 'public-read-write': 누구나 읽기/쓰기 가능 (위험)
-        // 'authenticated-read': 인증된 사용자만 읽기 가능
+  private _createS3Client() {
+    return new S3Client({
+      region: this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_REGION'),
+      endpoint: this.endpoint,
+      credentials: {
+        accessKeyId: this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_ACCESS_KEY'),
+        secretAccessKey: this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_SECRET_KEY'),
       },
+      forcePathStyle: true,
     });
+  }
 
-    await uploader.done();
+  private _isTimeSkewError(e: any) {
+    return (
+      e?.name === 'RequestTimeTooSkewed' ||
+      String(e?.message || '').includes('RequestTimeTooSkewed')
+    );
+  }
+
+  async uploadImage(file: Express.Multer.File, key: string): Promise<string> {
+    const run = async (client: S3Client) => {
+      const uploader = new Upload({
+        client,
+        params: {
+          Bucket: this.bucket,
+          Key: key,
+          Body: file.buffer,
+          ContentType: file.mimetype,
+          ACL: 'public-read',
+          // 'private' (default): 본인만 접근 가능, URL로 직접 접근 불가
+          // 'public-read': 누구나 읽기 가능, URL로 직접 접근 가능
+          // 'public-read-write': 누구나 읽기/쓰기 가능 (위험)
+          // 'authenticated-read': 인증된 사용자만 읽기 가능
+        },
+      });
+      await uploader.done();
+    };
+
+    try {
+      await run(this.s3);
+    } catch (e: any) {
+      if (!this._isTimeSkewError(e)) throw e;
+
+      // client 재생성 후 1회 재시도
+      (this as any).s3 = this._createS3Client();
+      await run((this as any).s3);
+    }
 
     return `${this.endpoint}/${this.bucket}/${key}`;
   }
@@ -204,22 +237,65 @@ export class ProjectService {
     return data;
   }
 
-  async create(memberId: bigint, dto: CreateProjectDto) {
-    const finalKey = await this.finalizeThumbnailOrThrow(dto.thumbnailUploadId, memberId);
+  async findOneWithViewCount(id: number, viewerKey: string) {
+    const projectId = BigInt(id);
 
-    const project = await this.projectRepository.create(memberId, dto, finalKey);
+    const redisKey = `view:project:${id}:${viewerKey}`;
+
+    /*
+     * 'NX' (Not eXists)
+     * 이 key가 존재하지 않을 때만 SET 하라
+     * -> key 없음 + SET 성공 = 'OK' 반환
+     * -> key 이미 존재 + NX 조건 때문에 SET 스킵 = null 반환
+     */
+    const firstView = await this.redis.set(redisKey, 'true', 'EX', 60 * 30, 'NX');
+
+    if (firstView === 'OK') {
+      const project = await this.projectRepository.incrementViewCountAndFind(projectId);
+      return plainToInstance(ProjectDetailItemDto, project, { excludeExtraneousValues: true });
+    }
+
+    const project = await this.projectRepository.findById(projectId);
+    return plainToInstance(ProjectDetailItemDto, project, { excludeExtraneousValues: true });
+  }
+
+  async create(memberId: string, dto: CreateProjectDto) {
+    const finalKey = dto.thumbnailUploadId
+      ? await this.finalizeThumbnailOrThrow(dto.thumbnailUploadId, memberId)
+      : undefined;
+
+    const memberIdBigint = BigInt(memberId);
+    const project = await this.projectRepository.create(memberIdBigint, dto, finalKey);
 
     return plainToInstance(ProjectDetailItemDto, project, { excludeExtraneousValues: true });
   }
 
-  async update(id: number, memberId: bigint, dto: UpdateProjectDto) {
+  async update(id: number, memberId: string, dto: UpdateProjectDto) {
     const projectId = BigInt(id);
 
     const exists = await this.projectRepository.exists(projectId);
     if (!exists) {
-      throw new NotFoundException('프로젝트를 찾을 수 없습니다.');
+      throw new ProjectNotFoundException(id);
     }
 
+    // member.github_login 조회
+    const member = await this.authRepository.findById(memberId);
+    if (!member?.githubLogin) {
+      throw new MemberNotFoundException();
+    }
+
+    // member.github_login 이 project_participants 조회 결과 들어있는지 확인
+    const canUpdate = await this.projectRepository.canMemberUpdateProject(
+      projectId,
+      member.githubLogin,
+    );
+
+    // 없으면 throw
+    if (!canUpdate) {
+      throw new ProjectForbiddenException('이 프로젝트를 수정할 권한이 없습니다.');
+    }
+
+    // 있으면 finalize
     const finalKey = dto.thumbnailUploadId
       ? await this.finalizeThumbnailOrThrow(dto.thumbnailUploadId, memberId)
       : undefined;
@@ -228,12 +304,29 @@ export class ProjectService {
     return plainToInstance(ProjectDetailItemDto, updated, { excludeExtraneousValues: true });
   }
 
-  async delete(id: number) {
+  async delete(id: number, memberId: string) {
     const projectId = BigInt(id);
 
+    // 프로젝트 존재 여부 확인
     const exists = await this.projectRepository.exists(projectId);
     if (!exists) {
-      throw new NotFoundException('프로젝트를 찾을 수 없습니다.');
+      throw new ProjectNotFoundException(id);
+    }
+
+    // member.github_login 조회
+    const member = await this.authRepository.findById(memberId);
+    if (!member?.githubLogin) {
+      throw new MemberNotFoundException();
+    }
+
+    // member.github_login 이 project_participants에 조회 결과 들어있는지 확인
+    const canDelete = await this.projectRepository.canMemberUpdateProject(
+      projectId,
+      member.githubLogin,
+    );
+
+    if (!canDelete) {
+      throw new ProjectForbiddenException('이 프로젝트를 삭제할 권한이 없습니다.');
     }
 
     await this.projectRepository.deleteById(projectId);

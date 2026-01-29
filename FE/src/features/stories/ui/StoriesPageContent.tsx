@@ -50,6 +50,7 @@ const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
                     <button
                       type="button"
                       className="text-neutral-text-weak hover:text-brand-surface-default transition-colors duration-150 cursor-pointer"
+                      suppressHydrationWarning
                     >
                       <Link />
                     </button>

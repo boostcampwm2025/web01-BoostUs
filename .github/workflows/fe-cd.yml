@@ -57,7 +57,11 @@ jobs:
             set -e
 
             DEPLOY_DIR="${{ secrets.DEPLOY_DIR }}"
-            [ -z "$DEPLOY_DIR" ] && DEPLOY_DIR="/srv/boostus"
+            if [ -z "$DEPLOY_DIR" ]; then
+              echo "❌ DEPLOY_DIR is not set"
+              exit 1
+            fi
+
             cd "$DEPLOY_DIR"
 
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ${{ env.REGISTRY }} -u "${{ secrets.GHCR_USERNAME }}" --password-stdin
@@ -71,6 +75,14 @@ jobs:
               echo "FE_IMAGE=${FE_IMAGE}" >> .env.prod
             fi
 
-            docker pull "$FE_IMAGE" || true
-            docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --remove-orphans
+            if ! docker pull "$FE_IMAGE"; then
+              echo "⚠️ Image pull failed, attempting to use cached image..."
+            fi
+
+            echo "🚀 Deploying FE..."
+            docker compose -f docker-compose.prod.yml \
+              --env-file .env.prod \
+              up -d frontend --no-deps
+
+            echo "🔄 Pruning unused Docker images..."
             docker image prune -f

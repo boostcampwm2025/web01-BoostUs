@@ -1,9 +1,9 @@
 import Image from 'next/image';
-import paint from '@/assets/NoImage.png';
 import Link from 'next/link';
 import TogglePill from '@/shared/ui/TogglePill';
 import { Eye } from 'lucide-react';
 import TechList from '@/features/project/ui/ProjectList/TechList';
+import paint from 'public/assets/NoImage.png';
 
 interface ProjectCardProps {
   project: {
@@ -23,12 +23,11 @@ const ProjectListCard = ({ project }: ProjectCardProps) => {
   return (
     <Link
       href={`/project/${project.id.toString()}`}
-      className="block h-full rounded-xl bg-white shadow"
+      className="block h-full rounded-2xl bg-neutral-surface-bold"
       scroll={false}
     >
-      <article className="flex h-full flex-col overflow-hidden rounded-xl bg-neutral-surface-bold border border-neutral-border-default hover:border-neutral-border-active cursor-pointer transition-colors duration-150 shadow-default hover:shadow-hover">
+      <article className="flex h-full flex-col overflow-hidden rounded-2xl bg-neutral-surface-bold border border-neutral-border-default hover:border-neutral-border-active cursor-pointer transition-colors duration-150 shadow-default hover:shadow-hover">
         <div className="relative w-full shrink-0">
-          {' '}
           <Image
             src={project.thumbnailUrl ?? paint}
             alt={project.title}
@@ -46,12 +45,12 @@ const ProjectListCard = ({ project }: ProjectCardProps) => {
         </div>
 
         <div className="flex flex-1 flex-col gap-2 px-4 pt-4 pb-2">
-          <span className="text-display-bold20 text-neutral-text-strong font-bold">
+          <span className="text-display-16 text-neutral-text-strong font-bold">
             {project.title}
           </span>
-          <span className="text-body-regular14 text-neutral-text-weak line-clamp-2 pb-2">
+          <p className="text-body-14 text-neutral-text-weak line-clamp-2 overflow-hidden text-ellipsis wrap-break-word">
             {project.description}
-          </span>
+          </p>
 
           <div className="mt-auto flex flex-row justify-between gap-2">
             <div className="flex h-14 flex-row flex-wrap content-start gap-2 overflow-hidden">

@@ -1,3 +1,4 @@
+import { customFetch } from '@/shared/utils/fetcher';
 import type { ApiResponse } from '@/shared/types/ApiResponseType';
 
 export interface UploadThumbnailResponse {
@@ -11,20 +12,14 @@ export async function uploadThumbnail(
   const formData = new FormData();
   formData.append('file', file);
 
-  const response = await fetch('/api/projects/uploads/thumbnails', {
-    method: 'POST',
-    credentials: 'include', // 쿠키 기반 인증
-    body: formData,
-    // FormData 사용 시 Content-Type 헤더를 설정하지 않음 (브라우저가 자동 설정)
-  });
+  const json = await customFetch<ApiResponse<UploadThumbnailResponse>>(
+    '/api/projects/uploads/thumbnails',
+    {
+      method: 'POST',
+      credentials: 'include',
+      body: formData,
+    }
+  );
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(
-      `썸네일 업로드 실패: ${String(response.status)} - ${errorText}`
-    );
-  }
-
-  const json = (await response.json()) as ApiResponse<UploadThumbnailResponse>;
   return json.data;
 }

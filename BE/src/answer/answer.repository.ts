@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, VoteType } from 'src/generated/prisma/client';
+import { ContentState, Prisma, VoteType } from 'src/generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
 export type CreateAnswerInput = {
@@ -11,6 +11,18 @@ export type CreateAnswerInput = {
 @Injectable()
 export class AnswerRepository {
   constructor(private readonly prisma: PrismaService) {}
+
+  async findOnePublished(id: string) {
+    return this.prisma.answer.findFirst({
+      where: {
+        id: BigInt(id),
+        state: ContentState.PUBLISHED,
+      },
+      include: {
+        member: { select: { id: true, nickname: true, avatarUrl: true, cohort: true } },
+      },
+    });
+  }
 
   create(input: CreateAnswerInput) {
     return this.prisma.answer.create({
@@ -71,9 +83,22 @@ export class AnswerRepository {
         where: { id: answerId },
         data: { upCount: { increment: 1 } },
       });
+    } else if (existing.voteType === VoteType.UP) {
+      await this.prisma.answerVote.delete({
+        where: {
+          memberId_answerId: {
+            memberId,
+            answerId,
+          },
+        },
+      });
+
+      await this.prisma.answer.update({
+        where: { id: answerId },
+        data: { upCount: { decrement: 1 } },
+      });
     }
   }
-
   async dislike(answerId: bigint, memberId: bigint) {
     const existing = await this.prisma.answerVote.findUnique({
       where: {
@@ -96,6 +121,19 @@ export class AnswerRepository {
       await this.prisma.answer.update({
         where: { id: answerId },
         data: { downCount: { increment: 1 } },
+      });
+    } else if (existing.voteType === VoteType.DOWN) {
+      await this.prisma.answerVote.delete({
+        where: {
+          memberId_answerId: {
+            memberId,
+            answerId,
+          },
+        },
+      });
+      await this.prisma.answer.update({
+        where: { id: answerId },
+        data: { downCount: { decrement: 1 } },
       });
     }
   }

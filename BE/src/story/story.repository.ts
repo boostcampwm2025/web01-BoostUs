@@ -195,4 +195,114 @@ export class StoryRepository {
         return [{ likeCount: 'desc' }, { id: 'desc' }];
     }
   }
+
+  /**
+   * Story 존재 여부 확인
+   * @param storyId bigint
+   * @returns boolean
+   */
+  async checkStoryExists(storyId: bigint): Promise<boolean> {
+    const story = await this.prisma.story.findUnique({
+      where: { id: storyId },
+      select: { id: true },
+    });
+    return story !== null;
+  }
+
+  /**
+   * StoryLike 존재 여부 확인
+   * @param storyId bigint
+   * @param memberId bigint
+   * @returns boolean
+   */
+  async checkStoryLikeExists(storyId: bigint, memberId: bigint): Promise<boolean> {
+    const storyLike = await this.prisma.storyLike.findUnique({
+      where: {
+        memberId_storyId: {
+          memberId,
+          storyId,
+        },
+      },
+    });
+    return storyLike !== null;
+  }
+
+  /**
+   * 캠퍼들의 이야기 좋아요 등록
+   * @param storyId bigint
+   * @param memberId bigint
+   * @returns void
+   */
+  async likeStory(storyId: bigint, memberId: bigint): Promise<void> {
+    await this.prisma.$transaction(async (tx) => {
+      // StoryLike 중복 확인
+      const existing = await tx.storyLike.findUnique({
+        where: {
+          memberId_storyId: {
+            memberId,
+            storyId,
+          },
+        },
+      });
+
+      if (existing) {
+        // 이미 좋아요한 경우는 애플리케이션 레벨에서 처리
+        // DB 유니크 제약조건으로도 방지되지만 명확한 에러를 위해 여기서 체크
+        return;
+      }
+
+      // StoryLike 생성 및 Story.likeCount 증가
+      await tx.storyLike.create({
+        data: {
+          memberId,
+          storyId,
+        },
+      });
+
+      await tx.story.update({
+        where: { id: storyId },
+        data: { likeCount: { increment: 1 } },
+      });
+    });
+  }
+
+  /**
+   * 캠퍼들의 이야기 좋아요 취소
+   * @param storyId bigint
+   * @param memberId bigint
+   * @returns void
+   */
+  async unlikeStory(storyId: bigint, memberId: bigint): Promise<void> {
+    await this.prisma.$transaction(async (tx) => {
+      // StoryLike 존재 확인
+      const existing = await tx.storyLike.findUnique({
+        where: {
+          memberId_storyId: {
+            memberId,
+            storyId,
+          },
+        },
+      });
+
+      if (!existing) {
+        // 좋아요하지 않은 경우는 애플리케이션 레벨에서 처리
+        return;
+      }
+
+      // StoryLike 삭제 및 Story.likeCount 감소
+      await tx.storyLike.delete({
+        where: {
+          memberId_storyId: {
+            memberId,
+            storyId,
+          },
+        },
+      });
+
+      await tx.story.update({
+        where: { id: storyId },
+        data: { likeCount: { decrement: 1 } },
+      });
+    });
+  }
 }

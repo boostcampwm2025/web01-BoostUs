@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Patch, Param, Delete, Get } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { AnswerService } from './answer.service';
 import { CreateAnswerDto } from './dto/req/create-answer.dto';
@@ -10,6 +10,25 @@ import { CurrentMember } from 'src/auth/decorator/current-member.decorator';
 @Controller('answers')
 export class AnswerController {
   constructor(private readonly answerService: AnswerService) {}
+
+  @Get(':id')
+  @responseMessage('답변 조회 성공')
+  @ApiOperation({
+    summary: '답변 단건 조회',
+    description: '답변 ID로 단건 조회합니다.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '답변 조회 성공',
+    type: AnswerResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: '답변을 찾을 수 없음',
+  })
+  findOne(@Param('id') id: string) {
+    return this.answerService.findOne(id);
+  }
 
   @Post(':id')
   @responseMessage('답변 생성 성공')

@@ -71,16 +71,16 @@ const ProjectListSection = () => {
   return (
     <section className="mt-8 mb-20 flex w-full flex-col gap-4">
       <div className="flex justify-between">
-        <span className="text-strong-16 text-black">
+        <span className="text-string-16 text-neutral-text-default">
           총{' '}
-          <span className="text-strong-16 font-semibold text-brand-text-default">
+          <span className="text-display-16 text-brand-text-default">
             {filteredProjects.length}
           </span>
           개의 프로젝트
         </span>
 
         {/* TODO: SlidingFilter로 리팩토링 필요 */}
-        <div className="flex flex-row flex-wrap gap-2 bg-neutral-surface-strong rounded-lg px-1 py-1">
+        <div className="flex flex-row flex-wrap gap-1 bg-neutral-surface-strong rounded-lg px-1 py-1">
           {sortOptions.map((option) => {
             const isSelected = sortOrder === option.key;
 
@@ -89,7 +89,7 @@ const ProjectListSection = () => {
                 key={option.key}
                 type="button"
                 onClick={() => setSortOrder(option.key)}
-                className="relative flex w-auto cursor-pointer items-center justify-center rounded-lg p-1 transition-colors duration-300"
+                className="relative flex w-auto cursor-pointer items-center justify-center rounded-lg px-2 py-1 transition-colors duration-300"
               >
                 {isSelected && (
                   <motion.div
@@ -113,7 +113,7 @@ const ProjectListSection = () => {
         </div>
       </div>
 
-      <div className="grid w-full grid-cols-4 gap-8">
+      <div className="grid w-full grid-cols-4 gap-4 lg:gap-8">
         {filteredProjects.map((project) => (
           <ProjectListCard key={project.id} project={project} />
         ))}
