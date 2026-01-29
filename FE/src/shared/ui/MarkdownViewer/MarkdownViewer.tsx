@@ -64,7 +64,7 @@ export const MarkdownViewer = ({ content }: { content: string }) => {
         // 본문 텍스트 (p) 스타일
         p: ({ ...props }) => (
           <p
-            className="text-body-16 text-neutral-text-default mb-4 leading-relaxed"
+            className="text-body-16 text-neutral-text-default mb-4 leading-relaxed wrap-break-word"
             {...props}
           />
         ),
@@ -95,7 +95,7 @@ export const MarkdownViewer = ({ content }: { content: string }) => {
         // 링크 (a) 스타일
         a: ({ ...props }) => (
           <a
-            className="text-accent-blue hover:text-accent-blue text-string-16 hover:text-display-16 transition-colors hover:underline"
+            className="text-accent-blue hover:text-accent-blue text-string-16 hover:text-display-16 transition-colors hover:underline break-all"
             target="_blank"
             rel="noopener noreferrer"
             {...props}
@@ -141,6 +141,35 @@ export const MarkdownViewer = ({ content }: { content: string }) => {
         ),
         b: ({ ...props }) => <b className="text-display-16" {...props} />,
         h5: ({ ...props }) => <b className="text-display-16" {...props} />,
+
+        // 테이블 (table, thead, tbody, tr, th, td) 스타일
+        table: ({ ...props }) => (
+          <div className="my-4 w-full overflow-x-auto">
+            <table
+              className="w-full border-collapse border border-neutral-border-default"
+              {...props}
+            />
+          </div>
+        ),
+        thead: ({ ...props }) => (
+          <thead className="bg-neutral-surface-strong" {...props} />
+        ),
+        tbody: ({ ...props }) => <tbody {...props} />,
+        tr: ({ ...props }) => (
+          <tr className="border-b border-neutral-border-default" {...props} />
+        ),
+        th: ({ ...props }) => (
+          <th
+            className="border border-neutral-border-default px-4 py-2 text-left font-bold wrap-break-word"
+            {...props}
+          />
+        ),
+        td: ({ ...props }) => (
+          <td
+            className="border border-neutral-border-default px-4 py-2 wrap-break-word"
+            {...props}
+          />
+        ),
       }}
     >
       {content}

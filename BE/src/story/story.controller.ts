@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CurrentMember } from '../auth/decorator/current-member.decorator';
 import { Public } from '../auth/decorator/public.decorator';
 import { ParseBigIntPipe } from '../common/pipe/parse-bigint.pipe';
 import {
@@ -35,7 +36,7 @@ export class StoryController {
   @Get(':id')
   @ApiOperation({
     summary: '스토리 상세 조회',
-    description: '특정 스토리의 상세 정보를 조회합니다.',
+    description: '특정 스토리의 상세 정보를 조회합니다. 로그인한 사용자의 경우 isLikedByMe 필드가 포함됩니다.',
   })
   @ApiParam({
     name: 'id',
@@ -52,13 +53,142 @@ export class StoryController {
     status: 404,
     description: '스토리를 찾을 수 없음',
   })
-  async getStory(@Param('id', ParseBigIntPipe) id: bigint): Promise<StoryResponseDto> {
-    return await this.storyService.findStoryById(id);
+  async getStory(
+    @Param('id', ParseBigIntPipe) id: bigint,
+    @CurrentMember() memberId?: string,
+  ): Promise<StoryResponseDto> {
+    return await this.storyService.findStoryById(id, memberId);
   }
 
   @Public()
   @Post()
   async createStory(@Body() dto: CreateStoryRequestDto): Promise<CreateStoryResponseDto> {
     return await this.storyService.createStory(dto);
+  }
+
+  @Post(':id/like')
+  @ApiOperation({
+    summary: '캠퍼들의 이야기 좋아요 등록',
+    description: '로그인한 사용자가 캠퍼들의 이야기에 좋아요를 등록합니다.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: '스토리 ID',
+    example: '1',
+    type: 'string',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '좋아요 등록 성공',
+    schema: {
+      type: 'object',
+      properties: {
+        storyId: {
+          type: 'string',
+          example: '1',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: '인증 실패',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '스토리를 찾을 수 없음',
+  })
+  @ApiResponse({
+    status: 409,
+    description: '이미 좋아요한 상태',
+  })
+  async likeStory(
+    @Param('id', ParseBigIntPipe) id: bigint,
+    @CurrentMember() memberId: string,
+  ): Promise<{ storyId: string }> {
+    return { storyId: await this.storyService.likeStory(id, memberId) };
+  }
+
+  @Delete(':id/like')
+  @ApiOperation({
+    summary: '캠퍼들의 이야기 좋아요 취소',
+    description: '로그인한 사용자가 캠퍼들의 이야기 좋아요를 취소합니다.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: '스토리 ID',
+    example: '1',
+    type: 'string',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '좋아요 취소 성공',
+    schema: {
+      type: 'object',
+      properties: {
+        storyId: {
+          type: 'string',
+          example: '1',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: '인증 실패',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '스토리를 찾을 수 없음',
+  })
+  @ApiResponse({
+    status: 400,
+    description: '좋아요하지 않은 상태',
+  })
+  async unlikeStory(
+    @Param('id', ParseBigIntPipe) id: bigint,
+    @CurrentMember() memberId: string,
+  ): Promise<{ storyId: string }> {
+    return { storyId: await this.storyService.unlikeStory(id, memberId) };
+  }
+
+  @Get(':id/like/status')
+  @ApiOperation({
+    summary: '캠퍼들의 이야기 좋아요 상태 확인',
+    description: '로그인한 사용자가 특정 스토리에 좋아요를 눌렀는지 확인합니다.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: '스토리 ID',
+    example: '1',
+    type: 'string',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '좋아요 상태 확인 성공',
+    schema: {
+      type: 'object',
+      properties: {
+        isLiked: {
+          type: 'boolean',
+          example: true,
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: '인증 실패',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '스토리를 찾을 수 없음',
+  })
+  async checkStoryLikeStatus(
+    @Param('id', ParseBigIntPipe) id: bigint,
+    @CurrentMember() memberId: string,
+  ): Promise<{ isLiked: boolean }> {
+    const isLiked = await this.storyService.checkStoryLikeStatus(id, memberId);
+    return { isLiked };
   }
 }
