@@ -12,6 +12,11 @@ import { UpdateAnswerDto } from './dto/req/update-answer.dto';
 export class AnswerService {
   constructor(private readonly answerRepo: AnswerRepository) {}
 
+  async findOne(id: string) {
+    const answer = await this.answerRepo.findOnePublished(id); // repo로 빼는 게 깔끔
+    if (!answer) throw new NotFoundException('답변을 찾을 수 없습니다.');
+    return answer;
+  }
   async create(
     memberIdStr: string,
     questionIdStr: string,

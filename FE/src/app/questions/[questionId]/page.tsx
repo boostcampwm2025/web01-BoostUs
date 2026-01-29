@@ -3,14 +3,14 @@ import QuestionDetail from '@/features/questions/ui/QuestionDetail/QuestionDetai
 
 interface Props {
   params: Promise<{
-    id: string;
+    questionId: string;
   }>;
 }
 
 const QuestionsDetailPage = async ({ params }: Props) => {
-  const { id } = await params;
+  const { questionId } = await params;
 
-  const response = await getQuestionById(id);
+  const response = await getQuestionById(questionId);
   const question = response?.question;
   const answers = response?.answers;
 
