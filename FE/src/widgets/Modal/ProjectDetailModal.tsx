@@ -14,7 +14,7 @@ export default function ProjectDetailModalPage() {
   }
 
   return (
-    <ModalOverlay>
+    <ModalOverlay closeOnOutsideClick={true}>
       <Suspense
         fallback={<div className="p-10 text-center">데이터 불러오는 중...</div>}
       >

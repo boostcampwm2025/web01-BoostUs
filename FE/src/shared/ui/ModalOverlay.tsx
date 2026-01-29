@@ -4,11 +4,16 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import CloseIcon from '@/components/ui/CloseIcon';
 
+interface ModalOverlayProps {
+  children: React.ReactNode;
+  /** 배경 클릭 시 모달 닫힘 여부 */
+  closeOnOutsideClick?: boolean;
+}
+
 export default function ModalOverlay({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+  closeOnOutsideClick = false, // 기본값은 닫히지 않음 (register, edit용)
+}: ModalOverlayProps) {
   const router = useRouter();
 
   useEffect(() => {
@@ -35,11 +40,18 @@ export default function ModalOverlay({
     };
   }, []);
 
+  const handleBackgroundClick = () => {
+    if (closeOnOutsideClick) {
+      router.back();
+    }
+  };
+
   return (
     // 1. 배경
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 md:p-10" // 모바일 대응을 위해 padding 조정
       style={{ overscrollBehavior: 'contain' }}
+      onClick={handleBackgroundClick}
     >
       {/* 2. 모달 컨테이너 */}
       <div
