@@ -95,15 +95,17 @@ const AnswerCard = ({ answer, question }: Props) => {
             <MarkdownViewer content={answer.contents} />
           </div>
           <div className="border-t border-neutral-border-default w-full flex flex-row pt-4 justify-between">
-            {showAcceptButton && (
-              <button
-                className="gap-1 flex flex-row items-center justify-center text-neutral-text-default cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150"
-                onClick={handleAccept}
-              >
-                <CircleCheck size={16} />
-                <span>채택하기</span>
-              </button>
-            )}
+            <button
+              className={`gap-1 flex flex-row items-center justify-center text-neutral-text-default cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150 ${
+                showAcceptButton ? 'visible' : 'invisible pointer-events-none'
+              }`}
+              onClick={handleAccept}
+              aria-hidden={!showAcceptButton}
+              disabled={!showAcceptButton}
+            >
+              <CircleCheck size={16} />
+              <span>채택하기</span>
+            </button>
 
             <div className="flex flex-row items-center justify-center gap-2">
               <button className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150">
