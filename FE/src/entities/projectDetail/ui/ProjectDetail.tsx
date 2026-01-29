@@ -71,7 +71,6 @@ export default function ProjectDetail() {
     <div>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-display-24">프로젝트 상세</h2>
-        <CloseButton />
       </div>
 
       <div className="flex flex-col">
