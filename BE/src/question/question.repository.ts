@@ -75,6 +75,34 @@ export class QuestionRepository {
     return { items, totalItems };
   }
 
+  async incrementViewCountAndFindOne(id: bigint) {
+    return this.prisma.question.update({
+      where: { id },
+      data: {
+        viewCount: { increment: 1 },
+      },
+      include: {
+        member: {
+          select: { id: true, nickname: true, avatarUrl: true, cohort: true },
+        },
+        answers: {
+          where: { state: ContentState.PUBLISHED },
+          orderBy: { createdAt: 'desc' },
+          include: {
+            member: {
+              select: { id: true, nickname: true, avatarUrl: true, cohort: true },
+            },
+          },
+        },
+        _count: {
+          select: {
+            answers: { where: { state: ContentState.PUBLISHED } },
+          },
+        },
+      },
+    });
+  }
+
   async findOne(id: bigint) {
     return this.prisma.question.findUnique({
       where: { id },

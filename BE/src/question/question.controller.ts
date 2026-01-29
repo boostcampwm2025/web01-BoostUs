@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Public } from '../auth/decorator/public.decorator';
 import { CreateQuestionDto } from './dto/req/create-question.dto';
@@ -9,6 +19,8 @@ import { QuestionCountDto } from './dto/res/question-count.dto';
 import { responseMessage } from '../common/decorator/response-message.decorator';
 import { UpdateQuestionDto } from './dto/req/update-question.dto';
 import { CurrentMember } from 'src/auth/decorator/current-member.decorator';
+import { ViewerKeyGuard } from 'src/view/guard/view.guard';
+import { ViewerKey } from 'src/view/decorator/viewer-key.decorator';
 
 @ApiTags('질문')
 @Controller('questions')
@@ -73,6 +85,7 @@ export class QuestionController {
   }
 
   @Public()
+  @UseGuards(ViewerKeyGuard)
   @Get(':id')
   @responseMessage('질문 상세 조회 성공!')
   @ApiOperation({
@@ -93,8 +106,9 @@ export class QuestionController {
     status: 404,
     description: '질문을 찾을 수 없음',
   })
-  async findOne(@Param('id') id: string) {
-    return await this.questionService.findOne(id);
+  async findOne(@Param('id') id: string, @ViewerKey() viewerKey: string) {
+    // return await this.questionService.findOne(id);
+    return await this.questionService.findOneWithViewCount(id, viewerKey);
   }
 
   @Patch(':id')
