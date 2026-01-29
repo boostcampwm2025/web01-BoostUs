@@ -1,10 +1,17 @@
 import { Icon } from '@iconify/react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const Footer = () => {
   return (
     <footer className="border-t border-neutral-border-default gap-8 flex items-center justify-center bg-neutral-surface-default w-full min-w-360 h-20">
-      <h1 className="text-display-32 text-neutral-text-weak">BoostUs</h1>
+      <Image
+        src="/assets/Logo.svg"
+        alt="boostus 로고"
+        width={120}
+        height={40}
+        className="h-7 w-auto invert-48 sepia-4 saturate-324 hue-rotate-202 brightness-91 contrast-89"
+      />
       <div className="flex flex-col gap-1">
         <span className="text-body-12 text-neutral-text-weak">
           © 2026 BoostUs. All rights reserved.
@@ -25,7 +32,7 @@ const Footer = () => {
         >
           <Icon
             icon="mdi:github"
-            className="w-10 h-10 cursor-pointer text-neutral-text-weak hover:text-neutral-text-strong transition-colors duration-150"
+            className="w-8 h-8 cursor-pointer text-neutral-text-weak hover:text-neutral-text-strong transition-colors duration-150"
           />
         </Link>
         <Link
@@ -35,7 +42,7 @@ const Footer = () => {
         >
           <Icon
             icon="ri:notion-fill"
-            className="w-10 h-10 cursor-pointer text-neutral-text-weak hover:text-neutral-text-strong transition-colors duration-150"
+            className="w-8 h-8 cursor-pointer text-neutral-text-weak hover:text-neutral-text-strong transition-colors duration-150"
           />
         </Link>
       </div>
