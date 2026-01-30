@@ -98,7 +98,8 @@ export default function ProjectDetail() {
         <div className="flex flex-wrap items-center gap-2 text-center text-body-14 text-neutral-text-weak">
           <Calendar1 size={16} />
           <span>
-            {extractDate(data.startDate)} ~ {extractDate(data.endDate)}
+            {extractDate(data.startDate, 'absolute')} ~{' '}
+            {extractDate(data.endDate, 'absolute')}
           </span>
           <Users size={16} className={'ml-2'} />
           <span>{data.participants.length}명</span>
