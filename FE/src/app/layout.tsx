@@ -1,10 +1,10 @@
+import { AuthInitializer } from '@/features/login/AuthInitializer';
+import Footer from '@/widgets/Footer';
+import Header from '@/widgets/Header';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
-import './globals.css';
-import Header from '@/widgets/Header';
-import Footer from '@/widgets/Footer';
-import { AuthInitializer } from '@/features/login/AuthInitializer';
 import Script from 'next/script';
+import './globals.css';
 
 export const metadata: Metadata = {
   title: 'BoostUs - 부스트캠퍼들이 함께 기록하고, 함께 성장하는 커뮤니티 🌱',
@@ -37,6 +37,11 @@ export default function RootLayout({
             data-context="부스트어스"
             data-auto="false" // 수동 모드 설정 (필수)
             async // 가이드에 있는 async 속성
+          />
+          <Script
+            src="https://utmate.me/sdk/utmate-sdk.iife.js" // web16팀 utmate sdk (사용성 테스트)
+            strategy="afterInteractive"
+            async
           />
         </main>
         <Footer />
