@@ -93,9 +93,6 @@ export default function ProjectEditPage() {
     void loadStacks();
   }, []);
 
-  // -------------------------------------------------------------
-  // [수정 포인트 1] 텍스트 영역 높이 조절 로직 개선
-  // -------------------------------------------------------------
   const [isComposing, setIsComposing] = useState(false);
   const contentsRef = useRef<HTMLTextAreaElement | null>(null);
   const contentsValue = watch('contents.0');
@@ -109,9 +106,6 @@ export default function ProjectEditPage() {
   useLayoutEffect(() => {
     const el = contentsRef.current;
     if (!el) return;
-
-    // 기존: el.style.height = '0px'; -> 스크롤 튐의 원인
-    // 변경: 'auto'로 설정하여 급격한 높이 변화 방지
     el.style.height = 'auto';
     el.style.height = `${el.scrollHeight}px`;
   }, [contentsValue]);
