@@ -1,10 +1,10 @@
+import { AuthInitializer } from '@/features/login/AuthInitializer';
+import Footer from '@/widgets/Footer';
+import Header from '@/widgets/Header';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
-import './globals.css';
-import Header from '@/widgets/Header';
-import Footer from '@/widgets/Footer';
-import { AuthInitializer } from '@/features/login/AuthInitializer';
 import Script from 'next/script';
+import './globals.css';
 
 export const metadata: Metadata = {
   title: 'BoostUs - 부스트캠퍼들이 함께 기록하고, 함께 성장하는 커뮤니티 🌱',
@@ -34,7 +34,7 @@ export default function RootLayout({
             src="https://kr.object.ncloudstorage.com/boostad-sdk-dev/sdk/sdk.js"
             strategy="afterInteractive" // 페이지 로드 후 실행 (성능 최적화)
             data-blog-key="d88f304b-6eae-4010-9f1a-2c5963085a9b"
-            data-context="부스트어스"
+            data-context="개발"
             data-auto="false" // 수동 모드 설정 (필수)
             async // 가이드에 있는 async 속성
           />
