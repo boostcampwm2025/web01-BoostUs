@@ -70,7 +70,7 @@
 
 ## 🔹 서비스 아키텍처
 
-<img width="95%" alt="image" src="https://github.com/user-attachments/assets/feea07bc-d233-4046-981a-fe3e3357bbf4" />
+<img width="640" height="715" alt="스크린샷 2026-01-30 오전 10 28 45" src="https://github.com/user-attachments/assets/3b8165b7-6462-4ec2-8879-53fb855e8c4e" />
 
 <br>
 
@@ -85,6 +85,8 @@
 | **Infra & DevOps** | ![NCP](https://img.shields.io/badge/Naver%20Cloud-03C75A?style=for-the-badge&logo=naver&logoColor=white) ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge\&logo=docker\&logoColor=white) ![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge\&logo=nginx\&logoColor=white) ![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)  |
 
 <br>
+
+
 
 
 
