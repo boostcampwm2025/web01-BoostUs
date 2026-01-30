@@ -1,6 +1,6 @@
 const ListCardChip = ({ tag }: { tag: string }) => {
   return (
-    <div className="flex items-center justify-center px-2 py-0.5 border rounded-full border-neutral-border-default bg-neutral-surface-strong">
+    <div className="flex items-center justify-center px-2 py-0.5 border rounded-full border-neutral-border-default bg-neutral-surface-strong whitespace-nowrap">
       <span className="text-body-12 text-neutral-text-weak">{tag}</span>
     </div>
   );
