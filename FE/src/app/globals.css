@@ -3,6 +3,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+textarea {
+  field-sizing: content; /* 이 속성을 쓰면 height 조절 스크립트가 필요 없음 */
+}
+
 @theme {
   --color-special-white: #fefefe;
   --color-stone-50: #f9fafb;
