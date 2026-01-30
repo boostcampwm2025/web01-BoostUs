@@ -1,8 +1,19 @@
-const extractDate = (dateTimeStr: string | undefined) => {
+type DateFormatType = 'relative' | 'absolute';
+
+const extractDate = (
+  dateTimeStr: string | undefined,
+  formatType: DateFormatType = 'relative'
+): string => {
   if (!dateTimeStr || dateTimeStr.length < 10) {
     return '';
   }
 
+  // absolute 타입인 경우 YYYY-MM-DD만 반환
+  if (formatType === 'absolute') {
+    return dateTimeStr.slice(0, 10);
+  }
+
+  // relative 타입인 경우 기존 로직 수행
   const date = new Date(dateTimeStr);
   const now = new Date();
 
