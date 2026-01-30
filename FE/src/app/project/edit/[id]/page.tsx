@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation'; // 👈 라우터 추가
+import { useRouter, useParams } from 'next/navigation';
 import { ImageUp, X } from 'lucide-react';
 import { useProjectRegister } from '@/features/project/hook/useProjectRegister';
 
@@ -49,25 +49,21 @@ const normalizeStacks = (data: unknown): TechStackResponse => {
   return empty;
 };
 
-// 컴포넌트 이름 변경 & params 받기
 export default function ProjectEditPage() {
   const router = useRouter();
 
   const params = useParams<{ id: string }>();
   const projectId = Number(params.id);
 
-  // ID 유효성 검사
   if (isNaN(projectId)) {
     return (
       <div className="p-10 text-center">유효하지 않은 프로젝트 ID입니다.</div>
     );
   }
 
-  // 훅에 ID와 완료 후 이동할 경로 전달
   const {
     register,
     watch,
-    // setValue, // 훅 내부에서 처리하므로 여기서 직접 안 써도 됨 (필요시 사용)
     formState: { errors, isSubmitting },
     previewUrl,
     isDragging,
@@ -85,7 +81,6 @@ export default function ProjectEditPage() {
 
   const [stackData, setStackData] = useState<TechStackResponse | null>(null);
 
-  // 기술 스택 목록 불러오기 (기존 로직 유지)
   useEffect(() => {
     const loadStacks = async () => {
       try {
@@ -98,7 +93,9 @@ export default function ProjectEditPage() {
     void loadStacks();
   }, []);
 
-  // 텍스트 영역 높이 조절 (기존 로직 유지)
+  // -------------------------------------------------------------
+  // [수정 포인트 1] 텍스트 영역 높이 조절 로직 개선
+  // -------------------------------------------------------------
   const [isComposing, setIsComposing] = useState(false);
   const contentsRef = useRef<HTMLTextAreaElement | null>(null);
   const contentsValue = watch('contents.0');
@@ -112,7 +109,10 @@ export default function ProjectEditPage() {
   useLayoutEffect(() => {
     const el = contentsRef.current;
     if (!el) return;
-    el.style.height = '0px';
+
+    // 기존: el.style.height = '0px'; -> 스크롤 튐의 원인
+    // 변경: 'auto'로 설정하여 급격한 높이 변화 방지
+    el.style.height = 'auto';
     el.style.height = `${el.scrollHeight}px`;
   }, [contentsValue]);
 
@@ -370,12 +370,9 @@ export default function ProjectEditPage() {
               contentsRef.current = el;
               contentsRHRef(el);
             }}
-            onChange={(e) => {
-              contentsOnChange(e);
-              const el = e.currentTarget;
-              el.style.height = '0px';
-              el.style.height = `${el.scrollHeight}px`;
-            }}
+            // [수정 포인트 2] onChange 중복 로직 제거
+            // 이미 useLayoutEffect가 contentsValue 변경을 감지하므로 여기서 높이 조절 불필요
+            onChange={contentsOnChange}
           />
         </div>
 
@@ -448,14 +445,13 @@ export default function ProjectEditPage() {
               기술 스택 로딩 중...
             </div>
           )}
-          {/* hidden input은 hook 내부 useEffect가 동기화해주므로 제거해도 되지만, 안전장치로 둬도 무방 */}
         </div>
 
         {/* 버튼 그룹  */}
         <div className="flex justify-end gap-2 mt-8">
           <button
             type="button"
-            onClick={() => router.push('/project')} // 뒤로가기
+            onClick={() => router.push('/project')}
             className="rounded-lg bg-brand-surface-weak border border-neutral-border-default px-4 py-2 text-string-16 text-neutral-text-default hover:border-neutral-border-active hover:text-brand-text-default cursor-pointer duration-150 transition-colors"
           >
             취소
@@ -463,7 +459,6 @@ export default function ProjectEditPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            // onClick={() => router.push(`/project`)}
             className="cursor-pointer rounded-lg bg-brand-surface-default px-4 py-2 text-string-16 text-brand-text-on-default hover:bg-brand-dark disabled:opacity-50 duration-150 transition-colors"
           >
             {isSubmitting ? '저장 중...' : '수정 완료'}
