@@ -38,6 +38,11 @@ export default function RootLayout({
             data-auto="false" // 수동 모드 설정 (필수)
             async // 가이드에 있는 async 속성
           />
+          <Script
+            src="https://utmate.me/sdk/utmate-sdk.iife.js" // web16팀 utmate sdk (사용성 테스트)
+            strategy="afterInteractive"
+            async
+          />
         </main>
         <Footer />
       </body>
