@@ -53,11 +53,8 @@ export default function MemberInfoMangeSections() {
       }
 
       try {
-        // TODO: API 호출
-
         await updateNickname(safeInput);
 
-        // 기존 authState를 복사하고, member 안의 nickname만 교체
         setAuthState((prev) => {
           if (!prev || !prev.member) return prev; // 예외 처리
 
@@ -173,6 +170,12 @@ export default function MemberInfoMangeSections() {
                   value={nicknameInput ?? ''}
                   onChange={(e) => setNicknameInput(e.target.value)}
                   autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault(); // 엔터 입력 시 불필요한 새로고침이나 폼 제출 방지
+                      handleNicknameAction(); // 저장 함수 실행
+                    }
+                  }}
                   className="text-display-20 text-neutral-text-strong border-b border-neutral-border-default
              focus:outline-none focus:border-brand-border-default transition-colors bg-transparent
              p-0 w-30"
