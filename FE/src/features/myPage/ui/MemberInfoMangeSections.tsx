@@ -18,6 +18,7 @@ import {
   convertBlogUrlToRss,
   detectPlatformFromBlogUrl,
 } from '@/features/feed/utils/blog-rss-converter';
+import { CheckIcon } from '@/components/ui/check';
 
 // 폼 데이터 타입 정의
 interface RssFormValues {
@@ -35,6 +36,37 @@ export default function MemberInfoMangeSections() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  // 닉네임 수정 상태
+  const [isEditingNickname, setIsEditingNickname] = useState<boolean>(false);
+  const [nicknameInput, setNicknameInput] = useState<string | null>(null);
+
+  // 닉네임 수정 버튼 클릭 핸들러
+  const handleNicknameAction = async () => {
+    if (isEditingNickname) {
+      // 입력값이 없거나 공백만 있으면 리턴
+      const safeInput = nicknameInput ?? '';
+
+      if (!safeInput.trim()) {
+        alert('닉네임을 입력해주세요.');
+        return;
+      }
+
+      try {
+        // API 호출
+        // await updateNickname({ nickname: safeInput });
+
+        setIsEditingNickname(false);
+      } catch (error) {
+        alert('닉네임 변경에 실패했습니다.');
+      }
+    } else {
+      //  수정 모드 진입
+      setNicknameInput(member?.nickname ?? '');
+      setIsEditingNickname(true);
+    }
+  };
+
+  // 로그아웃
   const handleLogout = async () => {
     await logout();
   };
@@ -116,14 +148,30 @@ export default function MemberInfoMangeSections() {
           <div className="flex flex-col justify-center gap-2 flex-1">
             {/* 닉네임 + 수정 아이콘 */}
             <div className="flex flex-row items-center gap-2">
-              <span className="text-display-20 text-neutral-text-strong">
-                {member.nickname}
-              </span>
+              {!isEditingNickname ? (
+                <span className="text-display-20 text-neutral-text-strong">
+                  {member.nickname}
+                </span>
+              ) : (
+                <input
+                  type="text"
+                  defaultValue={member.nickname ?? ''}
+                  autoFocus // 수정 모드 진입 시 자동 포커스
+                  className="text-display-20 text-neutral-text-strong border-b border-neutral-border-default
+                             focus:outline-none focus:border-brand-border-default transition-colors bg-transparent
+                             p-0 w-30"
+                />
+              )}
               <button
                 type="button"
                 className="text-neutral-text-weak hover:text-neutral-text-strong cursor-pointer transition-colors duration-150"
+                onClick={handleNicknameAction}
               >
-                <PenToolIcon size={16} />
+                {isEditingNickname ? (
+                  <CheckIcon size={16} />
+                ) : (
+                  <PenToolIcon size={16} />
+                )}
               </button>
             </div>
 
