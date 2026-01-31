@@ -1,5 +1,5 @@
-import FeedSection from '@/features/mainpage/feed/FeedSection';
-import RecommendedSection from '@/features/mainpage/recommendation/RecommendedSection';
+import FeedSection from '@/features/main/FeedSection';
+import RecommendedSection from '@/features/main/reco/RecommendedSection';
 
 const Home = () => {
   return (

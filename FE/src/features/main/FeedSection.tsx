@@ -1,7 +1,7 @@
 'use client';
 
 import StoriesCard from '@/features/stories/ui/Card/Card';
-import FeedHeader from '@/features/mainpage/feed/FeedHeader';
+import FeedHeader from '@/features/main/FeedHeader';
 import { useEffect, useState } from 'react';
 import { fetchRecoStory } from '@/features/main/reco/api/fetchRecoStory';
 import Contribute from '@/features/main/contribute/Contribute';
