@@ -32,22 +32,22 @@ export default function MyPage() {
         <MyViews />
       </div>
 
-      <div
-        style={{
-          position: 'fixed',
-          bottom: '20px',
-          right: '20px',
-          backgroundColor: 'rgba(0,0,0,0.8)',
-          color: 'white',
-          padding: '10px',
-          borderRadius: '8px',
-          fontSize: '12px',
-          zIndex: 9999,
-        }}
-      >
-        <h3>🔑 MyPage 모니터링</h3>
-        <pre>{JSON.stringify(member, null, 2)}</pre>
-      </div>
+      {/*<div*/}
+      {/*  style={{*/}
+      {/*    position: 'fixed',*/}
+      {/*    bottom: '20px',*/}
+      {/*    right: '20px',*/}
+      {/*    backgroundColor: 'rgba(0,0,0,0.8)',*/}
+      {/*    color: 'white',*/}
+      {/*    padding: '10px',*/}
+      {/*    borderRadius: '8px',*/}
+      {/*    fontSize: '12px',*/}
+      {/*    zIndex: 9999,*/}
+      {/*  }}*/}
+      {/*>*/}
+      {/*  <h3>🔑 MyPage 모니터링</h3>*/}
+      {/*  <pre>{JSON.stringify(member, null, 2)}</pre>*/}
+      {/*</div>*/}
     </div>
   );
 }
