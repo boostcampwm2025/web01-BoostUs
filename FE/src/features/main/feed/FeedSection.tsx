@@ -1,14 +1,14 @@
 'use client';
 
 import StoriesCard from '@/features/stories/ui/Card/Card';
-import FeedHeader from '@/features/main/FeedHeader';
+import FeedHeader from '@/features/main/feed/FeedHeader';
 import { useEffect, useState } from 'react';
 import { fetchRecoStory } from '@/features/main/reco/api/fetchRecoStory';
 import Contribute from '@/features/main/contribute/Contribute';
 import MainQnaSection from '@/features/main/qna/ui/MainQnaSection';
 import Link from 'next/link';
 import { Story } from '@/features/stories/model/stories.type';
-import MainBelowSection from '@/features/main/MainBelowSection';
+import MainBelowSection from '@/features/main/below/MainBelowSection';
 
 const FeedSection = () => {
   const [Stories, setStories] = useState<Story[] | null>(null);

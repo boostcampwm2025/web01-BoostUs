@@ -1,6 +1,6 @@
 import RecommendedSection from '@/features/main/reco/RecommendedSection';
-import FeedSection from '@/features/main/FeedSection';
-import MainBelowSection from '@/features/main/MainBelowSection';
+import FeedSection from '@/features/main/feed/FeedSection';
+import MainBelowSection from '@/features/main/below/MainBelowSection';
 
 export default function MainPageWidget() {
   return (
