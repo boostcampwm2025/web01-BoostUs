@@ -78,7 +78,9 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
   useEffect(() => {
     fetchStacks()
       .then((res) => setStackData(normalizeStacks(res.data)))
-      .catch(console.error);
+      .catch((e) => {
+        console.error(e);
+      });
   }, []);
 
   const cohortOptions = Array.from({ length: 10 }).map((_, i) => ({

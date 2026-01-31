@@ -67,6 +67,7 @@ export const FormSelect = ({
         </option>
       ))}
     </select>
+    {error && <p className="mt-1 text-xs text-red-500">{error.message}</p>}
   </div>
 );
 

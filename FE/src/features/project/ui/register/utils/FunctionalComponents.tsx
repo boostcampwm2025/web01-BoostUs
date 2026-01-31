@@ -1,11 +1,11 @@
 import { ImageUp, X } from 'lucide-react';
 import { FieldError, UseFormRegisterReturn } from 'react-hook-form';
-
+import type { LabelHTMLAttributes } from 'react';
 // 1. 썸네일 업로더
 interface ThumbnailUploaderProps {
   previewUrl: string | null;
   isDragging: boolean;
-  dragHandlers: any; // 타입 정의 필요 (DragEvent 핸들러)
+  dragHandlers: LabelHTMLAttributes<HTMLLabelElement>;
   register: UseFormRegisterReturn;
   error?: FieldError;
 }
