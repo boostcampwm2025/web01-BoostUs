@@ -1,6 +1,7 @@
 import { ImageUp, X } from 'lucide-react';
 import { FieldError, UseFormRegisterReturn } from 'react-hook-form';
 import type { LabelHTMLAttributes } from 'react';
+
 // 1. 썸네일 업로더
 interface ThumbnailUploaderProps {
   previewUrl: string | null;

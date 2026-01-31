@@ -71,7 +71,7 @@ export const FormSelect = ({
   </div>
 );
 
-// Textarea
+//3. Textarea
 
 interface FormTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string;
@@ -94,9 +94,8 @@ export const FormTextarea = ({
     const el = textareaRef.current;
     if (!el) return;
 
-    // 1. 높이를 'auto'로 리셋하여 줄어든 내용까지 감지하게 함
+    // 1. 높이를 'auto'로 리셋하여 줄어든 내용까지 감지
     el.style.height = 'auto';
-
     // 2. 실제 스크롤 높이(내용물 높이) + 테두리 값 등을 고려해 설정
     el.style.height = `${el.scrollHeight}px`;
   };
