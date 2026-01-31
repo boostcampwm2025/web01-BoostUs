@@ -19,6 +19,7 @@ import {
   detectPlatformFromBlogUrl,
 } from '@/features/feed/utils/blog-rss-converter';
 import { CheckIcon } from '@/components/ui/check';
+import { updateNickname } from '@/features/myPage/api/updateNickname';
 
 // 폼 데이터 타입 정의
 interface RssFormValues {
@@ -53,7 +54,8 @@ export default function MemberInfoMangeSections() {
 
       try {
         // TODO: API 호출
-        // await updateNickname({ nickname: safeInput });
+
+        await updateNickname(safeInput);
 
         // 기존 authState를 복사하고, member 안의 nickname만 교체
         setAuthState((prev) => {
@@ -69,8 +71,8 @@ export default function MemberInfoMangeSections() {
         });
 
         setIsEditingNickname(false);
-      } catch (error) {
-        alert('닉네임 변경에 실패했습니다.');
+      } catch (e: any) {
+        alert(e.message);
       }
     } else {
       //  수정 모드 진입

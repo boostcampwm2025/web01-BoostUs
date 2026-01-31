@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CurrentMember } from '../auth/decorator/current-member.decorator';
 import { MemberProfileResponseDto } from './dto/member-profile-response.dto';
 import { MemberService } from './member.service';
@@ -29,6 +29,7 @@ export class MemberController {
     summary: '로그인한 사용자의 닉네임 수정',
     description: 'JWT 인증을 통해 로그인한 사용자의 닉네임을 수정합니다.',
   })
+  @ApiConsumes('application/x-www-form-urlencoded')
   @ApiResponse({
     status: 200,
     description: '닉네임 수정 성공',
@@ -36,7 +37,7 @@ export class MemberController {
   })
   async updateMyNickname(
     @CurrentMember() memberId: string,
-    @Param() dto: UpdateNicknameDto,
+    @Body() dto: UpdateNicknameDto,
   ): Promise<MemberProfileResponseDto> {
     return this.memberService.updateMyNickname(memberId, dto);
   }
