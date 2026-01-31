@@ -73,7 +73,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
 
   const [stackData, setStackData] = useState<TechStackResponse | null>(null);
   const [isComposing, setIsComposing] = useState(false);
-  const contentsValue = watch('contents.0');
+  const contentsValue = watch('contents');
 
   useEffect(() => {
     fetchStacks()
@@ -173,7 +173,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
             label="상세 내용"
             placeholder="내용 입력"
             register={register('contents')}
-            watchValue={contentsValue ?? ''}
+            watchValue={(contentsValue as unknown as string) ?? ''}
             rows={6}
             error={errors.contents as FieldError}
             className="min-h-[150px]"

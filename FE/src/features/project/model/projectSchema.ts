@@ -53,7 +53,7 @@ export type ProjectFormValues = {
   field: 'WEB' | 'IOS' | 'ANDROID';
   title: string;
   description: string | undefined;
-  contents?: string[] | undefined;
+  contents?: string | string[] | undefined;
   repoUrl: string;
   demoUrl: string | undefined;
   cohort:

@@ -22,8 +22,8 @@ export const FormInput = ({
       {label}
     </label>
     <input
-      {...register}
       {...props}
+      {...register}
       className={`mt-1 block w-full rounded-lg border p-2 focus:ring-brand-border-default ${
         error
           ? 'border-danger-border-default'
@@ -57,8 +57,8 @@ export const FormSelect = ({
       {label}
     </label>
     <select
-      {...register}
       {...props}
+      {...register}
       className="mt-1 block w-full rounded-lg border border-neutral-border-default p-2 focus:border-neutral-border-active focus:ring-brand-border-default"
     >
       {options.map((opt) => (
@@ -71,11 +71,12 @@ export const FormSelect = ({
 );
 
 // Textarea
+
 interface FormTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string;
   error?: FieldError;
   register: UseFormRegisterReturn;
-  watchValue: string; // 높이 조절을 위해 감시할 값
+  watchValue: string;
 }
 
 export const FormTextarea = ({
@@ -88,16 +89,39 @@ export const FormTextarea = ({
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const { ref: registerRef, ...restRegister } = register;
 
-  // 높이 조절 로직을 처리
-  useEffect(() => {
+  const adjustHeight = () => {
     const el = textareaRef.current;
     if (!el) return;
-    el.style.height = '0px';
+
+    // 1. 높이를 'auto'로 리셋하여 줄어든 내용까지 감지하게 함
+    el.style.height = 'auto';
+
+    // 2. 실제 스크롤 높이(내용물 높이) + 테두리 값 등을 고려해 설정
     el.style.height = `${el.scrollHeight}px`;
+  };
+
+  useEffect(() => {
+    const rafId = requestAnimationFrame(() => {
+      adjustHeight();
+    });
+
+    const timer1 = setTimeout(() => {
+      adjustHeight();
+    }, 10);
+
+    const timer2 = setTimeout(() => {
+      adjustHeight();
+    }, 150);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
   }, [watchValue]);
 
   return (
-    <div>
+    <div className="flex-1">
       <label
         htmlFor={props.id}
         className="block text-string-16 text-neutral-text-default"
@@ -105,13 +129,19 @@ export const FormTextarea = ({
         {label}
       </label>
       <textarea
-        {...restRegister}
         {...props}
+        {...restRegister}
+        rows={1}
         ref={(e) => {
           registerRef(e);
           textareaRef.current = e;
         }}
-        className="mt-1 block w-full resize-none overflow-hidden rounded-lg border border-neutral-border-default p-2 focus:border-neutral-border-active focus:ring-brand-border-default"
+        onInput={adjustHeight}
+        className={`mt-1 block w-full resize-none overflow-hidden rounded-lg border p-2 focus:ring-brand-border-default ${
+          error
+            ? 'border-danger-border-default'
+            : 'border-neutral-border-default focus:border-neutral-border-active'
+        } ${props.className}`}
       />
       {error && <p className="mt-1 text-xs text-red-500">{error.message}</p>}
     </div>
