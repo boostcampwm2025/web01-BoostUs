@@ -1,7 +1,7 @@
 import { forwardRef, TextareaHTMLAttributes, useEffect, useRef } from 'react';
 import { FieldError, UseFormRegisterReturn } from 'react-hook-form';
 
-// 1. 기본 Input
+// 기본 Input
 interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   error?: FieldError;
@@ -70,7 +70,7 @@ export const FormSelect = ({
   </div>
 );
 
-// 3. Auto-resize Textarea (로직 캡슐화)
+// Textarea
 interface FormTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string;
   error?: FieldError;
@@ -88,7 +88,7 @@ export const FormTextarea = ({
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const { ref: registerRef, ...restRegister } = register;
 
-  // 높이 조절 로직을 여기서 처리 -> 메인 파일 깔끔해짐
+  // 높이 조절 로직을 처리
   useEffect(() => {
     const el = textareaRef.current;
     if (!el) return;

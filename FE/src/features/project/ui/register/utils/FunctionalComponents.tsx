@@ -1,16 +1,11 @@
 import { ImageUp, X } from 'lucide-react';
 import { FieldError, UseFormRegisterReturn } from 'react-hook-form';
-import TechStackSelector from '@/entities/TechStackSelector/ui/TechStackSelector';
-import {
-  TechStackResponse,
-  TechStackItem,
-} from '@/entities/TechStackSelector/model/types';
 
 // 1. 썸네일 업로더
 interface ThumbnailUploaderProps {
   previewUrl: string | null;
   isDragging: boolean;
-  dragHandlers: any; // 타입 정의 필요 (DragEvent 핸들러들)
+  dragHandlers: any; // 타입 정의 필요 (DragEvent 핸들러)
   register: UseFormRegisterReturn;
   error?: FieldError;
 }
