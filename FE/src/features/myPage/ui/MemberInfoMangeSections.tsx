@@ -2,7 +2,7 @@
 
 import { useForm } from 'react-hook-form';
 import Image from 'next/image';
-import { useAtomValue } from 'jotai';
+import { useAtom } from 'jotai';
 import { memberAtom } from '@/features/login/model/auth.store';
 import { PenToolIcon } from '@/components/ui/pen-tool';
 import { GithubIcon } from '@/components/ui/github';
@@ -26,7 +26,7 @@ interface RssFormValues {
 }
 
 export default function MemberInfoMangeSections() {
-  const authState = useAtomValue(memberAtom);
+  const [authState, setAuthState] = useAtom(memberAtom);
   const member = authState?.member;
   const latestProject = authState?.latestProject;
   const feed = authState?.feed;
@@ -52,8 +52,21 @@ export default function MemberInfoMangeSections() {
       }
 
       try {
-        // API 호출
+        // TODO: API 호출
         // await updateNickname({ nickname: safeInput });
+
+        // 기존 authState를 복사하고, member 안의 nickname만 교체
+        setAuthState((prev) => {
+          if (!prev || !prev.member) return prev; // 예외 처리
+
+          return {
+            ...prev, // 기존 상태 유지
+            member: {
+              ...prev.member, // 기존 멤버 정보 유지
+              nickname: safeInput, // 닉네임만 새 값으로 덮어쓰기
+            },
+          };
+        });
 
         setIsEditingNickname(false);
       } catch (error) {
@@ -155,11 +168,12 @@ export default function MemberInfoMangeSections() {
               ) : (
                 <input
                   type="text"
-                  defaultValue={member.nickname ?? ''}
-                  autoFocus // 수정 모드 진입 시 자동 포커스
+                  value={nicknameInput ?? ''}
+                  onChange={(e) => setNicknameInput(e.target.value)}
+                  autoFocus
                   className="text-display-20 text-neutral-text-strong border-b border-neutral-border-default
-                             focus:outline-none focus:border-brand-border-default transition-colors bg-transparent
-                             p-0 w-30"
+             focus:outline-none focus:border-brand-border-default transition-colors bg-transparent
+             p-0 w-30"
                 />
               )}
               <button
