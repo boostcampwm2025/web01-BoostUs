@@ -159,9 +159,8 @@ export default function PostEditorForm({
               buttonStyle="primary"
               disabled={!canSubmit}
               onClick={handleSubmit}
-              content={buttonLabel}
             >
-              답변하기
+              {buttonLabel}
             </Button>
           </CustomTooltip>
         </div>
