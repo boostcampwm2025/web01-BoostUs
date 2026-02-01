@@ -9,6 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import Button from '@/shared/ui/Button/Button';
 
 interface customDialogProps {
   dialogTrigger: ReactNode;
@@ -41,19 +42,13 @@ const CustomDialog = ({
             {dialogFooter ?? (
               <>
                 <DialogClose asChild>
-                  <button
-                    type="button"
-                    className="border border-neutral-border-default px-4 py-2 rounded-lg cursor-pointer text-string-16 text-neutral-text-default hover:text-brand-surface-default hover:border-brand-border-default transition-colors duration-150"
-                  >
-                    닫기
-                  </button>
+                  <Button content="닫기" buttonStyle="outlined" />
                 </DialogClose>
-                <button
-                  type="submit"
-                  className="bg-brand-surface-default hover:bg-brand-dark transition-colors duration-150 text-string-16 text-brand-text-on-default px-4 py-2 rounded-lg cursor-pointer"
-                >
-                  저장
-                </button>
+                <Button
+                  content="저장"
+                  buttonStyle="primary"
+                  buttonType="submit"
+                />
               </>
             )}
           </DialogFooter>

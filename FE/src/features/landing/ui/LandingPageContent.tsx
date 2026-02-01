@@ -6,6 +6,7 @@ import ServiceStats from '@/features/landing/ui/ServiceStats';
 import Link from 'next/link';
 import { useLandingScroll } from '@/features/landing/model/useLandingScroll';
 import ImageCard from '@/entities/landing/ImageCard';
+import Button from '@/shared/ui/Button/Button';
 
 const LandingPageContent = () => {
   const { firstSectionRef, secondSectionRef } = useLandingScroll();
@@ -24,10 +25,12 @@ const LandingPageContent = () => {
           이어진 모든 기록을 자산으로 만들고, 성장이 다음 도전으로 이어지도록
           돕는 커뮤니티·아카이빙 플랫폼
         </h3>
-        <Link href="/">
-          <button className="flex items-center justify-center px-4 py-3 mt-12 cursor-pointer bg-brand-surface-default rounded-lg text-brand-text-on-default text-string-16">
-            BoostUs 시작하기
-          </button>
+        <Link className="mt-12" href="/">
+          <Button
+            buttonStyle="primary"
+            content="boostus 시작하기"
+            size="large"
+          />
         </Link>
         <ServiceStats />
         <div className="relative w-full max-w-190 aspect-640/460">
@@ -87,21 +90,23 @@ const LandingPageContent = () => {
         </p>
         <div className="flex flex-row items-center gap-4 mt-8">
           <Link href="/">
-            <button className="flex items-center justify-center px-4 py-3 cursor-pointer bg-brand-surface-default rounded-lg text-brand-text-on-default text-string-16">
-              BoostUs 시작하기
-            </button>
+            <Button
+              buttonStyle="primary"
+              content="boostus 시작하기"
+              size="large"
+            />
           </Link>
-          <button
+          <Button
+            buttonStyle="outlined"
             onClick={() => {
               window.scrollTo({
                 top: 0,
                 behavior: 'smooth',
               });
             }}
-            className="flex items-center justify-center px-4 py-3 cursor-pointer bg-neutral-surface-strong rounded-lg border border-neutral-border-default hover:border-neutral-border-active text-neutral-text-default hover:text-brand-text-default transition-colors duration-150 text-string-16"
-          >
-            다시 알아보기
-          </button>
+            size="large"
+            content="다시 알아보기"
+          />
         </div>
       </section>
     </article>
