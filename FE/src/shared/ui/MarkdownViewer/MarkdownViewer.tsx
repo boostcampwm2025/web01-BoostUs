@@ -3,176 +3,197 @@ import rehypeRaw from 'rehype-raw';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
 
+/**
+ * 티스토리/카카오 스타일의 이미지 치환자를 표준 HTML img 태그로 변환합니다.
+ * 입력 예시: [##Image|kage@...|CDM|1.3|{"style":"alignCenter"}##]
+ */
+const transformCustomImageSyntax = (content: string): string => {
+  const regex = /\[##Image\|([^|]+)\|([^|]+)\|.*?##]/g;
+
+  return content.replace(regex, (_match: string, path: string, alt: string) => {
+    const imageSrc = path.startsWith('http')
+      ? path
+      : `https://blog.kakaocdn.net/dn/${path}`;
+
+    return `<img src="${imageSrc}" alt="${alt}" class="custom-legacy-image" />`;
+  });
+};
+
 export const MarkdownViewer = ({ content }: { content: string }) => {
+  const processedContent = transformCustomImageSyntax(content);
+
   return (
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
-      rehypePlugins={[
-        rehypeRaw,
-        [
-          rehypeSanitize,
-          {
-            ...defaultSchema,
-            attributes: {
-              ...defaultSchema.attributes,
-              p: [
-                ...(defaultSchema.attributes?.p ?? []),
-                ['align', 'center', 'left', 'right', 'justify'],
-              ],
-              img: [
-                ...(defaultSchema.attributes?.img ?? []),
-                'width',
-                'height',
-                'align',
-              ],
-              // 중요: code 태그에서 className을 허용해야 언어 감지가 가능합니다.
-              code: [...(defaultSchema.attributes?.code ?? []), 'className'],
+    <div className="w-full wrap-break-word overflow-x-hidden **:max-w-full **:wrap-break-word [&_pre]:overflow-x-auto [&_code]:wrap-break-word">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        rehypePlugins={[
+          rehypeRaw,
+          [
+            rehypeSanitize,
+            {
+              ...defaultSchema,
+              attributes: {
+                ...defaultSchema.attributes,
+                p: [
+                  ...(defaultSchema.attributes?.p ?? []),
+                  ['align', 'center', 'left', 'right', 'justify'],
+                ],
+                img: [
+                  ...(defaultSchema.attributes?.img ?? []),
+                  'width',
+                  'height',
+                  'align',
+                ],
+                // 중요: code 태그에서 className을 허용해야 언어 감지가 가능합니다.
+                code: [...(defaultSchema.attributes?.code ?? []), 'className'],
+              },
             },
-          },
-        ],
-      ]}
-      components={{
-        /**
-         * 요소별 스타일 커스텀
-         * 각 키(h1, h2, p 등)는 마크다운 요소에 대응됩니다.
-         */
+          ],
+        ]}
+        components={{
+          /**
+           * 요소별 스타일 커스텀
+           * 각 키(h1, h2, p 등)는 마크다운 요소에 대응됩니다.
+           */
 
-        // # (h1) 스타일
-        h1: ({ ...props }) => (
-          <h1
-            className="text-neutral-text-default text-display-32 mb-6"
-            {...props}
-          />
-        ),
-
-        // ## (h2) 스타일
-        h2: ({ ...props }) => (
-          <h2
-            className="text-neutral-text-default text-display-24 mb-3"
-            {...props}
-          />
-        ),
-
-        // ### (h3) 스타일
-        h3: ({ ...props }) => (
-          <h3
-            className="text-neutral-text-default text-display-20 mb-3"
-            {...props}
-          />
-        ),
-
-        // 본문 텍스트 (p) 스타일
-        p: ({ ...props }) => (
-          <p
-            className="text-body-16 text-neutral-text-default mb-4 leading-relaxed wrap-break-word"
-            {...props}
-          />
-        ),
-
-        // 리스트 (ul, ol, li) 스타일
-        ul: ({ ...props }) => (
-          <ul
-            className="text-neutral-text-default text-body-16 mb-4 ml-4 list-inside list-disc"
-            {...props}
-          />
-        ),
-        ol: ({ ...props }) => (
-          <ol
-            className="text-neutral-text-default text-body-16 mb-4 ml-4 list-inside list-decimal"
-            {...props}
-          />
-        ),
-        li: ({ ...props }) => <li className="mb-1" {...props} />,
-
-        // 인용문 (blockquote) 스타일
-        blockquote: ({ ...props }) => (
-          <blockquote
-            className="text-neutral-text-default border-accent-blue bg-grayscale-300 my-4 flex items-center justify-center border-l-4 py-4 pr-12 pl-4 [&_p]:mb-0"
-            {...props}
-          />
-        ),
-
-        // 링크 (a) 스타일
-        a: ({ ...props }) => (
-          <a
-            className="text-accent-blue hover:text-accent-blue text-string-16 hover:text-display-16 transition-colors hover:underline break-all"
-            target="_blank"
-            rel="noopener noreferrer"
-            {...props}
-          />
-        ),
-
-        // 이미지 (img) 스타일
-        img: (props) => (
-          <img
-            className="mx-auto mb-8 block h-auto max-w-full rounded-lg shadow-sm"
-            {...props}
-          />
-        ),
-
-        // 인라인 코드 (`code`) 및 코드 블록 스타일
-        code: ({ className, children, ...props }) => {
-          // 인라인 코드인지 블록 코드인지 구분 (간단한 예시)
-          const isInline = !className;
-          return isInline ? (
-            <code
-              className="text-neutral-text-strong bg-brand-surface-weak rounded px-1 py-0.5 font-mono text-sm"
-              {...props}
-            >
-              {children}
-            </code>
-          ) : (
-            <code
-              className={`bg-brand-surface-weak text-neutral-text-default my-4 block w-full overflow-x-auto rounded-lg p-4 text-sm ${className}`}
-              {...props}
-            >
-              {children}
-            </code>
-          );
-        },
-
-        pre: ({ ...props }) => (
-          <pre className="m-0 w-full bg-transparent p-0" {...props} />
-        ),
-
-        // 볼드체 (strong, b) 스타일
-        strong: ({ ...props }) => (
-          <strong className="text-display-16" {...props} />
-        ),
-        b: ({ ...props }) => <b className="text-display-16" {...props} />,
-        h5: ({ ...props }) => <b className="text-display-16" {...props} />,
-
-        // 테이블 (table, thead, tbody, tr, th, td) 스타일
-        table: ({ ...props }) => (
-          <div className="my-4 w-full overflow-x-auto">
-            <table
-              className="w-full border-collapse border border-neutral-border-default"
+          // # (h1) 스타일
+          h1: ({ ...props }) => (
+            <h1
+              className="text-neutral-text-default text-display-32 mb-6 mt-8"
               {...props}
             />
-          </div>
-        ),
-        thead: ({ ...props }) => (
-          <thead className="bg-neutral-surface-strong" {...props} />
-        ),
-        tbody: ({ ...props }) => <tbody {...props} />,
-        tr: ({ ...props }) => (
-          <tr className="border-b border-neutral-border-default" {...props} />
-        ),
-        th: ({ ...props }) => (
-          <th
-            className="border border-neutral-border-default px-4 py-2 text-left font-bold wrap-break-word"
-            {...props}
-          />
-        ),
-        td: ({ ...props }) => (
-          <td
-            className="border border-neutral-border-default px-4 py-2 wrap-break-word"
-            {...props}
-          />
-        ),
-      }}
-    >
-      {content}
-    </ReactMarkdown>
+          ),
+
+          // ## (h2) 스타일
+          h2: ({ ...props }) => (
+            <h2
+              className="text-neutral-text-default text-display-24 mb-3 mt-6"
+              {...props}
+            />
+          ),
+
+          // ### (h3) 스타일
+          h3: ({ ...props }) => (
+            <h3
+              className="text-neutral-text-default text-display-20 mb-3"
+              {...props}
+            />
+          ),
+
+          // 본문 텍스트 (p) 스타일
+          p: ({ ...props }) => (
+            <p
+              className="text-body-16 text-neutral-text-default mb-4 leading-relaxed wrap-break-word"
+              {...props}
+            />
+          ),
+
+          // 리스트 (ul, ol, li) 스타일
+          ul: ({ ...props }) => (
+            <ul
+              className="text-neutral-text-default text-body-16 mb-4 ml-4 list-outside list-disc"
+              {...props}
+            />
+          ),
+          ol: ({ ...props }) => (
+            <ol
+              className="text-neutral-text-default text-body-16 mb-4 ml-4 list-inside list-decimal"
+              {...props}
+            />
+          ),
+          li: ({ ...props }) => <li className="mb-1" {...props} />,
+
+          // 인용문 (blockquote) 스타일
+          blockquote: ({ ...props }) => (
+            <blockquote
+              className="text-neutral-text-default border-brand-border-default bg-neutral-surface-strong my-4 border-l-4 py-4 px-6"
+              {...props}
+            />
+          ),
+
+          // 링크 (a) 스타일
+          a: ({ ...props }) => (
+            <a
+              className="text-brand-dark  text-string-16 hover:text-display-16 hover:underline break-all"
+              target="_blank"
+              rel="noopener noreferrer"
+              {...props}
+            />
+          ),
+
+          // 이미지 (img) 스타일
+          img: (props) => (
+            <img
+              className="mx-auto my-8 block h-auto max-w-full"
+              {...props}
+              alt=""
+            />
+          ),
+
+          // 인라인 코드 (`code`) 및 코드 블록 스타일
+          code: ({ className, children, ...props }) => {
+            // 인라인 코드인지 블록 코드인지 구분 (간단한 예시)
+            const isInline = !className;
+            return isInline ? (
+              <code
+                className="text-neutral-text-strong bg-neutral-border-default rounded px-1 py-0.5 font-mono text-body-14"
+                {...props}
+              >
+                {children}
+              </code>
+            ) : (
+              <code
+                className={`bg-brand-surface-weak text-neutral-text-default my-4 block w-full overflow-x-auto rounded-lg p-4 text-body-14 ${className}`}
+                {...props}
+              >
+                {children}
+              </code>
+            );
+          },
+
+          pre: ({ ...props }) => (
+            <pre className="m-0 w-full bg-transparent p-0" {...props} />
+          ),
+
+          // 볼드체 (strong, b) 스타일
+          strong: ({ ...props }) => (
+            <strong className="text-display-16" {...props} />
+          ),
+          b: ({ ...props }) => <b className="text-display-16" {...props} />,
+          h5: ({ ...props }) => <b className="text-display-16" {...props} />,
+
+          // 테이블 (table, thead, tbody, tr, th, td) 스타일
+          table: ({ ...props }) => (
+            <div className="my-4 w-full overflow-x-auto">
+              <table
+                className="w-full border-collapse border border-neutral-border-default"
+                {...props}
+              />
+            </div>
+          ),
+          thead: ({ ...props }) => (
+            <thead className="bg-neutral-surface-strong" {...props} />
+          ),
+          tbody: ({ ...props }) => <tbody {...props} />,
+          tr: ({ ...props }) => (
+            <tr className="border-b border-neutral-border-default" {...props} />
+          ),
+          th: ({ ...props }) => (
+            <th
+              className="border border-neutral-border-default px-4 py-2 text-left text-display-16 wrap-break-word"
+              {...props}
+            />
+          ),
+          td: ({ ...props }) => (
+            <td
+              className="border border-neutral-border-default px-4 py-2 wrap-break-word"
+              {...props}
+            />
+          ),
+        }}
+      >
+        {processedContent}
+      </ReactMarkdown>
+    </div>
   );
 };
