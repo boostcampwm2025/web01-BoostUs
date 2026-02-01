@@ -145,23 +145,29 @@ export const MarkdownViewer = ({ content }: { content: string }) => {
             node: _node,
             ...rest
           }: CodeComponentProps) => {
-            // 언어 감지: className이 'language-js'와 같은 형식이면 match에 값이 들어옵니다.
+            // 1. 언어 감지 (기존 로직)
             const match = /language-(\w+)/.exec(className ?? '');
-            const isInline = !match; // match가 없으면 인라인 코드로 간주
 
-            return !isInline ? (
-              // 2. 코드 블록: ref를 전달하지 않고, rest만 전달하여 타입 충돌 방지
+            // 2. [추가] 내용에 줄바꿈이 있는지 확인
+            const hasNewLine = (children as string).includes('\n');
+
+            // 3. [수정] 언어 클래스가 있거나, 줄바꿈이 있으면 '블록'으로 간주
+            const isBlock = match ?? hasNewLine;
+
+            return isBlock ? (
+              // 블록형 코드 (SyntaxHighlighter)
               <SyntaxHighlighter
                 {...rest}
                 style={vscDarkPlus}
-                language={match ? match[1] : ''}
+                // 언어가 감지되지 않았으면 'text'(일반 텍스트)로 설정하여 에러 방지
+                language={match ? match[1] : 'text'}
                 PreTag="div"
                 className="rounded-lg my-4 text-body-14"
               >
                 {(children as string).replace(/\n$/, '')}
               </SyntaxHighlighter>
             ) : (
-              // 3. 인라인 코드: ref를 포함하여 정상적인 HTML 요소로 렌더링
+              // 인라인 코드 (기존 스타일)
               <code
                 ref={ref}
                 className="text-neutral-text-strong bg-neutral-border-default rounded px-1 py-0.5 font-mono text-body-14"
