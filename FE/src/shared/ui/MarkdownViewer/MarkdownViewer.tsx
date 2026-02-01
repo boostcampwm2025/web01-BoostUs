@@ -1,7 +1,14 @@
 import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { ComponentPropsWithRef } from 'react';
+
+type CodeComponentProps = ComponentPropsWithRef<'code'> & {
+  node?: unknown; // react-markdown이 주입하는 메타데이터 (사용하지 않음)
+};
 
 /**
  * 티스토리/카카오 스타일의 이미지 치환자를 표준 HTML img 태그로 변환합니다.
@@ -131,20 +138,34 @@ export const MarkdownViewer = ({ content }: { content: string }) => {
           ),
 
           // 인라인 코드 (`code`) 및 코드 블록 스타일
-          code: ({ className, children, ...props }) => {
-            // 인라인 코드인지 블록 코드인지 구분 (간단한 예시)
-            const isInline = !className;
-            return isInline ? (
-              <code
-                className="text-neutral-text-strong bg-neutral-border-default rounded px-1 py-0.5 font-mono text-body-14"
-                {...props}
+          code: ({
+            className,
+            children,
+            ref,
+            node: _node,
+            ...rest
+          }: CodeComponentProps) => {
+            // 언어 감지: className이 'language-js'와 같은 형식이면 match에 값이 들어옵니다.
+            const match = /language-(\w+)/.exec(className ?? '');
+            const isInline = !match; // match가 없으면 인라인 코드로 간주
+
+            return !isInline ? (
+              // 2. 코드 블록: ref를 전달하지 않고, rest만 전달하여 타입 충돌 방지
+              <SyntaxHighlighter
+                {...rest}
+                style={vscDarkPlus}
+                language={match ? match[1] : ''}
+                PreTag="div"
+                className="rounded-lg my-4 text-body-14"
               >
-                {children}
-              </code>
+                {(children as string).replace(/\n$/, '')}
+              </SyntaxHighlighter>
             ) : (
+              // 3. 인라인 코드: ref를 포함하여 정상적인 HTML 요소로 렌더링
               <code
-                className={`bg-brand-surface-weak text-neutral-text-default my-4 block w-full overflow-x-auto rounded-lg p-4 text-body-14 ${className}`}
-                {...props}
+                ref={ref}
+                className="text-neutral-text-strong bg-neutral-border-default rounded px-1 py-0.5 font-mono text-body-14"
+                {...rest}
               >
                 {children}
               </code>
