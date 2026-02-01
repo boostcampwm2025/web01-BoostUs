@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://capsule-render.vercel.app/api?type=venom&theme=tokyonight&height=300&section=header&text=BoostUs&fontSize=90" />
+  <img width="5120" height="2560" alt="boostus big logo" src="https://github.com/user-attachments/assets/3d1536e7-cd15-429e-a0ff-419237499029" />
 </div>
 
 <p align="center">
@@ -85,6 +85,7 @@
 </table>
 
 <br>
+
 
 
 
