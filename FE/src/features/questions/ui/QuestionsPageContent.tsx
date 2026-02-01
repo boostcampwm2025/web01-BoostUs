@@ -43,7 +43,7 @@ const QuestionsPageContent = ({
         />
         <div className="flex flex-row gap-4 mt-8">
           <QuestionsSearchBar />
-          <Button buttonStyle="primary" content="질문하기" />
+          <Button content="질문하기" />
         </div>
         <div
           className={`transition-opacity duration-200 ${isLoading ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}
