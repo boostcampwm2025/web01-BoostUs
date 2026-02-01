@@ -12,6 +12,7 @@ import { Meta } from '@/shared/types/PaginationType';
 import { useQuestionPagination } from '@/features/questions/model/useQuestionsPagination';
 import PageHeader from '@/shared/ui/PageHeader';
 import Button from '@/shared/ui/Button/Button';
+import Link from 'next/link';
 
 interface QuestionsPageContentProps {
   initialQuestions: Question[];
@@ -43,7 +44,9 @@ const QuestionsPageContent = ({
         />
         <div className="flex flex-row gap-4 mt-8">
           <QuestionsSearchBar />
-          <Button content="질문하기" />
+          <Link href="/questions/register">
+            <Button>질문하기</Button>
+          </Link>
         </div>
         <div
           className={`transition-opacity duration-200 ${isLoading ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}

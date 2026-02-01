@@ -42,9 +42,9 @@ const CustomDialog = ({
             {dialogFooter ?? (
               <>
                 <DialogClose asChild>
-                  <Button content="닫기" buttonStyle="outlined" />
+                  <Button buttonStyle="outlined">닫기</Button>
                 </DialogClose>
-                <Button content="저장" type="submit" />
+                <Button type="submit">저장</Button>
               </>
             )}
           </DialogFooter>

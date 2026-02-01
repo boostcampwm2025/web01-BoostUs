@@ -26,11 +26,9 @@ const LandingPageContent = () => {
           돕는 커뮤니티·아카이빙 플랫폼
         </h3>
         <Link className="mt-12" href="/">
-          <Button
-            buttonStyle="primary"
-            content="boostus 시작하기"
-            size="large"
-          />
+          <Button buttonStyle="primary" size="large">
+            boostus 시작하기
+          </Button>
         </Link>
         <ServiceStats />
         <div className="relative w-full max-w-190 aspect-640/460">
@@ -90,11 +88,9 @@ const LandingPageContent = () => {
         </p>
         <div className="flex flex-row items-center gap-4 mt-8">
           <Link href="/">
-            <Button
-              buttonStyle="primary"
-              content="boostus 시작하기"
-              size="large"
-            />
+            <Button buttonStyle="primary" size="large">
+              boostus 시작하기
+            </Button>
           </Link>
           <Button
             buttonStyle="outlined"
@@ -105,8 +101,9 @@ const LandingPageContent = () => {
               });
             }}
             size="large"
-            content="다시 알아보기"
-          />
+          >
+            다시 알아보기
+          </Button>
         </div>
       </section>
     </article>

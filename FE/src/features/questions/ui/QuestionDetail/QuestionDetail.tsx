@@ -72,12 +72,9 @@ const QuestionDetail = ({
             </span>
           </div>
         </div>
-        <Button
-          buttonStyle="primary"
-          content="답변하기"
-          onClick={handleSubmit}
-          disabled={!member}
-        />
+        <Button buttonStyle="primary" onClick={handleSubmit} disabled={!member}>
+          답변하기
+        </Button>
       </div>
       <QuestionCard question={question} hasAcceptedAnswer={hasAcceptedAnswer} />
       {answers.length > 0 ? (
