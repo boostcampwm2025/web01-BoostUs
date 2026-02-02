@@ -11,7 +11,6 @@ import { QuestionQueryDto, QuestionSort, QuestionStatus } from './dto/req/questi
 import { QuestionRepository } from './question.repository';
 import { QuestionResponseDto } from './dto/res/question-response.dto';
 import { UpdateQuestionDto } from './dto/req/update-question.dto';
-import { AnswerResponseDto } from 'src/answer/dto/res/answer-response.dto';
 import { ViewService } from 'src/view/view.service';
 import { QuestionNotFoundException } from './exception/question.exception';
 
@@ -194,18 +193,14 @@ export class QuestionService {
     };
   }
 
-  async findOne(idStr: string): Promise<{
-    question: QuestionResponseDto;
-    answers: AnswerResponseDto[];
-  }> {
+  async findOne(idStr: string) {
     const id = BigInt(idStr);
     const q = await this.questionRepo.findOne(id);
-
-    if (!q) throw new Error('Question not found');
+    if (!q) throw new QuestionNotFoundException(id);
 
     return {
       question: {
-        id: q.id.toString(),
+        id: q.id, // BigInt 그대로
         title: q.title,
         contents: q.contents,
         hashtags: q.hashtags ? q.hashtags.split(',') : [],
@@ -215,31 +210,21 @@ export class QuestionService {
         isResolved: q.isResolved,
         state: q.state,
         answerCount: q._count.answers,
-        createdAt: q.createdAt.toISOString(),
-        updatedAt: q.updatedAt.toISOString(),
-        member: {
-          id: q.member.id.toString(),
-          nickname: q.member.nickname,
-          avatarUrl: q.member.avatarUrl,
-          cohort: q.member.cohort,
-        },
+        createdAt: q.createdAt, // Date 그대로
+        updatedAt: q.updatedAt, // Date 그대로
+        member: q.member, // MemberDto가 변환 책임지게 하거나 필요한 필드만 추출
       },
       answers: q.answers.map((a) => ({
-        id: a.id.toString(),
-        questionId: a.questionId.toString(),
+        id: a.id,
+        questionId: a.questionId,
         contents: a.contents,
         isAccepted: a.isAccepted,
         upCount: a.upCount,
         downCount: a.downCount,
         state: a.state,
-        createdAt: a.createdAt.toISOString(),
-        updatedAt: a.updatedAt.toISOString(),
-        member: {
-          id: a.member.id.toString(),
-          nickname: a.member.nickname,
-          avatarUrl: a.member.avatarUrl,
-          cohort: a.member.cohort,
-        },
+        createdAt: a.createdAt,
+        updatedAt: a.updatedAt,
+        member: a.member,
       })),
     };
   }
@@ -302,7 +287,7 @@ export class QuestionService {
       createdAt: updated.createdAt.toISOString(),
       updatedAt: updated.updatedAt.toISOString(),
       member: {
-        id: updated.member.id.toString(),
+        id: updated.member.id,
         nickname: updated.member.nickname,
         avatarUrl: updated.member.avatarUrl,
         cohort: updated.member.cohort,

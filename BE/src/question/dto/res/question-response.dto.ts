@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Transform, Type } from 'class-transformer';
-import { MemberDto } from './member.dto';
+import { MemberDto } from 'src/member/dto/member.dto';
 import { ContentState } from 'src/generated/prisma/enums';
 
 type HasAnswerCount = {

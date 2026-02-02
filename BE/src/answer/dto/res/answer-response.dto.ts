@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Transform, Type } from 'class-transformer';
 import { ContentState } from 'src/generated/prisma/enums';
-import { AnswerUserDto } from './answer-user.dto';
-
+import { MemberDto } from 'src/member/dto/member.dto';
 export class AnswerResponseDto {
   @ApiProperty({ description: '답변 ID', example: '1' })
   @Expose()
@@ -44,8 +43,8 @@ export class AnswerResponseDto {
   @Transform(({ value }: { value: Date }) => value.toISOString())
   updatedAt!: string;
 
-  @ApiProperty({ description: '작성자 정보', type: () => AnswerUserDto })
+  @ApiProperty({ description: '작성자 정보', type: () => MemberDto })
   @Expose()
-  @Type(() => AnswerUserDto)
-  member!: AnswerUserDto;
+  @Type(() => MemberDto)
+  member!: MemberDto;
 }
