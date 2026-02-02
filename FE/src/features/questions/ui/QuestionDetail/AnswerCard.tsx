@@ -50,9 +50,9 @@ const AnswerCard = ({ answer, question, hasAcceptedAnswer }: Props) => {
   }, [answer.isAccepted, isAccepted]);
 
   const isQuestionAuthor = member?.member?.id === question.member.id;
-
+  const isMyAnswer = member?.member?.id === answer.member.id;
   const showAcceptButton =
-    isQuestionAuthor && !question.isResolved && !isAccepted;
+    isQuestionAuthor && !question.isResolved && !isAccepted && !isMyAnswer;
 
   const handleAccept = async () => {
     if (question.isResolved) return;
