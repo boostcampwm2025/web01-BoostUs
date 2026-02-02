@@ -2,12 +2,12 @@
 
 import Image from 'next/image';
 import { Calendar1, Eye, Heart } from 'lucide-react';
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { fetchRecoStory } from '@/features/main/reco/api/fetchRecoStory';
 import { Story } from '@/features/stories';
 import UserProfile from '@/shared/ui/UserProfile';
 import extractDate from '@/shared/utils/extractDate';
+import { Card } from '@/shared/ui/Card';
 
 const DEFAULT_THUMBNAIL = '/FE/public/assets/NoImage.png';
 
@@ -61,59 +61,59 @@ const RecommendStorySection = () => {
 
   // 6. 렌더링 (Props 대신 bestStory State 사용)
   return (
-    <Link href={`/stories/${bestStory.id}`}>
-      <div className="bg-neutral-surface-bold border-neutral-border-default hover:border-neutral-border-active shadow-default hover:shadow-hover grid w-full cursor-pointer grid-rows-[4fr_6fr] overflow-hidden rounded-2xl border transition-colors duration-150 h-full">
-        {/* 상단 이미지 영역 */}
-        <div className="relative w-full h-full min-h-50">
-          <Image
-            src={currentSrc}
-            alt={`${bestStory.title} 글의 썸네일 이미지`}
-            fill
-            className="object-cover"
-            priority
-            onError={() => setIsImageError(true)}
+    <Card.Root
+      href={`/stories/${bestStory.id}`}
+      className="grid w-full h-125 grid-rows-[4fr_6fr]"
+    >
+      <Card.ImageContainer className="h-full min-h-50">
+        <Image
+          src={currentSrc}
+          alt={`${bestStory.title} 글의 썸네일 이미지`}
+          fill
+          className="object-cover"
+          priority
+          onError={() => setIsImageError(true)}
+        />
+      </Card.ImageContainer>
+
+      <Card.Content className="px-3 py-2 justify-between h-full">
+        <div>
+          <UserProfile
+            imageSrc={bestStory.member.avatarUrl}
+            nickname={bestStory.member.nickname}
+            cohort={bestStory.member.cohort}
           />
+          {/* [Typography] text-display-20으로 오버라이드 */}
+          <Card.Title className="mt-4 text-display-20">
+            {bestStory.title}
+          </Card.Title>
+          <Card.Description className="mt-2 mb-2 leading-6 line-clamp-3">
+            {bestStory.summary}
+          </Card.Description>
         </div>
 
-        {/* 하단 텍스트 정보 영역 */}
-        <div className="px-3 py-2 flex flex-col justify-between h-full">
-          <div>
-            <UserProfile
-              imageSrc={bestStory.member.avatarUrl}
-              nickname={bestStory.member.nickname}
-              cohort={bestStory.member.cohort}
-            />
-            <h3 className="text-neutral-text-strong text-display-20 mt-4 line-clamp-1">
-              {bestStory.title}
-            </h3>
-            <div className="text-body-14 text-neutral-text-weak mt-2 mb-2 leading-6">
-              <p className="line-clamp-3">{bestStory.summary}</p>
-            </div>
+        <Card.Footer className="mt-3">
+          <div className="flex flex-row items-center gap-1">
+            <Heart className="text-neutral-text-weak h-3 w-3" />
+            <span className="text-body-12 text-neutral-text-weak">
+              {bestStory.likeCount}
+            </span>
           </div>
-
-          <div className="mt-3 flex w-full flex-row items-center gap-2">
-            <div className="flex flex-row items-center gap-1">
-              <Heart className="text-neutral-text-weak h-3 w-3" />
-              <span className="text-body-12 text-neutral-text-weak">
-                {bestStory.likeCount}
-              </span>
-            </div>
-            <div className="flex flex-row items-center gap-1">
-              <Eye className="text-neutral-text-weak h-3 w-3" />
-              <span className="text-body-12 text-neutral-text-weak">
-                {bestStory.viewCount}
-              </span>
-            </div>
-            <div className="flex flex-row items-center gap-1">
-              <Calendar1 className="text-neutral-text-weak h-3 w-3" />
-              <span className="text-body-12 text-neutral-text-weak">
-                {extractDate(bestStory.createdAt)}
-              </span>
-            </div>
+          <div className="flex flex-row items-center gap-1">
+            <Eye className="text-neutral-text-weak h-3 w-3" />
+            <span className="text-body-12 text-neutral-text-weak">
+              {bestStory.viewCount}
+            </span>
           </div>
-        </div>
-      </div>
-    </Link>
+          <div className="flex flex-row items-center gap-1">
+            <Calendar1 className="text-neutral-text-weak h-3 w-3" />
+            <span className="text-body-12 text-neutral-text-weak">
+              {extractDate(bestStory.createdAt)}
+            </span>
+          </div>
+        </Card.Footer>
+      </Card.Content>
+    </Card.Root>
   );
 };
 
