@@ -177,7 +177,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
             register={register('contents')}
             watchValue={(contentsValue as unknown as string) ?? ''}
             rows={6}
-            error={errors.contents as FieldError}
+            error={errors.contents}
             className="min-h-[150px]"
           />
 

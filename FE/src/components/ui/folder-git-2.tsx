@@ -41,7 +41,7 @@ const FolderGit2Icon = forwardRef<FolderGit2IconHandle, FolderGit2IconProps>(
         if (isControlledRef.current) {
           onMouseEnter?.(e);
         } else {
-          controls.start('animate');
+          void controls.start('animate');
         }
       },
       [controls, onMouseEnter]
@@ -52,7 +52,7 @@ const FolderGit2Icon = forwardRef<FolderGit2IconHandle, FolderGit2IconProps>(
         if (isControlledRef.current) {
           onMouseLeave?.(e);
         } else {
-          controls.start('normal');
+          void controls.start('normal');
         }
       },
       [controls, onMouseLeave]

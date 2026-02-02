@@ -86,7 +86,7 @@ export const useProjectRegister = (
         setValue('startDate', startDateStr as any);
         setValue('endDate', endDateStr as any);
         setValue('cohort', cohortValue as any);
-        setValue('field', ((rawData as any).field ?? 'WEB') as any);
+        setValue('field', (rawData as any).field ?? 'WEB');
 
         setValue('contents', contentText);
 

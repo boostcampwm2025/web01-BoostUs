@@ -31,7 +31,7 @@ export default function MainQnaSection() {
       }
     };
 
-    loadQuestions();
+    void loadQuestions();
   }, [activeTab]);
 
   return (

@@ -109,7 +109,7 @@ export default function RecommendProjectSection() {
                       : 'w-2.5 bg-gray-600 hover:bg-gray-400' // 비활성
                   }
                 `}
-                aria-label={`Go to slide ${index + 1}`}
+                aria-label={`Go to slide ${(index + 1).toString()}`}
               />
             ))}
           </div>
