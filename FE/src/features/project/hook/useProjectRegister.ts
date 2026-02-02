@@ -228,7 +228,7 @@ export const useProjectRegister = (
       if (onClose) onClose();
     } catch (error: unknown) {
       console.error(error);
-      alert(`처리 실패: ${getErrorMessage(error)}`);
+      toast.error(`처리 실패: ${getErrorMessage(error)}`);
     }
   };
 

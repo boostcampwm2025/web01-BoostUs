@@ -7,6 +7,7 @@ import { useAuth } from '@/features/login/model/auth.store';
 import PostEditorForm, {
   PostFormValues,
 } from '@/features/questions/ui/Form/PostEditorForm';
+import { toast } from 'sonner';
 
 export default function QuestionEditPage() {
   const { questionId } = useParams<{ questionId: string }>();
@@ -28,7 +29,7 @@ export default function QuestionEditPage() {
 
       // ✅ 작성자만 수정 가능
       if (!member || member?.member.id !== q.member.id) {
-        alert('수정 권한이 없어요.');
+        toast.error('질문을 수정 할 권한이 없어요.');
         router.replace(`/questions/${questionId}`);
         return;
       }
