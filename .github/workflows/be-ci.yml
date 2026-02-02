@@ -33,9 +33,9 @@ jobs:
         working-directory: ./BE
         run: npx prisma generate
 
-      #   - name: Lint Check
-      #     working-directory: ./BE
-      #     run: npm run lint
+      - name: Lint Check
+        working-directory: ./BE
+        run: npm run lint
 
       - name: Build Check
         working-directory: ./BE

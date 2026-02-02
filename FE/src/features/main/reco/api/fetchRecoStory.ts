@@ -1,7 +1,6 @@
 import {
   StoriesSortOption,
   Story,
-  StoryDetail,
 } from '@/features/stories/model/stories.type';
 import { ApiResponse } from '@/shared/types/ApiResponseType';
 import { Meta } from '@/shared/types/PaginationType';

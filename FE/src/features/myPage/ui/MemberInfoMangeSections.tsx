@@ -110,8 +110,9 @@ export default function MemberInfoMangeSections() {
     if (autoPlatform && autoPlatform !== 'custom') {
       try {
         finalRssUrl = convertBlogUrlToRss(autoPlatform, inputUrl);
-      } catch (error) {
+      } catch (e) {
         setServerError('URL 변환에 실패했습니다. 올바른 블로그 주소인가요?');
+        console.error(e);
         return;
       }
     }
@@ -176,7 +177,7 @@ export default function MemberInfoMangeSections() {
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault(); // 엔터 입력 시 불필요한 새로고침이나 폼 제출 방지
-                      handleNicknameAction(); // 저장 함수 실행
+                      void handleNicknameAction(); // 저장 함수 실행
                     }
                   }}
                   className="text-display-20 text-neutral-text-strong border-b border-neutral-border-default

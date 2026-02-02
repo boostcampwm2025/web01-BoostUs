@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import { ArrowBigUp } from 'lucide-react';
 
 interface UserProfileProps {
   imageSrc: string;

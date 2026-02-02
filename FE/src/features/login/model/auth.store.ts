@@ -1,5 +1,5 @@
 import { atom, useAtom } from 'jotai';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   getCurrentMember,
