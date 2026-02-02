@@ -1,6 +1,6 @@
 import { AuthInitializer } from '@/features/login/AuthInitializer';
 import Footer from '@/widgets/Footer';
-import Header from '@/widgets/Header';
+import Header from '@/widgets/Header/Header';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import Script from 'next/script';

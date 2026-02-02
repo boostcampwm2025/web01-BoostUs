@@ -1,11 +1,11 @@
 'use client';
 
 import { useAuth } from '@/features/login/model/auth.store';
-
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import useHeaderScroll from '@/widgets/Header/useHeaderScroll';
+import useImageError from '@/shared/model/useImageError';
 
 const NAV_ITEMS = [
   { href: '/landing', label: '서비스 소개' },
@@ -16,40 +16,11 @@ const NAV_ITEMS = [
 
 const Header = () => {
   const pathname = usePathname();
-  const [isScrolled, setIsScrolled] = useState(false);
+  const { isScrolled } = useHeaderScroll();
   const { member, isAuthenticated, isLoading } = useAuth();
-  const [avatarError, setAvatarError] = useState(false);
-
-  useEffect(() => {
-    let ticking = false;
-
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const nextIsScrolled = window.scrollY > 0;
-          setIsScrolled((prev) => {
-            return prev !== nextIsScrolled ? nextIsScrolled : prev;
-          });
-
-          ticking = false;
-        });
-
-        ticking = true;
-      }
-    };
-
-    handleScroll();
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-
-  useEffect(() => {
-    setAvatarError(false);
-  }, [member?.member?.avatarUrl]);
+  const { isError: avatarError, setIsError: setAvatarError } = useImageError(
+    member?.member?.avatarUrl
+  );
 
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname.startsWith(href);
