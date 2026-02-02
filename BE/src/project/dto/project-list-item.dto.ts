@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose, Transform } from 'class-transformer';
+import { Expose, Transform, TransformFnParams } from 'class-transformer';
 import { ProjectField } from '../type/project-field.type';
 import { toPublicUrl } from '../util/thumbnail-transform.util';
 
@@ -21,7 +21,7 @@ export class ProjectListItemDto {
     nullable: true,
   })
   @Expose()
-  @Transform(({ obj }) => toPublicUrl(obj.thumbnailKey))
+  @Transform(({ value }: TransformFnParams) => toPublicUrl(value as string | null | undefined))
   thumbnailUrl: string | null;
 
   @ApiProperty({
