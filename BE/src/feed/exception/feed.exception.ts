@@ -20,11 +20,7 @@ export class FeedNotFoundException extends BaseException {
  */
 export class FeedForbiddenException extends BaseException {
   constructor(action: '수정' | '삭제') {
-    super(
-      'FEED_FORBIDDEN',
-      `피드를 ${action}할 권한이 없습니다.`,
-      HttpStatus.FORBIDDEN,
-    );
+    super('FEED_FORBIDDEN', `피드를 ${action}할 권한이 없습니다.`, HttpStatus.FORBIDDEN);
   }
 }
 

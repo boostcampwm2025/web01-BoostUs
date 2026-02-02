@@ -1,34 +1,14 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  ParseIntPipe,
-  Patch,
-  Post
-} from '@nestjs/common';
-import {
-  ApiBody,
-  ApiOperation,
-  ApiParam,
-  ApiResponse,
-  ApiTags
-} from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
+import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CurrentMember } from '../auth/decorator/current-member.decorator';
 import { Public } from '../auth/decorator/public.decorator';
-import {
-  CreateFeedDto,
-  FeedDetailDto,
-  FeedListResponseDto,
-  UpdateFeedDto,
-} from './dto';
+import { CreateFeedDto, FeedDetailDto, FeedListResponseDto, UpdateFeedDto } from './dto';
 import { FeedService } from './feed.service';
 
 @ApiTags('RSS 피드')
 @Controller('feeds')
 export class FeedController {
-  constructor(private readonly feedService: FeedService) { }
+  constructor(private readonly feedService: FeedService) {}
 
   @Public()
   @Get()
@@ -48,8 +28,7 @@ export class FeedController {
   @Post()
   @ApiOperation({
     summary: 'RSS 피드 생성',
-    description:
-      '새로운 RSS 피드를 생성합니다. 기존 피드가 있으면 자동으로 대체됩니다.',
+    description: '새로운 RSS 피드를 생성합니다. 기존 피드가 있으면 자동으로 대체됩니다.',
   })
   @ApiBody({
     type: CreateFeedDto,
@@ -80,9 +59,7 @@ export class FeedController {
     description: 'RSS 피드 조회 성공',
     type: FeedDetailDto,
   })
-  async getMyFeed(
-    @CurrentMember() memberId: string,
-  ): Promise<FeedDetailDto | null> {
+  async getMyFeed(@CurrentMember() memberId: string): Promise<FeedDetailDto | null> {
     return await this.feedService.findByMemberId(memberId);
   }
 
