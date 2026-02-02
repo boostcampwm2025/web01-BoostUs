@@ -1,9 +1,8 @@
-import RegisterModalPage from '@/features/project/ui/register/RegisterModalPage';
+'use client';
 
-export default function ProjectRegisterPage() {
-  return (
-    <div>
-      <RegisterModalPage />
-    </div>
-  );
+import ProjectForm from '@/widgets/ProjectRegister/ProjectForm';
+
+export default function RegisterPage() {
+  // ID 없이 부르면 "등록 모드"
+  return <ProjectForm />;
 }

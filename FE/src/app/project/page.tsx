@@ -1,4 +1,4 @@
-import ProjectMainBoard from '@/features/project/ui/ProjectMainBoard';
+import ProjectMainBoard from '@/widgets/Project/ProjectMainBoard';
 import { Suspense } from 'react';
 
 export default function ProjectPage() {

@@ -1,8 +1,9 @@
-import { Controller, Get } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
+import { ApiConsumes, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CurrentMember } from '../auth/decorator/current-member.decorator';
 import { MemberProfileResponseDto } from './dto/member-profile-response.dto';
 import { MemberService } from './member.service';
+import { UpdateNicknameDto } from './dto/member-profile-update-nickname.dto';
 
 @ApiTags('멤버')
 @Controller('members')
@@ -21,5 +22,23 @@ export class MemberController {
   })
   async getMyProfile(@CurrentMember() memberId: string): Promise<MemberProfileResponseDto> {
     return this.memberService.getProfile(memberId);
+  }
+
+  @Patch('me/profile/nickname')
+  @ApiOperation({
+    summary: '로그인한 사용자의 닉네임 수정',
+    description: 'JWT 인증을 통해 로그인한 사용자의 닉네임을 수정합니다.',
+  })
+  @ApiConsumes('application/x-www-form-urlencoded')
+  @ApiResponse({
+    status: 200,
+    description: '닉네임 수정 성공',
+    type: MemberProfileResponseDto,
+  })
+  async updateMyNickname(
+    @CurrentMember() memberId: string,
+    @Body() dto: UpdateNicknameDto,
+  ): Promise<MemberProfileResponseDto> {
+    return this.memberService.updateMyNickname(memberId, dto);
   }
 }
