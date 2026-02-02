@@ -70,7 +70,7 @@ export const StoriesProvider = ({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [isRankingOpen, setIsRankingOpen] = useState(true);
+  const [isRankingOpen, setIsRankingOpen] = useState(false);
   const toggleRanking = () => setIsRankingOpen((prev) => !prev);
 
   const rankingPeriod = (searchParams.get('rankingPeriod') ??

@@ -43,7 +43,7 @@ const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
           <StoriesList initialStories={initialStories} />
         </motion.div>
         <AnimatePresence mode="popLayout">
-          {isRankingOpen && <StoriesRanking initialStories={initialStories} />}
+          {isRankingOpen && <StoriesRanking />}
         </AnimatePresence>
       </motion.div>
       <AnimatePresence>
