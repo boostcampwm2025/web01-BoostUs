@@ -165,11 +165,14 @@ export class ProjectService {
     });
   }
 
-  private _isTimeSkewError(e: any) {
-    return (
-      e?.name === 'RequestTimeTooSkewed' ||
-      String(e?.message || '').includes('RequestTimeTooSkewed')
-    );
+  private _isTimeSkewError(e: unknown) {
+    if (!e || typeof e !== 'object') return false;
+
+    const err = e as { name?: unknown; message?: unknown };
+    const name = typeof err.name === 'string' ? err.name : '';
+    const message = typeof err.message === 'string' ? err.message : '';
+
+    return name === 'RequestTimeTooSkewed' || message.includes('RequestTimeTooSkewed');
   }
 
   async uploadImage(file: Express.Multer.File, key: string): Promise<string> {
@@ -197,8 +200,8 @@ export class ProjectService {
       if (!this._isTimeSkewError(e)) throw e;
 
       // client 재생성 후 1회 재시도
-      (this as any).s3 = this._createS3Client();
-      await run((this as any).s3);
+      const retryClient = this._createS3Client();
+      await run(retryClient);
     }
 
     return `${this.endpoint}/${this.bucket}/${key}`;
