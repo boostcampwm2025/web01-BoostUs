@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ComponentProps } from 'react';
 import { cn } from '@/lib/utils';
+import { MetaInfoItem } from '@/shared/ui/MetaInfoItem/MetaInfoItem';
 
 // 1. 카드 전체 껍데기 (Link 기반)
 // Flex나 Grid 레이아웃은 사용하는 쪽에서 className으로 주입합니다.
@@ -58,7 +59,7 @@ const Title = ({ className, children, ...props }: ComponentProps<'h3'>) => {
   return (
     <h3
       className={cn(
-        'text-neutral-text-strong font-bold line-clamp-1',
+        'text-neutral-text-strong line-clamp-1',
         // 기본 사이즈는 display-16, 필요시 display-20 등으로 덮어쓰기 가능
         'text-display-16',
         className
@@ -106,4 +107,5 @@ export const Card = {
   Title,
   Description,
   Footer,
+  InfoItem: MetaInfoItem,
 };

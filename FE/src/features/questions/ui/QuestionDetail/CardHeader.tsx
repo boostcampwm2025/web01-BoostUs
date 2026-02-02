@@ -6,6 +6,32 @@ import { useAuth } from '@/features/login/model/auth.store';
 import { useRouter } from 'next/navigation';
 import { deleteAnswer, deleteQuestion } from '../../api/questions.api';
 import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
+import { MetaInfoItem } from '@/shared/ui/MetaInfoItem/MetaInfoItem';
+
+const ActionButtons = ({
+  onCorrection,
+  onDelete,
+}: {
+  onCorrection: () => void;
+  onDelete: () => void;
+}) => {
+  return (
+    <>
+      <button
+        className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150"
+        onClick={onCorrection}
+      >
+        수정
+      </button>
+      <button
+        className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150"
+        onClick={onDelete}
+      >
+        삭제
+      </button>
+    </>
+  );
+};
 
 const CardHeader = ({
   question,
@@ -19,32 +45,32 @@ const CardHeader = ({
   const { member } = useAuth();
   const router = useRouter();
 
-  const targetMemberId = question ? question.member.id : answer?.member.id;
-  const isAuthor = member && targetMemberId === member.member.id;
+  const target = question ?? answer;
+  if (!target) return null;
+
+  const isAuthor = member && target.member.id === member.member.id;
+  const TOOLTIP_MESSAGE = '답변이 채택되면 수정이나 삭제가 불가능해요';
+
+  // 답변이 채택되지 않았을 때 툴팁 표시
+  const shouldShowTooltip =
+    !question && answer && !hasAcceptedAnswer && !answer.isAccepted;
 
   const handleCorrection = () => {
     if (!member) {
-      alert('로그인이 필요해요.');
       return;
     }
 
     if (question) {
-      // 질문 수정 페이지 이동
       router.push(`/questions/${question.id}/edit`);
     } else if (answer) {
-      // 답변 수정 페이지 이동
       router.push(`/questions/${answer.questionId}/answers/${answer.id}/edit`);
     }
   };
 
   const handleDelete = async () => {
     if (!member) {
-      alert('로그인이 필요해요.');
       return;
     }
-
-    if (!question && !answer) return;
-
     if (!confirm('정말 삭제하시겠어요?')) return;
 
     try {
@@ -60,101 +86,56 @@ const CardHeader = ({
     }
   };
 
-  const TOOLTIP_MESSAGE = '답변이 채택되면 수정이나 삭제가 불가능해요';
-  const shouldShowTooltip = !hasAcceptedAnswer && answer && !answer.isAccepted;
-
   return (
     <div className="w-full h-10 flex flex-row items-center px-4 bg-neutral-surface-strong rounded-t-2xl border-b border-neutral-border-default">
       <div className="flex flex-row items-center gap-4">
-        {question && (
-          <UserProfile
-            imageSrc={question.member.avatarUrl}
-            nickname={question.member.nickname}
-            size="medium"
-          />
-        )}
-        {answer && (
-          <UserProfile
-            imageSrc={answer.member.avatarUrl}
-            nickname={answer.member.nickname}
-            size="medium"
-          />
-        )}
-        <div className="flex flex-row items-center justify-center gap-1">
-          <Calendar1
-            className="text-neutral-text-weak"
-            strokeWidth={2}
-            size={14}
-          />
-          <span className="text-neutral-text-weak text-body-12">
-            {question
-              ? extractDate(question?.createdAt)
-              : extractDate(answer?.createdAt)}
-          </span>
-        </div>
+        <UserProfile
+          imageSrc={target.member.avatarUrl}
+          nickname={target.member.nickname}
+          size="medium"
+        />
+
+        <MetaInfoItem icon={Calendar1} iconClassName="w-3.5 h-3.5">
+          {extractDate(target.createdAt)}
+        </MetaInfoItem>
       </div>
+
       {isAuthor && (
         <div className="ml-auto flex flex-row items-center justify-center gap-2">
           {question && !hasAcceptedAnswer && (
-            <>
-              <button
-                className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150"
-                onClick={handleCorrection}
-              >
-                수정
-              </button>
-              <button
-                className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150"
-                onClick={handleDelete}
-              >
-                삭제
-              </button>
-            </>
+            <CustomTooltip
+              content={TOOLTIP_MESSAGE}
+              contentClassName="bg-brand-surface-default text-brand-text-on-default"
+            >
+              <div className="flex gap-2">
+                <ActionButtons
+                  onCorrection={handleCorrection}
+                  onDelete={handleDelete}
+                />
+              </div>
+            </CustomTooltip>
           )}
-          {answer && !answer.isAccepted && (
-            <>
-              {shouldShowTooltip ? (
-                <CustomTooltip
-                  content={TOOLTIP_MESSAGE}
-                  contentClassName="bg-brand-surface-default text-brand-text-on-default"
-                >
-                  <button
-                    className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150"
-                    onClick={handleCorrection}
-                  >
-                    수정
-                  </button>
-                </CustomTooltip>
-              ) : (
-                <button
-                  className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150"
-                  onClick={handleCorrection}
-                >
-                  수정
-                </button>
-              )}
-              {shouldShowTooltip ? (
-                <CustomTooltip
-                  content={TOOLTIP_MESSAGE}
-                  contentClassName="bg-brand-surface-default text-brand-text-on-default"
-                >
-                  <button
-                    className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150"
-                    onClick={handleDelete}
-                  >
-                    삭제
-                  </button>
-                </CustomTooltip>
-              ) : (
-                <button
-                  className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150"
-                  onClick={handleDelete}
-                >
-                  삭제
-                </button>
-              )}
-            </>
-          )}
+
+          {answer &&
+            !answer.isAccepted &&
+            (shouldShowTooltip ? (
+              <CustomTooltip
+                content={TOOLTIP_MESSAGE}
+                contentClassName="bg-brand-surface-default text-brand-text-on-default"
+              >
+                <div className="flex gap-2">
+                  <ActionButtons
+                    onCorrection={handleCorrection}
+                    onDelete={handleDelete}
+                  />
+                </div>
+              </CustomTooltip>
+            ) : (
+              <ActionButtons
+                onCorrection={handleCorrection}
+                onDelete={handleDelete}
+              />
+            ))}
         </div>
       )}
     </div>

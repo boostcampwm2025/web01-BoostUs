@@ -45,29 +45,16 @@ const StoriesCard = ({ id, story }: StoriesCardProps) => {
             cohort={story.member.cohort}
           />
           <Card.Title className="mt-4">{story.title}</Card.Title>
-          <Card.Description className="mt-2 mb-2 h-18 leading-6 line-clamp-3">
+          <Card.Description className="mt-2 mb-2 leading-6 line-clamp-3">
             {story.summary}
           </Card.Description>
         </div>
         <Card.Footer className="mt-3">
-          <div className="flex flex-row items-center gap-1">
-            <Heart className="text-neutral-text-weak h-3 w-3" />
-            <span className="text-body-12 text-neutral-text-weak">
-              {story.likeCount}
-            </span>
-          </div>
-          <div className="flex flex-row items-center gap-1">
-            <Eye className="text-neutral-text-weak h-3 w-3" />
-            <span className="text-body-12 text-neutral-text-weak">
-              {story.viewCount}
-            </span>
-          </div>
-          <div className="flex flex-row items-center gap-1">
-            <Calendar1 className="text-neutral-text-weak h-3 w-3" />
-            <span className="text-body-12 text-neutral-text-weak">
-              {extractDate(story.createdAt)}
-            </span>
-          </div>
+          <Card.InfoItem icon={Heart}>{story.likeCount}</Card.InfoItem>
+          <Card.InfoItem icon={Eye}>{story.viewCount}</Card.InfoItem>
+          <Card.InfoItem icon={Calendar1}>
+            {extractDate(story.createdAt)}
+          </Card.InfoItem>
         </Card.Footer>
       </Card.Content>
     </Card.Root>

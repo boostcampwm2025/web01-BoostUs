@@ -55,10 +55,14 @@ const ProjectListCard = ({ project }: ProjectCardProps) => {
               <TechList key={tech} title={tech} />
             ))}
           </div>
-          <span className="text-neutral-text-weak flex shrink-0 flex-row items-center gap-1 self-end text-body-12 font-light">
-            <Eye size={16} className="text-neutral-text-weak" strokeWidth={2} />
+          <Card.InfoItem
+            icon={Eye}
+            className="self-end"
+            iconClassName="w-4 h-4"
+            textClassName="font-light"
+          >
             {project.viewCount}
-          </span>
+          </Card.InfoItem>
         </Card.Footer>
       </Card.Content>
     </Card.Root>

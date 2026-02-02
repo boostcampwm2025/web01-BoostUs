@@ -12,6 +12,8 @@ import { useEffect, useState } from 'react';
 import { incrementQuestionView } from '../../api/questions.api';
 import Button from '@/shared/ui/Button/Button';
 import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
+import { MetaInfoItem } from '@/shared/ui/MetaInfoItem/MetaInfoItem';
+import Link from 'next/link';
 
 const QuestionDetail = ({
   data,
@@ -47,22 +49,12 @@ const QuestionDetail = ({
       <div className="flex items-center justify-between w-full">
         <div className="flex flex-row gap-4 mt-3">
           <QuestionStatus status={question.isResolved} />
-          <div className="flex flex-row items-center justify-center gap-1">
-            <MessageCircle
-              className="text-neutral-text-weak"
-              strokeWidth={2}
-              size={14}
-            />
-            <span className="text-neutral-text-weak text-body-12">
-              {question.answerCount}
-            </span>
-          </div>
-          <div className="flex flex-row items-center justify-center gap-1">
-            <Eye className="text-neutral-text-weak" strokeWidth={2} size={14} />
-            <span className="text-neutral-text-weak text-body-12">
-              {viewCount}
-            </span>
-          </div>
+          <MetaInfoItem icon={MessageCircle} iconClassName="w-3.5 h-3.5">
+            {question.answerCount}
+          </MetaInfoItem>
+          <MetaInfoItem icon={Eye} iconClassName="w-3.5 h-3.5">
+            {viewCount}
+          </MetaInfoItem>
         </div>
         {!member ? (
           <CustomTooltip
@@ -82,7 +74,9 @@ const QuestionDetail = ({
             </Button>
           </CustomTooltip>
         ) : (
-          <Button>답변하기</Button>
+          <Link href={`/questions/${question.id}/answers/`}>
+            <Button>답변하기</Button>
+          </Link>
         )}
       </div>
       <QuestionCard question={question} hasAcceptedAnswer={hasAcceptedAnswer} />
