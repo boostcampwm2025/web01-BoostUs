@@ -19,6 +19,7 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectDetailItemDto } from './dto/project-detail-item.dto';
 import { ProjectListItemDto } from './dto/project-list-item.dto';
 import { ProjectListQueryDto } from './dto/project-list-query.dto';
+import { ProjectParticipantDto } from './dto/project-participant.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectService } from './project.service';
 import { CurrentMember } from 'src/auth/decorator/current-member.decorator';
@@ -37,6 +38,21 @@ export class ProjectController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     return this.projectService.uploadTempThumbnail(file, memberId);
+  }
+
+  @Public()
+  @Get('/collaborators')
+  @ApiOperation({
+    summary: '레포지토리 collaborator 목록 조회',
+    description: 'repository 쿼리 파라미터로 전달된 GitHub 레포지토리의 collaborator 목록을 조회합니다.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'collaborator 목록 조회 성공',
+    type: [ProjectParticipantDto],
+  })
+  async getCollaborators(@Query('repository') repositoryUrl: string) {
+    return this.projectService.getRepoCollaborators(repositoryUrl);
   }
 
   @Public()

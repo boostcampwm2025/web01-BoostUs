@@ -11,7 +11,8 @@ import { AuthRepository } from 'src/auth/auth.repository';
 import { ConfigService } from '@nestjs/config';
 import { CopyObjectCommand, DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, createSign } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import type Redis from 'ioredis';
 import { REDIS } from '../redis/redis.provider';
 import { ThumbnailMeta } from './type/upload-image-meta.type';
@@ -22,6 +23,10 @@ import {
   InvalidThumbnailMetadataException,
   ThumbnailOwnershipException,
   MemberNotFoundException,
+  RepositoryQueryRequiredException,
+  InvalidRepositoryUrlException,
+  GithubAppKeyNotConfiguredException,
+  GithubApiRequestFailedException,
 } from './exception/project.exception';
 import { ViewService } from 'src/view/view.service';
 
@@ -30,6 +35,9 @@ export class ProjectService {
   private s3: S3Client;
   private readonly endpoint: string;
   private readonly bucket: string;
+  private readonly githubAppId: string;
+  private readonly githubAppPrivateKey: string;
+  private readonly githubApiBase = 'https://api.github.com';
 
   constructor(
     private readonly projectRepository: ProjectRepository,
@@ -40,6 +48,8 @@ export class ProjectService {
   ) {
     this.endpoint = this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_ENDPOINT');
     this.bucket = this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_BUCKET');
+    this.githubAppId = this.config.getOrThrow<string>('GITHUB_APP_ID');
+    this.githubAppPrivateKey = this._loadGithubAppPrivateKey();
 
     this.s3 = new S3Client({
       region: this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_REGION'),
@@ -54,6 +64,106 @@ export class ProjectService {
       // true : Path style -> NCP 는 path style 권장
       // https://kr.object.ncloudstorage.com/버킷이름/파일경로
     });
+  }
+
+  /**
+   * GitHub App Private Key를 환경변수 또는 파일에서 로드합니다.
+   * @returns PEM 형식의 private key 문자열
+   */
+  private _loadGithubAppPrivateKey() {
+    const inlineKey = this.config.get<string>('GITHUB_APP_PRIVATE_KEY');
+    if (inlineKey) return inlineKey.replace(/\\n/g, '\n');
+
+    const keyPath = this.config.get<string>('GITHUB_APP_PRIVATE_KEY_PATH');
+    if (!keyPath) {
+      throw new GithubAppKeyNotConfiguredException();
+    }
+
+    return readFileSync(keyPath, 'utf-8');
+  }
+
+  /**
+   * JWT 생성에 사용하는 base64url 인코딩을 수행합니다.
+   * @param input Buffer 또는 string
+   * @returns base64url 인코딩 문자열
+   */
+  private _base64Url(input: Buffer | string) {
+    return Buffer.from(input)
+      .toString('base64')
+      .replace(/=/g, '')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_');
+  }
+
+  /**
+   * GitHub App 인증용 JWT를 생성합니다.
+   * @returns GitHub App JWT
+   */
+  private _createGithubAppJwt() {
+    const now = Math.floor(Date.now() / 1000);
+    const header = this._base64Url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }));
+    const payload = this._base64Url(
+      JSON.stringify({
+        iat: now - 60,
+        exp: now + 9 * 60,
+        iss: this.githubAppId,
+      }),
+    );
+    const data = `${header}.${payload}`;
+
+    const signer = createSign('RSA-SHA256');
+    signer.update(data);
+    signer.end();
+
+    const signature = signer.sign(this.githubAppPrivateKey);
+    return `${data}.${this._base64Url(signature)}`;
+  }
+
+  /**
+   * repository URL에서 owner/repo를 파싱합니다.
+   * @param repositoryUrl GitHub 레포 URL 또는 slug
+   * @returns { owner, repo }
+   */
+  private _parseRepositorySlug(repositoryUrl: string) {
+    const raw = repositoryUrl.trim();
+    let path = raw;
+
+    try {
+      if (raw.startsWith('http://') || raw.startsWith('https://')) {
+        path = new URL(raw).pathname;
+      } else if (raw.includes('github.com/')) {
+        path = new URL(`https://${raw}`).pathname;
+      }
+    } catch {
+      // URL 파싱 실패는 아래에서 검증
+    }
+
+    const cleaned = path.replace(/^\/+/, '').replace(/\.git$/, '');
+    const [owner, repo] = cleaned.split('/').filter(Boolean);
+
+    if (!owner || !repo) {
+      throw new InvalidRepositoryUrlException();
+    }
+
+    return { owner, repo };
+  }
+
+  /**
+   * GitHub API에 요청하고 JSON을 파싱합니다.
+   * @param url 요청 URL
+   * @param init fetch 옵션
+   * @returns 파싱된 JSON 응답
+   */
+  private async _githubFetch<T>(
+    url: string,
+    init?: { method?: string; headers?: Record<string, string>; body?: string },
+  ) {
+    const res = await fetch(url, init);
+    if (!res.ok) {
+      const body = await res.text();
+      throw new GithubApiRequestFailedException(res.status, res.statusText, body);
+    }
+    return (await res.json()) as T;
   }
 
   async uploadTempThumbnail(file: Express.Multer.File, memberId: string) {
@@ -205,6 +315,58 @@ export class ProjectService {
     }
 
     return `${this.endpoint}/${this.bucket}/${key}`;
+  }
+
+  /**
+   * GitHub 레포의 collaborator 목록을 조회합니다.
+   * @param repositoryUrl GitHub 레포 URL 또는 slug
+   * @returns collaborator 목록 (githubId, avatarUrl)
+   */
+  async getRepoCollaborators(repositoryUrl: string) {
+    if (!repositoryUrl) {
+      throw new RepositoryQueryRequiredException();
+    }
+
+    const { owner, repo } = this._parseRepositorySlug(repositoryUrl);
+    const appJwt = this._createGithubAppJwt();
+
+    const installation = await this._githubFetch<{ id: number }>(
+      `${this.githubApiBase}/repos/${owner}/${repo}/installation`,
+      {
+        headers: {
+          Authorization: `Bearer ${appJwt}`,
+          Accept: 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    );
+
+    const accessToken = await this._githubFetch<{ token: string }>(
+      `${this.githubApiBase}/app/installations/${installation.id}/access_tokens`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${appJwt}`,
+          Accept: 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    );
+
+    const collaborators = await this._githubFetch<
+      Array<{ login: string; avatar_url: string | null }>
+    >(`${this.githubApiBase}/repos/${owner}/${repo}/collaborators`, {
+      headers: {
+        Authorization: `token ${accessToken.token}`,
+        Accept: 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+    });
+
+    return collaborators.map((collaborator) => ({
+      githubId: collaborator.login,
+      avatarUrl: collaborator.avatar_url ?? null,
+    }));
   }
 
   async findAll(query: ProjectListQueryDto) {
