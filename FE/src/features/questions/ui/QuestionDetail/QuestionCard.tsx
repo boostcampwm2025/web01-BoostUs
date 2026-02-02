@@ -37,7 +37,7 @@ const QuestionCard = ({
     }
   };
 
-  const handleReport = async () => {
+  const handleReport = () => {
     try {
       toast.info('준비 중인 기능이에요.');
     } catch (error) {
