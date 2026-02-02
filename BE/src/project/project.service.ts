@@ -165,11 +165,14 @@ export class ProjectService {
     });
   }
 
-  private _isTimeSkewError(e: any) {
-    return (
-      e?.name === 'RequestTimeTooSkewed' ||
-      String(e?.message || '').includes('RequestTimeTooSkewed')
-    );
+  private _isTimeSkewError(e: unknown) {
+    if (!e || typeof e !== 'object') return false;
+
+    const err = e as { name?: unknown; message?: unknown };
+    const name = typeof err.name === 'string' ? err.name : '';
+    const message = typeof err.message === 'string' ? err.message : '';
+
+    return name === 'RequestTimeTooSkewed' || message.includes('RequestTimeTooSkewed');
   }
 
   async uploadImage(file: Express.Multer.File, key: string): Promise<string> {
