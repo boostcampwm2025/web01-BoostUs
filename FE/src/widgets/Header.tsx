@@ -48,7 +48,10 @@ const Header = () => {
   }, []);
 
   useEffect(() => {
-    setAvatarError(false);
+    if (avatarError) {
+      setAvatarError(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [member?.member?.avatarUrl]);
 
   const isActive = (href: string) =>
