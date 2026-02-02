@@ -21,7 +21,7 @@ export class ProjectDetailItemDto {
     example: 'https://example.com/thumbnail.jpg',
     nullable: true,
   })
-  @Expose()
+  @Expose({ name: 'thumbnailKey' })
   @Transform(({ value }: TransformFnParams) => toPublicUrl(value as string | null | undefined))
   thumbnailUrl: string | null;
 
