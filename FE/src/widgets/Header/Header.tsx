@@ -34,15 +34,18 @@ const Header = () => {
       }`}
     >
       <div className="flex items-center justify-between w-full h-full max-w-7xl">
-        <Link href="/">
-          <Image
-            src="/assets/Logo.svg"
-            alt="boostus 로고"
-            width={120}
-            height={40}
-            className="h-8 w-auto"
-          />
-        </Link>
+        <div className="shrink-0 w-36">
+          <Link href="/">
+            <Image
+              src="/assets/Logo.svg"
+              alt="boostus 로고"
+              width={96}
+              height={32}
+              className="h-8 w-auto object-contain"
+              priority
+            />
+          </Link>
+        </div>
         <nav className="flex h-full gap-10 text-string-16 text-neutral-text-strong">
           {NAV_ITEMS.map(({ href, label }) => (
             <Link
@@ -59,37 +62,42 @@ const Header = () => {
             </Link>
           ))}
         </nav>
-        {!isLoading && (
-          <>
-            {isAuthenticated && member ? (
-              <Link
-                href="/mypage"
-                className="flex items-center transition-opacity hover:opacity-80"
-              >
-                <div className="relative w-9 h-9 rounded-full overflow-hidden">
-                  <Image
-                    src={
-                      avatarError || !member.member.avatarUrl
-                        ? '/assets/NoImage.png'
-                        : member.member.avatarUrl
-                    }
-                    alt={`${member.member.nickname}의 프로필 사진`}
-                    className="object-cover"
-                    fill
-                    onError={() => setAvatarError(true)}
-                  />
-                </div>
-              </Link>
-            ) : (
-              <Link
-                href="/login"
-                className="transition-colors text-string-16 text-neutral-text-default hover:text-brand-text-default"
-              >
-                로그인
-              </Link>
-            )}
-          </>
-        )}
+        <div className="flex justify-end shrink-0 items-center w-36">
+          {isLoading ? (
+            <div className="w-9 h-9 rounded-full animate-pulse bg-neutral-surface-strong" />
+          ) : (
+            <>
+              {isAuthenticated && member ? (
+                <Link
+                  href="/mypage"
+                  className="flex items-center transition-opacity hover:opacity-80"
+                >
+                  <div className="relative w-9 h-9 rounded-full overflow-hidden">
+                    <Image
+                      src={
+                        avatarError || !member.member.avatarUrl
+                          ? '/assets/NoImage.png'
+                          : member.member.avatarUrl
+                      }
+                      alt={`${member.member.nickname}의 프로필 사진`}
+                      className="object-cover"
+                      fill
+                      sizes="36px"
+                      onError={() => setAvatarError(true)}
+                    />
+                  </div>
+                </Link>
+              ) : (
+                <Link
+                  href="/login"
+                  className="transition-colors text-string-16 text-neutral-text-default hover:text-brand-text-default"
+                >
+                  로그인
+                </Link>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </header>
   );
