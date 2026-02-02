@@ -17,7 +17,7 @@ interface UpdateProjectBody {
 }
 
 export const updateProject = async (id: number, body: UpdateProjectBody) => {
-  return customFetch<unknown>(`/api/projects/${id}`, {
+  return customFetch<unknown>(`/api/projects/${id.toString()}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
