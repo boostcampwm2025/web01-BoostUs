@@ -1,4 +1,4 @@
-import type { LandingData } from '../landing.type';
+import type { LandingData } from '../model/landing.type';
 import type { ApiResponse } from '@/shared/types/ApiResponseType';
 import { customFetch } from '@/shared/utils/fetcher';
 

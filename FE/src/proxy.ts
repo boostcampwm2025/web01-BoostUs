@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export const middleware = (request: NextRequest) => {
+export const proxy = (request: NextRequest) => {
   // 1. 쿠키에서 방문 여부 확인
   const hasVisited = request.cookies.get('has_visited_service');
   const { pathname } = request.nextUrl;

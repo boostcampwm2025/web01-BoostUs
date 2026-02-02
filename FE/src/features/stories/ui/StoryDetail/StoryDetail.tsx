@@ -86,7 +86,7 @@ const StoryDetail = ({ story }: { story: StoryDetail }) => {
         </aside>
 
         {/* 우측 콘텐츠 영역 */}
-        <article className="w-full max-w-2xl flex flex-col items-start justify-center">
+        <article className="w-full max-w-3xl flex flex-col items-start justify-center">
           <BackButton url="/stories" />
           <h1 className="text-neutral-text-strong text-display-32 w-full mt-4 leading-tight wrap-break-word">
             {story.title}
@@ -130,9 +130,8 @@ const StoryDetail = ({ story }: { story: StoryDetail }) => {
               priority
             />
           </div>
-          <div className="w-full wrap-break-word overflow-x-hidden **:max-w-full **:wrap-break-word [&_pre]:overflow-x-auto [&_code]:wrap-break-word">
-            <MarkdownViewer content={story.contents} />
-          </div>
+
+          <MarkdownViewer content={story.contents} />
         </article>
       </div>
 
