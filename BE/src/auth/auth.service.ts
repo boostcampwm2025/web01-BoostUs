@@ -11,7 +11,7 @@ import {
   AccessTokenNotExpiredException,
   InvalidAccessTokenException,
   InvalidRefreshTokenException,
-  RefreshTokenExpiredException,,
+  RefreshTokenExpiredException,
 } from './exception/auth.exception';
 import { GithubAuthClient } from './github-auth.client';
 import { COHORT_ORG_MAP } from './type/cohort.type';
@@ -155,7 +155,7 @@ export class AuthService {
    */
   checkAccessTokenExpired(accessToken: string): void {
     try {
-      const payload = this.jwtService.decode(accessToken) as { exp?: number; type?: string } | null;
+      const payload = parseDecodedPayload(this.jwtService.decode<JwtPayload>(accessToken));
 
       if (!payload || payload.type !== 'access') {
         // 유효하지 않은 토큰이거나 액세스 토큰이 아니면 통과 (재발급 필요)

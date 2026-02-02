@@ -1,55 +1,72 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Expose, Transform, Type } from 'class-transformer';
+import { MemberDto } from './member.dto';
 import { ContentState } from 'src/generated/prisma/enums';
-import { QuestionUserDto } from './question-user.dto';
+
+type HasAnswerCount = {
+  _count?: {
+    answers?: number;
+  };
+};
 
 export class QuestionResponseDto {
   @ApiProperty({
-    description: '질문 ID',
+    description: '질문 ID (BigInt → string)',
     example: '1',
   })
-  id!: string; // BigInt → string
+  @Expose()
+  @Transform(({ value }) => String(value))
+  id!: string;
 
   @ApiProperty({
     description: '질문 제목',
-    example: 'NestJS에서 Prisma를 사용하는 방법은?',
+    example: 'NestJS에서 DTO는 왜 필요한가요?',
   })
+  @Expose()
   title!: string;
 
   @ApiProperty({
     description: '질문 내용',
-    example: '# 질문\n\nNestJS에서 Prisma를 설정하는 방법을 알고 싶습니다.',
+    example: '# 질문\n\nDTO가 필요한 이유가 궁금합니다.',
   })
+  @Expose()
   contents!: string;
 
   @ApiProperty({
-    description: '해시태그 목록',
-    example: ['NestJS', 'Prisma', 'TypeScript'],
+    description: '해시태그 목록 (DB에서는 "a,b,c" 형태일 수 있음)',
+    example: ['nestjs', 'dto', 'swagger'],
     type: [String],
   })
+  @Expose()
+  @Transform(({ value }) => (typeof value === 'string' && value.length > 0 ? value.split(',') : []))
   hashtags!: string[];
 
   @ApiProperty({
     description: '추천 수',
-    example: 5,
+    example: 12,
   })
-  upCount!: number; // Prisma upCount
+  @Expose()
+  upCount!: number;
 
   @ApiProperty({
     description: '비추천 수',
-    example: 0,
+    example: 1,
   })
-  downCount!: number; // Prisma
+  @Expose()
+  downCount!: number;
 
   @ApiProperty({
-    description: '조회수',
-    example: 42,
+    description: '조회 수',
+    example: 234,
   })
+  @Expose()
   viewCount!: number;
 
   @ApiProperty({
     description: '해결 여부',
     example: false,
   })
+  @Expose()
   isResolved!: boolean;
 
   @ApiProperty({
@@ -57,29 +74,38 @@ export class QuestionResponseDto {
     enum: ContentState,
     example: ContentState.PUBLISHED,
   })
+  @Expose()
   state!: ContentState;
 
   @ApiProperty({
-    description: '답변 갯수',
-    example: 0,
+    description: '답변 개수',
+    example: 3,
   })
+  @Expose()
+  @Transform(({ obj }: { obj: HasAnswerCount }) => Number(obj._count?.answers ?? 0))
   answerCount!: number;
 
   @ApiProperty({
-    description: '생성일시',
-    example: '2024-01-19T12:00:00Z',
+    description: '생성일시 (ISO string)',
+    example: '2024-01-19T12:00:00.000Z',
   })
-  createdAt!: string; // ISO string
+  @Expose()
+  @Transform(({ value }) => (value instanceof Date ? value.toISOString() : String(value)))
+  createdAt!: string;
 
   @ApiProperty({
-    description: '수정일시',
-    example: '2024-01-19T12:00:00Z',
+    description: '수정일시 (ISO string)',
+    example: '2024-01-19T12:00:00.000Z',
   })
-  updatedAt!: string; // ISO string
+  @Expose()
+  @Transform(({ value }) => (value instanceof Date ? value.toISOString() : String(value)))
+  updatedAt!: string;
 
   @ApiProperty({
     description: '작성자 정보',
-    type: () => QuestionUserDto,
+    type: () => MemberDto,
   })
-  member!: QuestionUserDto;
+  @Expose()
+  @Type(() => MemberDto)
+  member!: MemberDto;
 }

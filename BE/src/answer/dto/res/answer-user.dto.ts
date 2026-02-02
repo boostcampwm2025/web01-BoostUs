@@ -1,16 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
 
 export class AnswerUserDto {
   @ApiProperty({
     description: '사용자 ID',
     example: '1',
   })
-  id!: string; // BigInt → string
+  @Expose()
+  id!: string;
 
   @ApiProperty({
     description: '닉네임',
     example: '윌리',
   })
+  @Expose()
   nickname!: string;
 
   @ApiProperty({
@@ -18,6 +21,7 @@ export class AnswerUserDto {
     example: 'https://example.com/avatar.jpg',
     nullable: true,
   })
+  @Expose()
   avatarUrl!: string | null;
 
   @ApiProperty({
@@ -25,5 +29,6 @@ export class AnswerUserDto {
     example: 10,
     nullable: true,
   })
+  @Expose()
   cohort!: number | null;
 }
