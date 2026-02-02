@@ -6,6 +6,7 @@ import { updateProject } from '@/features/project/api/updateProject';
 import { fetchProjectDetail } from '@/entities/projectDetail/api/projectDetailAPI';
 import { useRouter } from 'next/navigation';
 import { uploadThumbnail } from '../api/uploadThumbnail';
+import formatLocalDate from '@/shared/utils/formatLocalDate';
 
 const getErrorMessage = (err: unknown): string => {
   if (err instanceof Error) return err.message;
@@ -193,6 +194,9 @@ export const useProjectRegister = (
         ? data.contents.join('\n')
         : (data.contents ?? '');
 
+      const startDateLocal = formatLocalDate(data.startDate);
+      const endDateLocal = formatLocalDate(data.endDate);
+
       // 공통으로 들어갈 기본 데이터
       const baseData = {
         thumbnailUrl: uploadedThumbnailUrl ?? null,
@@ -204,8 +208,8 @@ export const useProjectRegister = (
         // demoUrl이 없으면 null 혹은 빈 문자열 처리 (API 스펙에 따라 다름, 여기선 null로 가정)
         demoUrl: data.demoUrl && data.demoUrl.trim() !== '' ? data.demoUrl : '',
         cohort: isNaN(parsedCohort) ? 0 : parsedCohort,
-        startDate: data.startDate.toISOString().split('T')[0],
-        endDate: data.endDate.toISOString().split('T')[0],
+        startDate: startDateLocal,
+        endDate: endDateLocal,
         techStack: techStack,
         field: data.field,
       };
