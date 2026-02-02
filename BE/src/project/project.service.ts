@@ -27,7 +27,7 @@ import { ViewService } from 'src/view/view.service';
 
 @Injectable()
 export class ProjectService {
-  private s3: S3Client;
+  private readonly s3: S3Client;
   private readonly endpoint: string;
   private readonly bucket: string;
 
@@ -200,8 +200,8 @@ export class ProjectService {
       if (!this._isTimeSkewError(e)) throw e;
 
       // client 재생성 후 1회 재시도
-      this.s3 = this._createS3Client();
-      await run(this.s3);
+      const retryClient = this._createS3Client();
+      await run(retryClient);
     }
 
     return `${this.endpoint}/${this.bucket}/${key}`;
