@@ -7,7 +7,7 @@ import Script from 'next/script';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'BoostUs - 부스트캠퍼들이 함께 기록하고, 함께 성장하는 커뮤니티 🌱',
+  title: 'boostus - 부스트캠퍼들이 함께 기록하고, 함께 성장하는 커뮤니티 🌱',
   description: '',
 };
 

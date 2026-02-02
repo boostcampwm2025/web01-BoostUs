@@ -10,6 +10,7 @@ import { Eye, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { incrementQuestionView } from '../../api/questions.api';
+import Button from '@/shared/ui/Button/Button';
 
 const QuestionDetail = ({
   data,
@@ -48,11 +49,9 @@ const QuestionDetail = ({
   return (
     <article className="mx-auto flex w-full max-w-270 flex-col items-start justify-center">
       <BackButton url="/questions" />
-
       <h1 className="mt-4 text-display-32 text-neutral-text-strong">
         {question.title}
       </h1>
-
       <div className="flex items-center justify-between w-full">
         <div className="flex flex-row gap-4 mt-3">
           <QuestionStatus status={question.isResolved} />
@@ -73,14 +72,9 @@ const QuestionDetail = ({
             </span>
           </div>
         </div>
-        <button
-          type="button"
-          disabled={!member}
-          onClick={handleSubmit}
-          className="px-4 py-2 rounded-lg cursor-pointer bg-brand-surface-default hover:bg-brand-dark transition-colors duration-150 text-brand-text-on-default disabled:opacity-50 disabled:cursor-not-allowed"
-        >
+        <Button buttonStyle="primary" onClick={handleSubmit} disabled={!member}>
           답변하기
-        </button>
+        </Button>
       </div>
       <QuestionCard question={question} hasAcceptedAnswer={hasAcceptedAnswer} />
       {answers.length > 0 ? (
