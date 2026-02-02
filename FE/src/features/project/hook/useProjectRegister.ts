@@ -197,16 +197,18 @@ export const useProjectRegister = (
       const startDateLocal = formatLocalDate(data.startDate);
       const endDateLocal = formatLocalDate(data.endDate);
 
+      const validDemoUrl =
+        data.demoUrl && data.demoUrl.trim() !== '' ? data.demoUrl : null;
+
       // 공통으로 들어갈 기본 데이터
       const baseData = {
         thumbnailUrl: uploadedThumbnailUrl ?? null,
-        thumbnailUploadId: thumbnailUploadId, // 이제 string | null 타입임
+        thumbnailUploadId: thumbnailUploadId,
         title: data.title,
         description: data.description ?? '',
         contents: contentsStr,
         repoUrl: data.repoUrl,
-        // demoUrl이 없으면 null 혹은 빈 문자열 처리 (API 스펙에 따라 다름, 여기선 null로 가정)
-        demoUrl: data.demoUrl && data.demoUrl.trim() !== '' ? data.demoUrl : '',
+        demoUrl: validDemoUrl,
         cohort: isNaN(parsedCohort) ? 0 : parsedCohort,
         startDate: startDateLocal,
         endDate: endDateLocal,
@@ -218,7 +220,7 @@ export const useProjectRegister = (
         await updateProject(editProjectId, {
           ...baseData,
           participants: participants,
-          demoUrl: baseData.demoUrl || '',
+          demoUrl: baseData.demoUrl ?? '',
         });
         alert('수정되었습니다.');
         router.push('/project');
@@ -226,7 +228,6 @@ export const useProjectRegister = (
         await registerProject({
           ...baseData,
           participants: participants.map((id) => ({ githubId: id })),
-          demoUrl: baseData.demoUrl || null,
         });
         alert('등록되었습니다.');
         router.push('/project');
