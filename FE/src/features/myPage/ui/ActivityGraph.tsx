@@ -29,9 +29,8 @@ function GraphContent() {
         <CustomTooltip
           content={TOOLTIP_CONTENT}
           contentClassName="bg-brand-surface-default text-brand-text-on-default max-w-[180px] break-keep"
-          useProvider={false} // 이미 부모(ActivityGraph)에서 감쌌으므로 false
+          useProvider={false} // 이미 부모에서 감쌈
         >
-          {/* [핵심 3] 아이콘을 button이나 div로 감싸야 ref 에러가 안 납니다 */}
           <button type="button" className="flex items-center justify-center">
             <CircleHelpIcon
               size={16}
@@ -72,7 +71,7 @@ function GraphContent() {
           renderBlock={(block, activity) => (
             <CustomTooltip
               key={activity.date}
-              useProvider={false} // 여기도 Provider 중복 생성 방지
+              useProvider={false} // Provider 중복 생성 방지
               contentClassName="bg-brand-surface-default text-brand-text-on-default"
               content={
                 <div className="text-xs">
@@ -90,10 +89,8 @@ function GraphContent() {
   );
 }
 
-// Provider를 관리하는 껍데기 컴포넌트
 export default function ActivityGraph() {
   return (
-    // Provider는 여기서 딱 한 번만 선언되고, 절대 리렌더링되지 않음
     <TooltipProvider delayDuration={200}>
       <GraphContent />
     </TooltipProvider>
