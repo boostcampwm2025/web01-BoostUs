@@ -109,8 +109,6 @@ export class AnswerService {
   }
 
   async dislike(answerIdStr: string, memberIdStr: string | undefined) {
-    if (!memberIdStr) throw new BadRequestException('로그인을 하셨어야죠');
-
     const answerId = BigInt(answerIdStr);
     const memberId = BigInt(memberIdStr);
 

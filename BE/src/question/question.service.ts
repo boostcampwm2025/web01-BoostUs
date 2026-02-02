@@ -9,13 +9,13 @@ import { decodeCursor, encodeCursor } from '../common/util/cursor.util';
 import { CreateQuestionDto } from './dto/req/create-question.dto';
 import { QuestionQueryDto, QuestionSort, QuestionStatus } from './dto/req/question-query.dto';
 import { QuestionRepository } from './question.repository';
-import { QuestionResponseDto } from './dto/res/question-response.dto';
+import { QuestionResponseDto } from './dto/res/detail/question-response.dto';
 import { UpdateQuestionDto } from './dto/req/update-question.dto';
 import { ViewService } from 'src/view/view.service';
 import { QuestionNotFoundException } from './exception/question.exception';
-import { QuestionCursorResponseDto } from './dto/res/question-list.dto';
+import { QuestionCursorResponseDto } from './dto/res/all/question-list.dto';
 import { Reaction } from 'src/enum/reaction';
-import { QuestionDetailItemDto } from './dto/res/question-detail-item.dto';
+import { QuestionDetailItemDto } from './dto/res/detail/question-detail-item.dto';
 
 const toHashtagsStringOrNull = (hashtags?: string[]): string | null =>
   hashtags && hashtags.length ? hashtags.join(',') : null;

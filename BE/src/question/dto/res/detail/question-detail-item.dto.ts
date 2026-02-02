@@ -1,6 +1,6 @@
 import { Expose, Type } from 'class-transformer';
 import { QuestionResponseDto } from './question-response.dto';
-import { AnswerResponseDto } from 'src/answer/dto/res/answer-response.dto';
+import { AnswerDetailResponseDto } from 'src/answer/dto/res/answer-detail-response.dto';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class QuestionDetailItemDto {
@@ -9,8 +9,8 @@ export class QuestionDetailItemDto {
   @Type(() => QuestionResponseDto)
   question!: QuestionResponseDto;
 
-  @ApiProperty({ type: () => AnswerResponseDto, isArray: true })
+  @ApiProperty({ type: () => AnswerDetailResponseDto, isArray: true })
   @Expose()
-  @Type(() => AnswerResponseDto)
-  answers!: AnswerResponseDto[];
+  @Type(() => AnswerDetailResponseDto)
+  answers!: AnswerDetailResponseDto[];
 }

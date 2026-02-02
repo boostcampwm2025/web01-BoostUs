@@ -1,7 +1,7 @@
 // src/question/dto/res/question-response.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { BaseQuestionDto } from './base-question.dto';
+import { BaseQuestionDto } from '../base-question.dto';
 import { ContentState } from 'src/generated/prisma/enums';
 
 export class QuestionResponseDto extends BaseQuestionDto {

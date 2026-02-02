@@ -6,5 +6,5 @@ import { Reaction } from 'src/enum/reaction';
 export class AnswerDetailResponseDto extends AnswerResponseDto {
   @ApiProperty({ description: '답변에서 선택한 반응', example: Reaction.LIKE })
   @Expose()
-  reaction: Reaction;
+  reaction?: Reaction;
 }

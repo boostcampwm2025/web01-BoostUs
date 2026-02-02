@@ -13,7 +13,7 @@ import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/s
 import { Public } from '../auth/decorator/public.decorator';
 import { CreateQuestionDto } from './dto/req/create-question.dto';
 import { QuestionQueryDto } from './dto/req/question-query.dto';
-import { QuestionResponseDto } from './dto/res/question-response.dto';
+import { QuestionResponseDto } from './dto/res/detail/question-response.dto';
 import { QuestionService } from './question.service';
 import { QuestionCountDto } from './dto/res/question-count.dto';
 import { responseMessage } from '../common/decorator/response-message.decorator';
@@ -22,8 +22,8 @@ import { CurrentMember } from 'src/auth/decorator/current-member.decorator';
 import { ViewerKeyGuard } from 'src/view/guard/view.guard';
 import { ViewerKey } from 'src/view/decorator/viewer-key.decorator';
 import { ParseBigIntPipe } from 'src/common/pipe/parse-bigint.pipe';
-import { QuestionCursorResponseDto } from './dto/res/question-list.dto';
-import { QuestionDetailItemDto } from './dto/res/question-detail-item.dto';
+import { QuestionCursorResponseDto } from './dto/res/all/question-list.dto';
+import { QuestionDetailItemDto } from './dto/res/detail/question-detail-item.dto';
 
 @ApiTags('질문')
 @Controller('questions')
