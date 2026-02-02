@@ -27,7 +27,7 @@ export class StoryService {
     private readonly storyRepository: StoryRepository,
     private readonly feedRepository: FeedRepository,
     private readonly viewService: ViewService,
-  ) { }
+  ) {}
 
   /**
    * 모든 공개된 캠퍼들의 이야기 목록 조회
@@ -102,7 +102,7 @@ export class StoryService {
   }
 
   /**
-   * ID로 캠퍼들의 이야기 상세 조회 
+   * ID로 캠퍼들의 이야기 상세 조회
    * @param id bigint
    * @returns StoryResponseDto
    */
@@ -186,10 +186,7 @@ export class StoryService {
     }
 
     // 이미 좋아요한 경우 확인
-    const alreadyLiked = await this.storyRepository.checkStoryLikeExists(
-      storyId,
-      memberIdBigInt,
-    );
+    const alreadyLiked = await this.storyRepository.checkStoryLikeExists(storyId, memberIdBigInt);
     if (alreadyLiked) {
       throw new StoryAlreadyLikedException(storyId);
     }
@@ -216,10 +213,7 @@ export class StoryService {
     }
 
     // 좋아요하지 않은 경우 확인
-    const notLiked = !(await this.storyRepository.checkStoryLikeExists(
-      storyId,
-      memberIdBigInt,
-    ));
+    const notLiked = !(await this.storyRepository.checkStoryLikeExists(storyId, memberIdBigInt));
     if (notLiked) {
       throw new StoryNotLikedException(storyId);
     }
