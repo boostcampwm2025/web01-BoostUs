@@ -56,7 +56,7 @@ export default function MemberInfoMangeSections() {
         await updateNickname(safeInput);
 
         setAuthState((prev) => {
-          if (!prev || !prev.member) return prev; // 예외 처리
+          if (!prev?.member) return prev; // 예외 처리
 
           return {
             ...prev, // 기존 상태 유지
@@ -68,8 +68,11 @@ export default function MemberInfoMangeSections() {
         });
 
         setIsEditingNickname(false);
-      } catch (e: any) {
-        alert(e.message);
+      } catch (e) {
+        // e가 Error 객체인지 확인
+        if (e instanceof Error) {
+          alert(e.message);
+        }
       }
     } else {
       //  수정 모드 진입
@@ -107,8 +110,9 @@ export default function MemberInfoMangeSections() {
     if (autoPlatform && autoPlatform !== 'custom') {
       try {
         finalRssUrl = convertBlogUrlToRss(autoPlatform, inputUrl);
-      } catch (error) {
+      } catch (e) {
         setServerError('URL 변환에 실패했습니다. 올바른 블로그 주소인가요?');
+        console.error(e);
         return;
       }
     }
@@ -173,7 +177,7 @@ export default function MemberInfoMangeSections() {
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault(); // 엔터 입력 시 불필요한 새로고침이나 폼 제출 방지
-                      handleNicknameAction(); // 저장 함수 실행
+                      void handleNicknameAction(); // 저장 함수 실행
                     }
                   }}
                   className="text-display-20 text-neutral-text-strong border-b border-neutral-border-default

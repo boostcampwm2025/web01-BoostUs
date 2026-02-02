@@ -146,7 +146,7 @@ export const ParticipantManager = ({
       <div className="mt-3 flex flex-row gap-2">
         {participants.map((name, index) => (
           <div
-            key={`${name}-${index}`}
+            key={`${name}-${index.toString()}`}
             className="flex items-center gap-2 rounded-full border bg-neutral-surface-bold px-3 py-2"
           >
             <span className="text-body-14">{name}</span>

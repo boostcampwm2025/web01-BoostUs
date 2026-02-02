@@ -10,10 +10,10 @@ import paint from 'public/assets/NoImage.png';
 import MarkdownViewer from '@/shared/ui/MarkdownViewer';
 import extractDate from '@/shared/utils/extractDate';
 
-interface Props {
-  projectId: number;
-  onEditClick?: () => void;
-}
+// interface Props {
+//   projectId: number;
+//   onEditClick?: () => void;
+// }
 
 import { useAuth } from '@/features/login/model/auth.store';
 
@@ -34,10 +34,7 @@ export default function ProjectDetail() {
   )?.githubId;
 
   useEffect(() => {
-    if (!isValidId) {
-      setError('유효하지 않은 프로젝트 ID입니다.');
-      return;
-    }
+    if (!isValidId) return;
 
     let alive = true;
 
@@ -58,6 +55,10 @@ export default function ProjectDetail() {
       alive = false;
     };
   }, [id, isValidId]);
+
+  if (!isValidId) {
+    return <div>유효하지 않은 프로젝트 ID입니다.</div>;
+  }
 
   if (error) return <div>{error}</div>;
   if (!data) return <div>로딩 중...</div>;
@@ -123,7 +124,7 @@ export default function ProjectDetail() {
             className="flex items-center gap-2 rounded-xl border bg-brand-surface-github px-4 py-3 text-brand-text-on-default text-string-16 hover:bg-brand-surface-github/90 transition-colors duration-150"
             rel="noreferrer"
           >
-            {/* eslint-disable-next-line @typescript-eslint/no-deprecated */}
+            {}
             <Github size={16} color={'white'} /> GitHub Repository
           </a>
           <a

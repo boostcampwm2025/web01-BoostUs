@@ -191,6 +191,7 @@ export class QuestionRepository {
   }
 
   async like(questionId: bigint, memberId: bigint) {
+    //질문 투표 조회
     const existing = await this.prisma.questionVote.findUnique({
       where: {
         memberId_questionId: {
@@ -199,7 +200,7 @@ export class QuestionRepository {
         },
       },
     });
-
+    //투표 존재 하지 않으면 생성
     if (!existing) {
       await this.prisma.questionVote.create({
         data: {
@@ -213,7 +214,9 @@ export class QuestionRepository {
         where: { id: questionId },
         data: { upCount: { increment: 1 } },
       });
-    } else if (existing.voteType === VoteType.UP) {
+    }
+    // UP 투표 존재시 삭제
+    else if (existing.voteType === VoteType.UP) {
       await this.prisma.questionVote.delete({
         where: {
           memberId_questionId: {
@@ -228,8 +231,29 @@ export class QuestionRepository {
         data: { upCount: { decrement: 1 } },
       });
     }
+    //DOWN 투표 존재시 UP 투표로 변경
+    else if (existing.voteType === VoteType.DOWN) {
+      await this.prisma.questionVote.update({
+        where: {
+          memberId_questionId: {
+            memberId,
+            questionId,
+          },
+        },
+        data: {
+          voteType: VoteType.UP,
+        },
+      });
+
+      await this.prisma.question.update({
+        where: { id: questionId },
+        data: { upCount: { increment: 1 }, downCount: { decrement: 1 } },
+      });
+    }
   }
+
   async dislike(questionId: bigint, memberId: bigint) {
+    //질문 투표 조회
     const existing = await this.prisma.questionVote.findUnique({
       where: {
         memberId_questionId: {
@@ -238,7 +262,7 @@ export class QuestionRepository {
         },
       },
     });
-
+    //투표 존재 하지 않으면 생성
     if (!existing) {
       await this.prisma.questionVote.create({
         data: {
@@ -252,7 +276,9 @@ export class QuestionRepository {
         where: { id: questionId },
         data: { downCount: { increment: 1 } },
       });
-    } else if (existing.voteType === VoteType.DOWN) {
+    }
+    // DOWN 투표 존재시 삭제
+    else if (existing.voteType === VoteType.DOWN) {
       await this.prisma.questionVote.delete({
         where: {
           memberId_questionId: {
@@ -261,9 +287,29 @@ export class QuestionRepository {
           },
         },
       });
+
       await this.prisma.question.update({
         where: { id: questionId },
         data: { downCount: { decrement: 1 } },
+      });
+    }
+    //UP 투표 존재시 DOWN 투표로 변경
+    else if (existing.voteType === VoteType.UP) {
+      await this.prisma.questionVote.update({
+        where: {
+          memberId_questionId: {
+            memberId,
+            questionId,
+          },
+        },
+        data: {
+          voteType: VoteType.DOWN,
+        },
+      });
+
+      await this.prisma.question.update({
+        where: { id: questionId },
+        data: { downCount: { increment: 1 }, upCount: { decrement: 1 } },
       });
     }
   }
