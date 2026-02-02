@@ -1,10 +1,6 @@
 import { useState, useEffect, DragEvent } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  projectSchema,
-  ProjectFormValues,
-} from '@/features/project/model/projectSchema';
+import { ProjectFormValues } from '@/features/project/model/projectSchema';
 import { registerProject } from '@/features/project/api/registerProject';
 import { updateProject } from '@/features/project/api/updateProject';
 import { fetchProjectDetail } from '@/entities/projectDetail/api/projectDetailAPI';
@@ -36,7 +32,7 @@ export const useProjectRegister = (
     defaultValues: {
       title: '',
       description: '',
-      contents: [''],
+      contents: '',
       repoUrl: '',
       demoUrl: '',
       cohort: '10기',
@@ -79,7 +75,7 @@ export const useProjectRegister = (
           : '10기';
 
         const contentText = Array.isArray(rawData.contents)
-          ? rawData.contents[0]
+          ? rawData.contents.join('\n')
           : rawData.contents || '';
 
         setValue('title', rawData.title);
@@ -91,7 +87,8 @@ export const useProjectRegister = (
         setValue('endDate', endDateStr as any);
         setValue('cohort', cohortValue as any);
         setValue('field', ((rawData as any).field ?? 'WEB') as any);
-        setValue('contents', [contentText]);
+
+        setValue('contents', contentText);
 
         if (rawData.thumbnailUrl) setPreviewUrl(rawData.thumbnailUrl);
 
@@ -193,9 +190,15 @@ export const useProjectRegister = (
         thumbnailUploadId: thumbnailUploadId,
         title: data.title,
         description: data.description ?? '',
-        contents: Array.isArray(data.contents)
-          ? data.contents.join('\n')
-          : (data.contents ?? ''),
+
+        // [수정 4] 폼 데이터가 문자열이므로 그대로 전송 (혹시 모를 배열 타입 방어 코드 포함)
+        contents:
+          typeof data.contents === 'string'
+            ? data.contents
+            : Array.isArray(data.contents)
+              ? data.contents.join('\n')
+              : (data.contents ?? ''),
+
         repoUrl: data.repoUrl,
 
         demoUrl:
@@ -212,7 +215,6 @@ export const useProjectRegister = (
         participants: participants,
       };
 
-      //
       if (editProjectId) {
         await updateProject(editProjectId, requestBody as any);
         alert('수정되었습니다.');

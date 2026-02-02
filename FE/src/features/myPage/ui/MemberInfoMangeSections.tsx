@@ -2,7 +2,7 @@
 
 import { useForm } from 'react-hook-form';
 import Image from 'next/image';
-import { useAtomValue } from 'jotai';
+import { useAtom } from 'jotai';
 import { memberAtom } from '@/features/login/model/auth.store';
 import { PenToolIcon } from '@/components/ui/pen-tool';
 import { GithubIcon } from '@/components/ui/github';
@@ -18,6 +18,8 @@ import {
   convertBlogUrlToRss,
   detectPlatformFromBlogUrl,
 } from '@/features/feed/utils/blog-rss-converter';
+import { CheckIcon } from '@/components/ui/check';
+import { updateNickname } from '@/features/myPage/api/updateNickname';
 
 // 폼 데이터 타입 정의
 interface RssFormValues {
@@ -25,7 +27,7 @@ interface RssFormValues {
 }
 
 export default function MemberInfoMangeSections() {
-  const authState = useAtomValue(memberAtom);
+  const [authState, setAuthState] = useAtom(memberAtom);
   const member = authState?.member;
   const latestProject = authState?.latestProject;
   const feed = authState?.feed;
@@ -35,6 +37,48 @@ export default function MemberInfoMangeSections() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  // 닉네임 수정 상태
+  const [isEditingNickname, setIsEditingNickname] = useState<boolean>(false);
+  const [nicknameInput, setNicknameInput] = useState<string | null>(null);
+
+  // 닉네임 수정 버튼 클릭 핸들러
+  const handleNicknameAction = async () => {
+    if (isEditingNickname) {
+      // 입력값이 없거나 공백만 있으면 리턴
+      const safeInput = nicknameInput ?? '';
+
+      if (!safeInput.trim()) {
+        alert('닉네임을 입력해주세요.');
+        return;
+      }
+
+      try {
+        await updateNickname(safeInput);
+
+        setAuthState((prev) => {
+          if (!prev || !prev.member) return prev; // 예외 처리
+
+          return {
+            ...prev, // 기존 상태 유지
+            member: {
+              ...prev.member, // 기존 멤버 정보 유지
+              nickname: safeInput, // 닉네임만 새 값으로 덮어쓰기
+            },
+          };
+        });
+
+        setIsEditingNickname(false);
+      } catch (e: any) {
+        alert(e.message);
+      }
+    } else {
+      //  수정 모드 진입
+      setNicknameInput(member?.nickname ?? '');
+      setIsEditingNickname(true);
+    }
+  };
+
+  // 로그아웃
   const handleLogout = async () => {
     await logout();
   };
@@ -116,14 +160,37 @@ export default function MemberInfoMangeSections() {
           <div className="flex flex-col justify-center gap-2 flex-1">
             {/* 닉네임 + 수정 아이콘 */}
             <div className="flex flex-row items-center gap-2">
-              <span className="text-display-20 text-neutral-text-strong">
-                {member.nickname}
-              </span>
+              {!isEditingNickname ? (
+                <span className="text-display-20 text-neutral-text-strong">
+                  {member.nickname}
+                </span>
+              ) : (
+                <input
+                  type="text"
+                  value={nicknameInput ?? ''}
+                  onChange={(e) => setNicknameInput(e.target.value)}
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault(); // 엔터 입력 시 불필요한 새로고침이나 폼 제출 방지
+                      handleNicknameAction(); // 저장 함수 실행
+                    }
+                  }}
+                  className="text-display-20 text-neutral-text-strong border-b border-neutral-border-default
+             focus:outline-none focus:border-brand-border-default transition-colors bg-transparent
+             p-0 w-30"
+                />
+              )}
               <button
                 type="button"
                 className="text-neutral-text-weak hover:text-neutral-text-strong cursor-pointer transition-colors duration-150"
+                onClick={handleNicknameAction}
               >
-                <PenToolIcon size={16} />
+                {isEditingNickname ? (
+                  <CheckIcon size={16} />
+                ) : (
+                  <PenToolIcon size={16} />
+                )}
               </button>
             </div>
 

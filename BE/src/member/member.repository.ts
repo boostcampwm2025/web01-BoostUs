@@ -76,4 +76,13 @@ export class MemberRepository {
       latestProject,
     };
   }
+
+  async updateNickname(memberId: string, nickname: string) {
+    const id = BigInt(memberId);
+
+    return this.prisma.member.update({
+      where: { id },
+      data: { nickname },
+    });
+  }
 }

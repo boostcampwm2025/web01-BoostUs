@@ -92,7 +92,7 @@ const Header = () => {
           <>
             {isAuthenticated && member ? (
               <Link
-                href="/login"
+                href="/mypage"
                 className="flex items-center transition-opacity hover:opacity-80"
               >
                 <div className="relative w-9 h-9 rounded-full overflow-hidden">

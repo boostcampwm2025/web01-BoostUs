@@ -1,13 +1,14 @@
 'use client';
 
 import StoriesCard from '@/features/stories/ui/Card/Card';
-import FeedHeader from '@/features/mainpage/feed/FeedHeader';
+import FeedHeader from '@/features/main/feed/FeedHeader';
 import { useEffect, useState } from 'react';
 import { fetchRecoStory } from '@/features/main/reco/api/fetchRecoStory';
 import Contribute from '@/features/main/contribute/Contribute';
 import MainQnaSection from '@/features/main/qna/ui/MainQnaSection';
 import Link from 'next/link';
 import { Story } from '@/features/stories/model/stories.type';
+import MainBelowSection from '@/features/main/below/MainBelowSection';
 
 const FeedSection = () => {
   const [Stories, setStories] = useState<Story[] | null>(null);
@@ -45,29 +46,6 @@ const FeedSection = () => {
 
       {/*boostAd seciton*/}
       <div data-boostad-zone style={{ width: '100%', height: '100%' }}></div>
-
-      <section className="flex flex-col lg:flex-row gap-6 w-full">
-        {/* 질문 & 답변 */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-4 justify-between mb-4">
-            <h2 className="text-display-24 text-neutral-text-strong">
-              질문 & 답변
-            </h2>
-            <Link
-              href="/questions"
-              className="text-neutral-text-weak hover:text-neutral-text-strong text-string-16 transition-colors duration-150 flex flex-row items-center gap-1"
-            >
-              더보기 &rarr;
-            </Link>
-          </div>
-          <MainQnaSection />
-        </div>
-
-        {/* 기여하기 50% */}
-        <div className="flex-1 min-w-0">
-          <Contribute />
-        </div>
-      </section>
     </>
   );
 };
