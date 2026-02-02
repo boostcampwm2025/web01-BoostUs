@@ -11,7 +11,7 @@ import {
   AccessTokenNotExpiredException,
   InvalidAccessTokenException,
   InvalidRefreshTokenException,
-  RefreshTokenExpiredException
+  RefreshTokenExpiredException,
 } from './exception/auth.exception';
 import { GithubAuthClient } from './github-auth.client';
 import { COHORT_ORG_MAP } from './type/cohort.type';
@@ -24,7 +24,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     @Inject(REDIS) private readonly redis: Redis,
-  ) { }
+  ) {}
 
   async handleCallback(code: string) {
     const githubAccessToken = await this.githubAuthClient.exchangeCodeForToken(code);
@@ -146,7 +146,7 @@ export class AuthService {
    */
   checkAccessTokenExpired(accessToken: string): void {
     try {
-      const payload = this.jwtService.decode(accessToken) as { exp?: number; type?: string } | null;
+      const payload = this.jwtService.decode(accessToken);
 
       if (!payload || payload.type !== 'access') {
         // 유효하지 않은 토큰이거나 액세스 토큰이 아니면 통과 (재발급 필요)
@@ -178,7 +178,10 @@ export class AuthService {
    * @param refreshToken 리프레시 토큰
    * @returns 새로운 액세스 토큰과 리프레시 토큰
    */
-  async refreshTokens(accessToken: string, refreshToken: string): Promise<{ accessToken: string; refreshToken: string }> {
+  async refreshTokens(
+    accessToken: string,
+    refreshToken: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     // 1. 액세스 토큰 만료 여부 확인
     this.checkAccessTokenExpired(accessToken);
 

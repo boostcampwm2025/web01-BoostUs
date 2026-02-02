@@ -1,9 +1,16 @@
 import { Expose, Transform, Type } from 'class-transformer';
 import { MemberDto } from './member.dto';
+import { ContentState } from 'src/generated/prisma/enums';
+
+type HasAnswerCount = {
+  _count?: {
+    answers?: number;
+  };
+};
 
 export class QuestionResponseDto {
   @Expose()
-  @Transform(({ value }) => value?.toString())
+  @Transform(({ value }) => String(value))
   id!: string;
 
   @Expose()
@@ -13,7 +20,7 @@ export class QuestionResponseDto {
   contents!: string;
 
   @Expose()
-  @Transform(({ obj }) => (obj.hashtags ? obj.hashtags.split(',') : []))
+  @Transform(({ value }) => (typeof value === 'string' && value.length > 0 ? value.split(',') : []))
   hashtags!: string[];
 
   @Expose()
@@ -29,18 +36,18 @@ export class QuestionResponseDto {
   isResolved!: boolean;
 
   @Expose()
-  state!: string; // enum이면 ContentState
+  state!: ContentState;
 
   @Expose()
-  @Transform(({ obj }) => obj?._count?.answers ?? 0)
+  @Transform(({ obj }: { obj: HasAnswerCount }) => Number(obj._count?.answers ?? 0))
   answerCount!: number;
 
   @Expose()
-  @Transform(({ value }) => value?.toISOString())
+  @Transform(({ value }) => (value instanceof Date ? value.toISOString() : String(value)))
   createdAt!: string;
 
   @Expose()
-  @Transform(({ value }) => value?.toISOString())
+  @Transform(({ value }) => (value instanceof Date ? value.toISOString() : String(value)))
   updatedAt!: string;
 
   @Expose()

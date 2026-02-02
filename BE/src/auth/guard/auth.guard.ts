@@ -6,7 +6,7 @@ import { Request } from 'express';
 import { IS_PUBLIC_KEY } from '../decorator/public.decorator';
 import {
   AccessTokenExpiredException,
-  InvalidAccessTokenException
+  InvalidAccessTokenException,
 } from '../exception/auth.exception';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class AuthGuard implements CanActivate {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly reflector: Reflector,
-  ) { }
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // @Public 데코레이터가 있는지 확인

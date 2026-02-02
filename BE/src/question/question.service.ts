@@ -13,8 +13,6 @@ import { QuestionResponseDto } from './dto/res/question-response.dto';
 import { UpdateQuestionDto } from './dto/req/update-question.dto';
 import { AnswerResponseDto } from 'src/answer/dto/res/answer-response.dto';
 import { ViewService } from 'src/view/view.service';
-import { plainToInstance } from 'class-transformer';
-import { QuestionDetailItemDto } from './dto/question-detail-item.dto';
 import { QuestionNotFoundException } from './exception/question.exception';
 
 const toHashtagsStringOrNull = (hashtags?: string[]): string | null =>

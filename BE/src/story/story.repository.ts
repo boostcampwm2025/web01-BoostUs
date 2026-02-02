@@ -6,7 +6,7 @@ import { StoryPeriod, StorySortBy } from './type/story-query.type';
 
 @Injectable()
 export class StoryRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   /**
    * 모든 공개된 캠퍼들의 이야기 목록 조회

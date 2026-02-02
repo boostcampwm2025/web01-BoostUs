@@ -2,7 +2,7 @@ import { Expose, Transform } from 'class-transformer';
 
 export class MemberDto {
   @Expose()
-  @Transform(({ value }) => value?.toString())
+  @Transform(({ value }) => String(value))
   id!: string;
 
   @Expose()

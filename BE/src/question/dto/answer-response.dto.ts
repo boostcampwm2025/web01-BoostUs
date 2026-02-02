@@ -1,13 +1,14 @@
 import { Expose, Type, Transform } from 'class-transformer';
 import { MemberDto } from './member.dto';
+import { ContentState } from 'src/generated/prisma/enums';
 
 export class AnswerResponseDto {
   @Expose()
-  @Transform(({ value }) => value?.toString())
+  @Transform(({ value }) => String(value))
   id!: string;
 
   @Expose()
-  @Transform(({ value }) => value?.toString())
+  @Transform(({ value }) => String(value))
   questionId!: string;
 
   @Expose()
@@ -23,14 +24,14 @@ export class AnswerResponseDto {
   downCount!: number;
 
   @Expose()
-  state!: string; // enum이면 ContentState
+  state!: ContentState;
 
   @Expose()
-  @Transform(({ value }) => value?.toISOString())
+  @Transform(({ value }: { value: Date }) => value.toISOString())
   createdAt!: string;
 
   @Expose()
-  @Transform(({ value }) => value?.toISOString())
+  @Transform(({ value }: { value: Date }) => value.toISOString())
   updatedAt!: string;
 
   @Expose()

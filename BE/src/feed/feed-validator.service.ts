@@ -5,7 +5,7 @@ import { InvalidFeedUrlException } from './exception/feed.exception';
 
 @Injectable()
 export class FeedValidatorService {
-  constructor(private readonly httpService: HttpService) { }
+  constructor(private readonly httpService: HttpService) {}
 
   /**
    * 허용된 도메인인지 검증 (velog, tistory만 허용)
@@ -15,27 +15,20 @@ export class FeedValidatorService {
     try {
       url = new URL(feedUrl);
     } catch {
-      throw new InvalidFeedUrlException(
-        '유효하지 않은 URL 형식입니다.',
-        { feedUrl },
-      );
+      throw new InvalidFeedUrlException('유효하지 않은 URL 형식입니다.', { feedUrl });
     }
 
     const hostname = url.hostname.toLowerCase();
     const pathname = url.pathname.toLowerCase();
 
     // Velog RSS 검증: v2.velog.io 도메인이고 /rss 경로를 포함해야 함
-    const isVelog =
-      hostname === 'v2.velog.io' && pathname.startsWith('/rss');
+    const isVelog = hostname === 'v2.velog.io' && pathname.startsWith('/rss');
 
     // Tistory RSS 검증: *.tistory.com 도메인이고 /rss 경로를 포함해야 함
-    const isTistory =
-      hostname.endsWith('.tistory.com') && pathname === '/rss';
+    const isTistory = hostname.endsWith('.tistory.com') && pathname === '/rss';
 
     if (!isVelog && !isTistory) {
-      throw new InvalidFeedUrlException(
-        'velog 또는 tistory RSS 피드만 등록할 수 있습니다.'
-      );
+      throw new InvalidFeedUrlException('velog 또는 tistory RSS 피드만 등록할 수 있습니다.');
     }
   }
 
@@ -71,24 +64,17 @@ export class FeedValidatorService {
 
       // XML 형식이 아니면 예외 발생
       if (!isXml) {
-        throw new InvalidFeedUrlException(
-          'RSS 피드 형식이 올바르지 않습니다.',
-          { feedUrl },
-        );
+        throw new InvalidFeedUrlException('RSS 피드 형식이 올바르지 않습니다.', { feedUrl });
       }
-
     } catch (error) {
       if (error instanceof InvalidFeedUrlException) {
         throw error;
       }
 
-      throw new InvalidFeedUrlException(
-        this.resolveErrorMessage(error),
-        {
-          feedUrl,
-          statusCode: error?.response?.status,
-        },
-      );
+      throw new InvalidFeedUrlException(this.resolveErrorMessage(error), {
+        feedUrl,
+        statusCode: error?.response?.status,
+      });
     }
   }
 
@@ -96,8 +82,7 @@ export class FeedValidatorService {
    * RSS 접근 실패 에러 메시지 결정
    */
   private resolveErrorMessage(error: any): string {
-    const DEFAULT_MESSAGE =
-      'RSS 피드에 접근할 수 없습니다. URL을 확인해주세요.';
+    const DEFAULT_MESSAGE = 'RSS 피드에 접근할 수 없습니다. URL을 확인해주세요.';
 
     const status = error?.response?.status;
     if (status) {
@@ -105,10 +90,7 @@ export class FeedValidatorService {
         404: 'RSS 피드를 찾을 수 없습니다. URL을 확인해주세요.',
       };
 
-      return (
-        statusMessageMap[status] ??
-        `RSS 피드에 접근할 수 없습니다. HTTP ${status}`
-      );
+      return statusMessageMap[status] ?? `RSS 피드에 접근할 수 없습니다. HTTP ${status}`;
     }
 
     if (error?.message?.includes('timeout')) {
