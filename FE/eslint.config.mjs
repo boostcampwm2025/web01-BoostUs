@@ -80,6 +80,7 @@ export default ts.config(
 
       // 3. any 사용 금지 (엄격 모드)
       '@typescript-eslint/no-explicit-any': 'warn',
+      "@typescript-eslint/no-deprecated": "off",
 
       // 4. 불리언 표현식 엄격 검사
       // if (obj) 대신 if (obj !== null) 처럼 명확하게 작성해야 함

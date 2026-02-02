@@ -27,4 +27,4 @@ import { AuthGuard } from './guard/auth.guard';
   providers: [AuthService, GithubAuthClient, AuthRepository, AuthGuard],
   exports: [AuthGuard, JwtModule],
 })
-export class AuthModule { }
+export class AuthModule {}

@@ -97,6 +97,21 @@ export class AnswerRepository {
         where: { id: answerId },
         data: { upCount: { decrement: 1 } },
       });
+    } else if (existing.voteType === VoteType.DOWN) {
+      await this.prisma.answerVote.update({
+        where: {
+          memberId_answerId: {
+            memberId,
+            answerId,
+          },
+        },
+        data: { voteType: VoteType.UP },
+      });
+
+      await this.prisma.answer.update({
+        where: { id: answerId },
+        data: { upCount: { increment: 1 }, downCount: { decrement: 1 } },
+      });
     }
   }
   async dislike(answerId: bigint, memberId: bigint) {
@@ -120,7 +135,7 @@ export class AnswerRepository {
 
       await this.prisma.answer.update({
         where: { id: answerId },
-        data: { downCount: { increment: 1 } },
+        data: { upCount: { increment: 1 } },
       });
     } else if (existing.voteType === VoteType.DOWN) {
       await this.prisma.answerVote.delete({
@@ -131,9 +146,25 @@ export class AnswerRepository {
           },
         },
       });
+
       await this.prisma.answer.update({
         where: { id: answerId },
-        data: { downCount: { decrement: 1 } },
+        data: { upCount: { decrement: 1 } },
+      });
+    } else if (existing.voteType === VoteType.UP) {
+      await this.prisma.answerVote.update({
+        where: {
+          memberId_answerId: {
+            memberId,
+            answerId,
+          },
+        },
+        data: { voteType: VoteType.DOWN },
+      });
+
+      await this.prisma.answer.update({
+        where: { id: answerId },
+        data: { downCount: { increment: 1 }, upCount: { decrement: 1 } },
       });
     }
   }

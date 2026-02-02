@@ -48,7 +48,7 @@ const optionalFileList = z
   });
 
 // 1) 먼저 "정확한 출력 타입"을 정의
-export type ProjectFormValues = {
+export interface ProjectFormValues {
   thumbnail: FileList | undefined;
   field: 'WEB' | 'IOS' | 'ANDROID';
   title: string;
@@ -73,7 +73,7 @@ export type ProjectFormValues = {
   participants?: string[] | undefined;
   techStackInput?: string | undefined;
   techStack?: string[] | undefined;
-};
+}
 
 export const projectSchema: z.ZodType<ProjectFormValues> = z
   .object({

@@ -14,6 +14,7 @@ export interface ProjectData {
   repoUrl: string;
   demoUrl: string;
   cohort: number;
+  field: 'WEB' | 'IOS' | 'ANDROID';
   startDate: string;
   endDate: string;
   createdAt: string;

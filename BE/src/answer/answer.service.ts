@@ -39,7 +39,7 @@ export class AnswerService {
       createdAt: created.createdAt.toISOString(),
       updatedAt: created.updatedAt.toISOString(),
       member: {
-        id: created.member.id.toString(),
+        id: created.member.id,
         nickname: created.member.nickname,
         avatarUrl: created.member.avatarUrl,
         cohort: created.member.cohort,
@@ -81,7 +81,7 @@ export class AnswerService {
       createdAt: updated.createdAt.toISOString(),
       updatedAt: updated.updatedAt.toISOString(),
       member: {
-        id: updated.member.id.toString(),
+        id: updated.member.id,
         nickname: updated.member.nickname,
         avatarUrl: updated.member.avatarUrl,
         cohort: updated.member.cohort,
