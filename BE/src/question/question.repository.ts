@@ -2,6 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { Prisma, ContentState } from 'src/generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { VoteType } from 'src/generated/prisma/client';
+import { Reaction } from 'src/enum/reaction';
+
+const voteTypeToReaction = (voteType?: VoteType | null): Reaction => {
+  if (!voteType) return Reaction.NONE;
+  return voteType === VoteType.UP ? Reaction.LIKE : Reaction.DISLIKE;
+};
 
 export type CreateQuestionInput = {
   memberId: bigint;
@@ -312,5 +318,78 @@ export class QuestionRepository {
         data: { downCount: { increment: 1 }, upCount: { decrement: 1 } },
       });
     }
+  }
+
+  async getQuestionReaction(questionId: bigint, memberId: bigint): Promise<Reaction> {
+    const vote = await this.prisma.questionVote.findUnique({
+      where: { memberId_questionId: { memberId, questionId } },
+      select: { voteType: true },
+    });
+
+    return voteTypeToReaction(vote?.voteType);
+  }
+
+  async getAnswerReaction(answerId: bigint, memberId: bigint): Promise<Reaction> {
+    const vote = await this.prisma.answerVote.findUnique({
+      where: { memberId_answerId: { memberId, answerId } },
+      select: { voteType: true },
+    });
+
+    return voteTypeToReaction(vote?.voteType);
+  }
+  async getQuestionReactionsBulk(
+    questionIds: bigint[],
+    memberId: bigint,
+  ): Promise<Map<string, Reaction>> {
+    if (questionIds.length === 0) return new Map();
+
+    const votes = await this.prisma.questionVote.findMany({
+      where: {
+        memberId,
+        questionId: { in: questionIds },
+      },
+      select: {
+        questionId: true,
+        voteType: true,
+      },
+    });
+
+    // 기본값 NONE 세팅
+    const map = new Map<string, Reaction>();
+    for (const qid of questionIds) map.set(qid.toString(), Reaction.NONE);
+
+    // 실제 vote 덮어쓰기
+    for (const v of votes) {
+      map.set(v.questionId.toString(), voteTypeToReaction(v.voteType));
+    }
+
+    return map;
+  }
+
+  async getAnswerReactionsBulk(
+    answerIds: bigint[],
+    memberId: bigint,
+  ): Promise<Map<string, Reaction>> {
+    if (answerIds.length === 0) return new Map();
+
+    const votes = await this.prisma.answerVote.findMany({
+      where: {
+        memberId,
+        answerId: { in: answerIds },
+      },
+      select: {
+        answerId: true,
+        voteType: true,
+      },
+    });
+
+    const map = new Map<string, Reaction>();
+    for (const aid of answerIds) map.set(aid.toString(), Reaction.NONE);
+
+    for (const v of votes) {
+      map.set(v.answerId.toString(), voteTypeToReaction(v.voteType));
+    }
+
+    return map;
   }
 }
