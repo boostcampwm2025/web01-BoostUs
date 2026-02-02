@@ -357,7 +357,7 @@ export class ProjectService {
       Array<{ login: string; avatar_url: string | null }>
     >(`${this.githubApiBase}/repos/${owner}/${repo}/collaborators`, {
       headers: {
-        Authorization: `token ${accessToken.token}`,
+        Authorization: `Bearer ${accessToken.token}`,
         Accept: 'application/vnd.github+json',
         'X-GitHub-Api-Version': '2022-11-28',
       },
