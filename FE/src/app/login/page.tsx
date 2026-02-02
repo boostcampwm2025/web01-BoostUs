@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import LoginContainer from '@/widgets/Login/Login.container'; // 분리한 클라이언트 컴포넌트
+import LoginContainer from '@/widgets/Login/Login.container';
+import { Suspense } from 'react'; // 분리한 클라이언트 컴포넌트
 
 export const metadata: Metadata = {
   title: '로그인 - BoostUs',
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default function LoginPage() {
-  return <LoginContainer />;
+  return (
+    <Suspense fallback={null}>
+      <LoginContainer />
+    </Suspense>
+  );
 }
