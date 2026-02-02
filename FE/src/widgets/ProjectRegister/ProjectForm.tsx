@@ -78,14 +78,14 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
   useEffect(() => {
     fetchStacks()
       .then((res) => setStackData(normalizeStacks(res.data)))
-      .catch((e) => {
+      .catch((e: unknown) => {
         console.error(e);
       });
   }, []);
 
   const cohortOptions = Array.from({ length: 10 }).map((_, i) => ({
-    label: `${i + 1}기`,
-    value: `${i + 1}기`,
+    label: `${(i + 1).toString()}기`,
+    value: `${(i + 1).toString()}기`,
   }));
 
   return (

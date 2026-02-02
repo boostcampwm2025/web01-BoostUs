@@ -110,8 +110,9 @@ export default function MemberInfoMangeSections() {
     if (autoPlatform && autoPlatform !== 'custom') {
       try {
         finalRssUrl = convertBlogUrlToRss(autoPlatform, inputUrl);
-      } catch (error) {
+      } catch (e) {
         setServerError('URL 변환에 실패했습니다. 올바른 블로그 주소인가요?');
+        console.error(e);
         return;
       }
     }

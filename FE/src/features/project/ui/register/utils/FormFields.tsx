@@ -1,4 +1,4 @@
-import { forwardRef, TextareaHTMLAttributes, useEffect, useRef } from 'react';
+import { TextareaHTMLAttributes, useEffect, useRef } from 'react';
 import { FieldError, UseFormRegisterReturn } from 'react-hook-form';
 
 // 기본 Input

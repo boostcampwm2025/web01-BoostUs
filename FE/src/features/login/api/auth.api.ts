@@ -1,5 +1,5 @@
 import { ApiResponse } from '@/shared/types/ApiResponseType';
-import type { Member, AuthResponse } from '../model/auth.types';
+import type { AuthResponse } from '../model/auth.types';
 
 /**
  * 현재 로그인한 멤버 정보를 가져옵니다.

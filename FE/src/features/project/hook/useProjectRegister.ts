@@ -47,6 +47,7 @@ export const useProjectRegister = (
   });
 
   const { watch, setValue, handleSubmit, getValues } = formMethods;
+  // eslint-disable-next-line react-hooks/incompatible-library
   const thumbnailList = watch('thumbnail');
 
   // 1. 데이터 로드
@@ -95,7 +96,8 @@ export const useProjectRegister = (
         setTechStack(loadedTechStack);
 
         const loadedParticipants = Array.isArray(rawData.participants)
-          ? rawData.participants.map((p: any) =>
+          ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            rawData.participants.map((p: any) =>
               typeof p === 'string' ? p : (p as { githubId: string }).githubId
             )
           : [];

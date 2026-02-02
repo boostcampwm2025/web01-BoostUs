@@ -1,4 +1,3 @@
-import { ArrowBigDown, ArrowBigUp } from 'lucide-react';
 import { UpvoteIcon } from '@/components/ui/upvote';
 import { DownvoteIcon } from '@/components/ui/downvote';
 

@@ -1,14 +1,7 @@
 import { Question } from '@/features/questions/model/questions.type';
-import {
-  ArrowBigDown,
-  ArrowBigUp,
-  Calendar1,
-  Eye,
-  MessageCircle,
-} from 'lucide-react';
+import { Calendar1, Eye, MessageCircle } from 'lucide-react';
 import { UpvoteIcon } from '@/components/ui/upvote';
 import { DownvoteIcon } from '@/components/ui/downvote';
-import Image from 'next/image';
 import UserProfile from '@/shared/ui/UserProfile';
 import extractDate from '@/shared/utils/extractDate';
 
