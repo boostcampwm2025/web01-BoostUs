@@ -46,7 +46,7 @@ const StoriesList = ({ initialStories }: StoriesListProps) => {
   return (
     <section className="flex w-full flex-col items-end gap-4">
       <div
-        className={`grid w-full ${!isRankingOpen ? 'grid-cols-4' : 'grid-cols-3'} gap-8`}
+        className={`grid w-full ${!isRankingOpen ? 'grid-cols-4' : 'grid-cols-3'} gap-4 lg:gap-8`}
       >
         <AnimatePresence mode="popLayout">
           {stories.length > 0 ? (
