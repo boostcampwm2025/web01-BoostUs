@@ -14,7 +14,7 @@ export function AuthInitializer() {
   useEffect(() => {
     // React.StrictMode 등에서 두 번 실행되는 것을 방지하기 위한 체크
     if (!initialized.current) {
-      fetchCurrentMember();
+      void fetchCurrentMember();
       initialized.current = true;
     }
   }, [fetchCurrentMember]);

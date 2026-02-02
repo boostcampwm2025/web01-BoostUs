@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import ProjectListCard from '@/features/project/ui/ProjectList/ProjectListCard';
 import { useSearchParams } from 'next/navigation';
-import { ChevronDown, ChevronUp } from 'lucide-react';
 import { fetchProjects, Project } from '@/features/project/api/getProjects';
 import { motion } from 'framer-motion';
 
@@ -67,6 +66,8 @@ const ProjectListSection = () => {
         return b.viewCount - a.viewCount;
       }
     });
+
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <section className="mt-8 mb-20 flex w-full flex-col gap-4">

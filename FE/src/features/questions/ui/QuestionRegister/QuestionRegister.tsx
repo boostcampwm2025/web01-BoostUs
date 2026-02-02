@@ -12,7 +12,7 @@ export default function QuestionRegisterPage() {
       variant="create"
       onSubmit={async (values) => {
         const res = await createQuestion({
-          title: values.title!,
+          title: values.title ?? '',
           contents: values.contents,
           hashtags: values.hashtags,
         });

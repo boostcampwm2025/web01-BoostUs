@@ -1,10 +1,8 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
 import TogglePills from '@/features/project/ui/filter/TogglePills';
-import Image from 'next/image';
-import open from '@/assets/weui_arrow-outlined.svg';
 import * as data from '@/features/project/ui/filter/data';
 import { AnimatePresence, motion, type Variants } from 'framer-motion';
 import Link from 'next/link';
