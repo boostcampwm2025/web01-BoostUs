@@ -49,4 +49,4 @@ import { LandingModule } from './landing/landing.module';
     },
   ],
 })
-export class AppModule { }
+export class AppModule {}

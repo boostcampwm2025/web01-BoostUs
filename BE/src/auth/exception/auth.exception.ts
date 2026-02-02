@@ -27,7 +27,10 @@ export class InvalidRefreshTokenException extends BaseException {
 
 export class AccessTokenNotExpiredException extends BaseException {
   constructor() {
-    super('ACCESS_TOKEN_NOT_EXPIRED', '액세스 토큰이 아직 만료되지 않았습니다.', HttpStatus.BAD_REQUEST);
+    super(
+      'ACCESS_TOKEN_NOT_EXPIRED',
+      '액세스 토큰이 아직 만료되지 않았습니다.',
+      HttpStatus.BAD_REQUEST,
+    );
   }
 }
-
