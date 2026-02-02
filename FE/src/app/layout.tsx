@@ -5,6 +5,8 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import Script from 'next/script';
 import './globals.css';
+import { Toaster } from '@/components/ui/sonner';
+import React from 'react';
 
 export const metadata: Metadata = {
   title: 'boostus - 부스트캠퍼들이 함께 기록하고, 함께 성장하는 커뮤니티 🌱',
@@ -44,6 +46,7 @@ export default function RootLayout({
             async
           />
         </main>
+        <Toaster />
         <Footer />
       </body>
     </html>

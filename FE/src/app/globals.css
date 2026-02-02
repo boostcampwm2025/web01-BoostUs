@@ -266,3 +266,38 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes toast-timer {
+  from { width: 100%; }
+  to { width: 0; }
+}
+
+@layer utilities {
+  .sonner-progress-bar {
+    /* 토스트 카드 내부에서 바가 넘치지 않도록 설정 */
+    @apply relative overflow-hidden;
+
+    /* 1. 트랙 (바닥에 깔리는 연한 색) */
+    &::before {
+      content: "";
+      @apply absolute bottom-0 left-0 h-1 w-full;
+      background-color: var(--color-brand-light);
+    }
+
+    /* 2. 인디케이터 (줄어드는 진한 색) */
+    &::after {
+      content: "";
+      @apply absolute bottom-0 left-0 h-1;
+      background-color: var(--color-brand-primary);
+      width: 100%;
+      /* 4초 동안 줄어드는 애니메이션 */
+      animation: toast-timer 4s linear forwards;
+    }
+  }
+
+  /* 마우스 호버 시 애니메이션 멈춤 (Sonner 동작과 동기화) */
+  /* .group 클래스는 Toaster 컴포넌트에서 이미 부여됨 */
+  .group:hover .sonner-progress-bar::after {
+    animation-play-state: paused;
+  }
+}

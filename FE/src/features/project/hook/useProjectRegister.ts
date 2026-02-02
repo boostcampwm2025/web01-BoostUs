@@ -6,6 +6,7 @@ import { updateProject } from '@/features/project/api/updateProject';
 import { fetchProjectDetail } from '@/entities/projectDetail/api/projectDetailAPI';
 import { useRouter } from 'next/navigation';
 import { uploadThumbnail } from '../api/uploadThumbnail';
+import { toast } from 'sonner';
 
 const getErrorMessage = (err: unknown): string => {
   if (err instanceof Error) return err.message;
@@ -86,7 +87,7 @@ export const useProjectRegister = (
         setValue('startDate', startDateStr as any);
         setValue('endDate', endDateStr as any);
         setValue('cohort', cohortValue as any);
-        setValue('field', ((rawData as any).field ?? 'WEB') as any);
+        setValue('field', (rawData as any).field ?? 'WEB');
 
         setValue('contents', contentText);
 
@@ -217,11 +218,11 @@ export const useProjectRegister = (
 
       if (editProjectId) {
         await updateProject(editProjectId, requestBody as any);
-        alert('수정되었습니다.');
+        toast.success('프로젝트가 수정되었습니다.');
         await router.push('/project');
       } else {
         await registerProject(requestBody as any);
-        alert('등록되었습니다.');
+        toast.success('프로젝트가 등록되었습니다.');
         await router.push('/project');
       }
       if (onClose) onClose();
