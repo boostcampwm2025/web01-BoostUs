@@ -274,24 +274,53 @@ body {
 
 @layer utilities {
   .sonner-progress-bar {
-    /* 토스트 카드 내부에서 바가 넘치지 않도록 설정 */
-    @apply relative overflow-hidden;
+    @apply relative overflow-hidden border;
+
+    /* 기본 테두리 색상 (Info, Default 등) */
+    border-color: var(--color-neutral-border-default);
 
     /* 1. 트랙 (바닥에 깔리는 연한 색) */
     &::before {
       content: "";
       @apply absolute bottom-0 left-0 h-1 w-full;
-      background-color: var(--color-brand-light);
+      background-color: var(--color-stone-100);
     }
 
     /* 2. 인디케이터 (줄어드는 진한 색) */
     &::after {
       content: "";
       @apply absolute bottom-0 left-0 h-1;
-      background-color: var(--color-brand-primary);
+      background-color: var(--color-neutral-text-default);
       width: 100%;
-      /* 4초 동안 줄어드는 애니메이션 */
       animation: toast-timer 4s linear forwards;
+    }
+
+    /* Success (성공) - 브랜드 컬러 */
+    &[data-type="success"] {
+      border-color: var(--color-brand-primary);
+      &::before { background-color: var(--color-brand-light); }
+      &::after { background-color: var(--color-brand-primary); }
+    }
+
+    /* Error (에러) - 빨간색 */
+    &[data-type="error"] {
+      border-color: var(--color-danger-text-default);
+      &::before { background-color: var(--color-danger-surface-default); }
+      &::after { background-color: var(--color-danger-text-default); }
+    }
+
+    /* Warning (경고) - 오렌지색 (아이콘 색상과 맞춤) */
+    &[data-type="warning"] {
+      border-color: #fb923c; /* orange-400 */
+      &::before { background-color: #fff7ed; /* orange-50 */ }
+      &::after { background-color: #fb923c; }
+    }
+
+    /* Info (정보) - 뉴트럴 컬러 (기본값과 동일하게 유지하거나 변경 가능) */
+    &[data-type="info"] {
+      border-color: var(--color-neutral-border-default);
+      &::before { background-color: var(--color-stone-100); }
+      &::after { background-color: var(--color-neutral-text-default); }
     }
   }
 
