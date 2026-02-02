@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { incrementQuestionView } from '../../api/questions.api';
 import Button from '@/shared/ui/Button/Button';
+import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
 
 const QuestionDetail = ({
   data,
@@ -36,15 +37,6 @@ const QuestionDetail = ({
     };
     void incrementView();
   }, [question.id]);
-
-  const handleSubmit = () => {
-    if (!member) {
-      alert('로그인이 필요해요.');
-      return;
-    }
-
-    router.push(`/questions/${question.id}/answers`);
-  };
 
   return (
     <article className="mx-auto flex w-full max-w-270 flex-col items-start justify-center">
@@ -72,9 +64,26 @@ const QuestionDetail = ({
             </span>
           </div>
         </div>
-        <Button buttonStyle="primary" onClick={handleSubmit} disabled={!member}>
-          답변하기
-        </Button>
+        {!member ? (
+          <CustomTooltip
+            content="로그인 후 답변을 등록할 수 있어요"
+            contentClassName="bg-brand-surface-default text-brand-text-on-default"
+          >
+            <Button
+              onClick={() => {
+                const { pathname, search, hash } = window.location;
+                const currentPath = `${pathname}${search}${hash}`;
+                router.push(
+                  `/login?redirect=${encodeURIComponent(currentPath)}`
+                );
+              }}
+            >
+              답변하기
+            </Button>
+          </CustomTooltip>
+        ) : (
+          <Button>답변하기</Button>
+        )}
       </div>
       <QuestionCard question={question} hasAcceptedAnswer={hasAcceptedAnswer} />
       {answers.length > 0 ? (
