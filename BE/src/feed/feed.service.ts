@@ -23,7 +23,7 @@ export class FeedService {
     private readonly feedRepository: FeedRepository,
     private readonly feedValidatorService: FeedValidatorService,
     private readonly memberRepository: MemberRepository,
-  ) { }
+  ) {}
 
   /**
    * 활성 상태의 모든 피드 목록 조회
@@ -110,11 +110,7 @@ export class FeedService {
    * @param dto UpdateFeedDto
    * @returns FeedDetailDto
    */
-  async update(
-    id: number,
-    memberIdStr: string,
-    dto: UpdateFeedDto,
-  ): Promise<FeedDetailDto> {
+  async update(id: number, memberIdStr: string, dto: UpdateFeedDto): Promise<FeedDetailDto> {
     const feedId = BigInt(id);
     const memberId = BigInt(memberIdStr);
 
