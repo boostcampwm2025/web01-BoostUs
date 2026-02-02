@@ -57,7 +57,8 @@ export const BlogRegistrationButton = () => {
         <LinkButton
           shouldHighlight={shouldHighlight}
           onClick={() => {
-            const currentPath = window.location.pathname;
+            const { pathname, search, hash } = window.location;
+            const currentPath = `${pathname}${search}${hash}`;
             router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
           }}
         />
