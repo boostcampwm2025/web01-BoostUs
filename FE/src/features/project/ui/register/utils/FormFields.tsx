@@ -28,7 +28,7 @@ export const FormInput = ({
         error
           ? 'border-danger-border-default'
           : 'border-neutral-border-default focus:border-neutral-border-active'
-      } ${props.className}`}
+      } ${props.className ?? ''}`}
     />
     {error && <p className="mt-1 text-xs text-red-500">{error.message}</p>}
   </div>
@@ -97,7 +97,7 @@ export const FormTextarea = ({
     // 1. 높이를 'auto'로 리셋하여 줄어든 내용까지 감지
     el.style.height = 'auto';
     // 2. 실제 스크롤 높이(내용물 높이) + 테두리 값 등을 고려해 설정
-    el.style.height = `${el.scrollHeight}px`;
+    el.style.height = `${el.scrollHeight.toString()}px`;
   };
 
   useEffect(() => {
@@ -141,7 +141,7 @@ export const FormTextarea = ({
           error
             ? 'border-danger-border-default'
             : 'border-neutral-border-default focus:border-neutral-border-active'
-        } ${props.className}`}
+        } ${props.className ?? ''}`}
       />
       {error && <p className="mt-1 text-xs text-red-500">{error.message}</p>}
     </div>

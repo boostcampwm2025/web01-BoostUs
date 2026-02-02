@@ -124,7 +124,7 @@ export default function ProjectDetail() {
             className="flex items-center gap-2 rounded-xl border bg-brand-surface-github px-4 py-3 text-brand-text-on-default text-string-16 hover:bg-brand-surface-github/90 transition-colors duration-150"
             rel="noreferrer"
           >
-            {/* eslint-disable-next-line @typescript-eslint/no-deprecated */}
+            {}
             <Github size={16} color={'white'} /> GitHub Repository
           </a>
           <a
