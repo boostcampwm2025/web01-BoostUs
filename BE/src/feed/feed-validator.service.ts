@@ -74,14 +74,15 @@ export class FeedValidatorService {
       if (!isXml) {
         throw new InvalidFeedUrlException('RSS 피드 형식이 올바르지 않습니다.', { feedUrl });
       }
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof InvalidFeedUrlException) {
         throw error;
       }
 
+      const err = error as ErrorWithResponse;
       throw new InvalidFeedUrlException(this.resolveErrorMessage(error), {
         feedUrl,
-        statusCode: error?.response?.status,
+        statusCode: err?.response?.status,
       });
     }
   }
@@ -89,8 +90,9 @@ export class FeedValidatorService {
   /**
    * RSS 접근 실패 에러 메시지 결정
    */
-  private resolveErrorMessage(error: any): string {
+  private resolveErrorMessage(error: unknown): string {
     const DEFAULT_MESSAGE = 'RSS 피드에 접근할 수 없습니다. URL을 확인해주세요.';
+    const err = error as ErrorWithResponse;
 
     const status = err?.response?.status;
     if (status !== undefined && typeof status === 'number') {
