@@ -1,4 +1,6 @@
 import { ArrowBigDown, ArrowBigUp } from 'lucide-react';
+import { UpvoteIcon } from '@/components/ui/upvote';
+import { DownvoteIcon } from '@/components/ui/downvote';
 
 interface Props {
   upCount: number;
@@ -21,7 +23,7 @@ const VoteButtons = ({ upCount, myVote, onUpvote, onDownvote }: Props) => {
         onClick={onUpvote}
         aria-label="Upvote"
       >
-        <ArrowBigUp strokeWidth={2} size={24} />
+        <UpvoteIcon size={24} />
       </button>
 
       <span className="text-neutral-text-default text-display-16">
@@ -33,7 +35,7 @@ const VoteButtons = ({ upCount, myVote, onUpvote, onDownvote }: Props) => {
         onClick={onDownvote}
         aria-label="Downvote"
       >
-        <ArrowBigDown strokeWidth={2} size={24} />
+        <DownvoteIcon size={24} />
       </button>
     </div>
   );

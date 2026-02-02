@@ -6,6 +6,8 @@ import {
   Eye,
   MessageCircle,
 } from 'lucide-react';
+import { UpvoteIcon } from '@/components/ui/upvote';
+import { DownvoteIcon } from '@/components/ui/downvote';
 import Image from 'next/image';
 import UserProfile from '@/shared/ui/UserProfile';
 import extractDate from '@/shared/utils/extractDate';
@@ -20,21 +22,13 @@ const ListCardFooter = ({ question }: { question: Question }) => {
       />
       <div className="flex flex-row items-center justify-center gap-3">
         <div className="flex flex-row items-center justify-center gap-1">
-          <ArrowBigUp
-            className="text-neutral-text-weak"
-            strokeWidth={2}
-            size={14}
-          />
+          <UpvoteIcon className="text-neutral-text-weak" size={14} />
           <span className="text-neutral-text-weak text-body-12">
             {question.upCount}
           </span>
         </div>
         <div className="flex flex-row items-center justify-center gap-1">
-          <ArrowBigDown
-            className="text-neutral-text-weak"
-            strokeWidth={2}
-            size={14}
-          />
+          <DownvoteIcon className="text-neutral-text-weak" size={14} />
           <span className="text-neutral-text-weak text-body-12">
             {question.downCount}
           </span>
