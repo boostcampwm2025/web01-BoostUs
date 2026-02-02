@@ -1,8 +1,9 @@
 import { BadRequestException } from '@nestjs/common';
+
 export type CursorPayload =
   | { sort: 'LATEST'; v: string; id: string }
-  | { sort: 'LIKES'; v: number; id: string }
-  | { sort: 'VIEWS'; v: number; id: string };
+  | { sort: 'LIKES'; v: number; id: string; publishedAt?: string }
+  | { sort: 'VIEWS'; v: number; id: string; publishedAt?: string };
 
 export function encodeCursor(payload: CursorPayload) {
   return Buffer.from(JSON.stringify(payload), 'utf8').toString('base64url');
@@ -15,11 +16,14 @@ export function isCursorPayload(x: unknown): x is CursorPayload {
   const sort = o.sort;
   const v = o.v;
   const id = o.id;
+  const publishedAt = o.publishedAt;
 
   if (typeof id !== 'string') return false;
 
   if (sort === 'LATEST') return typeof v === 'string';
-  if (sort === 'LIKES' || sort === 'VIEWS') return typeof v === 'number';
+  if (sort === 'LIKES' || sort === 'VIEWS') {
+    return typeof v === 'number' && (publishedAt === undefined || typeof publishedAt === 'string');
+  }
   return false;
 }
 
