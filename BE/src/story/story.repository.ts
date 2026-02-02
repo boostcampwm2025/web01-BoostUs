@@ -168,6 +168,11 @@ export class StoryRepository {
     if (sortBy === StorySortBy.VIEWS && cursor.sort === 'VIEWS') {
       const cursorViewCount = Number(cursor.v);
       const cursorPublishedAt = cursor.publishedAt ? new Date(cursor.publishedAt) : undefined;
+
+      if (!cursorPublishedAt) {
+        return {};
+      }
+
       return {
         OR: [
           { viewCount: { lt: cursorViewCount } },
@@ -192,6 +197,11 @@ export class StoryRepository {
     if (sortBy === StorySortBy.LIKES && cursor.sort === 'LIKES') {
       const cursorLikeCount = Number(cursor.v);
       const cursorPublishedAt = cursor.publishedAt ? new Date(cursor.publishedAt) : undefined;
+
+      if (!cursorPublishedAt) {
+        return {};
+      }
+
       return {
         OR: [
           { likeCount: { lt: cursorLikeCount } },
