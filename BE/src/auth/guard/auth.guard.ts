@@ -8,6 +8,7 @@ import {
   AccessTokenExpiredException,
   InvalidAccessTokenException,
 } from '../exception/auth.exception';
+import type { JwtPayload } from '../type/jwt-payload.type';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -38,8 +39,10 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      const secret = this.configService.getOrThrow('JWT_SECRET');
-      const payload = await this.jwtService.verifyAsync(accessToken, { secret });
+      const secret = this.configService.getOrThrow<string>('JWT_SECRET');
+      const payload = await this.jwtService.verifyAsync<JwtPayload>(accessToken, {
+        secret,
+      });
 
       // 액세스 토큰인지 확인
       if (payload.type !== 'access') {
@@ -52,8 +55,8 @@ export class AuthGuard implements CanActivate {
       };
 
       return true;
-    } catch (error) {
-      if (error.name === 'TokenExpiredError') {
+    } catch (error: unknown) {
+      if (error instanceof Error && error.name === 'TokenExpiredError') {
         throw new AccessTokenExpiredException();
       }
       throw new InvalidAccessTokenException();
@@ -61,6 +64,8 @@ export class AuthGuard implements CanActivate {
   }
 
   private extractAccessToken(request: Request): string | undefined {
-    return request.cookies?.accessToken;
+    const cookies = request.cookies as Record<string, string | undefined> | undefined;
+    const token = cookies?.accessToken;
+    return typeof token === 'string' ? token : undefined;
   }
 }

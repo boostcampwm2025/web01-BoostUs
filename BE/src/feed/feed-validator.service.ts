@@ -59,7 +59,15 @@ export class FeedValidatorService {
       }
 
       // Content-Type 검증 (접근 가능 여부만 확인)
-      const contentType = response.headers['content-type']?.toLowerCase() ?? '';
+      const headers = response.headers as Record<string, string | string[] | undefined>;
+      const rawContentType = headers['content-type'];
+      const contentType = (
+        typeof rawContentType === 'string'
+          ? rawContentType
+          : Array.isArray(rawContentType)
+            ? rawContentType[0]
+            : ''
+      ).toLowerCase();
       const isXml = contentType.includes('text/xml');
 
       // XML 형식이 아니면 예외 발생
@@ -84,8 +92,8 @@ export class FeedValidatorService {
   private resolveErrorMessage(error: any): string {
     const DEFAULT_MESSAGE = 'RSS 피드에 접근할 수 없습니다. URL을 확인해주세요.';
 
-    const status = error?.response?.status;
-    if (status) {
+    const status = err?.response?.status;
+    if (status !== undefined && typeof status === 'number') {
       const statusMessageMap: Record<number, string> = {
         404: 'RSS 피드를 찾을 수 없습니다. URL을 확인해주세요.',
       };
@@ -93,10 +101,16 @@ export class FeedValidatorService {
       return statusMessageMap[status] ?? `RSS 피드에 접근할 수 없습니다. HTTP ${status}`;
     }
 
-    if (error?.message?.includes('timeout')) {
+    if (typeof err?.message === 'string' && err.message.includes('timeout')) {
       return 'RSS 피드 응답 시간이 초과되었습니다. URL을 확인해주세요.';
     }
 
     return DEFAULT_MESSAGE;
   }
+}
+
+/** Axios 등 HTTP 에러에 포함되는 response 형태 */
+interface ErrorWithResponse {
+  response?: { status?: number };
+  message?: string;
 }

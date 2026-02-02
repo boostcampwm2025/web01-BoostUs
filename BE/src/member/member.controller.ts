@@ -1,9 +1,9 @@
-import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
-import { ApiConsumes, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Patch } from '@nestjs/common';
+import { ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CurrentMember } from '../auth/decorator/current-member.decorator';
 import { MemberProfileResponseDto } from './dto/member-profile-response.dto';
-import { MemberService } from './member.service';
 import { UpdateNicknameDto } from './dto/member-profile-update-nickname.dto';
+import { MemberService } from './member.service';
 
 @ApiTags('멤버')
 @Controller('members')

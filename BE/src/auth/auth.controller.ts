@@ -49,7 +49,7 @@ export class AuthController {
     });
 
     // 프론트엔드 메인 페이지로 리다이렉트
-    const frontendUrl = this.configService.getOrThrow('FRONTEND_URL');
+    const frontendUrl = this.configService.getOrThrow<string>('FRONTEND_URL');
     return res.redirect(frontendUrl);
   }
 
@@ -90,10 +90,11 @@ export class AuthController {
     description: '리프레시 토큰 만료 또는 유효하지 않음',
   })
   async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    const accessToken = req.cookies?.accessToken;
-    const refreshToken = req.cookies?.refreshToken;
+    const cookies = req.cookies as Record<string, string | undefined> | undefined;
+    const accessToken = cookies?.accessToken ?? '';
+    const refreshToken = cookies?.refreshToken ?? '';
 
-    if (!refreshToken) {
+    if (!refreshToken || typeof refreshToken !== 'string') {
       throw new RefreshTokenExpiredException();
     }
 
@@ -120,14 +121,15 @@ export class AuthController {
   @Public()
   @Post('logout')
   async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    const refreshToken = req.cookies?.refreshToken;
+    const cookies = req.cookies as Record<string, string | undefined> | undefined;
+    const refreshToken = cookies?.refreshToken;
 
     // 리프레시 토큰이 있으면 Redis에서 삭제
-    if (refreshToken) {
+    if (typeof refreshToken === 'string') {
       try {
         const { memberId } = await this.authService.verifyRefreshToken(refreshToken);
         await this.authService.deleteRefreshTokenFromRedis(memberId);
-      } catch (error) {
+      } catch {
         // 리프레시 토큰이 유효하지 않거나 만료된 경우 무시하고 계속 진행
         // (이미 만료되었거나 유효하지 않은 토큰이므로)
       }
