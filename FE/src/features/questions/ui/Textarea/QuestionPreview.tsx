@@ -1,5 +1,3 @@
-'use client';
-
 import MarkdownViewer from '@/shared/ui/MarkdownViewer';
 
 interface Props {

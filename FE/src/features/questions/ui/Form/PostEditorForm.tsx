@@ -133,13 +133,6 @@ export default function PostEditorForm({
               : '지식을 공유해 주세요. 마크다운 미리보기를 지원합니다.'
           }
         />
-        {!member && (
-          <div className="mt-2 rounded-xl border border-neutral-border-default bg-neutral-surface-strong px-4 py-3">
-            <p className="text-neutral-text-weak text-body-14">
-              현재 로그인 정보(member)가 없어 비활성화되어 있어요.
-            </p>
-          </div>
-        )}
       </div>
 
       {/* 2. 메인 에디터 컨테이너 (QuestionForm 스타일 유지) */}
