@@ -16,6 +16,7 @@ const LinkButton = forwardRef<HTMLButtonElement, LinkButtonProps>(
   ({ shouldHighlight, ...props }, ref) => {
     return (
       <motion.button
+        aria-label="내 블로그 등록하기"
         ref={ref}
         type="button"
         className={`relative cursor-pointer transition-colors duration-150 ${
@@ -55,7 +56,11 @@ export const BlogRegistrationButton = () => {
       >
         <LinkButton
           shouldHighlight={shouldHighlight}
-          onClick={() => router.push('/login')}
+          onClick={() => {
+            const { pathname, search, hash } = window.location;
+            const currentPath = `${pathname}${search}${hash}`;
+            router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
+          }}
         />
       </CustomTooltip>
     );

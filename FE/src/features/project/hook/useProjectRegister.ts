@@ -6,6 +6,7 @@ import { updateProject } from '@/features/project/api/updateProject';
 import { fetchProjectDetail } from '@/entities/projectDetail/api/projectDetailAPI';
 import { useRouter } from 'next/navigation';
 import { uploadThumbnail } from '../api/uploadThumbnail';
+import { toast } from 'sonner';
 import formatLocalDate from '@/shared/utils/formatLocalDate';
 
 const getErrorMessage = (err: unknown): string => {
@@ -222,20 +223,20 @@ export const useProjectRegister = (
           participants: participants,
           demoUrl: baseData.demoUrl ?? '',
         });
-        alert('수정되었습니다.');
+        toast.success('프로젝트 정보가 수정되었습니다.');
         router.push('/project');
       } else {
         await registerProject({
           ...baseData,
           participants: participants.map((id) => ({ githubId: id })),
         });
-        alert('등록되었습니다.');
+        toast.success('프로젝트가 등록되었습니다.');
         router.push('/project');
       }
       if (onClose) onClose();
     } catch (error: unknown) {
       console.error(error);
-      alert(`처리 실패: ${getErrorMessage(error)}`);
+      toast.error(`처리 실패: ${getErrorMessage(error)}`);
     }
   };
 

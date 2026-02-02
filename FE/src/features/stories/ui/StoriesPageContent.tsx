@@ -31,19 +31,20 @@ const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
       />
       <motion.div
         layout
+        layoutDependency={isRankingOpen}
         className={`mt-8 grid items-start gap-8 ${isRankingOpen ? 'grid-cols-[7fr_3fr]' : 'grid-cols-1'}`}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       >
-        <motion.div layout className="gap-10 flex flex-col">
+        <div className="gap-10 flex flex-col">
           <div className="flex flex-row items-center gap-4">
             <StoriesSearchBar />
             <StoriesListDropdown />
             <BlogRegistrationButton />
           </div>
           <StoriesList initialStories={initialStories} />
-        </motion.div>
+        </div>
         <AnimatePresence mode="popLayout">
-          {isRankingOpen && <StoriesRanking initialStories={initialStories} />}
+          {isRankingOpen && <StoriesRanking />}
         </AnimatePresence>
       </motion.div>
       <AnimatePresence>
