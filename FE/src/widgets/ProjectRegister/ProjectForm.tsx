@@ -256,7 +256,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
               openRepoModal();
               return;
             }
-            onSubmit(e);
+            void onSubmit(e);
           }}
           className="space-y-6"
         >
