@@ -14,6 +14,7 @@ import { StoryModule } from './story/story.module';
 import { TechStackModule } from './tech-stack/tech-stack.module';
 import { MemberModule } from './member/member.module';
 import { LandingModule } from './landing/landing.module';
+import { RecommendModule } from './recommend/recommend.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { LandingModule } from './landing/landing.module';
     AnswerModule,
     MemberModule,
     LandingModule,
+    RecommendModule,
   ],
   providers: [
     Logger,
