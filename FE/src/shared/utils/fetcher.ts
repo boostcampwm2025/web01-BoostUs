@@ -33,7 +33,7 @@ export const customFetch = async <T>(
   path: string,
   options?: FetchOptions
 ): Promise<T> => {
-  const { params, _retry, ...fetchOptions } = options ?? {};
+  const { params, _retry, skipStore, ...fetchOptions } = options ?? {};
   const baseUrl = getBaseUrl();
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
   const url = new URL(normalizedPath, baseUrl || window.location.origin);
@@ -55,7 +55,7 @@ export const customFetch = async <T>(
   const headers = new Headers(fetchOptions.headers);
   const isServer = typeof window === 'undefined';
 
-  if (isServer && !options?.skipStore) {
+  if (isServer && !skipStore) {
     try {
       const { cookies } = await import('next/headers');
       const cookieStore = await cookies();
