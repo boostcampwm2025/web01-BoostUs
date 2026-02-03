@@ -1,19 +1,20 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { Reaction } from '@/features/questions/model/questions.type';
 
 interface VoteStats {
   upCount: number;
   downCount: number;
-  isLiked?: boolean;
-  isDisliked?: boolean;
+  reaction: Reaction;
 }
 
 interface UseOptimisticVoteProps<T extends string | number> {
   id: T;
-  initialStats: VoteStats;
+  upCount: number;
+  downCount: number;
+  reaction: Reaction;
   api: {
     voteUp: (id: T) => Promise<unknown>;
     voteDown: (id: T) => Promise<unknown>;
@@ -22,65 +23,66 @@ interface UseOptimisticVoteProps<T extends string | number> {
 
 export const useOptimisticVote = <T extends string | number>({
   id,
-  initialStats,
+  upCount,
+  downCount,
+  reaction,
   api,
 }: UseOptimisticVoteProps<T>) => {
-  const router = useRouter();
-  const [stats, setStats] = useState(initialStats);
-  const [myVote, setMyVote] = useState<'up' | 'down' | null>(null);
+  const [stats, setStats] = useState<VoteStats>({
+    upCount,
+    downCount,
+    reaction,
+  });
 
   // 초기 데이터 동기화
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setStats(initialStats);
-    if (initialStats.isLiked) setMyVote('up');
-    else if (initialStats.isDisliked) setMyVote('down');
-    else setMyVote(null);
-  }, [initialStats]);
+    setStats({ upCount, downCount, reaction });
+  }, [upCount, downCount, reaction]);
 
-  const handleVote = async (type: 'up' | 'down') => {
+  const handleVote = async (type: 'LIKE' | 'DISLIKE') => {
     const prevStats = { ...stats };
-    const prevVote = myVote;
+    const currentReaction = stats.reaction;
 
-    // 1. 새로운 상태 계산 (낙관적 업데이트)
+    // 새로운 상태 계산 (낙관적 업데이트)
     let nextUpCount = stats.upCount;
     let nextDownCount = stats.downCount;
-    let nextVote: 'up' | 'down' | null = type;
+    let nextReaction: Reaction = type;
 
-    if (myVote === type) {
-      // 이미 투표한 버튼을 다시 클릭 -> 취소
-      nextVote = null;
-      if (type === 'up') nextUpCount--;
-      else nextDownCount--;
+    // 이미 같은 타입으로 투표되어 있다면 취소 (Toggle Off)
+    if (currentReaction === type) {
+      nextReaction = 'NONE';
+      if (type === 'LIKE') nextUpCount--;
+      if (type === 'DISLIKE') nextDownCount--;
     } else {
-      // 새로운 투표 혹은 전환
-      if (type === 'up') {
+      // 새로운 투표 혹은 전환 (Switch)
+      if (type === 'LIKE') {
         nextUpCount++;
-        if (myVote === 'down') nextDownCount--; // down -> up 전환
+        if (currentReaction === 'DISLIKE') nextDownCount--; // DISLIKE -> LIKE 전환 시 감소
       } else {
+        // type === 'DISLIKE'
         nextDownCount++;
-        if (myVote === 'up') nextUpCount--; // up -> down 전환
+        if (currentReaction === 'LIKE') nextUpCount--; // LIKE -> DISLIKE 전환 시 감소
       }
     }
 
-    setStats({ ...stats, upCount: nextUpCount, downCount: nextDownCount });
-    setMyVote(nextVote);
+    setStats({
+      upCount: nextUpCount,
+      downCount: nextDownCount,
+      reaction: nextReaction,
+    });
 
     try {
-      // API 호출 (백엔드 API가 토글 방식으로 작동한다고 가정)
-      if (type === 'up') await api.voteUp(id);
+      if (type === 'LIKE') await api.voteUp(id);
       else await api.voteDown(id);
-
-      router.refresh();
     } catch (error) {
       console.error(`Error ${type}voting:`, error);
       setStats(prevStats);
-      setMyVote(prevVote);
       toast.error('투표 처리에 실패했습니다.', {
         description: '잠시 후 다시 시도해주세요.',
       });
     }
   };
 
-  return { stats, myVote, handleVote };
+  return { stats, handleVote };
 };

@@ -32,15 +32,13 @@ const FeedSection = () => {
   return (
     <>
       <FeedHeader />
-      <section className="gap-8 md:columns-3 lg:columns-4 mt-4 mb-8 w-full">
+      <section className="grid w-full grid-cols-1 gap-8 mt-4 mb-12 md:grid-cols-3 lg:grid-cols-4">
         {Stories?.map((story) => (
-          <div key={story.id} className={'mb-8'}>
-            <StoriesCard id={story.id} key={story.id} story={story} />
-          </div>
+          <StoriesCard id={story.id} key={story.id} story={story} />
         ))}
       </section>
 
-      {/*boostAd seciton*/}
+      {/*boostAd section*/}
       <div data-boostad-zone style={{ width: '100%', height: '100%' }}></div>
     </>
   );
