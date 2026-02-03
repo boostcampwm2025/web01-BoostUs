@@ -80,41 +80,54 @@ export const customFetch = async <T>(
       .json()
       .catch(() => null)) as ApiResponse<unknown> | null;
 
+    const errorCode = errorData?.error?.code;
+    const isTokenExpired =
+      errorCode === 'ACCESS_TOKEN_EXPIRED' ||
+      errorCode === 'REFRESH_TOKEN_EXPIRED' ||
+      errorCode === 'INVALID_ACCESS_TOKEN' ||
+      errorCode === 'INVALID_REFRESH_TOKEN';
+
     // 토큰 만료 감지 및 갱신 (Interceptor 패턴)
-    if (response.status === 401) {
+    // 401 에러이거나 토큰 관련 에러 코드가 있는 경우
+    if (response.status === 401 || isTokenExpired) {
       // ✅ [서버 환경] 갱신 시도 없이 바로 로그인 페이지로 리다이렉트
       if (isServer) {
-        // Next.js의 redirect()는 내부적으로 에러를 던져서 작동하므로 return 불필요
         redirect('/login');
       }
 
-      // ✅ [클라이언트 환경] 토큰 갱신 로직 실행
-      if (
-        !_retry &&
-        (errorData?.error?.code === 'ACCESS_TOKEN_EXPIRED' ||
-          errorData?.error?.code === 'REFRESH_TOKEN_EXPIRED')
-      ) {
+      // ✅ [클라이언트 환경] 토큰 갱신 로직 실행 (재시도 아닌 경우만)
+      if (!_retry) {
         try {
           const refreshResponse = await fetch('/api/auth/refresh', {
             method: 'POST',
+            credentials: 'include',
           });
 
           if (refreshResponse.ok) {
+            // 토큰 갱신 성공 시 원래 요청 재시도
             return await customFetch<T>(path, { ...options, _retry: true });
           }
         } catch (refreshError) {
-          console.error('Token refresh failed:', refreshError);
+          console.error('☠️ [Token Refresh Failed]:', refreshError);
         }
 
-        // 갱신 실패 시 클라이언트에서도 이동
+        // 갱신 실패 시 로그인 페이지로 이동
         window.location.href = '/login';
+        throw new ApiError('Authentication failed', errorCode, response.status);
       }
     }
 
-    // 토큰 만료가 아닌 일반 에러거나, 갱신 실패 시 에러 던지기
+    // 토큰 만료가 아닌 일반 에러거나, 재시도 후 실패 시 에러 던지기
+    console.error('☠️ [API Error]:', {
+      status: response.status,
+      code: errorCode,
+      message: errorData?.message,
+      path,
+    });
+
     throw new ApiError(
       errorData?.message ?? `API Error: ${response.statusText}`,
-      errorData?.error?.code,
+      errorCode,
       response.status
     );
   }
