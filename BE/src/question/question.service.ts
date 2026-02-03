@@ -218,7 +218,7 @@ export class QuestionService {
     let answerReactionMap = new Map<string, Reaction>();
     if (memberId) {
       const answerIds = q.answers.map((a) => a.id);
-      answerReactionMap = await this.questionRepo.getQuestionReactionsBulk(answerIds, memberId);
+      answerReactionMap = await this.questionRepo.getAnswerReactionsBulk(answerIds, memberId);
     }
     return {
       question: {
