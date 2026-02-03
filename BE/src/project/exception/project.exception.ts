@@ -63,3 +63,55 @@ export class MemberNotFoundException extends BaseException {
     super('MEMBER_NOT_FOUND', '사용자 정보를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
   }
 }
+
+/**
+ * repository 쿼리 파라미터가 없을 때
+ */
+export class RepositoryQueryRequiredException extends BaseException {
+  constructor() {
+    super(
+      'REPOSITORY_QUERY_REQUIRED',
+      'repository 쿼리 파라미터가 필요합니다.',
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+}
+
+/**
+ * GitHub 레포 URL/slug 형식이 올바르지 않을 때
+ */
+export class InvalidRepositoryUrlException extends BaseException {
+  constructor() {
+    super(
+      'INVALID_REPOSITORY_URL',
+      'repositoryUrl 형식이 올바르지 않습니다.',
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+}
+
+/**
+ * GitHub App Private Key 설정이 누락되었을 때
+ */
+export class GithubAppKeyNotConfiguredException extends BaseException {
+  constructor() {
+    super(
+      'GITHUB_APP_KEY_NOT_CONFIGURED',
+      'GITHUB_APP_PRIVATE_KEY 또는 GITHUB_APP_PRIVATE_KEY_PATH 설정이 필요합니다.',
+      HttpStatus.INTERNAL_SERVER_ERROR,
+    );
+  }
+}
+
+/**
+ * GitHub API 호출이 실패했을 때
+ */
+export class GithubApiRequestFailedException extends BaseException {
+  constructor(status: number, statusText: string, body: string) {
+    super('GITHUB_API_REQUEST_FAILED', 'GitHub API 요청에 실패했습니다.', HttpStatus.BAD_GATEWAY, {
+      status,
+      statusText,
+      body,
+    });
+  }
+}
