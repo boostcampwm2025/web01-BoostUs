@@ -11,6 +11,10 @@ import {
   RECO_STORY_PARAMS,
   RECO_STORY_QUERY_KEY,
 } from '@/features/main/reco/api/fetchRecoStory';
+import {
+  fetchRecoProject,
+  RECO_PROJECT_QUERY_KEY,
+} from '@/features/main/reco/api/fetchRecoProject';
 
 // ISR(1시간 캐싱) 적용: 1시간마다 페이지 재생성
 export const revalidate = 3600;
@@ -21,6 +25,11 @@ const Home = async () => {
   await queryClient.prefetchQuery({
     queryKey: RECO_STORY_QUERY_KEY,
     queryFn: () => fetchRecoStory(RECO_STORY_PARAMS),
+  });
+
+  await queryClient.prefetchQuery({
+    queryKey: RECO_PROJECT_QUERY_KEY,
+    queryFn: fetchRecoProject,
   });
 
   await queryClient.prefetchQuery({

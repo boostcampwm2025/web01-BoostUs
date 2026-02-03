@@ -43,9 +43,9 @@ export default function MainQnaSection() {
           <div className="flex bg-neutral-100 p-1 rounded-lg gap-1 w-fit">
             <button
               onClick={() => setActiveTab('ALL')}
-              className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all duration-200 ${
+              className={`px-3 py-1.5 text-string-12 rounded-md transition-all duration-200 ${
                 activeTab === 'ALL'
-                  ? 'bg-white text-neutral-text-strong shadow-sm'
+                  ? 'bg-white text-neutral-text-strong shadow-default'
                   : 'text-neutral-text-weak hover:text-neutral-text-default'
               }`}
             >
@@ -53,7 +53,7 @@ export default function MainQnaSection() {
             </button>
             <button
               onClick={() => setActiveTab('UNANSWERED')}
-              className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all duration-200 ${
+              className={`px-3 py-1.5 text-string-12 rounded-md transition-all duration-200 ${
                 activeTab === 'UNANSWERED'
                   ? 'bg-white text-neutral-text-strong shadow-sm'
                   : 'text-neutral-text-weak hover:text-neutral-text-default'

@@ -12,6 +12,7 @@ import {
   fetchRecoProject,
   RECO_PROJECT_QUERY_KEY,
 } from '@/features/main/reco/api/fetchRecoProject';
+import Image from 'next/image';
 
 interface RecoProject {
   id: number;
@@ -90,7 +91,7 @@ export default function RecommendProjectSection() {
         onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
         className="w-full h-full"
       >
-        {slides.map((slide) => (
+        {slides.map((slide, index) => (
           <SwiperSlide key={slide.id}>
             <div
               className={`w-full h-full ${slide.color} ${slide.id !== -1 ? 'cursor-pointer' : ''}`}
@@ -98,12 +99,15 @@ export default function RecommendProjectSection() {
                 if (slide.id !== -1)
                   router.push(`project/${slide.id.toString()}`);
               }}
-              style={{
-                backgroundImage: `url(${slide.image})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              }}
-            />
+            >
+              <Image
+                src={slide.image}
+                alt={slide.title}
+                fill
+                className="object-cover opacity-60"
+                priority={index === 0}
+              />
+            </div>
           </SwiperSlide>
         ))}
       </Swiper>
