@@ -34,7 +34,7 @@ jobs:
 
       - name: Lint Check
         working-directory: ./FE
-        run: pnpm lint
+        run: pnpm exec eslint .
 
       - name: Build Check
         working-directory: ./FE

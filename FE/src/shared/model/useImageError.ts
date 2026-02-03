@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const useImageError = (imageUrl?: string) => {
+const useImageError = (imageUrl?: string | null) => {
   const [isError, setIsError] = useState(false);
   const [prevUrl, setPrevUrl] = useState(imageUrl);
 
