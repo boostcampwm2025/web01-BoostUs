@@ -355,7 +355,7 @@ export class ProjectService {
 
     const collaborators = await this._githubFetch<
       Array<{ login: string; avatar_url: string | null }>
-    >(`${this.githubApiBase}/repos/${owner}/${repo}/collaborators`, {
+    >(`${this.githubApiBase}/repos/${owner}/${repo}/collaborators?affiliation=direct`, {
       headers: {
         Authorization: `Bearer ${accessToken.token}`,
         Accept: 'application/vnd.github+json',
