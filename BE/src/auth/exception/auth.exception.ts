@@ -34,3 +34,9 @@ export class AccessTokenNotExpiredException extends BaseException {
     );
   }
 }
+
+export class AdminRequiredException extends BaseException {
+  constructor() {
+    super('ADMIN_REQUIRED', '관리자만 접근할 수 있습니다.', HttpStatus.FORBIDDEN);
+  }
+}
