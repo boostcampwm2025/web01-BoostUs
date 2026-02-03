@@ -16,6 +16,18 @@ const getBaseUrl = () => {
   return '';
 };
 
+export class ApiError extends Error {
+  code?: string;
+  status?: number;
+
+  constructor(message: string, code?: string, status?: number) {
+    super(message);
+    this.name = 'ApiError';
+    this.code = code;
+    this.status = status;
+  }
+}
+
 export const customFetch = async <T>(
   path: string,
   options?: FetchOptions
@@ -99,9 +111,10 @@ export const customFetch = async <T>(
     }
 
     // 토큰 만료가 아닌 일반 에러거나, 갱신 실패 시 에러 던지기
-    throw new Error(
-      errorData?.message ??
-        `API Error: ${response.statusText} (${String(response.status)})`
+    throw new ApiError(
+      errorData?.message ?? `API Error: ${response.statusText}`,
+      errorData?.error?.code,
+      response.status
     );
   }
 
