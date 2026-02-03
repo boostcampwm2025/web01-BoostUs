@@ -1,10 +1,5 @@
 import { customFetch } from '@/shared/utils/fetcher';
 
-interface ParticipantInfo {
-  githubId: string;
-  avatarUrl?: string;
-}
-
 interface RegisterProjectRequest {
   thumbnailUploadId?: string | null;
 
@@ -27,7 +22,7 @@ interface RegisterProjectRequest {
 
   field: string;
 
-  participants?: ParticipantInfo[] | null;
+  participants?: string[] | null;
 }
 
 export async function registerProject(data: RegisterProjectRequest) {
