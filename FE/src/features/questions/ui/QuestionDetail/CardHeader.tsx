@@ -7,13 +7,15 @@ import { useRouter } from 'next/navigation';
 import { deleteAnswer, deleteQuestion } from '../../api/questions.api';
 import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
 import { MetaInfoItem } from '@/shared/ui/MetaInfoItem/MetaInfoItem';
+import { FormEvent } from 'react';
+import CustomDialog from '@/shared/ui/Dialog/CustomDialog';
 
 const ActionButtons = ({
   onCorrection,
   onDelete,
 }: {
   onCorrection: () => void;
-  onDelete: () => void;
+  onDelete: (e: FormEvent) => void;
 }) => {
   return (
     <>
@@ -23,12 +25,19 @@ const ActionButtons = ({
       >
         수정
       </button>
-      <button
-        className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150"
-        onClick={onDelete}
-      >
-        삭제
-      </button>
+      <CustomDialog
+        dialogTrigger={
+          <button className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150">
+            삭제
+          </button>
+        }
+        dialogTitle="삭제 확인"
+        dialogDescription="정말 삭제하시겠어요? 삭제된 내용은 복구할 수 없습니다."
+        onSubmit={onDelete}
+        cancelLabel="취소"
+        submitLabel="삭제"
+        footerClassName="mt-4"
+      />
     </>
   );
 };
@@ -67,11 +76,12 @@ const CardHeader = ({
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (e: FormEvent) => {
+    e.preventDefault();
+
     if (!member) {
       return;
     }
-    if (!confirm('정말 삭제하시겠어요?')) return;
 
     try {
       if (question) {

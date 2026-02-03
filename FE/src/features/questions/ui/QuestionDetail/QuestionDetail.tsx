@@ -14,6 +14,7 @@ import Button from '@/shared/ui/Button/Button';
 import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
 import { MetaInfoItem } from '@/shared/ui/MetaInfoItem/MetaInfoItem';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 const QuestionDetail = ({
   data,
@@ -65,6 +66,7 @@ const QuestionDetail = ({
               onClick={() => {
                 const { pathname, search, hash } = window.location;
                 const currentPath = `${pathname}${search}${hash}`;
+                toast.info('로그인이 필요한 기능입니다.');
                 router.push(
                   `/login?redirect=${encodeURIComponent(currentPath)}`
                 );

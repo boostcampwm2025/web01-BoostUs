@@ -29,7 +29,6 @@ export const getInitialQuestions = async (params?: {
       status,
       sort: params?.sort,
     },
-    cache: 'no-store',
   });
 };
 
@@ -51,7 +50,7 @@ export const getQuestionById = async (id: string) => {
       question: QuestionDetail;
       answers: Answer[];
     }>
-  >(`/api/questions/${id}`, { cache: 'no-store' });
+  >(`/api/questions/${id}`);
 
   return data.data;
 };
@@ -77,17 +76,14 @@ export const fetchQuestionsByCursor = async (
     }>
   >('/api/questions', {
     params,
-    cache: 'no-store',
   });
 
   return response.data;
 };
 
 export const getQuestionCounts = async () => {
-  const response = await customFetch<ApiResponse<QuestionCounts>>(
-    `/api/questions/count`,
-    { cache: 'no-store' }
-  );
+  const response =
+    await customFetch<ApiResponse<QuestionCounts>>(`/api/questions/count`);
   return response.data;
 };
 
@@ -251,8 +247,7 @@ export const deleteAnswer = async (answerId: string) => {
 
 export const getAnswerById = async (answerId: string) => {
   const data = await customFetch<ApiResponse<Answer>>(
-    `/api/answers/${answerId}`,
-    { cache: 'no-store' }
+    `/api/answers/${answerId}`
   );
 
   return data.data;

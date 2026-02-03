@@ -10,6 +10,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import Button from '@/shared/ui/Button/Button';
+import { cn } from '@/lib/utils';
 
 interface customDialogProps {
   dialogTrigger: ReactNode;
@@ -18,6 +19,9 @@ interface customDialogProps {
   dialogContent?: ReactNode;
   dialogFooter?: ReactNode;
   onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
+  cancelLabel?: string;
+  submitLabel?: string;
+  footerClassName?: string;
 }
 
 const CustomDialog = ({
@@ -27,6 +31,9 @@ const CustomDialog = ({
   dialogContent,
   dialogFooter,
   onSubmit,
+  cancelLabel = '닫기',
+  submitLabel = '저장',
+  footerClassName,
 }: customDialogProps): JSX.Element => {
   return (
     <Dialog>
@@ -38,13 +45,19 @@ const CustomDialog = ({
             <DialogDescription>{dialogDescription}</DialogDescription>
           </DialogHeader>
           {dialogContent}
-          <DialogFooter>
+          <DialogFooter
+            className={cn('flex gap-2 justify-end', footerClassName)}
+          >
             {dialogFooter ?? (
               <>
                 <DialogClose asChild>
-                  <Button buttonStyle="outlined">닫기</Button>
+                  <Button buttonStyle="outlined" className="w-fit">
+                    {cancelLabel}
+                  </Button>
                 </DialogClose>
-                <Button type="submit">저장</Button>
+                <Button type="submit" className="w-fit">
+                  {submitLabel}
+                </Button>
               </>
             )}
           </DialogFooter>
