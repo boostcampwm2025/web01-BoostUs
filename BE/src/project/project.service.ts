@@ -27,6 +27,7 @@ import {
   GithubApiRequestFailedException,
 } from './exception/project.exception';
 import { ViewService } from 'src/view/view.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class ProjectService {
@@ -42,6 +43,7 @@ export class ProjectService {
     private readonly authRepository: AuthRepository,
     private readonly config: ConfigService,
     private readonly viewService: ViewService,
+    private readonly jwtService: JwtService,
     @Inject(REDIS) private readonly redis: Redis,
   ) {
     this.endpoint = this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_ENDPOINT');
@@ -83,24 +85,16 @@ export class ProjectService {
    * GitHub App 인증용 JWT를 생성합니다.
    * @returns GitHub App JWT
    */
-  private _createGithubAppJwt() {
+  private _createGithubAppJwt(): string {
     const now = Math.floor(Date.now() / 1000);
-    const header = this._base64Url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }));
-    const payload = this._base64Url(
-      JSON.stringify({
-        iat: now - 60,
-        exp: now + 9 * 60,
-        iss: this.githubAppId,
-      }),
+    return this.jwtService.sign(
+      { iat: now - 60, exp: now + 9 * 60, iss: this.githubAppId },
+      {
+        algorithm: 'RS256',
+        privateKey: this.githubAppPrivateKey,
+        header: { alg: 'RS256', typ: 'JWT' },
+      },
     );
-    const data = `${header}.${payload}`;
-
-    const signer = createSign('RSA-SHA256');
-    signer.update(data);
-    signer.end();
-
-    const signature = signer.sign(this.githubAppPrivateKey);
-    return `${data}.${this._base64Url(signature)}`;
   }
 
   /**
