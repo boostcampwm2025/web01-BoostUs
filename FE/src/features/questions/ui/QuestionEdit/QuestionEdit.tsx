@@ -53,12 +53,17 @@ export default function QuestionEditPage() {
       initialValues={initialValues}
       onSubmit={async (values) => {
         if (!values.title) return undefined;
-        await editQuestion(questionId, {
-          title: values.title,
-          contents: values.contents,
-          hashtags: values.hashtags,
-        });
-        router.push(`/questions/${questionId}`);
+        try {
+          await editQuestion(questionId, {
+            title: values.title,
+            contents: values.contents,
+            hashtags: values.hashtags,
+          });
+          toast.success('질문이 수정되었습니다.');
+          router.push(`/questions/${questionId}`);
+        } catch (error) {
+          toast.error(error);
+        }
         return undefined;
       }}
     />

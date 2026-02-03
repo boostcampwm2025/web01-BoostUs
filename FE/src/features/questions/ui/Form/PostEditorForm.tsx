@@ -11,6 +11,7 @@ import { useAuth } from '@/features/login/model/auth.store';
 import type { PreviewMode } from './QuestionModeButton';
 import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
 import Button from '@/shared/ui/Button/Button';
+import { toast } from '@/shared/utils/toast';
 
 const MAX_TITLE_LENGTH = 200;
 const TOOLTIP_MESSAGE_ANSWER = '답변이 채택되면 수정이나 삭제가 불가능해요';
@@ -89,7 +90,7 @@ export default function PostEditorForm({
     setIsTriedToSubmit(true);
 
     if (!member) {
-      alert('로그인이 필요해요.');
+      toast.warning('로그인이 필요합니다.');
       return;
     }
 
@@ -103,8 +104,7 @@ export default function PostEditorForm({
         hashtags: type === 'question' && hashTags.length ? hashTags : undefined,
       });
     } catch (e) {
-      const message = e instanceof Error ? e.message : '요청에 실패했어요.';
-      alert(message);
+      toast.error(e);
     } finally {
       setIsSubmitting(false);
     }

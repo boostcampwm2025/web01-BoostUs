@@ -71,10 +71,9 @@ export default function StorySidebar({
     try {
       const url = window.location.href;
       await navigator.clipboard.writeText(url);
-      // TODO: 복사 성공 토스트 메시지
+      toast.success('URL이 클립보드에 복사되었습니다.');
     } catch (error) {
-      console.error('URL 복사 실패:', error);
-      // TODO: 에러 토스트 메시지
+      toast.error(error);
     }
   };
 

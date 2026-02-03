@@ -17,12 +17,14 @@ const RecommendStorySection = () => {
   const [bestStory, setBestStory] = useState<Story | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isImageError, setIsImageError] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   // 2. 컴포넌트 마운트 시 데이터 Fetching
   useEffect(() => {
     const loadBestStory = async () => {
       try {
         setIsLoading(true);
+        setHasError(false);
         // 메인용 임시 로직: 조회수(VIEWS) 1등 가져오기
         const response = await fetchRecoStory({
           sortBy: 'views',
@@ -32,9 +34,12 @@ const RecommendStorySection = () => {
 
         if (response?.data?.items && response.data.items.length > 0) {
           setBestStory(response.data.items[0]);
+        } else {
+          setHasError(true);
         }
       } catch (error) {
         toast.error(error);
+        setHasError(true);
       } finally {
         setIsLoading(false);
       }
@@ -50,8 +55,8 @@ const RecommendStorySection = () => {
     );
   }
 
-  // 4. 데이터가 없을 때 처리
-  if (!bestStory) {
+  // 4. 에러가 발생했거나 데이터가 없을 때 처리
+  if (hasError || !bestStory) {
     return null;
   }
 
