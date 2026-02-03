@@ -44,7 +44,8 @@ export class ProjectController {
   @Get('/collaborators')
   @ApiOperation({
     summary: '레포지토리 collaborator 목록 조회',
-    description: 'repository 쿼리 파라미터로 전달된 GitHub 레포지토리의 collaborator 목록을 조회합니다.',
+    description:
+      'repository 쿼리 파라미터로 전달된 GitHub 레포지토리의 collaborator 목록을 조회합니다.',
   })
   @ApiResponse({
     status: 200,
