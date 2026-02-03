@@ -44,11 +44,18 @@ describe('Dropdown Component', () => {
     <Dropdown>
       <DropdownTrigger label="옵션 선택" />
       <DropdownContent>
-        <DropdownItem label="아이템 1" onClick={() => onSelectMock('1')} />
+        <DropdownItem
+          label="아이템 1"
+          onClick={() => {
+            onSelectMock('1');
+          }}
+        />
         <DropdownItem
           label="아이템 2"
           isSelected={true}
-          onClick={() => onSelectMock('2')}
+          onClick={() => {
+            onSelectMock('2');
+          }}
         />
       </DropdownContent>
     </Dropdown>

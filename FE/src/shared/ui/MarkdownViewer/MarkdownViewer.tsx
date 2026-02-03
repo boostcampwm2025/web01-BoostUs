@@ -50,6 +50,8 @@ export const MarkdownViewer = ({ content }: { content: string }) => {
                   'width',
                   'height',
                   'align',
+                  'className', // ✅ 필수: 커스텀 이미지 클래스 허용
+                  'alt', // ✅ 필수: alt 속성 보존
                 ],
                 // 중요: code 태그에서 className을 허용해야 언어 감지가 가능합니다.
                 code: [...(defaultSchema.attributes?.code ?? []), 'className'],
@@ -133,7 +135,7 @@ export const MarkdownViewer = ({ content }: { content: string }) => {
             <img
               className="mx-auto my-8 block h-auto max-w-full"
               {...props}
-              alt=""
+              // alt=""
             />
           ),
 
