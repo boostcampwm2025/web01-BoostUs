@@ -71,7 +71,7 @@ export const MarkdownViewer = ({ content }: { content: string }) => {
 
           // 본문 텍스트 (p) 스타일
           p: ({ ...props }) => (
-            <p
+            <div
               className="text-body-16 text-neutral-text-default mb-4 leading-relaxed wrap-break-word"
               {...props}
             />
@@ -130,8 +130,12 @@ export const MarkdownViewer = ({ content }: { content: string }) => {
             // 1. 언어 감지 (기존 로직)
             const match = /language-(\w+)/.exec(className ?? '');
 
+            const isStringContent = typeof children === 'string';
+
             // 2. [추가] 내용에 줄바꿈이 있는지 확인
-            const hasNewLine = (children as string).includes('\n');
+            const hasNewLine = isStringContent
+              ? children.includes('\n')
+              : false;
 
             // 3. [수정] 언어 클래스가 있거나, 줄바꿈이 있으면 '블록'으로 간주
             const isBlock = match ?? hasNewLine;
@@ -146,7 +150,9 @@ export const MarkdownViewer = ({ content }: { content: string }) => {
                 PreTag="div"
                 className="rounded-lg my-4 text-body-14"
               >
-                {(children as string).replace(/\n$/, '')}
+                {isStringContent
+                  ? children.replace(/\n$/, '')
+                  : String(children)}
               </SyntaxHighlighter>
             ) : (
               // 인라인 코드 (기존 스타일)
