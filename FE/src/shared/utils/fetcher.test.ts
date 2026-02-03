@@ -7,7 +7,6 @@ global.fetch = fetchMock;
 
 describe('customFetch (API 요청 래퍼)', () => {
   beforeEach(() => {
-    // [중요] resetAllMocks를 써야 이전 테스트의 mockResolvedValue가 남지 않습니다.
     vi.resetAllMocks();
 
     // Window 객체 속성 모킹
@@ -30,16 +29,14 @@ describe('customFetch (API 요청 래퍼)', () => {
     vi.unstubAllGlobals();
   });
 
-  // [수정] json()이 Promise를 반환하도록 'async' 키워드 추가
-  // 원본 코드에서 .catch()를 체이닝하기 때문에 반드시 Promise여야 함
   const createMockResponse = (ok: boolean, status: number, data: unknown) => {
     return {
       ok,
       status,
       statusText: ok ? 'OK' : 'Error',
-      json: async (): Promise<unknown> => data, // async 추가
+      json: (): Promise<unknown> => Promise.resolve(data),
       clone: () => ({
-        json: async (): Promise<unknown> => data, // async 추가
+        json: (): Promise<unknown> => Promise.resolve(data),
       }),
     };
   };
