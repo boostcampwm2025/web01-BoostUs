@@ -1,46 +1,72 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperClass } from 'swiper/types';
 import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
-
+import { useRouter } from 'next/navigation';
 import { Pause, Play } from 'lucide-react';
+import { fetchRecoProject } from '../api/fetchRecoProject';
+
+// ✅ 지금 응답 형태에 맞춘 최소 타입
+type RecoProject = {
+  id: number;
+  thumbnailUrl: string | null;
+  title: string;
+  description: string | null;
+  field: string | null;
+  teamNumber: number;
+};
 
 export default function RecommendProjectSection() {
+  const router = useRouter();
   const [swiperInstance, setSwiperInstance] = useState<SwiperClass | null>(
     null
   );
   const [isPlaying, setIsPlaying] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const slides = [
-    {
-      id: 1,
-      image: '/api/placeholder/800/600',
-      category: '프로젝트',
-      title: '부스트캠프 커뮤니티 서비스',
-      description: '우리 프로젝트 화이팅~',
-      color: 'bg-slate-800',
-    },
-    {
-      id: 2,
-      image: '/api/placeholder/800/600',
-      category: '스터디',
-      title: '알고리즘 정복하기',
-      description: '매일 아침 9시, 함께 성장해요.',
-      color: 'bg-amber-800',
-    },
-    {
-      id: 3,
-      image: '/api/placeholder/800/600',
-      category: '네트워킹',
-      title: '개발자 커피챗',
-      description: '현업 개발자와의 만남',
-      color: 'bg-emerald-800',
-    },
-  ];
+  // ✅ 추가: 추천 프로젝트 state
+  const [projects, setProjects] = useState<RecoProject[]>([]);
+
+  // ✅ 추가: 데이터 가져오기
+  useEffect(() => {
+    void (async () => {
+      try {
+        const res = await fetchRecoProject(); // ApiResponse<Project[]>
+        setProjects(res.data as RecoProject[]);
+      } catch (e) {
+        console.error(e);
+        setProjects([]);
+      }
+    })();
+  }, []);
+
+  // ✅ 기존 slides를 실데이터로 교체
+  const slides = useMemo(() => {
+    if (projects.length === 0) {
+      return [
+        {
+          id: 1,
+          image: '/api/placeholder/800/600',
+          category: '프로젝트',
+          title: '추천 프로젝트를 불러오는 중…',
+          description: '',
+          color: 'bg-slate-800',
+        },
+      ];
+    }
+
+    return projects.slice(0, 3).map((p, idx) => ({
+      id: p.id,
+      image: p.thumbnailUrl ?? '/api/placeholder/800/600',
+      category: p.field ?? '프로젝트',
+      title: p.title,
+      description: p.description ?? '',
+      color: ['bg-slate-800', 'bg-amber-800', 'bg-emerald-800'][idx % 3],
+    }));
+  }, [projects]);
 
   const handleSlideChange = (index: number) => {
     swiperInstance?.slideToLoop(index);
@@ -48,11 +74,8 @@ export default function RecommendProjectSection() {
 
   const toggleAutoplay = () => {
     if (!swiperInstance) return;
-    if (isPlaying) {
-      swiperInstance.autoplay.stop();
-    } else {
-      swiperInstance.autoplay.start();
-    }
+    if (isPlaying) swiperInstance.autoplay.stop();
+    else swiperInstance.autoplay.start();
     setIsPlaying(!isPlaying);
   };
 
@@ -62,7 +85,7 @@ export default function RecommendProjectSection() {
         modules={[Autoplay]}
         spaceBetween={0}
         slidesPerView={1}
-        loop={true}
+        loop={slides.length > 1}
         autoplay={{ delay: 5000, disableOnInteraction: false }}
         onSwiper={setSwiperInstance}
         onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
@@ -71,18 +94,21 @@ export default function RecommendProjectSection() {
         {slides.map((slide) => (
           <SwiperSlide key={slide.id}>
             <div
-              className={`w-full h-full flex items-center justify-center ${slide.color}`}
-            >
-              <h2 className="text-4xl font-bold opacity-50">IMAGE MOCKUP</h2>
-            </div>
+              className={`w-full h-full ${slide.color} cursor-pointer`}
+              onClick={() => router.push(`project/${slide.id.toString()}`)}
+              style={{
+                backgroundImage: `url(${slide.image})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
+            />
           </SwiperSlide>
         ))}
       </Swiper>
 
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10 pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent z-10 pointer-events-none" />
 
       <div className="absolute bottom-0 left-0 w-full p-8 z-20 flex justify-between items-end">
-        {/* 왼쪽 텍스트 */}
         <div className="flex flex-col gap-2">
           <span className="bg-brand-surface-default text-string-14 font-bold px-3 py-1 rounded-full w-fit">
             {slides[activeIndex]?.category}
@@ -93,9 +119,7 @@ export default function RecommendProjectSection() {
           </p>
         </div>
 
-        {/* 오른쪽 컨트롤러 영역 */}
         <div className="flex items-center gap-4 bg-black/30 backdrop-blur-md px-4 py-2 rounded-full border border-white/10">
-          {/* 커스텀 페이지네이션 */}
           <div className="flex gap-2">
             {slides.map((_, index) => (
               <button
@@ -105,8 +129,8 @@ export default function RecommendProjectSection() {
                   h-2.5 rounded-full transition-all duration-300 ease-out 
                   ${
                     activeIndex === index
-                      ? 'w-8 bg-neutral-surface-bold' // 활성 상태
-                      : 'w-2.5 bg-gray-600 hover:bg-gray-400' // 비활성
+                      ? 'w-8 bg-neutral-surface-bold'
+                      : 'w-2.5 bg-gray-600 hover:bg-gray-400'
                   }
                 `}
                 aria-label={`Go to slide ${(index + 1).toString()}`}
@@ -114,10 +138,8 @@ export default function RecommendProjectSection() {
             ))}
           </div>
 
-          {/* 구분선  */}
           <div className="w-[1px] h-4 bg-gray-600"></div>
 
-          {/* 재생/일시정지 버튼 */}
           <button
             onClick={toggleAutoplay}
             className="text-gray-300 hover:text-white transition"
