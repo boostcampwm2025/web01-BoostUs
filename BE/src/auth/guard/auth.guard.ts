@@ -52,6 +52,7 @@ export class AuthGuard implements CanActivate {
       // 요청 객체에 사용자 정보 추가
       request['member'] = {
         id: payload.sub,
+        role: payload.role,
       };
 
       return true;

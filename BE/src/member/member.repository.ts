@@ -23,6 +23,7 @@ export class MemberRepository {
         githubLogin: true,
         nickname: true,
         cohort: true,
+        role: true,
         feed: {
           select: {
             feedUrl: true,
@@ -72,6 +73,7 @@ export class MemberRepository {
       githubLogin: member.githubLogin,
       nickname: member.nickname,
       cohort: member.cohort,
+      role: member.role,
       feed: member.feed,
       latestProject,
     };
