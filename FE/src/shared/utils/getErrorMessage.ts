@@ -14,7 +14,6 @@ export const getErrorMessage = (error: unknown): string => {
     }
 
     // 매핑된 메시지는 없지만, 서버에서 보내준 메시지가 있다면 사용
-    // (백엔드 UnknownFilter에서 500 에러 등의 보안 정보는 이미 걸러졌다고 가정)
     if (error.message) {
       return error.message;
     }
