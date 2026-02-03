@@ -11,7 +11,7 @@ import { AuthRepository } from 'src/auth/auth.repository';
 import { ConfigService } from '@nestjs/config';
 import { CopyObjectCommand, DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import { randomUUID, createSign } from 'node:crypto';
+import { randomUUID } from 'node:crypto';
 import type Redis from 'ioredis';
 import { REDIS } from '../redis/redis.provider';
 import { ThumbnailMeta } from './type/upload-image-meta.type';
