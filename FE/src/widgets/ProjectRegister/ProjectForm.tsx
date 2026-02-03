@@ -78,7 +78,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
 
   const [stackData, setStackData] = useState<TechStackResponse | null>(null);
   const [isComposing, setIsComposing] = useState(false);
-  const [isRepoModalOpen, setIsRepoModalOpen] = useState(false);
+  const [isRepoModalOpen, setIsRepoModalOpen] = useState(!isEditMode);
   const [repoUrlInput, setRepoUrlInput] = useState('');
   const [repoLoading, setRepoLoading] = useState(false);
   const [repoError, setRepoError] = useState<{
@@ -97,12 +97,6 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
         console.error(e);
       });
   }, []);
-
-  useEffect(() => {
-    if (!isEditMode && !hasPrefilled) {
-      setIsRepoModalOpen(true);
-    }
-  }, [isEditMode, hasPrefilled]);
 
   const cohortOptions = Array.from({ length: 10 }).map((_, i) => ({
     label: `${(i + 1).toString()}기`,
