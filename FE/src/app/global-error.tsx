@@ -2,6 +2,7 @@
 
 import Button from '@/shared/ui/Button/Button';
 import { useEffect } from 'react';
+import { getErrorMessage } from '@/shared/utils/getErrorMessage';
 
 const GlobalError = ({
   error,
@@ -22,7 +23,7 @@ const GlobalError = ({
             치명적인 오류가 발생했습니다.
           </h2>
           <p className="text-neutral-text-default text-body-16 mb-4">
-            {error.message || '알 수 없는 오류가 발생했습니다.'}
+            {getErrorMessage(error)}
           </p>
           <Button onClick={() => reset()}>새로고침</Button>
         </div>

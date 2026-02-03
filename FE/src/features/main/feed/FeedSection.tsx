@@ -5,6 +5,7 @@ import FeedHeader from '@/features/main/feed/FeedHeader';
 import { useEffect, useState } from 'react';
 import { fetchRecoStory } from '@/features/main/reco/api/fetchRecoStory';
 import { Story } from '@/features/stories/model/stories.type';
+import { toast } from '@/shared/utils/toast';
 
 const FeedSection = () => {
   const [Stories, setStories] = useState<Story[] | null>(null);
@@ -23,6 +24,7 @@ const FeedSection = () => {
         }
       } catch (error) {
         console.error('추천 스토리 로딩 실패:', error);
+        toast.error('추천 스토리 로딩에 실패했습니다.');
       }
     };
 

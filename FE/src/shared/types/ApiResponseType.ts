@@ -9,5 +9,5 @@ export interface ResponseError {
   code: string;
   message: string;
   status: number;
-  details: object;
+  details: Record<string, unknown>;
 }

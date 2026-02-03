@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import Button from '@/shared/ui/Button/Button';
+import { getErrorMessage } from '@/shared/utils/getErrorMessage';
 
 const Error = ({
   error,
@@ -21,8 +22,7 @@ const Error = ({
         일시적인 오류가 발생했습니다.
       </h2>
       <p className="text-neutral-text-default text-body-16 mb-4">
-        {error.message ||
-          '알 수 없는 오류가 발생하여 페이지를 불러올 수 없습니다.'}
+        {getErrorMessage(error)}
       </p>
       <div className="flex gap-2">
         <Button onClick={() => reset()} buttonStyle="outlined">

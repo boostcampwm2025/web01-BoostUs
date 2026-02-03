@@ -6,18 +6,8 @@ import { updateProject } from '@/features/project/api/updateProject';
 import { fetchProjectDetail } from '@/entities/projectDetail/api/projectDetailAPI';
 import { useRouter } from 'next/navigation';
 import { uploadThumbnail } from '../api/uploadThumbnail';
-import { toast } from 'sonner';
 import formatLocalDate from '@/shared/utils/formatLocalDate';
-
-const getErrorMessage = (err: unknown): string => {
-  if (err instanceof Error) return err.message;
-  if (typeof err === 'string') return err;
-  try {
-    return JSON.stringify(err);
-  } catch {
-    return '알 수 없는 오류';
-  }
-};
+import { toast } from '@/shared/utils/toast';
 
 export const useProjectRegister = (
   editProjectId?: number,
@@ -106,6 +96,7 @@ export const useProjectRegister = (
         setParticipants(loadedParticipants);
       } catch (err) {
         console.error('데이터 로드 실패:', err);
+        toast.error('프로젝트 데이터를 불러오는 데 실패했습니다.');
       }
     };
     void loadData();
@@ -236,7 +227,7 @@ export const useProjectRegister = (
       if (onClose) onClose();
     } catch (error: unknown) {
       console.error(error);
-      toast.error(`처리 실패: ${getErrorMessage(error)}`);
+      toast.error('프로젝트 데이터 처리에 실패했습니다.');
     }
   };
 

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { fetchQnaMain } from '@/features/main/qna/api/fetchQnaMain';
 import { Question } from '@/features/questions/model/questions.type';
 import QnaCard from '@/features/main/qna/ui/QnaCard';
+import { toast } from '@/shared/utils/toast';
 
 type TabType = 'ALL' | 'UNANSWERED';
 
@@ -26,6 +27,7 @@ export default function MainQnaSection() {
         }
       } catch (error) {
         console.error('메인 질문 로딩 실패:', error);
+        toast.error('메인페이지에서 질문을 불러오는 데 실패했습니다.');
       } finally {
         setIsLoading(false);
       }
@@ -70,7 +72,7 @@ export default function MainQnaSection() {
               <QnaCard key={question.id} question={question} />
             ))
           ) : (
-            <div className="flex flex-1 items-center justify-center min-h-[160px] text-sm text-neutral-text-weak bg-neutral-surface-bold">
+            <div className="flex flex-1 items-center justify-center min-h-40 text-body-14 text-neutral-text-weak bg-neutral-surface-bold">
               등록된 질문이 없습니다.
             </div>
           )}

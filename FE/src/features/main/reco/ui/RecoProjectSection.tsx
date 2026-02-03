@@ -8,6 +8,7 @@ import 'swiper/css';
 import { useRouter } from 'next/navigation';
 import { Pause, Play } from 'lucide-react';
 import { fetchRecoProject } from '../api/fetchRecoProject';
+import { toast } from '@/shared/utils/toast';
 
 // ✅ 지금 응답 형태에 맞춘 최소 타입
 interface RecoProject {
@@ -38,6 +39,7 @@ export default function RecommendProjectSection() {
         setProjects(res.data as RecoProject[]);
       } catch (e) {
         console.error(e);
+        toast.error(e);
         setProjects([]);
       }
     })();
@@ -80,7 +82,7 @@ export default function RecommendProjectSection() {
   };
 
   return (
-    <div className="relative w-full h-[500px] overflow-hidden rounded-xl bg-gray-900 text-white">
+    <div className="relative w-full h-125 overflow-hidden rounded-xl bg-gray-900 text-white">
       <Swiper
         modules={[Autoplay]}
         spaceBetween={0}
@@ -138,7 +140,7 @@ export default function RecommendProjectSection() {
             ))}
           </div>
 
-          <div className="w-[1px] h-4 bg-gray-600"></div>
+          <div className="w-px h-4 bg-gray-600"></div>
 
           <button
             onClick={toggleAutoplay}

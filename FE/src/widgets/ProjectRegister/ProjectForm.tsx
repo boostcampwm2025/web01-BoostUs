@@ -23,6 +23,7 @@ import {
   ThumbnailUploader,
   ParticipantManager,
 } from '@/features/project/ui/register/utils/FunctionalComponents';
+import { toast } from '@/shared/utils/toast';
 
 // 데이터 정규화 함수
 const normalizeStacks = (data: unknown): TechStackResponse => {
@@ -80,6 +81,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
       .then((res) => setStackData(normalizeStacks(res.data)))
       .catch((e: unknown) => {
         console.error(e);
+        toast.error('기술 스택 정보를 불러오는 데 실패했습니다.');
       });
   }, []);
 
@@ -178,7 +180,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
             watchValue={(contentsValue as unknown as string) ?? ''}
             rows={6}
             error={errors.contents}
-            className="min-h-[150px]"
+            className="min-h-37.5"
           />
 
           <ParticipantManager

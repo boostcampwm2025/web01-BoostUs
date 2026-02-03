@@ -5,6 +5,7 @@ import ProjectListCard from '@/features/project/ui/ProjectList/ProjectListCard';
 import { useSearchParams } from 'next/navigation';
 import { fetchProjects, Project } from '@/features/project/api/getProjects';
 import { motion } from 'framer-motion';
+import { toast } from '@/shared/utils/toast';
 
 const SORT_ORDER = {
   TEAM_NUM: '팀 번호 순',
@@ -35,6 +36,7 @@ const ProjectListSection = () => {
         setProjects(data.items); // 받아온 데이터의 items를 state에 저장
       } catch (error) {
         console.error('데이터 로드 실패:', error);
+        toast.error(error);
       } finally {
         setIsLoading(false);
       }

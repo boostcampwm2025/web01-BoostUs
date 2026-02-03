@@ -8,6 +8,7 @@ import { Story } from '@/features/stories';
 import UserProfile from '@/shared/ui/UserProfile';
 import extractDate from '@/shared/utils/extractDate';
 import { Card } from '@/shared/ui/Card';
+import { toast } from '@/shared/utils/toast';
 
 const DEFAULT_THUMBNAIL = '/FE/public/assets/NoImage.png';
 
@@ -34,6 +35,7 @@ const RecommendStorySection = () => {
         }
       } catch (error) {
         console.error('추천 스토리 로딩 실패:', error);
+        toast.error(error);
       } finally {
         setIsLoading(false);
       }
