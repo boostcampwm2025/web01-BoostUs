@@ -49,6 +49,9 @@ interface ProjectFormProps {
   projectId?: number; // 이 값이 있으면 수정 모드
 }
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_TYPES = new Set(['image/png', 'image/jpeg', 'image/gif']);
+
 export default function ProjectForm({ projectId }: ProjectFormProps) {
   const router = useRouter();
   const isEditMode = !!projectId;
@@ -100,7 +103,26 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
             previewUrl={previewUrl}
             isDragging={isDragging}
             dragHandlers={dragHandlers}
-            register={register('thumbnail')}
+            register={register('thumbnail', {
+              validate: {
+                fileType: (files) => {
+                  const file = files?.[0];
+                  if (!file) return true;
+                  return (
+                    ALLOWED_TYPES.has(file.type) ||
+                    'PNG, JPG, JPEG, GIF만 업로드 가능해요.'
+                  );
+                },
+                fileSize: (files) => {
+                  const file = files?.[0];
+                  if (!file) return true;
+                  return (
+                    file.size <= MAX_FILE_SIZE ||
+                    '이미지 크기는 최대 5MB까지 가능해요.'
+                  );
+                },
+              },
+            })}
             error={errors.thumbnail}
           />
 
