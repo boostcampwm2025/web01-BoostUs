@@ -105,6 +105,8 @@ export default function RecommendProjectSection() {
                 alt={slide.title}
                 fill
                 className="object-cover opacity-60"
+                sizes="(max-width: 768px) 100vw, 1200px"
+                quality={80}
                 priority={index === 0}
               />
             </div>

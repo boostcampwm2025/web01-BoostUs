@@ -44,7 +44,7 @@ export default function RootLayout({
             />
             <Script
               src="https://utmate.me/sdk/utmate-sdk.iife.js" // web16팀 utmate sdk (사용성 테스트)
-              strategy="afterInteractive"
+              strategy="lazyOnload" // 무거운 SDK이기 떄문에 LCP가 뜬 다음에 천천히 로드되도록 전략 설정
               async
             />
           </main>
