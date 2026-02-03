@@ -38,8 +38,25 @@ export const customFetch = async <T>(
     });
   }
 
+  const headers = new Headers(fetchOptions.headers);
+
+  if (typeof window === 'undefined') {
+    try {
+      const { cookies } = await import('next/headers');
+      const cookieStore = await cookies();
+      const cookieString = cookieStore.toString();
+
+      if (cookieString) {
+        headers.set('Cookie', cookieString);
+      }
+    } catch (error) {
+      console.error('Failed to get cookies in server environment:', error);
+    }
+  }
+
   const response = await fetch(url.toString(), {
     ...fetchOptions,
+    headers,
   });
 
   if (!response.ok) {
