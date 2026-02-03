@@ -85,10 +85,12 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
     repository?: string;
     readme?: string;
     collaborators?: string;
-  } | null>(null);
+  }>({});
   const [hasPrefilled, setHasPrefilled] = useState(false);
   const contentsValue = watch('contents');
   const repoUrlValue = watch('repoUrl');
+  const hasRepoError =
+    repoError.readme !== undefined || repoError.collaborators !== undefined;
 
   useEffect(() => {
     fetchStacks()
@@ -104,7 +106,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
   }));
 
   const openRepoModal = () => {
-    setRepoError(null);
+    setRepoError({});
     setRepoUrlInput(repoUrlValue ?? '');
     setIsRepoModalOpen(true);
   };
@@ -122,7 +124,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
     }
 
     setRepoLoading(true);
-    setRepoError(null);
+    setRepoError({});
 
     const [readmeResult, collaboratorsResult] = await Promise.allSettled([
       getProjectReadme(repositoryUrl),
@@ -212,14 +214,14 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
                 placeholder="https://github.com/org/repo"
                 disabled={repoLoading}
               />
-              {repoError?.repository && (
+              {repoError.repository && (
                 <p className="mt-1 text-string-12 text-danger-text-default">
                   {repoError.repository}
                 </p>
               )}
             </div>
 
-            {(repoError?.readme || repoError?.collaborators) && (
+            {hasRepoError && (
               <div className="rounded-lg bg-danger-surface-default p-3 text-string-12 text-danger-text-default">
                 {repoError.readme && <p>{repoError.readme}</p>}
                 {repoError.collaborators && <p>{repoError.collaborators}</p>}
