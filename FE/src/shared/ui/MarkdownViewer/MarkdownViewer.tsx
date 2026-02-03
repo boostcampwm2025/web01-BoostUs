@@ -32,6 +32,8 @@ export const MarkdownViewer = ({ content }: { content: string }) => {
                   'width',
                   'height',
                   'align',
+                  'className',
+                  'alt',
                 ],
                 // 중요: code 태그에서 className을 허용해야 언어 감지가 가능합니다.
                 code: [...(defaultSchema.attributes?.code ?? []), 'className'],
@@ -112,11 +114,7 @@ export const MarkdownViewer = ({ content }: { content: string }) => {
 
           // 이미지 (img) 스타일
           img: (props) => (
-            <img
-              className="mx-auto my-8 block h-auto max-w-full"
-              {...props}
-              alt=""
-            />
+            <img className="mx-auto my-8 block h-auto max-w-full" {...props} />
           ),
 
           // 인라인 코드 (`code`) 및 코드 블록 스타일
