@@ -47,7 +47,9 @@ export class ProjectService {
     this.endpoint = this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_ENDPOINT');
     this.bucket = this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_BUCKET');
     this.githubAppId = this.config.getOrThrow<string>('GITHUB_APP_ID');
-    this.githubAppPrivateKey = this.config.getOrThrow<string>('GITHUB_APP_PRIVATE_KEY');
+    this.githubAppPrivateKey = this.config
+      .getOrThrow<string>('GITHUB_APP_PRIVATE_KEY')
+      .replace(/\\n/g, '\n');
 
     this.s3 = new S3Client({
       region: this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_REGION'),
