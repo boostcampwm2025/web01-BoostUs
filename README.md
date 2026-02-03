@@ -2,6 +2,23 @@
   <img width="5120" height="2560" alt="boostus big logo" src="https://github.com/user-attachments/assets/3d1536e7-cd15-429e-a0ff-419237499029" />
 </div>
 
+<br>
+
+<div align="center">
+  
+# 부스트캠퍼들의 성장 경험을 기록하는 공간 🌱
+  
+> 경험이 남고, 성장이 이어지는 곳.
+
+**boostus** 는 부스트캠프에서 만들어진 프로젝트, 회고, 학습 기록들이<br>
+**흩어지지 않고 하나로 이어지도록 만드는 아카이빙·커뮤니티 플랫폼**입니다.
+
+개인의 기록으로 끝나던 경험을 모아<br>
+**한 사람의 성장이 다음 사람의 출발점이 되도록**,<br>
+부스트캠프의 시간과 경험을 계속 축적해 나갑니다.
+
+</div>
+
 <p align="center">
   <a href="https://www.notion.so/Pole-Position-2c3d4705e03f80f7bba0c5264dc7be36?source=copy_link"><b>📑 팀 노션</b></a>
   &nbsp;&nbsp;|&nbsp;&nbsp;
@@ -11,16 +28,6 @@
   &nbsp;&nbsp;|&nbsp;&nbsp;
   <a href="http://boostus.kro.kr/"><b>⭐️ 데모 사이트</b></a>
 </p>
-
-<br>
-
-## 🟩 boostus는 어떤 서비스인가요?
-
-> 경험이 남고, 성장이 이어지는 곳.
-
-**boostus**는 부스트캠프에서 만들어진 수많은 프로젝트, 회고, 학습 경험이 **흩어지지 않고 이어지도록 만드는 공간**입니다.
-
-또한 **boostus**는 부스트캠프에서 만들어진 기록을 모아 **한 사람의 성장이 다음 사람의 시작이 되도록 돕는** 지속 가능한 커뮤니티를 지향합니다!
 
 <br>
 
@@ -129,6 +136,7 @@
 </table>
 
 <br>
+
 
 
 
