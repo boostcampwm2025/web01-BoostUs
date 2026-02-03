@@ -1,3 +1,5 @@
-export const navigateToGithubLogin = () => {
-  window.location.href = '/api/auth/login';
+export const navigateToGithubLogin = (redirectPath?: string) => {
+  window.location.href = redirectPath
+    ? `/api/auth/login?redirect=${encodeURIComponent(redirectPath)}`
+    : '/api/auth/login';
 };
