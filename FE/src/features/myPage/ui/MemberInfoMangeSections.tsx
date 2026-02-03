@@ -20,7 +20,7 @@ import {
 } from '@/features/feed/utils/blog-rss-converter';
 import { CheckIcon } from '@/components/ui/check';
 import { updateNickname } from '@/features/myPage/api/updateNickname';
-import { toast } from 'sonner';
+import { toast } from '@/shared/utils/toast';
 
 // 폼 데이터 타입 정의
 interface RssFormValues {
@@ -70,9 +70,7 @@ export default function MemberInfoMangeSections() {
 
         setIsEditingNickname(false);
       } catch (e) {
-        if (e instanceof Error) {
-          toast.error(e?.message || '닉네임 수정에 실패했습니다.');
-        }
+        toast.error(e);
       }
     } else {
       //  수정 모드 진입

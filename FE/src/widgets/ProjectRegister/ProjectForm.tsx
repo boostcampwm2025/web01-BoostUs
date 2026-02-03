@@ -80,8 +80,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
     fetchStacks()
       .then((res) => setStackData(normalizeStacks(res.data)))
       .catch((e: unknown) => {
-        console.error(e);
-        toast.error('기술 스택 정보를 불러오는 데 실패했습니다.');
+        toast.error(e);
       });
   }, []);
 

@@ -26,8 +26,7 @@ export default function MainQnaSection() {
           setQuestions(response.data.items);
         }
       } catch (error) {
-        console.error('메인 질문 로딩 실패:', error);
-        toast.error('메인페이지에서 질문을 불러오는 데 실패했습니다.');
+        toast.error(error);
       } finally {
         setIsLoading(false);
       }

@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
 import { Reaction } from '@/features/questions/model/questions.type';
+import { toast } from '@/shared/utils/toast';
 
 interface VoteStats {
   upCount: number;
@@ -76,11 +76,8 @@ export const useOptimisticVote = <T extends string | number>({
       if (type === 'LIKE') await api.voteUp(id);
       else await api.voteDown(id);
     } catch (error) {
-      console.error(`Error ${type}voting:`, error);
       setStats(prevStats);
-      toast.error('투표 처리에 실패했습니다.', {
-        description: '잠시 후 다시 시도해주세요.',
-      });
+      toast.error(error);
     }
   };
 

@@ -7,7 +7,7 @@ import { useAuth } from '@/features/login/model/auth.store';
 import PostEditorForm, {
   PostFormValues,
 } from '@/features/questions/ui/Form/PostEditorForm';
-import { toast } from 'sonner';
+import { toast } from '@/shared/utils/toast';
 
 export default function QuestionEditPage() {
   const { questionId } = useParams<{ questionId: string }>();

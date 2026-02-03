@@ -35,7 +35,6 @@ const ProjectListSection = () => {
         const data = await fetchProjects();
         setProjects(data.items); // 받아온 데이터의 items를 state에 저장
       } catch (error) {
-        console.error('데이터 로드 실패:', error);
         toast.error(error);
       } finally {
         setIsLoading(false);

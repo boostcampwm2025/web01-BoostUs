@@ -95,8 +95,7 @@ export const useProjectRegister = (
           : [];
         setParticipants(loadedParticipants);
       } catch (err) {
-        console.error('데이터 로드 실패:', err);
-        toast.error('프로젝트 데이터를 불러오는 데 실패했습니다.');
+        toast.error(err);
       }
     };
     void loadData();
@@ -226,8 +225,7 @@ export const useProjectRegister = (
       }
       if (onClose) onClose();
     } catch (error: unknown) {
-      console.error(error);
-      toast.error('프로젝트 데이터 처리에 실패했습니다.');
+      toast.error(error);
     }
   };
 

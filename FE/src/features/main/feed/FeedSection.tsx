@@ -23,8 +23,7 @@ const FeedSection = () => {
           setStories(response.data.items);
         }
       } catch (error) {
-        console.error('추천 스토리 로딩 실패:', error);
-        toast.error('추천 스토리 로딩에 실패했습니다.');
+        toast.error(error);
       }
     };
 

@@ -38,7 +38,6 @@ export default function RecommendProjectSection() {
         const res = await fetchRecoProject(); // ApiResponse<Project[]>
         setProjects(res.data as RecoProject[]);
       } catch (e) {
-        console.error(e);
         toast.error(e);
         setProjects([]);
       }

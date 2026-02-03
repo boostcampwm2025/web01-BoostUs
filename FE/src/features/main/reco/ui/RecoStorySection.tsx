@@ -34,7 +34,6 @@ const RecommendStorySection = () => {
           setBestStory(response.data.items[0]);
         }
       } catch (error) {
-        console.error('추천 스토리 로딩 실패:', error);
         toast.error(error);
       } finally {
         setIsLoading(false);
