@@ -16,7 +16,7 @@ import type Redis from 'ioredis';
 import { REDIS } from '../redis/redis.provider';
 import { ThumbnailMeta } from './type/upload-image-meta.type';
 import { GithubRepoReadmeResponse } from './type/github-repo-readme.type';
-import { GithubCollaboratorResponse } from './type/github-collaborator.type';
+import { GithubRepoCollaboratorResponse } from './type/github-repo-collaborator.type';
 import {
   ProjectNotFoundException,
   ProjectForbiddenException,
@@ -374,7 +374,7 @@ export class ProjectService {
     const { owner, repo } = this._parseRepositorySlug(repositoryUrl);
     const installationAccessToken = await this._getInstallationAccessToken(owner, repo);
 
-    const collaborators = await this._githubFetch<GithubCollaboratorResponse[]>(
+    const collaborators = await this._githubFetch<GithubRepoCollaboratorResponse[]>(
       `${this.githubApiBase}/repos/${owner}/${repo}/collaborators?affiliation=direct`,
       {
         headers: {
