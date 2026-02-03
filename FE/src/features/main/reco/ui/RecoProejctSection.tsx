@@ -10,14 +10,14 @@ import { Pause, Play } from 'lucide-react';
 import { fetchRecoProject } from '../api/fetchRecoProject';
 
 // ✅ 지금 응답 형태에 맞춘 최소 타입
-type RecoProject = {
+interface RecoProject {
   id: number;
   thumbnailUrl: string | null;
   title: string;
   description: string | null;
   field: string | null;
   teamNumber: number;
-};
+}
 
 export default function RecommendProjectSection() {
   const router = useRouter();
