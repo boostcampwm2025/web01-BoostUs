@@ -187,6 +187,7 @@ export default function MemberInfoMangeSections() {
               )}
               <button
                 type="button"
+                aria-label={isEditingNickname ? '닉네임 저장' : '닉네임 수정'}
                 className="text-neutral-text-weak hover:text-neutral-text-strong cursor-pointer transition-colors duration-150"
                 onClick={handleNicknameAction}
               >
