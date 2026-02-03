@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useOptimisticVote } from '@/features/questions/model/useOptimisticVote';
 import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
+import { toast } from 'sonner';
 
 interface Props {
   answer: Answer;
@@ -28,17 +29,24 @@ const AnswerCard = ({ answer, question, hasAcceptedAnswer }: Props) => {
   const { member } = useAuth();
   const router = useRouter();
 
-  const { stats, myVote, handleVote } = useOptimisticVote({
+  const { stats, handleVote } = useOptimisticVote({
     id: answer.id,
-    initialStats: {
-      upCount: answer.upCount,
-      downCount: answer.downCount,
-    },
+    upCount: answer.upCount,
+    downCount: answer.downCount,
+    reaction: answer.reaction,
     api: {
       voteUp: likeAnswer,
       voteDown: dislikeAnswer,
     },
   });
+
+  const onVoteClick = (type: 'LIKE' | 'DISLIKE') => {
+    if (!member) {
+      toast.error('로그인이 필요한 기능이에요.');
+      return;
+    }
+    void handleVote(type);
+  };
 
   const [isAccepted, setIsAccepted] = useState(answer.isAccepted);
 
@@ -87,9 +95,9 @@ const AnswerCard = ({ answer, question, hasAcceptedAnswer }: Props) => {
       <div className="flex flex-row gap-6 w-full px-4 py-4 rounded-b-2xl">
         <VoteButtons
           upCount={stats.upCount}
-          myVote={myVote}
-          onUpvote={() => handleVote('up')}
-          onDownvote={() => handleVote('down')}
+          reaction={stats.reaction}
+          onUpvote={() => onVoteClick('LIKE')}
+          onDownvote={() => onVoteClick('DISLIKE')}
         />
         <div className="flex flex-col justify-between w-full">
           <div className="w-full">

@@ -8,6 +8,8 @@ import { likeQuestion, dislikeQuestion } from '../../api/questions.api';
 import { MarkdownViewer } from '@/shared/ui/MarkdownViewer/MarkdownViewer';
 import { useOptimisticVote } from '@/features/questions/model/useOptimisticVote';
 import { toast } from 'sonner';
+import { useAuth } from '@/features/login/model/auth.store';
+import { useRouter } from 'next/navigation';
 
 const QuestionCard = ({
   question,
@@ -16,17 +18,30 @@ const QuestionCard = ({
   question: QuestionDetailType;
   hasAcceptedAnswer: boolean;
 }) => {
-  const { stats, myVote, handleVote } = useOptimisticVote({
+  const { member } = useAuth();
+  const router = useRouter();
+
+  const { stats, handleVote } = useOptimisticVote({
     id: question.id,
-    initialStats: {
-      upCount: question.upCount,
-      downCount: question.downCount,
-    },
+    upCount: question.upCount,
+    downCount: question.downCount,
+    reaction: question.reaction,
     api: {
       voteUp: likeQuestion,
       voteDown: dislikeQuestion,
     },
   });
+
+  const onVoteClick = (type: 'LIKE' | 'DISLIKE') => {
+    if (!member) {
+      if (confirm('로그인이 필요한 서비스입니다. 로그인 하시겠습니까?')) {
+        router.push('/login');
+        // TODO: 리다이렉트랑 토스트하기
+      }
+      return;
+    }
+    void handleVote(type);
+  };
 
   const handleShare = async () => {
     try {
@@ -51,9 +66,9 @@ const QuestionCard = ({
       <div className="flex flex-row gap-6 w-full px-4 py-4 rounded-b-2xl">
         <VoteButtons
           upCount={stats.upCount}
-          myVote={myVote}
-          onUpvote={() => handleVote('up')}
-          onDownvote={() => handleVote('down')}
+          reaction={stats.reaction}
+          onUpvote={() => onVoteClick('LIKE')}
+          onDownvote={() => onVoteClick('DISLIKE')}
         />
         <div className="flex flex-col justify-between w-full">
           <div className="w-full">

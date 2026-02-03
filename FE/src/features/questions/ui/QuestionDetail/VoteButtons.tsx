@@ -1,14 +1,15 @@
 import { UpvoteIcon } from '@/components/ui/upvote';
 import { DownvoteIcon } from '@/components/ui/downvote';
+import { Reaction } from '@/features/questions/model/questions.type';
 
 interface Props {
   upCount: number;
-  myVote: 'up' | 'down' | null;
+  reaction: Reaction;
   onUpvote?: () => void;
   onDownvote?: () => void;
 }
 
-const VoteButtons = ({ upCount, myVote, onUpvote, onDownvote }: Props) => {
+const VoteButtons = ({ upCount, reaction, onUpvote, onDownvote }: Props) => {
   const baseBtnClass =
     'w-9 h-9 items-center justify-center flex rounded-lg cursor-pointer transition-colors duration-150';
   const inactiveClass =
@@ -18,7 +19,7 @@ const VoteButtons = ({ upCount, myVote, onUpvote, onDownvote }: Props) => {
   return (
     <div className="flex flex-col items-center justify-center gap-2">
       <button
-        className={`${baseBtnClass} ${myVote === 'up' ? activeClass : inactiveClass}`}
+        className={`${baseBtnClass} ${reaction === 'LIKE' ? activeClass : inactiveClass}`}
         onClick={onUpvote}
         aria-label="Upvote"
       >
@@ -30,7 +31,7 @@ const VoteButtons = ({ upCount, myVote, onUpvote, onDownvote }: Props) => {
       </span>
 
       <button
-        className={`${baseBtnClass} ${myVote === 'down' ? activeClass : inactiveClass}`}
+        className={`${baseBtnClass} ${reaction === 'DISLIKE' ? activeClass : inactiveClass}`}
         onClick={onDownvote}
         aria-label="Downvote"
       >
