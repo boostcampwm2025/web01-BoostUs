@@ -1,9 +1,4 @@
-import {
-  ForbiddenException,
-  NotFoundException,
-  BadRequestException,
-  Injectable,
-} from '@nestjs/common';
+import { ForbiddenException, NotFoundException, Injectable } from '@nestjs/common';
 import { CreateAnswerDto } from './dto/req/create-answer.dto';
 import { AnswerRepository } from './answer.repository';
 import { AnswerResponseDto } from './dto/res/answer-response.dto';
@@ -108,7 +103,7 @@ export class AnswerService {
     return answerId;
   }
 
-  async dislike(answerIdStr: string, memberIdStr: string | undefined) {
+  async dislike(answerIdStr: string, memberIdStr: string) {
     const answerId = BigInt(answerIdStr);
     const memberId = BigInt(memberIdStr);
 
