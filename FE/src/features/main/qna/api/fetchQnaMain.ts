@@ -6,10 +6,12 @@ import { ApiResponse } from '@/shared/types/ApiResponseType';
 import { Meta } from '@/shared/types/PaginationType';
 import { customFetch } from '@/shared/utils/fetcher';
 
-interface FetchQnaMainParams {
+export interface FetchQnaMainParams {
   status?: QuestionsStatusFilter; // 'all' | 'unanswered' | 'unsolved' | 'solved'
   size?: number;
 }
+
+export const MAIN_QNA_KEY = ['main-qna'];
 
 export const fetchQnaMain = async ({
   status = 'all',
@@ -34,13 +36,10 @@ export const fetchQnaMain = async ({
   const queryString = searchParams.toString();
   const path = queryString ? `/api/questions?${queryString}` : `/api/questions`;
 
-  // 필요에 따라 { next: { revalidate: 60 } } 등으로 조절
-  const response = await customFetch<
+  return await customFetch<
     ApiResponse<{
       items: Question[];
       meta: Meta;
     }>
-  >(path, { cache: 'no-store' });
-
-  return response;
+  >(path);
 };

@@ -15,6 +15,10 @@ import {
   fetchRecoProject,
   RECO_PROJECT_QUERY_KEY,
 } from '@/features/main/reco/api/fetchRecoProject';
+import {
+  fetchQnaMain,
+  MAIN_QNA_KEY,
+} from '@/features/main/qna/api/fetchQnaMain';
 
 // ISR(1시간 캐싱) 적용: 1시간마다 페이지 재생성
 export const revalidate = 3600;
@@ -35,6 +39,11 @@ const Home = async () => {
   await queryClient.prefetchQuery({
     queryKey: FEED_QUERY_KEY,
     queryFn: () => fetchRecoStory(FEED_PARAMS),
+  });
+
+  await queryClient.prefetchQuery({
+    queryKey: [MAIN_QNA_KEY, 'ALL'],
+    queryFn: () => fetchQnaMain({ status: 'all', size: 3 }),
   });
 
   return (

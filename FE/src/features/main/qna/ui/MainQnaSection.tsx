@@ -1,40 +1,35 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { fetchQnaMain } from '@/features/main/qna/api/fetchQnaMain';
-import { Question } from '@/features/questions/model/questions.type';
+import { useState } from 'react';
+import {
+  fetchQnaMain,
+  MAIN_QNA_KEY,
+} from '@/features/main/qna/api/fetchQnaMain';
 import QnaCard from '@/features/main/qna/ui/QnaCard';
-import { toast } from '@/shared/utils/toast';
+import { useQuery } from '@tanstack/react-query';
 
 type TabType = 'ALL' | 'UNANSWERED';
 
 export default function MainQnaSection() {
   const [activeTab, setActiveTab] = useState<TabType>('ALL');
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const loadQuestions = async () => {
-      try {
-        setIsLoading(true);
-        const response = await fetchQnaMain({
-          status: activeTab === 'ALL' ? 'all' : 'unanswered',
-          size: 3,
-        });
+  const { data: response, isLoading } = useQuery({
+    queryKey: [MAIN_QNA_KEY, activeTab], // 탭 바뀔 때마다 키 변경 -> 자동 refetch
+    queryFn: () =>
+      fetchQnaMain({
+        status: activeTab === 'ALL' ? 'all' : 'unanswered',
+        size: 3,
+      }),
+    staleTime: 1000 * 60,
+  });
 
-        if (response?.data?.items) {
-          setQuestions(response.data.items);
-        }
-      } catch (error) {
-        toast.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const questions = response?.data?.items ?? [];
 
-    void loadQuestions();
-  }, [activeTab]);
-  if (isLoading) return <div>로딩 중...</div>;
+  // TODO: 스켈레톤 UI 교체
+  if (isLoading)
+    return (
+      <div className="h-40 flex items-center justify-center">로딩 중...</div>
+    );
 
   return (
     <section className="w-full h-full">
