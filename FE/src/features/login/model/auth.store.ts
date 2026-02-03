@@ -30,9 +30,17 @@ export const useAuth = () => {
       const memberData = await getCurrentMember();
       setMember(memberData);
     } catch (error) {
-      // TODO: 401 등 에러 발생 시 로그인 안 된 상태로 처리
-      toast.error(error);
-      setMember(null);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+
+      if (errorMessage === 'UNAUTHORIZED') {
+        // 1. 비로그인 상태 (401): 에러 아님. 조용히 null 처리하고 끝냄.
+        setMember(null);
+      } else {
+        // 2. 진짜 에러 (500, 네트워크 오류 등): 사용자에게 알림.
+        toast.error(error);
+        setMember(null);
+      }
     } finally {
       setIsLoading(false);
     }

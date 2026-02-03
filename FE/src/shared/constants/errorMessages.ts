@@ -4,6 +4,7 @@
  */
 export const ERROR_MESSAGES: Record<string, string> = {
   // ===== 인증(Auth) 관련 에러 =====
+  UNAUTHORIZED: '인증이 필요합니다. 다시 로그인해주세요.',
   ACCESS_TOKEN_EXPIRED: '액세스 토큰이 만료되었습니다. 다시 로그인해주세요.',
   REFRESH_TOKEN_EXPIRED: '리프레시 토큰이 만료되었습니다. 다시 로그인해주세요.',
   INVALID_ACCESS_TOKEN: '유효하지 않은 액세스 토큰입니다. 다시 로그인해주세요.',
