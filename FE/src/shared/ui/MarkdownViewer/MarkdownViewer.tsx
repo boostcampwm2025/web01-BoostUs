@@ -150,9 +150,7 @@ export const MarkdownViewer = ({ content }: { content: string }) => {
                 PreTag="div"
                 className="rounded-lg my-4 text-body-14"
               >
-                {isStringContent
-                  ? children.replace(/\n$/, '')
-                  : String(children)}
+                {isStringContent ? children.replace(/\n$/, '') : ''}
               </SyntaxHighlighter>
             ) : (
               // 인라인 코드 (기존 스타일)
