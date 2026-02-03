@@ -24,7 +24,10 @@ interface FetchStoriesParams {
   size?: number;
 }
 
-export const fetchRecoStory = async (params?: FetchStoriesParams) => {
+export const fetchRecoStory = async (
+  params?: FetchStoriesParams & { skipStore?: boolean }
+) => {
+  const { skipStore, ...apiParams } = params ?? {};
   return await customFetch<
     ApiResponse<{
       items: Story[];
@@ -32,9 +35,10 @@ export const fetchRecoStory = async (params?: FetchStoriesParams) => {
     }>
   >('/api/stories', {
     params: {
-      ...params,
-      sortBy: params?.sortBy?.toUpperCase(),
-      period: params?.period?.toUpperCase(),
+      ...apiParams,
+      sortBy: apiParams?.sortBy?.toUpperCase(),
+      period: apiParams?.period?.toUpperCase(),
     },
+    skipStore,
   });
 };

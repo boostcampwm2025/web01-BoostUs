@@ -34,13 +34,15 @@ export interface ProjectsData {
   meta: ProjectsMeta;
 }
 
-export async function fetchProjects(): Promise<ProjectsData> {
+export async function fetchProjects(params?: {
+  skipStore?: boolean;
+}): Promise<ProjectsData> {
   const json = await customFetch<{
     success: boolean;
     message: string;
     error: unknown;
     data: ProjectsData;
-  }>('/api/projects');
+  }>('/api/projects', { skipStore: params?.skipStore });
 
   return {
     ...json.data,

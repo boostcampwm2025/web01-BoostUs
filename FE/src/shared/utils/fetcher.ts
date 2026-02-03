@@ -6,6 +6,7 @@ type QueryParamValue = string | number | boolean | undefined | null;
 type FetchOptions = RequestInit & {
   params?: Record<string, QueryParamValue>;
   _retry?: boolean; // 내부적으로 재시도 여부를 판단하기 위한 플래그
+  skipStore?: boolean; // 쿠키 헤더 설정을 건너뛸지 여부
 };
 
 const getBaseUrl = () => {
@@ -54,7 +55,7 @@ export const customFetch = async <T>(
   const headers = new Headers(fetchOptions.headers);
   const isServer = typeof window === 'undefined';
 
-  if (isServer) {
+  if (isServer && !options?.skipStore) {
     try {
       const { cookies } = await import('next/headers');
       const cookieStore = await cookies();

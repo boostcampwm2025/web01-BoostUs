@@ -8,18 +8,23 @@ import {
   fetchProjects,
   PROJECT_KEYS,
 } from '@/features/project/api/getProjects';
+import { Suspense } from 'react';
+
+export const revalidate = 3600;
 
 export default async function ProjectPage() {
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
     queryKey: PROJECT_KEYS.all,
-    queryFn: fetchProjects,
+    queryFn: () => fetchProjects({ skipStore: true }),
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ProjectMainBoard />
+      <Suspense fallback={<div>Loading projects...</div>}>
+        <ProjectMainBoard />
+      </Suspense>
     </HydrationBoundary>
   );
 }

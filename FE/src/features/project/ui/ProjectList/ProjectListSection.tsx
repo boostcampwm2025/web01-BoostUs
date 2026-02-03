@@ -27,7 +27,7 @@ interface SortOption {
 const ProjectListSection = () => {
   const { data: response, isLoading } = useQuery({
     queryKey: PROJECT_KEYS.all,
-    queryFn: fetchProjects,
+    queryFn: () => fetchProjects(),
     staleTime: 1000 * 60 * 5,
   });
 

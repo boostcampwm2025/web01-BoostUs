@@ -9,6 +9,7 @@ import { customFetch } from '@/shared/utils/fetcher';
 export interface FetchQnaMainParams {
   status?: QuestionsStatusFilter; // 'all' | 'unanswered' | 'unsolved' | 'solved'
   size?: number;
+  skipStore?: boolean;
 }
 
 export const MAIN_QNA_KEY = ['main-qna'];
@@ -16,6 +17,7 @@ export const MAIN_QNA_KEY = ['main-qna'];
 export const fetchQnaMain = async ({
   status = 'all',
   size = 3,
+  skipStore,
 }: FetchQnaMainParams) => {
   const searchParams = new URLSearchParams();
 
@@ -41,5 +43,5 @@ export const fetchQnaMain = async ({
       items: Question[];
       meta: Meta;
     }>
-  >(path);
+  >(path, { skipStore });
 };

@@ -37,7 +37,7 @@ export default function RecommendProjectSection() {
     isError,
   } = useQuery({
     queryKey: RECO_PROJECT_QUERY_KEY,
-    queryFn: fetchRecoProject,
+    queryFn: () => fetchRecoProject(),
   });
 
   const slides = useMemo(() => {

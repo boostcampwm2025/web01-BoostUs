@@ -52,8 +52,9 @@ export const useProjectRegister = (
   // 프로젝트 추가 Mutation
   const createMutation = useMutation({
     mutationFn: registerProject,
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.all });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.all });
+      await fetch(`api/revalidate?path=/project`); // Next.js 서버의 HTML 캐시 갱신 (ISR 무효화)
       toast.success('프로젝트가 등록되었습니다.');
       router.push('/project');
       if (onClose) onClose();
@@ -64,8 +65,9 @@ export const useProjectRegister = (
   const updateMutation = useMutation({
     mutationFn: ({ id, body }: { id: number; body: UpdateProjectBody }) =>
       updateProject(id, body),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.all });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.all });
+      await fetch(`api/revalidate?path=/project`); // Next.js 서버의 HTML 캐시 갱신 (ISR 무효화)
       toast.success('프로젝트 정보가 수정되었습니다.');
       router.push('/project');
       if (onClose) onClose();
