@@ -40,7 +40,7 @@ const Home = async () => {
     }),
     queryClient.prefetchQuery({
       queryKey: [MAIN_QNA_KEY, 'ALL'],
-      queryFn: () => fetchQnaMain({ status: 'all', size: 3 }),
+      queryFn: () => fetchQnaMain({ status: 'all', size: 3, skipStore: true }),
     }),
   ]);
 

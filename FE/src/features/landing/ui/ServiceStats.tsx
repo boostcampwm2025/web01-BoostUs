@@ -10,7 +10,7 @@ import {
 const ServiceStats = () => {
   const { data } = useQuery({
     queryKey: LANDING_STATS_KEY,
-    queryFn: getLandingCount,
+    queryFn: () => getLandingCount(),
     staleTime: 1000 * 60 * 60, // 1시간 동안 재요청 안 함 (ISR 주기와 맞춤)
     gcTime: 1000 * 60 * 60 * 24, // 캐시 오래 유지
   });

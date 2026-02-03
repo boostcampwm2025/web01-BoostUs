@@ -28,6 +28,7 @@ export const fetchRecoStory = async (
   params?: FetchStoriesParams & { skipStore?: boolean }
 ) => {
   const { skipStore, ...apiParams } = params ?? {};
+
   return await customFetch<
     ApiResponse<{
       items: Story[];

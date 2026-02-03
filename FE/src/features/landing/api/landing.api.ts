@@ -4,8 +4,14 @@ import { customFetch } from '@/shared/utils/fetcher';
 
 export const LANDING_STATS_KEY = ['landing-stats'];
 
-export const getLandingCount = async (): Promise<LandingData> => {
-  const response =
-    await customFetch<ApiResponse<LandingData>>(`/api/landing/count`);
+export const getLandingCount = async (options?: {
+  skipStore?: boolean;
+}): Promise<LandingData> => {
+  const response = await customFetch<ApiResponse<LandingData>>(
+    `/api/landing/count`,
+    {
+      skipStore: options?.skipStore,
+    }
+  );
   return response.data;
 };

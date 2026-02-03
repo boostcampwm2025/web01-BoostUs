@@ -16,7 +16,7 @@ const LandingPage = async () => {
 
   await queryClient.prefetchQuery({
     queryKey: LANDING_STATS_KEY,
-    queryFn: getLandingCount,
+    queryFn: () => getLandingCount({ skipStore: true }),
   });
 
   return (
