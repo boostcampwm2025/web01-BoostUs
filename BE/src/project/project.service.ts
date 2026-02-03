@@ -74,12 +74,12 @@ export class ProjectService {
     const inlineKey = this.config.get<string>('GITHUB_APP_PRIVATE_KEY');
     if (inlineKey) return inlineKey.replace(/\\n/g, '\n');
 
-    const keyPath = this.config.get<string>('GITHUB_APP_PRIVATE_KEY_PATH');
-    if (!keyPath) {
-      throw new GithubAppKeyNotConfiguredException();
-    }
+    // const keyPath = this.config.get<string>('GITHUB_APP_PRIVATE_KEY_PATH');
+    // if (!keyPath) {
+    //   throw new GithubAppKeyNotConfiguredException();
+    // }
 
-    return readFileSync(keyPath, 'utf-8');
+    // return readFileSync(keyPath, 'utf-8');
   }
 
   /**
