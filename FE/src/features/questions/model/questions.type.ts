@@ -8,6 +8,8 @@ export type QuestionsStatusFilter =
 
 export type QuestionsSortBy = 'latest' | 'likes' | 'views';
 
+export type Reaction = 'LIKE' | 'DISLIKE' | 'NONE';
+
 export interface Question {
   id: string;
   title: string;
@@ -20,6 +22,7 @@ export interface Question {
   createdAt: string;
   updatedAt: string;
   member: Member;
+  reaction: Reaction;
 }
 
 export interface QuestionDetail extends Question {
@@ -36,6 +39,7 @@ export interface Answer {
   createdAt: string;
   updatedAt: string;
   member: Member;
+  reaction: Reaction;
 }
 
 export interface QuestionCounts {

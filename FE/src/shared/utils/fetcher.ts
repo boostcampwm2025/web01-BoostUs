@@ -1,4 +1,5 @@
 import { ApiResponse } from '@/shared/types/ApiResponseType';
+import { redirect } from 'next/navigation';
 
 type QueryParamValue = string | number | boolean | undefined | null;
 
@@ -38,8 +39,26 @@ export const customFetch = async <T>(
     });
   }
 
+  const headers = new Headers(fetchOptions.headers);
+  const isServer = typeof window === 'undefined';
+
+  if (isServer) {
+    try {
+      const { cookies } = await import('next/headers');
+      const cookieStore = await cookies();
+      const cookieString = cookieStore.toString();
+
+      if (cookieString) {
+        headers.set('Cookie', cookieString);
+      }
+    } catch (error) {
+      console.error('Failed to get cookies in server environment:', error);
+    }
+  }
+
   const response = await fetch(url.toString(), {
     ...fetchOptions,
+    headers,
   });
 
   if (!response.ok) {
@@ -49,29 +68,32 @@ export const customFetch = async <T>(
       .catch(() => null)) as ApiResponse<unknown> | null;
 
     // 토큰 만료 감지 및 갱신 (Interceptor 패턴)
-    if (
-      response.status === 401 &&
-      (errorData?.error?.code === 'ACCESS_TOKEN_EXPIRED' ||
-        errorData?.error?.code === 'REFRESH_TOKEN_EXPIRED') &&
-      !_retry
-    ) {
-      try {
-        // 토큰 재발급 요청 (쿠키 기반이므로 credentials 자동 포함)
-        const refreshResponse = await fetch('/api/auth/refresh', {
-          method: 'POST',
-        });
-
-        // 재발급 성공 (201 Created) -> 원래 요청 재시도
-        if (refreshResponse.ok) {
-          // 재귀 호출: _retry를 true로 설정하여 무한 루프 방지
-          return await customFetch<T>(path, { ...options, _retry: true });
-        }
-      } catch (refreshError) {
-        console.error('Token refresh failed:', refreshError);
+    if (response.status === 401) {
+      // ✅ [서버 환경] 갱신 시도 없이 바로 로그인 페이지로 리다이렉트
+      if (isServer) {
+        // Next.js의 redirect()는 내부적으로 에러를 던져서 작동하므로 return 불필요
+        redirect('/login');
       }
 
-      // 재발급 실패 시 (리프레시 토큰도 만료됨) -> 강제 로그아웃
-      if (typeof window !== 'undefined') {
+      // ✅ [클라이언트 환경] 토큰 갱신 로직 실행
+      if (
+        !_retry &&
+        (errorData?.error?.code === 'ACCESS_TOKEN_EXPIRED' ||
+          errorData?.error?.code === 'REFRESH_TOKEN_EXPIRED')
+      ) {
+        try {
+          const refreshResponse = await fetch('/api/auth/refresh', {
+            method: 'POST',
+          });
+
+          if (refreshResponse.ok) {
+            return await customFetch<T>(path, { ...options, _retry: true });
+          }
+        } catch (refreshError) {
+          console.error('Token refresh failed:', refreshError);
+        }
+
+        // 갱신 실패 시 클라이언트에서도 이동
         window.location.href = '/login';
       }
     }

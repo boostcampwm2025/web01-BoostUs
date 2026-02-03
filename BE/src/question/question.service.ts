@@ -248,7 +248,7 @@ export class QuestionService {
         createdAt: a.createdAt.toISOString(),
         updatedAt: a.updatedAt.toISOString(),
         member: a.member,
-        reaction: answerReactionMap.get(a.id.toString()),
+        reaction: answerReactionMap.get(a.id.toString()) ?? Reaction.NONE,
       })),
     };
   }
