@@ -2,24 +2,20 @@
 
 import Image from 'next/image';
 import { Calendar1, Eye, Heart } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import {
   fetchRecoStory,
   RECO_STORY_PARAMS,
   RECO_STORY_QUERY_KEY,
 } from '@/features/main/reco/api/fetchRecoStory';
-import { Story } from '@/features/stories';
 import UserProfile from '@/shared/ui/UserProfile';
 import extractDate from '@/shared/utils/extractDate';
 import { Card } from '@/shared/ui/Card';
-import { toast } from '@/shared/utils/toast';
 import { useQuery } from '@tanstack/react-query';
+import useImageError from '@/shared/model/useImageError';
 
 const DEFAULT_THUMBNAIL = '/assets/NoImage.png';
 
 const RecommendStorySection = () => {
-  const [isImageError, setIsImageError] = useState(false);
-
   const {
     data: response,
     isLoading,
@@ -31,6 +27,9 @@ const RecommendStorySection = () => {
   });
 
   const bestStory = response?.data?.items?.[0] ?? null;
+  const { isError: imageError, setIsError: setImageError } = useImageError(
+    bestStory?.thumbnailUrl
+  );
 
   if (isLoading) {
     return (
@@ -42,8 +41,7 @@ const RecommendStorySection = () => {
     return null; // TODO: 에러 UI 개선 필요
   }
 
-  // TODO: useImageError 적용
-  const currentSrc = isImageError
+  const currentSrc = imageError
     ? DEFAULT_THUMBNAIL
     : (bestStory.thumbnailUrl ?? DEFAULT_THUMBNAIL);
 
@@ -59,7 +57,7 @@ const RecommendStorySection = () => {
           fill
           className="object-cover"
           priority
-          onError={() => setIsImageError(true)}
+          onError={() => setImageError(true)}
         />
       </Card.ImageContainer>
 
