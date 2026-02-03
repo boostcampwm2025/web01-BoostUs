@@ -150,10 +150,10 @@ export const MarkdownViewer = ({ content }: { content: string }) => {
             // 1. 언어 감지 (기존 로직)
             const match = /language-(\w+)/.exec(className ?? '');
 
-            // 2. [추가] 내용에 줄바꿈이 있는지 확인
+            // 2. 내용에 줄바꿈이 있는지 확인
             const hasNewLine = (children as string).includes('\n');
 
-            // 3. [수정] 언어 클래스가 있거나, 줄바꿈이 있으면 '블록'으로 간주
+            // 3. 언어 클래스가 있거나, 줄바꿈이 있으면 '블록'으로 간주
             const isBlock = match ?? hasNewLine;
 
             return isBlock ? (
