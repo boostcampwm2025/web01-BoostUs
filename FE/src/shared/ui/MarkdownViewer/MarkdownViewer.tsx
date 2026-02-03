@@ -10,25 +10,7 @@ type CodeComponentProps = ComponentPropsWithRef<'code'> & {
   node?: unknown; // react-markdown이 주입하는 메타데이터 (사용하지 않음)
 };
 
-/**
- * 티스토리/카카오 스타일의 이미지 치환자를 표준 HTML img 태그로 변환합니다.
- * 입력 예시: [##Image|kage@...|CDM|1.3|{"style":"alignCenter"}##]
- */
-const transformCustomImageSyntax = (content: string): string => {
-  const regex = /\[##Image\|([^|]+)\|([^|]+)\|.*?##]/g;
-
-  return content.replace(regex, (_match: string, path: string, alt: string) => {
-    const imageSrc = path.startsWith('http')
-      ? path
-      : `https://blog.kakaocdn.net/dn/${path}`;
-
-    return `<img src="${imageSrc}" alt="${alt}" class="custom-legacy-image" />`;
-  });
-};
-
 export const MarkdownViewer = ({ content }: { content: string }) => {
-  const processedContent = transformCustomImageSyntax(content);
-
   return (
     <div className="w-full wrap-break-word overflow-x-hidden **:max-w-full **:wrap-break-word [&_pre]:overflow-x-auto [&_code]:wrap-break-word">
       <ReactMarkdown
@@ -219,7 +201,7 @@ export const MarkdownViewer = ({ content }: { content: string }) => {
           ),
         }}
       >
-        {processedContent}
+        {content}
       </ReactMarkdown>
     </div>
   );

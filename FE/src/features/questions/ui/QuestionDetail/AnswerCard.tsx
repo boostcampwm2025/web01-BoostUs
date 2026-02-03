@@ -42,7 +42,9 @@ const AnswerCard = ({ answer, question, hasAcceptedAnswer }: Props) => {
 
   const onVoteClick = (type: 'LIKE' | 'DISLIKE') => {
     if (!member) {
-      toast.error('로그인이 필요한 기능이에요.');
+      const currentPath = window.location.pathname;
+      router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
+      toast.info('로그인이 필요한 기능입니다.');
       return;
     }
     void handleVote(type);
@@ -98,6 +100,7 @@ const AnswerCard = ({ answer, question, hasAcceptedAnswer }: Props) => {
           reaction={stats.reaction}
           onUpvote={() => onVoteClick('LIKE')}
           onDownvote={() => onVoteClick('DISLIKE')}
+          isLoggedIn={!!member}
         />
         <div className="flex flex-col justify-between w-full">
           <div className="w-full">

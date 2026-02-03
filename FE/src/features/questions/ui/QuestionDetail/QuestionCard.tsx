@@ -34,10 +34,9 @@ const QuestionCard = ({
 
   const onVoteClick = (type: 'LIKE' | 'DISLIKE') => {
     if (!member) {
-      if (confirm('로그인이 필요한 서비스입니다. 로그인 하시겠습니까?')) {
-        router.push('/login');
-        // TODO: 리다이렉트랑 토스트하기
-      }
+      const currentPath = window.location.pathname;
+      router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
+      toast.info('로그인이 필요한 기능입니다.');
       return;
     }
     void handleVote(type);
@@ -69,6 +68,7 @@ const QuestionCard = ({
           reaction={stats.reaction}
           onUpvote={() => onVoteClick('LIKE')}
           onDownvote={() => onVoteClick('DISLIKE')}
+          isLoggedIn={!!member}
         />
         <div className="flex flex-col justify-between w-full">
           <div className="w-full">
