@@ -1,9 +1,4 @@
-import {
-  ForbiddenException,
-  NotFoundException,
-  BadRequestException,
-  Injectable,
-} from '@nestjs/common';
+import { ForbiddenException, NotFoundException, Injectable } from '@nestjs/common';
 import { CreateAnswerDto } from './dto/req/create-answer.dto';
 import { AnswerRepository } from './answer.repository';
 import { AnswerResponseDto } from './dto/res/answer-response.dto';
@@ -49,15 +44,12 @@ export class AnswerService {
 
   async update(
     idstr: string,
-    memberIdStr: string | undefined,
+    memberIdStr: string,
     dto: UpdateAnswerDto,
   ): Promise<AnswerResponseDto> {
-    if (!memberIdStr) throw new BadRequestException('로그인을 하셨어야죠');
-
     const id = BigInt(idstr);
     const memberId = BigInt(memberIdStr);
 
-    // ✅ 작성자 확인용으로 최소 조회
     const ownerId = await this.answerRepo.findOwnerIdByAnswerId(id);
     if (!ownerId) throw new NotFoundException('답변의 주인이 없소');
 
@@ -89,13 +81,10 @@ export class AnswerService {
     };
   }
 
-  async delete(idstr: string, memberIdStr: string | undefined) {
-    if (!memberIdStr) throw new BadRequestException('로그인을 하셨어야죠');
-
+  async delete(idstr: string, memberIdStr: string) {
     const id = BigInt(idstr);
     const memberId = BigInt(memberIdStr);
 
-    // ✅ 작성자 확인용으로 최소 조회
     const ownerId = await this.answerRepo.findOwnerIdByAnswerId(id);
     if (!ownerId) throw new NotFoundException('답변의 주인이 없소');
 
@@ -103,13 +92,10 @@ export class AnswerService {
       throw new ForbiddenException('삭제권한이 없소');
     }
 
-    // ✅ 삭제
     await this.answerRepo.update(id, { state: 'DELETED' });
     return { id: idstr };
   }
-  async like(answerIdStr: string, memberIdStr: string | undefined) {
-    if (!memberIdStr) throw new BadRequestException('로그인을 하셨어야죠');
-
+  async like(answerIdStr: string, memberIdStr: string) {
     const answerId = BigInt(answerIdStr);
     const memberId = BigInt(memberIdStr);
 
@@ -117,9 +103,7 @@ export class AnswerService {
     return answerId;
   }
 
-  async dislike(answerIdStr: string, memberIdStr: string | undefined) {
-    if (!memberIdStr) throw new BadRequestException('로그인을 하셨어야죠');
-
+  async dislike(answerIdStr: string, memberIdStr: string) {
     const answerId = BigInt(answerIdStr);
     const memberId = BigInt(memberIdStr);
 

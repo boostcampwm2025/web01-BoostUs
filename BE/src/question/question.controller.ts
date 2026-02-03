@@ -13,7 +13,7 @@ import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/s
 import { Public } from '../auth/decorator/public.decorator';
 import { CreateQuestionDto } from './dto/req/create-question.dto';
 import { QuestionQueryDto } from './dto/req/question-query.dto';
-import { QuestionResponseDto } from './dto/res/question-response.dto';
+import { QuestionResponseDto } from './dto/res/detail/question-response.dto';
 import { QuestionService } from './question.service';
 import { QuestionCountDto } from './dto/res/question-count.dto';
 import { responseMessage } from '../common/decorator/response-message.decorator';
@@ -22,6 +22,8 @@ import { CurrentMember } from 'src/auth/decorator/current-member.decorator';
 import { ViewerKeyGuard } from 'src/view/guard/view.guard';
 import { ViewerKey } from 'src/view/decorator/viewer-key.decorator';
 import { ParseBigIntPipe } from 'src/common/pipe/parse-bigint.pipe';
+import { QuestionCursorResponseDto } from './dto/res/all/question-list.dto';
+import { QuestionDetailItemDto } from './dto/res/detail/question-detail-item.dto';
 
 @ApiTags('질문')
 @Controller('questions')
@@ -39,7 +41,6 @@ export class QuestionController {
   @ApiResponse({
     status: 201,
     description: '질문 생성 성공',
-    type: QuestionResponseDto,
   })
   @ApiResponse({
     status: 400,
@@ -79,10 +80,10 @@ export class QuestionController {
   @ApiResponse({
     status: 200,
     description: '질문 목록 조회 성공',
-    type: [QuestionResponseDto],
+    type: QuestionCursorResponseDto,
   })
-  findAll(@Query() query: QuestionQueryDto) {
-    return this.questionService.findAllCursor(query);
+  findAll(@Query() query: QuestionQueryDto, @CurrentMember() memberId?: string) {
+    return this.questionService.findAllCursor(query, memberId);
   }
 
   @Public()
@@ -100,14 +101,14 @@ export class QuestionController {
   @ApiResponse({
     status: 200,
     description: '질문 상세 조회 성공',
-    type: QuestionResponseDto,
+    type: QuestionDetailItemDto,
   })
   @ApiResponse({
     status: 404,
     description: '질문을 찾을 수 없음',
   })
-  async findOne(@Param('id') id: string) {
-    return await this.questionService.findOne(id);
+  async findOne(@Param('id') id: string, @CurrentMember() memberId?: string) {
+    return await this.questionService.findOne(id, memberId);
   }
 
   @Public()
