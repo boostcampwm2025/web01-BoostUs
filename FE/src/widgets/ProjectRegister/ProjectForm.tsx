@@ -105,7 +105,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
 
   const openRepoModal = () => {
     setRepoError(null);
-    setRepoUrlInput((repoUrlValue ?? '').toString());
+    setRepoUrlInput(repoUrlValue ?? '');
     setIsRepoModalOpen(true);
   };
 
