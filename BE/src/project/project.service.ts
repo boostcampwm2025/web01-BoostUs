@@ -12,7 +12,6 @@ import { ConfigService } from '@nestjs/config';
 import { CopyObjectCommand, DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { randomUUID, createSign } from 'node:crypto';
-import { readFileSync } from 'node:fs';
 import type Redis from 'ioredis';
 import { REDIS } from '../redis/redis.provider';
 import { ThumbnailMeta } from './type/upload-image-meta.type';
@@ -25,7 +24,6 @@ import {
   MemberNotFoundException,
   RepositoryQueryRequiredException,
   InvalidRepositoryUrlException,
-  GithubAppKeyNotConfiguredException,
   GithubApiRequestFailedException,
 } from './exception/project.exception';
 import { ViewService } from 'src/view/view.service';
@@ -49,7 +47,7 @@ export class ProjectService {
     this.endpoint = this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_ENDPOINT');
     this.bucket = this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_BUCKET');
     this.githubAppId = this.config.getOrThrow<string>('GITHUB_APP_ID');
-    this.githubAppPrivateKey = this._loadGithubAppPrivateKey();
+    this.githubAppPrivateKey = this.config.getOrThrow<string>('GITHUB_APP_PRIVATE_KEY');
 
     this.s3 = new S3Client({
       region: this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_REGION'),
@@ -64,22 +62,6 @@ export class ProjectService {
       // true : Path style -> NCP 는 path style 권장
       // https://kr.object.ncloudstorage.com/버킷이름/파일경로
     });
-  }
-
-  /**
-   * GitHub App Private Key를 환경변수 또는 파일에서 로드합니다.
-   * @returns PEM 형식의 private key 문자열
-   */
-  private _loadGithubAppPrivateKey() {
-    const inlineKey = this.config.get<string>('GITHUB_APP_PRIVATE_KEY');
-    if (inlineKey) return inlineKey.replace(/\\n/g, '\n');
-
-    // const keyPath = this.config.get<string>('GITHUB_APP_PRIVATE_KEY_PATH');
-    // if (!keyPath) {
-    //   throw new GithubAppKeyNotConfiguredException();
-    // }
-
-    // return readFileSync(keyPath, 'utf-8');
   }
 
   /**
