@@ -28,6 +28,8 @@ import {
 } from './exception/project.exception';
 import { ViewService } from 'src/view/view.service';
 import { JwtService } from '@nestjs/jwt';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class ProjectService {
@@ -44,6 +46,7 @@ export class ProjectService {
     private readonly config: ConfigService,
     private readonly viewService: ViewService,
     private readonly jwtService: JwtService,
+    private readonly http: HttpService,
     @Inject(REDIS) private readonly redis: Redis,
   ) {
     this.endpoint = this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_ENDPOINT');
@@ -134,14 +137,40 @@ export class ProjectService {
    */
   private async _githubFetch<T>(
     url: string,
-    init?: { method?: string; headers?: Record<string, string>; body?: string },
-  ) {
-    const res = await fetch(url, init);
-    if (!res.ok) {
-      const body = await res.text();
-      throw new GithubApiRequestFailedException(res.status, res.statusText, body);
+    init?: {
+      method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+      headers?: Record<string, string>;
+      body?: string;
+    },
+  ): Promise<T> {
+    try {
+      const res = await firstValueFrom(
+        this.http.request<T>({
+          url,
+          method: init?.method ?? 'GET',
+          headers: init?.headers,
+          data: init?.body,
+        }),
+      );
+
+      return res.data;
+    } catch (e: unknown) {
+      if (e && typeof e === 'object' && 'response' in e) {
+        const err = e as {
+          response?: { status?: number; statusText?: string; data?: unknown };
+        };
+
+        throw new GithubApiRequestFailedException(
+          err.response?.status ?? 500,
+          err.response?.statusText ?? 'Unknown',
+          typeof err.response?.data === 'string'
+            ? err.response.data
+            : JSON.stringify(err.response?.data),
+        );
+      }
+
+      throw e;
     }
-    return (await res.json()) as T;
   }
 
   async uploadTempThumbnail(file: Express.Multer.File, memberId: string) {
