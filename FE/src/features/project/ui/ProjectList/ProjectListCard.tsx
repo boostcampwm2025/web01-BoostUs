@@ -1,9 +1,9 @@
 import Image from 'next/image';
-import Link from 'next/link';
 import TogglePill from '@/shared/ui/TogglePill';
 import { Eye } from 'lucide-react';
 import TechList from '@/features/project/ui/ProjectList/TechList';
 import paint from 'public/assets/NoImage.png';
+import { Card } from '@/shared/ui/Card';
 
 interface ProjectCardProps {
   project: {
@@ -21,55 +21,51 @@ interface ProjectCardProps {
 
 const ProjectListCard = ({ project }: ProjectCardProps) => {
   return (
-    <Link
+    <Card.Root
       href={`/project/${project.id.toString()}`}
-      className="block h-full rounded-2xl bg-neutral-surface-bold"
       scroll={false}
+      className="flex flex-col"
     >
-      <article className="flex h-full flex-col overflow-hidden rounded-2xl bg-neutral-surface-bold border border-neutral-border-default hover:border-neutral-border-active cursor-pointer transition-colors duration-150 shadow-default hover:shadow-hover">
-        <div className="relative w-full shrink-0">
-          <Image
-            src={project.thumbnailUrl ?? paint}
-            alt={project.title}
-            className="aspect-video w-full object-cover"
-            width={300}
-            height={160}
-            unoptimized
+      <Card.ImageContainer className="shrink-0">
+        <Image
+          src={project.thumbnailUrl ?? paint}
+          alt={project.title}
+          className="aspect-video w-full object-cover"
+          width={300}
+          height={160}
+          unoptimized
+        />
+        <div className="absolute top-3 right-3 z-10">
+          <TogglePill
+            title={project.cohort.toString() + '기'}
+            isSelected={true}
           />
-          <div className="absolute top-3 right-3 z-10">
-            <TogglePill
-              title={project.cohort.toString() + '기'}
-              isSelected={true}
-            />
-          </div>
         </div>
+      </Card.ImageContainer>
 
-        <div className="flex flex-1 flex-col gap-2 px-4 pt-4 pb-2">
-          <span className="text-display-16 text-neutral-text-strong font-bold">
-            {project.title}
-          </span>
-          <p className="text-body-14 text-neutral-text-weak line-clamp-2 overflow-hidden text-ellipsis wrap-break-word">
-            {project.description}
-          </p>
+      <Card.Content className="flex-1 px-4 pt-4 pb-2 gap-2">
+        <Card.Title>{project.title}</Card.Title>
+        <Card.Description className="line-clamp-2 overflow-hidden text-ellipsis wrap-break-word">
+          {project.description}
+        </Card.Description>
 
-          <div className="mt-auto flex flex-row justify-between gap-2">
-            <div className="flex h-14 flex-row flex-wrap content-start gap-2 overflow-hidden">
-              {project.techStack.map((tech) => (
-                <TechList key={tech} title={tech} />
-              ))}
-            </div>
-            <span className="text-neutral-text-weak flex shrink-0 flex-row items-center gap-1 self-end text-body-12 font-light">
-              <Eye
-                size={16}
-                className="text-neutral-text-weak"
-                strokeWidth={2}
-              />
-              {project.viewCount}
-            </span>
+        <Card.Footer className="justify-between">
+          <div className="flex h-14 flex-row flex-wrap content-start gap-2 overflow-hidden">
+            {project.techStack.map((tech) => (
+              <TechList key={tech} title={tech} />
+            ))}
           </div>
-        </div>
-      </article>
-    </Link>
+          <Card.InfoItem
+            icon={Eye}
+            className="self-end"
+            iconClassName="w-4 h-4"
+            textClassName="font-light"
+          >
+            {project.viewCount}
+          </Card.InfoItem>
+        </Card.Footer>
+      </Card.Content>
+    </Card.Root>
   );
 };
 
