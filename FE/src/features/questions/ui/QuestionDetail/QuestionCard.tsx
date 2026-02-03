@@ -7,6 +7,7 @@ import VoteButtons from '@/features/questions/ui/QuestionDetail/VoteButtons';
 import { likeQuestion, dislikeQuestion } from '../../api/questions.api';
 import { MarkdownViewer } from '@/shared/ui/MarkdownViewer/MarkdownViewer';
 import { useOptimisticVote } from '@/features/questions/model/useOptimisticVote';
+import { toast } from 'sonner';
 
 const QuestionCard = ({
   question,
@@ -26,6 +27,23 @@ const QuestionCard = ({
       voteDown: dislikeQuestion,
     },
   });
+
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast.success('링크가 클립보드에 복사되었어요.');
+    } catch (error) {
+      if (error instanceof Error) toast.error('링크 복사에 실패했어요.');
+    }
+  };
+
+  const handleReport = () => {
+    try {
+      toast.info('준비 중인 기능이에요.');
+    } catch (error) {
+      if (error instanceof Error) toast.error('신고에 실패했어요.');
+    }
+  };
 
   return (
     <section className="mt-8 w-full rounded-2xl border border-neutral-border-default bg-neutral-surface-bold">
@@ -48,10 +66,16 @@ const QuestionCard = ({
               ))}
             </div>
             <div className="flex flex-row items-center justify-center gap-2">
-              <button className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150">
+              <button
+                onClick={handleShare}
+                className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150"
+              >
                 공유
               </button>
-              <button className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150">
+              <button
+                onClick={handleReport}
+                className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150"
+              >
                 신고
               </button>
             </div>

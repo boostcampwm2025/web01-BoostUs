@@ -1,5 +1,7 @@
-import RegisterModalPage from '@/features/project/ui/register/RegisterModalPage';
+'use client';
 
-export default function ProjectRegisterPageModal() {
-  return <RegisterModalPage />;
+import ProjectForm from '@/widgets/ProjectRegister/ProjectForm';
+
+export default function RegisterPage() {
+  return <ProjectForm />;
 }

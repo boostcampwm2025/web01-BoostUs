@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { Story } from '@/features/stories/model/stories.type';
 import { useInView } from 'react-intersection-observer';
 import { useStoriesInfiniteQuery } from '@/features/stories/model/useStoriesInfiniteQuery';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface StoriesListProps {
   initialStories: Story[]; // SSR로 받아온 초기 데이터 (Hydration 용)
@@ -45,17 +46,31 @@ const StoriesList = ({ initialStories }: StoriesListProps) => {
   return (
     <section className="flex w-full flex-col items-end gap-4">
       <div
-        className={`grid w-full ${!isRankingOpen ? 'grid-cols-4' : 'grid-cols-3'} gap-4`}
+        className={`grid w-full ${!isRankingOpen ? 'grid-cols-4' : 'grid-cols-3'} gap-4 lg:gap-8`}
       >
-        {stories.length > 0 ? (
-          stories.map((story) => (
-            <StoriesCard id={story.id} key={story.id} story={story} />
-          ))
-        ) : (
-          <div className="text-neutral-text-weak col-span-full py-10 text-center">
-            {status === 'pending' ? '로딩 중...' : '검색 결과가 없습니다.'}
-          </div>
-        )}
+        <AnimatePresence mode="popLayout">
+          {stories.length > 0 ? (
+            stories.map((story) => (
+              <motion.div
+                key={story.id}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.2 }}
+              >
+                <StoriesCard id={story.id} story={story} />
+              </motion.div>
+            ))
+          ) : (
+            <motion.div
+              layout
+              className="text-neutral-text-weak col-span-full py-10 text-center"
+            >
+              {status === 'pending' ? '로딩 중...' : '검색 결과가 없습니다.'}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* 무한 스크롤 트리거 (Sentinel) */}

@@ -32,9 +32,9 @@ jobs:
         working-directory: ./FE
         run: pnpm install --frozen-lockfile
 
-      #   - name: Lint Check
-      #     working-directory: ./FE
-      #     run: pnpm lint
+      - name: Lint Check
+        working-directory: ./FE
+        run: pnpm exec eslint .
 
       - name: Build Check
         working-directory: ./FE

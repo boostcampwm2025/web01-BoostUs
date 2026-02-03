@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ViewerKey } from '../view/decorator/viewer-key.decorator';
 import { CurrentMember } from '../auth/decorator/current-member.decorator';
 import { Public } from '../auth/decorator/public.decorator';
 import { ParseBigIntPipe } from '../common/pipe/parse-bigint.pipe';
+import { ViewerKey } from '../view/decorator/viewer-key.decorator';
 import { ViewerKeyGuard } from '../view/guard/view.guard';
 import {
   CreateStoryRequestDto,
@@ -17,7 +17,7 @@ import { StoryService } from './story.service';
 @ApiTags('캠퍼들의 이야기')
 @Controller('stories')
 export class StoryController {
-  constructor(private readonly storyService: StoryService) { }
+  constructor(private readonly storyService: StoryService) {}
 
   @Public()
   @Get()
@@ -38,7 +38,8 @@ export class StoryController {
   @Get(':id')
   @ApiOperation({
     summary: '스토리 상세 조회',
-    description: '특정 스토리의 상세 정보를 조회합니다. 조회수 증가는 POST /stories/:id/view 를 사용하세요.',
+    description:
+      '특정 스토리의 상세 정보를 조회합니다. 조회수 증가는 POST /stories/:id/view 를 사용하세요.',
   })
   @ApiParam({
     name: 'id',

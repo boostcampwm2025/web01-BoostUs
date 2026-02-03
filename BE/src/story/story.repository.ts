@@ -6,7 +6,7 @@ import { StoryPeriod, StorySortBy } from './type/story-query.type';
 
 @Injectable()
 export class StoryRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   /**
    * 모든 공개된 캠퍼들의 이야기 목록 조회
@@ -164,27 +164,59 @@ export class StoryRepository {
       };
     }
 
-    // 2-2. 조회순(viewCount, id) 보다 작은 것들
-    if (sortBy === StorySortBy.VIEWS) {
+    // 2-2. 조회순(viewCount, publishedAt, id) 보다 작은 것들
+    if (sortBy === StorySortBy.VIEWS && cursor.sort === 'VIEWS') {
       const cursorViewCount = Number(cursor.v);
+      const cursorPublishedAt = cursor.publishedAt ? new Date(cursor.publishedAt) : undefined;
+
+      if (!cursorPublishedAt) {
+        return {};
+      }
+
       return {
         OR: [
           { viewCount: { lt: cursorViewCount } },
           {
-            AND: [{ viewCount: { equals: cursorViewCount } }, { id: { lt: cursorId } }],
+            AND: [
+              { viewCount: { equals: cursorViewCount } },
+              { publishedAt: { lt: cursorPublishedAt } },
+            ],
+          },
+          {
+            AND: [
+              { viewCount: { equals: cursorViewCount } },
+              { publishedAt: { equals: cursorPublishedAt } },
+              { id: { lt: cursorId } },
+            ],
           },
         ],
       };
     }
 
-    // 2-3. 좋아요순(likeCount, id) 보다 작은 것들
-    if (sortBy === StorySortBy.LIKES) {
+    // 2-3. 좋아요순(likeCount, publishedAt, id) 보다 작은 것들
+    if (sortBy === StorySortBy.LIKES && cursor.sort === 'LIKES') {
       const cursorLikeCount = Number(cursor.v);
+      const cursorPublishedAt = cursor.publishedAt ? new Date(cursor.publishedAt) : undefined;
+
+      if (!cursorPublishedAt) {
+        return {};
+      }
+
       return {
         OR: [
           { likeCount: { lt: cursorLikeCount } },
           {
-            AND: [{ likeCount: { equals: cursorLikeCount } }, { id: { lt: cursorId } }],
+            AND: [
+              { likeCount: { equals: cursorLikeCount } },
+              { publishedAt: { lt: cursorPublishedAt } },
+            ],
+          },
+          {
+            AND: [
+              { likeCount: { equals: cursorLikeCount } },
+              { publishedAt: { equals: cursorPublishedAt } },
+              { id: { lt: cursorId } },
+            ],
           },
         ],
       };
@@ -200,10 +232,12 @@ export class StoryRepository {
     switch (sortBy) {
       case StorySortBy.LATEST:
         return [{ publishedAt: 'desc' }, { id: 'desc' }];
+
       case StorySortBy.VIEWS:
-        return [{ viewCount: 'desc' }, { id: 'desc' }];
+        return [{ viewCount: 'desc' }, { publishedAt: 'desc' }, { id: 'desc' }];
+
       case StorySortBy.LIKES:
-        return [{ likeCount: 'desc' }, { id: 'desc' }];
+        return [{ likeCount: 'desc' }, { publishedAt: 'desc' }, { id: 'desc' }];
     }
   }
 

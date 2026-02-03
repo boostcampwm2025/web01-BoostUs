@@ -12,4 +12,4 @@ import { StoryService } from './story.service';
   controllers: [StoryController],
   providers: [StoryService, StoryRepository, ViewService],
 })
-export class StoryModule { }
+export class StoryModule {}

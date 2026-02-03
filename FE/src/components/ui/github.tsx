@@ -72,13 +72,13 @@ const GithubIcon = forwardRef<GithubIconHandle, GithubIconProps>(
 
       return {
         startAnimation: async () => {
-          bodyControls.start('animate');
+          void bodyControls.start('animate');
           await tailControls.start('draw');
-          tailControls.start('wag');
+          void tailControls.start('wag');
         },
         stopAnimation: () => {
-          bodyControls.start('normal');
-          tailControls.start('normal');
+          void bodyControls.start('normal');
+          void tailControls.start('normal');
         },
       };
     });
@@ -88,9 +88,9 @@ const GithubIcon = forwardRef<GithubIconHandle, GithubIconProps>(
         if (isControlledRef.current) {
           onMouseEnter?.(e);
         } else {
-          bodyControls.start('animate');
+          void bodyControls.start('animate');
           await tailControls.start('draw');
-          tailControls.start('wag');
+          void tailControls.start('wag');
         }
       },
       [bodyControls, onMouseEnter, tailControls]
@@ -101,8 +101,8 @@ const GithubIcon = forwardRef<GithubIconHandle, GithubIconProps>(
         if (isControlledRef.current) {
           onMouseLeave?.(e);
         } else {
-          bodyControls.start('normal');
-          tailControls.start('normal');
+          void bodyControls.start('normal');
+          void tailControls.start('normal');
         }
       },
       [bodyControls, tailControls, onMouseLeave]

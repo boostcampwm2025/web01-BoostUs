@@ -1,15 +1,13 @@
 import { useState, useEffect, DragEvent } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  projectSchema,
-  ProjectFormValues,
-} from '@/features/project/model/projectSchema';
+import { ProjectFormValues } from '@/features/project/model/projectSchema';
 import { registerProject } from '@/features/project/api/registerProject';
 import { updateProject } from '@/features/project/api/updateProject';
 import { fetchProjectDetail } from '@/entities/projectDetail/api/projectDetailAPI';
 import { useRouter } from 'next/navigation';
 import { uploadThumbnail } from '../api/uploadThumbnail';
+import { toast } from 'sonner';
+import formatLocalDate from '@/shared/utils/formatLocalDate';
 
 const getErrorMessage = (err: unknown): string => {
   if (err instanceof Error) return err.message;
@@ -36,7 +34,7 @@ export const useProjectRegister = (
     defaultValues: {
       title: '',
       description: '',
-      contents: [''],
+      contents: '',
       repoUrl: '',
       demoUrl: '',
       cohort: '10기',
@@ -50,7 +48,8 @@ export const useProjectRegister = (
     },
   });
 
-  const { watch, setValue, handleSubmit } = formMethods;
+  const { watch, setValue, handleSubmit, getValues } = formMethods;
+  // eslint-disable-next-line react-hooks/incompatible-library
   const thumbnailList = watch('thumbnail');
 
   // 1. 데이터 로드
@@ -64,22 +63,18 @@ export const useProjectRegister = (
 
         if (!rawData) return;
 
-        const toDateString = (dateStr: string | Date | null) => {
-          if (!dateStr) return new Date().toISOString().split('T')[0];
+        const toDateObj = (dateStr: string | null): Date => {
+          if (!dateStr) return new Date();
           const d = new Date(dateStr);
-          if (isNaN(d.getTime())) return new Date().toISOString().split('T')[0];
-          return d.toISOString().split('T')[0];
+          return isNaN(d.getTime()) ? new Date() : d;
         };
-
-        const startDateStr = toDateString(rawData.startDate);
-        const endDateStr = toDateString(rawData.endDate);
 
         const cohortValue = rawData.cohort
           ? `${rawData.cohort.toString().replace('기', '')}기`
           : '10기';
 
         const contentText = Array.isArray(rawData.contents)
-          ? rawData.contents[0]
+          ? rawData.contents.join('\n')
           : rawData.contents || '';
 
         setValue('title', rawData.title);
@@ -87,26 +82,33 @@ export const useProjectRegister = (
         setValue('demoUrl', rawData.demoUrl ?? '');
         setValue('description', rawData.description ?? '');
 
-        setValue('startDate', startDateStr as any);
-        setValue('endDate', endDateStr as any);
-        setValue('cohort', cohortValue as any);
-        setValue('field', ((rawData as any).field ?? 'WEB') as any);
-        setValue('contents', [contentText]);
+        setValue('startDate', toDateObj(rawData.startDate));
+        setValue('endDate', toDateObj(rawData.endDate));
+
+        setValue('cohort', cohortValue as ProjectFormValues['cohort']);
+        setValue('field', rawData.field ?? 'WEB');
+
+        setValue('contents', contentText);
 
         if (rawData.thumbnailUrl) setPreviewUrl(rawData.thumbnailUrl);
 
-        setTechStack(rawData.techStack || []);
+        const loadedTechStack = Array.isArray(rawData.techStack)
+          ? rawData.techStack
+          : [];
+        setTechStack(loadedTechStack);
 
-        const participantNames =
-          rawData.participants?.map((p: any) =>
-            typeof p === 'string' ? p : p.githubId
-          ) || [];
-        setParticipants(participantNames);
+        const loadedParticipants = Array.isArray(rawData.participants)
+          ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            rawData.participants.map((p: any) =>
+              typeof p === 'string' ? p : (p as { githubId: string }).githubId
+            )
+          : [];
+        setParticipants(loadedParticipants);
       } catch (err) {
         console.error('데이터 로드 실패:', err);
       }
     };
-    loadData();
+    void loadData();
   }, [editProjectId, setValue]);
 
   // 2. 썸네일 미리보기
@@ -159,7 +161,7 @@ export const useProjectRegister = (
   };
 
   const handleParticipantsAdd = () => {
-    const raw = watch('participantsInput');
+    const raw = getValues('participantsInput');
     const name = (raw ?? '').trim();
     if (name === '') return;
     setParticipants((prev) => {
@@ -176,56 +178,65 @@ export const useProjectRegister = (
   const submitValidForm = async (data: ProjectFormValues) => {
     try {
       let uploadedThumbnailUrl: string | null = previewUrl;
-      let thumbnailUploadId: string | undefined = undefined;
+      let thumbnailUploadId: string | null = null;
+
       if (data.thumbnail && data.thumbnail.length > 0) {
         const file = data.thumbnail[0];
         const uploadResult = await uploadThumbnail(file);
         uploadedThumbnailUrl = uploadResult.thumbnailUrl;
-        thumbnailUploadId = uploadResult.thumbnailUploadId;
+        thumbnailUploadId = uploadResult.thumbnailUploadId ?? null;
       }
 
       const cohortStr =
         typeof data.cohort === 'string' ? data.cohort.replace('기', '') : '0';
       const parsedCohort = parseInt(cohortStr, 10);
 
-      const requestBody = {
-        thumbnailUrl: uploadedThumbnailUrl,
+      const contentsStr = Array.isArray(data.contents)
+        ? data.contents.join('\n')
+        : (data.contents ?? '');
+
+      const startDateLocal = formatLocalDate(data.startDate);
+      const endDateLocal = formatLocalDate(data.endDate);
+
+      const validDemoUrl =
+        data.demoUrl && data.demoUrl.trim() !== '' ? data.demoUrl : null;
+
+      // 공통으로 들어갈 기본 데이터
+      const baseData = {
+        thumbnailUrl: uploadedThumbnailUrl ?? null,
         thumbnailUploadId: thumbnailUploadId,
         title: data.title,
         description: data.description ?? '',
-        contents: Array.isArray(data.contents)
-          ? data.contents.join('\n')
-          : (data.contents ?? ''),
+        contents: contentsStr,
         repoUrl: data.repoUrl,
-
-        demoUrl:
-          data.demoUrl && data.demoUrl.trim() !== '' ? data.demoUrl : null,
-
+        demoUrl: validDemoUrl,
         cohort: isNaN(parsedCohort) ? 0 : parsedCohort,
-        startDate: new Date(data.startDate).toISOString().split('T')[0],
-        endDate: new Date(data.endDate).toISOString().split('T')[0],
-
-        // 백엔드(@IsString({each:true}))에 맞춰 문자열 배열 그대로 전송
+        startDate: startDateLocal,
+        endDate: endDateLocal,
         techStack: techStack,
-
         field: data.field,
-        participants: participants,
       };
 
-      //
       if (editProjectId) {
-        await updateProject(editProjectId, requestBody as any);
-        alert('수정되었습니다.');
-        await router.push('/project');
+        await updateProject(editProjectId, {
+          ...baseData,
+          participants: participants,
+          demoUrl: baseData.demoUrl ?? '',
+        });
+        toast.success('프로젝트 정보가 수정되었습니다.');
+        router.push('/project');
       } else {
-        await registerProject(requestBody as any);
-        alert('등록되었습니다.');
-        await router.push('/project');
+        await registerProject({
+          ...baseData,
+          participants: participants.map((id) => ({ githubId: id })),
+        });
+        toast.success('프로젝트가 등록되었습니다.');
+        router.push('/project');
       }
       if (onClose) onClose();
     } catch (error: unknown) {
       console.error(error);
-      alert(`처리 실패: ${getErrorMessage(error)}`);
+      toast.error(`처리 실패: ${getErrorMessage(error)}`);
     }
   };
 

@@ -2,6 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { Prisma, ContentState } from 'src/generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { VoteType } from 'src/generated/prisma/client';
+import { Reaction } from 'src/enum/reaction';
+
+const voteTypeToReaction = (voteType?: VoteType | null): Reaction => {
+  if (!voteType) return Reaction.NONE;
+  return voteType === VoteType.UP ? Reaction.LIKE : Reaction.DISLIKE;
+};
 
 export type CreateQuestionInput = {
   memberId: bigint;
@@ -191,6 +197,7 @@ export class QuestionRepository {
   }
 
   async like(questionId: bigint, memberId: bigint) {
+    //질문 투표 조회
     const existing = await this.prisma.questionVote.findUnique({
       where: {
         memberId_questionId: {
@@ -199,7 +206,7 @@ export class QuestionRepository {
         },
       },
     });
-
+    //투표 존재 하지 않으면 생성
     if (!existing) {
       await this.prisma.questionVote.create({
         data: {
@@ -213,7 +220,9 @@ export class QuestionRepository {
         where: { id: questionId },
         data: { upCount: { increment: 1 } },
       });
-    } else if (existing.voteType === VoteType.UP) {
+    }
+    // UP 투표 존재시 삭제
+    else if (existing.voteType === VoteType.UP) {
       await this.prisma.questionVote.delete({
         where: {
           memberId_questionId: {
@@ -228,8 +237,29 @@ export class QuestionRepository {
         data: { upCount: { decrement: 1 } },
       });
     }
+    //DOWN 투표 존재시 UP 투표로 변경
+    else if (existing.voteType === VoteType.DOWN) {
+      await this.prisma.questionVote.update({
+        where: {
+          memberId_questionId: {
+            memberId,
+            questionId,
+          },
+        },
+        data: {
+          voteType: VoteType.UP,
+        },
+      });
+
+      await this.prisma.question.update({
+        where: { id: questionId },
+        data: { upCount: { increment: 1 }, downCount: { decrement: 1 } },
+      });
+    }
   }
+
   async dislike(questionId: bigint, memberId: bigint) {
+    //질문 투표 조회
     const existing = await this.prisma.questionVote.findUnique({
       where: {
         memberId_questionId: {
@@ -238,7 +268,7 @@ export class QuestionRepository {
         },
       },
     });
-
+    //투표 존재 하지 않으면 생성
     if (!existing) {
       await this.prisma.questionVote.create({
         data: {
@@ -252,7 +282,9 @@ export class QuestionRepository {
         where: { id: questionId },
         data: { downCount: { increment: 1 } },
       });
-    } else if (existing.voteType === VoteType.DOWN) {
+    }
+    // DOWN 투표 존재시 삭제
+    else if (existing.voteType === VoteType.DOWN) {
       await this.prisma.questionVote.delete({
         where: {
           memberId_questionId: {
@@ -261,10 +293,103 @@ export class QuestionRepository {
           },
         },
       });
+
       await this.prisma.question.update({
         where: { id: questionId },
         data: { downCount: { decrement: 1 } },
       });
     }
+    //UP 투표 존재시 DOWN 투표로 변경
+    else if (existing.voteType === VoteType.UP) {
+      await this.prisma.questionVote.update({
+        where: {
+          memberId_questionId: {
+            memberId,
+            questionId,
+          },
+        },
+        data: {
+          voteType: VoteType.DOWN,
+        },
+      });
+
+      await this.prisma.question.update({
+        where: { id: questionId },
+        data: { downCount: { increment: 1 }, upCount: { decrement: 1 } },
+      });
+    }
+  }
+
+  async getQuestionReaction(questionId: bigint, memberId: bigint): Promise<Reaction> {
+    const vote = await this.prisma.questionVote.findUnique({
+      where: { memberId_questionId: { memberId, questionId } },
+      select: { voteType: true },
+    });
+
+    return voteTypeToReaction(vote?.voteType);
+  }
+
+  async getAnswerReaction(answerId: bigint, memberId: bigint): Promise<Reaction> {
+    const vote = await this.prisma.answerVote.findUnique({
+      where: { memberId_answerId: { memberId, answerId } },
+      select: { voteType: true },
+    });
+
+    return voteTypeToReaction(vote?.voteType);
+  }
+  async getQuestionReactionsBulk(
+    questionIds: bigint[],
+    memberId: bigint,
+  ): Promise<Map<string, Reaction>> {
+    if (questionIds.length === 0) return new Map();
+
+    const votes = await this.prisma.questionVote.findMany({
+      where: {
+        memberId,
+        questionId: { in: questionIds },
+      },
+      select: {
+        questionId: true,
+        voteType: true,
+      },
+    });
+
+    // 기본값 NONE 세팅
+    const map = new Map<string, Reaction>();
+    for (const qid of questionIds) map.set(qid.toString(), Reaction.NONE);
+
+    // 실제 vote 덮어쓰기
+    for (const v of votes) {
+      map.set(v.questionId.toString(), voteTypeToReaction(v.voteType));
+    }
+
+    return map;
+  }
+
+  async getAnswerReactionsBulk(
+    answerIds: bigint[],
+    memberId: bigint,
+  ): Promise<Map<string, Reaction>> {
+    if (answerIds.length === 0) return new Map();
+
+    const votes = await this.prisma.answerVote.findMany({
+      where: {
+        memberId,
+        answerId: { in: answerIds },
+      },
+      select: {
+        answerId: true,
+        voteType: true,
+      },
+    });
+
+    const map = new Map<string, Reaction>();
+    for (const aid of answerIds) map.set(aid.toString(), Reaction.NONE);
+
+    for (const v of votes) {
+      map.set(v.answerId.toString(), voteTypeToReaction(v.voteType));
+    }
+
+    return map;
   }
 }

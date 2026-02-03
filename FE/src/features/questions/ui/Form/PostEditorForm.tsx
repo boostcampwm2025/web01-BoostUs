@@ -10,6 +10,7 @@ import HashTagInput from '../QuestionRegister/HashTagInput';
 import { useAuth } from '@/features/login/model/auth.store';
 import type { PreviewMode } from './QuestionModeButton';
 import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
+import Button from '@/shared/ui/Button/Button';
 
 const MAX_TITLE_LENGTH = 200;
 const TOOLTIP_MESSAGE_ANSWER = '답변이 채택되면 수정이나 삭제가 불가능해요';
@@ -132,13 +133,6 @@ export default function PostEditorForm({
               : '지식을 공유해 주세요. 마크다운 미리보기를 지원합니다.'
           }
         />
-        {!member && (
-          <div className="mt-2 rounded-xl border border-neutral-border-default bg-neutral-surface-strong px-4 py-3">
-            <p className="text-neutral-text-weak text-body-14">
-              현재 로그인 정보(member)가 없어 비활성화되어 있어요.
-            </p>
-          </div>
-        )}
       </div>
 
       {/* 2. 메인 에디터 컨테이너 (QuestionForm 스타일 유지) */}
@@ -154,14 +148,13 @@ export default function PostEditorForm({
             }
             contentClassName="bg-brand-surface-default text-brand-text-on-default"
           >
-            <button
-              type="button"
+            <Button
+              buttonStyle="primary"
               disabled={!canSubmit}
               onClick={handleSubmit}
-              className="px-4 py-2 rounded-lg cursor-pointer bg-brand-surface-default hover:bg-brand-dark transition-colors duration-150 text-brand-text-on-default disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {buttonLabel}
-            </button>
+            </Button>
           </CustomTooltip>
         </div>
 

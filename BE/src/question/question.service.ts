@@ -9,13 +9,13 @@ import { decodeCursor, encodeCursor } from '../common/util/cursor.util';
 import { CreateQuestionDto } from './dto/req/create-question.dto';
 import { QuestionQueryDto, QuestionSort, QuestionStatus } from './dto/req/question-query.dto';
 import { QuestionRepository } from './question.repository';
-import { QuestionResponseDto } from './dto/res/question-response.dto';
+import { QuestionResponseDto } from './dto/res/detail/question-response.dto';
 import { UpdateQuestionDto } from './dto/req/update-question.dto';
-import { AnswerResponseDto } from 'src/answer/dto/res/answer-response.dto';
 import { ViewService } from 'src/view/view.service';
-import { plainToInstance } from 'class-transformer';
-import { QuestionDetailItemDto } from './dto/question-detail-item.dto';
 import { QuestionNotFoundException } from './exception/question.exception';
+import { QuestionCursorResponseDto } from './dto/res/all/question-list.dto';
+import { Reaction } from 'src/enum/reaction';
+import { QuestionDetailItemDto } from './dto/res/detail/question-detail-item.dto';
 
 const toHashtagsStringOrNull = (hashtags?: string[]): string | null =>
   hashtags && hashtags.length ? hashtags.join(',') : null;
@@ -26,7 +26,7 @@ export class QuestionService {
     private readonly questionRepo: QuestionRepository,
     private readonly viewService: ViewService,
   ) {}
-
+  //응답 dto 없음
   async create(memberIdStr: string, dto: CreateQuestionDto) {
     const memberId = BigInt(memberIdStr);
 
@@ -38,9 +38,12 @@ export class QuestionService {
     });
   }
 
-  async findAllCursor(query: QuestionQueryDto) {
+  async findAllCursor(
+    query: QuestionQueryDto,
+    memberIdStr?: string,
+  ): Promise<QuestionCursorResponseDto> {
     const { status, sort, size, cursor } = query;
-
+    const memberId = memberIdStr ? BigInt(memberIdStr) : null;
     let baseWhere: Prisma.QuestionWhereInput = {};
 
     switch (status) {
@@ -167,10 +170,14 @@ export class QuestionService {
         });
       }
     }
-
+    let reactionMap = new Map<string, Reaction>();
+    if (memberId) {
+      const questionIds = sliced.map((q) => q.id);
+      reactionMap = await this.questionRepo.getQuestionReactionsBulk(questionIds, memberId);
+    }
     return {
       items: sliced.map((q) => ({
-        id: Number(q.id),
+        id: q.id.toString(),
         title: q.title,
         hashtags: q.hashtags ? q.hashtags.split(',') : [],
         upCount: q.upCount,
@@ -180,15 +187,16 @@ export class QuestionService {
         isResolved: q.isResolved,
         createdAt: q.createdAt.toISOString(),
         updatedAt: q.updatedAt.toISOString(),
+        reaction: memberId ? (reactionMap.get(q.id.toString()) ?? Reaction.NONE) : Reaction.NONE,
         member: {
-          id: Number(q.member.id),
+          id: BigInt(q.member.id),
           nickname: q.member.nickname,
           avatarUrl: q.member.avatarUrl,
           cohort: q.member.cohort,
         },
       })),
       meta: {
-        size,
+        size: sizeSafe,
         hasNext,
         nextCursor,
         prevCursor: cursor || null,
@@ -196,15 +204,22 @@ export class QuestionService {
     };
   }
 
-  async findOne(idStr: string): Promise<{
-    question: QuestionResponseDto;
-    answers: AnswerResponseDto[];
-  }> {
+  async findOne(idStr: string, memberIdStr?: string): Promise<QuestionDetailItemDto> {
     const id = BigInt(idStr);
     const q = await this.questionRepo.findOne(id);
+    if (!q) throw new QuestionNotFoundException(id);
+    const memberId = memberIdStr ? BigInt(memberIdStr) : null;
 
-    if (!q) throw new Error('Question not found');
+    let questionReaction: Reaction = Reaction.NONE;
+    if (memberId) {
+      questionReaction = await this.questionRepo.getQuestionReaction(q.id, memberId);
+    }
 
+    let answerReactionMap = new Map<string, Reaction>();
+    if (memberId) {
+      const answerIds = q.answers.map((a) => a.id);
+      answerReactionMap = await this.questionRepo.getAnswerReactionsBulk(answerIds, memberId);
+    }
     return {
       question: {
         id: q.id.toString(),
@@ -219,12 +234,8 @@ export class QuestionService {
         answerCount: q._count.answers,
         createdAt: q.createdAt.toISOString(),
         updatedAt: q.updatedAt.toISOString(),
-        member: {
-          id: q.member.id.toString(),
-          nickname: q.member.nickname,
-          avatarUrl: q.member.avatarUrl,
-          cohort: q.member.cohort,
-        },
+        member: q.member,
+        reaction: questionReaction,
       },
       answers: q.answers.map((a) => ({
         id: a.id.toString(),
@@ -236,12 +247,8 @@ export class QuestionService {
         state: a.state,
         createdAt: a.createdAt.toISOString(),
         updatedAt: a.updatedAt.toISOString(),
-        member: {
-          id: a.member.id.toString(),
-          nickname: a.member.nickname,
-          avatarUrl: a.member.avatarUrl,
-          cohort: a.member.cohort,
-        },
+        member: a.member,
+        reaction: answerReactionMap.get(a.id.toString()),
       })),
     };
   }
@@ -303,8 +310,9 @@ export class QuestionService {
       answerCount: updated._count.answers,
       createdAt: updated.createdAt.toISOString(),
       updatedAt: updated.updatedAt.toISOString(),
+      reaction: Reaction.NONE,
       member: {
-        id: updated.member.id.toString(),
+        id: updated.member.id,
         nickname: updated.member.nickname,
         avatarUrl: updated.member.avatarUrl,
         cohort: updated.member.cohort,
@@ -354,7 +362,7 @@ export class QuestionService {
       throw new BadRequestException('해당 질문에 달린 답변이 아닙니다');
     }
 
-    return this.findOne(questionIdStr);
+    return this.findOne(questionIdStr, memberId.toString());
   }
 
   async like(questionIdStr: string, memberIdStr: string | undefined) {

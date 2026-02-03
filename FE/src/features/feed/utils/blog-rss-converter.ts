@@ -10,7 +10,7 @@ export function convertVelogToRss(blogUrl: string): string {
   const normalized = blogUrl.replace(/^https?:\/\//, '');
 
   // velog.io/@username 형식 매칭
-  const match = normalized.match(/^velog\.io\/(@[\w-]+)/);
+  const match = /^velog\.io\/(@[\w-]+)/.exec(normalized);
 
   if (!match) {
     throw new Error('유효하지 않은 Velog 블로그 주소입니다.');
@@ -30,7 +30,7 @@ export function convertTistoryToRss(blogUrl: string): string {
   const normalized = blogUrl.replace(/^https?:\/\//, '');
 
   // subdomain.tistory.com 형식 매칭
-  const match = normalized.match(/^([\w-]+)\.tistory\.com\/?$/);
+  const match = /^([\w-]+)\.tistory\.com\/?$/.exec(normalized);
 
   if (!match) {
     throw new Error('유효하지 않은 Tistory 블로그 주소입니다.');
@@ -74,7 +74,7 @@ export function convertBlogUrlToRss(
 export function extractBlogUrlFromRss(rssUrl: string): string | null {
   // Velog RSS: https://v2.velog.io/rss/@username
   // 원본: https://velog.io/@username
-  const velogMatch = rssUrl.match(/v2\.velog\.io\/rss\/(@[\w-]+)/);
+  const velogMatch = /v2\.velog\.io\/rss\/(@[\w-]+)/.exec(rssUrl);
   if (velogMatch) {
     const username = velogMatch[1];
     return `https://velog.io/${username}`;
@@ -82,7 +82,7 @@ export function extractBlogUrlFromRss(rssUrl: string): string | null {
 
   // Tistory RSS: https://subdomain.tistory.com/rss
   // 원본: https://subdomain.tistory.com
-  const tistoryMatch = rssUrl.match(/https?:\/\/([\w-]+)\.tistory\.com\/rss/);
+  const tistoryMatch = /https?:\/\/([\w-]+)\.tistory\.com\/rss/.exec(rssUrl);
   if (tistoryMatch) {
     const subdomain = tistoryMatch[1];
     return `https://${subdomain}.tistory.com`;
@@ -96,7 +96,9 @@ export function extractBlogUrlFromRss(rssUrl: string): string | null {
  * @param blogUrl 블로그 주소 (http/https 포함 또는 생략)
  * @returns 감지된 플랫폼 또는 null
  */
-export function detectPlatformFromBlogUrl(blogUrl: string): BlogPlatform | null {
+export function detectPlatformFromBlogUrl(
+  blogUrl: string
+): BlogPlatform | null {
   const normalized = blogUrl.replace(/^https?:\/\//, '');
 
   if (/^velog\.io\/@[\w-]+/.test(normalized)) {
@@ -109,4 +111,3 @@ export function detectPlatformFromBlogUrl(blogUrl: string): BlogPlatform | null 
 
   return null;
 }
-

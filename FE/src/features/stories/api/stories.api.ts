@@ -80,7 +80,9 @@ export const unlikeStory = async (storyId: string) => {
  * @param storyId 스토리 ID
  * @returns 좋아요 여부
  */
-export const checkStoryLikeStatus = async (storyId: string): Promise<boolean> => {
+export const checkStoryLikeStatus = async (
+  storyId: string
+): Promise<boolean> => {
   const data = await customFetch<ApiResponse<{ isLiked: boolean }>>(
     `/api/stories/${storyId}/like/status`
   );

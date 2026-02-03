@@ -64,88 +64,88 @@ html {
 
 body {
   background-color: var(--color-neutral-surface-default);
+}
 
-  @layer utilities {
-    /* Display (Bold) */
-    .text-display-32 {
-      font-size: 2rem;
-      font-weight: 700;
-      line-height: 1.5;
-    }
-    .text-display-24 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      line-height: 1.5;
-    }
-    .text-display-20 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      line-height: 1.5;
-    }
-    .text-display-16 {
-      font-size: 1rem;
-      font-weight: 700;
-      line-height: 1.5;
-    }
-
-    /* String (Medium) */
-    .text-string-20 {
-      font-size: 1.25rem;
-      font-weight: 500;
-      line-height: 1.5;
-    }
-    .text-string-16 {
-      font-size: 1rem;
-      font-weight: 500;
-      line-height: 1.5;
-    }
-    .text-string-14 {
-      font-size: 0.875rem;
-      font-weight: 500;
-      line-height: 1.5;
-    }
-    .text-string-12 {
-      font-size: 0.75rem;
-      font-weight: 500;
-      line-height: 1.5;
-    }
-
-    /* Body (Regular) */
-    .text-body-16 {
-      font-size: 1rem;
-      font-weight: 400;
-      line-height: 1.5;
-    }
-    .text-body-14 {
-      font-size: 0.875rem;
-      font-weight: 400;
-      line-height: 1.5;
-    }
-    .text-body-12 {
-      font-size: 0.75rem;
-      font-weight: 400;
-      line-height: 1.5;
-    }
-    .text-body-10 {
-      font-size: 0.625rem;
-      font-weight: 400;
-      line-height: 1.5;
-    }
+@layer utilities {
+  /* Display (Bold) */
+  .text-display-32 {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+  .text-display-24 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+  .text-display-20 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+  .text-display-16 {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.5;
   }
 
-  html {
-    /* 스크롤바 자리를 미리 확보 */
-    scrollbar-gutter: stable;
+  /* String (Medium) */
+  .text-string-20 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  .text-string-16 {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  .text-string-14 {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  .text-string-12 {
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.5;
   }
 
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+  /* Body (Regular) */
+  .text-body-16 {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
   }
+  .text-body-14 {
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+  .text-body-12 {
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+  .text-body-10 {
+    font-size: 0.625rem;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+}
 
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+html {
+  /* 스크롤바 자리를 미리 확보 */
+  scrollbar-gutter: stable;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 @theme inline {
@@ -264,5 +264,69 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@keyframes toast-timer {
+  from { width: 100%; }
+  to { width: 0; }
+}
+
+@layer utilities {
+  .sonner-progress-bar {
+    @apply relative overflow-hidden border;
+
+    /* 기본 테두리 색상 (Info, Default 등) */
+    border-color: var(--color-neutral-border-default);
+
+    /* 1. 트랙 (바닥에 깔리는 연한 색) */
+    &::before {
+      content: "";
+      @apply absolute bottom-0 left-0 h-1 w-full;
+      background-color: var(--color-stone-100);
+    }
+
+    /* 2. 인디케이터 (줄어드는 진한 색) */
+    &::after {
+      content: "";
+      @apply absolute bottom-0 left-0 h-1;
+      background-color: var(--color-neutral-text-default);
+      width: 100%;
+      animation: toast-timer 4s linear forwards;
+    }
+
+    /* Success (성공) - 브랜드 컬러 */
+    &[data-type="success"] {
+      border-color: var(--color-brand-primary);
+      &::before { background-color: var(--color-brand-light); }
+      &::after { background-color: var(--color-brand-primary); }
+    }
+
+    /* Error (에러) - 빨간색 */
+    &[data-type="error"] {
+      border-color: var(--color-danger-text-default);
+      &::before { background-color: var(--color-danger-surface-default); }
+      &::after { background-color: var(--color-danger-text-default); }
+    }
+
+    /* Warning (경고) - 오렌지색 (아이콘 색상과 맞춤) */
+    &[data-type="warning"] {
+      border-color: #fb923c; /* orange-400 */
+      &::before { background-color: #fff7ed; /* orange-50 */ }
+      &::after { background-color: #fb923c; }
+    }
+
+    /* Info (정보) - 뉴트럴 컬러 (기본값과 동일하게 유지하거나 변경 가능) */
+    &[data-type="info"] {
+      border-color: var(--color-neutral-border-default);
+      &::before { background-color: var(--color-stone-100); }
+      &::after { background-color: var(--color-neutral-text-default); }
+    }
+  }
+
+  /* 마우스 호버 시 애니메이션 멈춤 (Sonner 동작과 동기화) */
+  /* .group 클래스는 Toaster 컴포넌트에서 이미 부여됨 */
+  .group:hover .sonner-progress-bar::after {
+    animation-play-state: paused;
   }
 }

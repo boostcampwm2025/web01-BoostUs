@@ -14,3 +14,16 @@ export class MemberNotFoundException extends BaseException {
     );
   }
 }
+
+// 닉네임이 이미 있을 떄 발생하는 예외
+
+export class MemberNicknameDuplicateException extends BaseException {
+  constructor(nickname: string) {
+    super(
+      'MEMBER_NICKNAME_DUPLICATE',
+      '이미 사용 중인 닉네임입니다.',
+      HttpStatus.CONFLICT, // 409 Conflict (또는 400 사용 가능)
+      { nickname },
+    );
+  }
+}
