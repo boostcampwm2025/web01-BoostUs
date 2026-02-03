@@ -44,12 +44,6 @@ export const useOptimisticVote = <T extends string | number>({
     const prevStats = { ...stats };
     const currentReaction = stats.reaction;
 
-    console.log('[useOptimisticVote] handleVote called:', {
-      type,
-      currentReaction,
-      stats,
-    });
-
     // 새로운 상태 계산 (낙관적 업데이트)
     let nextUpCount = stats.upCount;
     let nextDownCount = stats.downCount;
@@ -71,12 +65,6 @@ export const useOptimisticVote = <T extends string | number>({
         if (currentReaction === 'LIKE') nextUpCount--; // LIKE -> DISLIKE 전환 시 감소
       }
     }
-
-    console.log('[useOptimisticVote] New state:', {
-      nextUpCount,
-      nextDownCount,
-      nextReaction,
-    });
 
     setStats({
       upCount: nextUpCount,
