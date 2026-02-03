@@ -6,6 +6,16 @@ import { ApiResponse } from '@/shared/types/ApiResponseType';
 import { Meta } from '@/shared/types/PaginationType';
 import { customFetch } from '@/shared/utils/fetcher';
 
+export const FEED_QUERY_KEY = ['feed-stories'];
+export const FEED_PARAMS = { sortBy: 'views', period: 'all', size: 8 } as const;
+
+export const RECO_STORY_QUERY_KEY = ['reco-story-best'];
+export const RECO_STORY_PARAMS = {
+  sortBy: 'views',
+  period: 'all',
+  size: 1,
+} as const;
+
 interface FetchStoriesParams {
   sortBy?: StoriesSortOption['sortBy'];
   period?: StoriesSortOption['period'];
@@ -15,20 +25,16 @@ interface FetchStoriesParams {
 }
 
 export const fetchRecoStory = async (params?: FetchStoriesParams) => {
-  const queryParams = new URLSearchParams();
-
-  if (params?.sortBy) queryParams.append('sortBy', params.sortBy.toUpperCase());
-  if (params?.period) queryParams.append('period', params.period.toUpperCase());
-  if (params?.query) queryParams.append('query', params.query);
-  if (params?.cursor) queryParams.append('cursor', params.cursor);
-  if (params?.size) queryParams.append('size', params.size.toString());
-
-  const data = await customFetch<
+  return await customFetch<
     ApiResponse<{
       items: Story[];
       meta: Meta;
     }>
-  >(`/api/stories?${queryParams.toString()}`);
-
-  return data;
+  >('/api/stories', {
+    params: {
+      ...params,
+      sortBy: params?.sortBy?.toUpperCase(),
+      period: params?.period?.toUpperCase(),
+    },
+  });
 };

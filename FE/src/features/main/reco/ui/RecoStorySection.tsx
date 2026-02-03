@@ -3,69 +3,50 @@
 import Image from 'next/image';
 import { Calendar1, Eye, Heart } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { fetchRecoStory } from '@/features/main/reco/api/fetchRecoStory';
+import {
+  fetchRecoStory,
+  RECO_STORY_PARAMS,
+  RECO_STORY_QUERY_KEY,
+} from '@/features/main/reco/api/fetchRecoStory';
 import { Story } from '@/features/stories';
 import UserProfile from '@/shared/ui/UserProfile';
 import extractDate from '@/shared/utils/extractDate';
 import { Card } from '@/shared/ui/Card';
 import { toast } from '@/shared/utils/toast';
+import { useQuery } from '@tanstack/react-query';
 
-const DEFAULT_THUMBNAIL = '/FE/public/assets/NoImage.png';
+const DEFAULT_THUMBNAIL = '/assets/NoImage.png';
 
 const RecommendStorySection = () => {
-  // 1. 내부에서 사용할 State 정의
-  const [bestStory, setBestStory] = useState<Story | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isImageError, setIsImageError] = useState(false);
-  const [hasError, setHasError] = useState(false);
 
-  // 2. 컴포넌트 마운트 시 데이터 Fetching
-  useEffect(() => {
-    const loadBestStory = async () => {
-      try {
-        setIsLoading(true);
-        setHasError(false);
-        // 메인용 임시 로직: 조회수(VIEWS) 1등 가져오기
-        const response = await fetchRecoStory({
-          sortBy: 'views',
-          period: 'all',
-          size: 1,
-        });
+  const {
+    data: response,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: RECO_STORY_QUERY_KEY,
+    queryFn: () => fetchRecoStory(RECO_STORY_PARAMS),
+    staleTime: 1000 * 60 * 5,
+  });
 
-        if (response?.data?.items && response.data.items.length > 0) {
-          setBestStory(response.data.items[0]);
-        } else {
-          setHasError(true);
-        }
-      } catch (error) {
-        toast.error(error);
-        setHasError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const bestStory = response?.data?.items?.[0] ?? null;
 
-    void loadBestStory();
-  }, []);
-
-  // 3. 로딩 중일 때 처리 (스켈레톤 혹은 빈 화면)
   if (isLoading) {
     return (
       <div className="w-full h-full bg-neutral-surface-bold animate-pulse rounded-2xl border border-neutral-border-default min-h-50" />
     );
   }
 
-  // 4. 에러가 발생했거나 데이터가 없을 때 처리
-  if (hasError || !bestStory) {
-    return null;
+  if (isError || !bestStory) {
+    return null; // TODO: 에러 UI 개선 필요
   }
 
-  // 5. 이미지 URL 처리 로직
+  // TODO: useImageError 적용
   const currentSrc = isImageError
     ? DEFAULT_THUMBNAIL
     : (bestStory.thumbnailUrl ?? DEFAULT_THUMBNAIL);
 
-  // 6. 렌더링 (Props 대신 bestStory State 사용)
   return (
     <Card.Root
       href={`/stories/${bestStory.id}`}
@@ -89,7 +70,6 @@ const RecommendStorySection = () => {
             nickname={bestStory.member.nickname}
             cohort={bestStory.member.cohort}
           />
-          {/* [Typography] text-display-20으로 오버라이드 */}
           <Card.Title className="mt-4 text-display-20">
             {bestStory.title}
           </Card.Title>
