@@ -228,7 +228,7 @@ export const useProjectRegister = (
       } else {
         await registerProject({
           ...baseData,
-          participants: participants.map((id) => ({ githubId: id })),
+          participants: participants,
         });
         toast.success('프로젝트가 등록되었습니다.');
         router.push('/project');
@@ -254,6 +254,7 @@ export const useProjectRegister = (
     participants,
     addParticipant: handleParticipantsAdd,
     removeParticipant: handleParticipantsRemove,
+    setParticipants,
     techStack,
     setTechStack,
   };
