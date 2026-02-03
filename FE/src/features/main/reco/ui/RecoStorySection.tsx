@@ -23,7 +23,7 @@ const RecommendStorySection = () => {
   } = useQuery({
     queryKey: RECO_STORY_QUERY_KEY,
     queryFn: () => fetchRecoStory(RECO_STORY_PARAMS),
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 60,
   });
 
   const bestStory = response?.data?.items?.[0] ?? null;

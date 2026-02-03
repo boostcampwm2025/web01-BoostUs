@@ -54,7 +54,14 @@ export const useProjectRegister = (
     mutationFn: registerProject,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.all });
-      await fetch(`api/revalidate?path=/project`); // Next.js 서버의 HTML 캐시 갱신 (ISR 무효화)
+
+      // ISR 캐시 무효화 (POST 메서드 사용)
+      try {
+        await fetch('/api/revalidate?path=/project', { method: 'POST' });
+      } catch (error) {
+        console.error('ISR revalidation failed:', error);
+      }
+
       toast.success('프로젝트가 등록되었습니다.');
       router.push('/project');
       if (onClose) onClose();
@@ -67,7 +74,14 @@ export const useProjectRegister = (
       updateProject(id, body),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.all });
-      await fetch(`api/revalidate?path=/project`); // Next.js 서버의 HTML 캐시 갱신 (ISR 무효화)
+
+      // ISR 캐시 무효화 (POST 메서드 사용)
+      try {
+        await fetch('/api/revalidate?path=/project', { method: 'POST' });
+      } catch (error) {
+        console.error('ISR revalidation failed:', error);
+      }
+
       toast.success('프로젝트 정보가 수정되었습니다.');
       router.push('/project');
       if (onClose) onClose();

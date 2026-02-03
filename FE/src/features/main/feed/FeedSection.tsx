@@ -13,7 +13,7 @@ const FeedSection = () => {
   const { data: response } = useQuery({
     queryKey: FEED_QUERY_KEY,
     queryFn: () => fetchRecoStory(FEED_PARAMS),
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 60,
   });
 
   const stories = response?.data?.items ?? [];

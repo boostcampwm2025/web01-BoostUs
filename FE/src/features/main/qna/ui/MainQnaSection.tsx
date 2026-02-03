@@ -20,7 +20,7 @@ export default function MainQnaSection() {
         status: activeTab === 'ALL' ? 'all' : 'unanswered',
         size: 3,
       }),
-    staleTime: 1000 * 60,
+    staleTime: 1000 * 60 * 60,
   });
 
   const questions = response?.data?.items ?? [];
