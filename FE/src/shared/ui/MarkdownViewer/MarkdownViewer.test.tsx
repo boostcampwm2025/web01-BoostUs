@@ -1,10 +1,11 @@
 import { render, screen } from '@testing-library/react';
+import type { ReactNode } from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { MarkdownViewer } from './MarkdownViewer';
 
 // SyntaxHighlighterProps 인터페이스 정의
 interface SyntaxHighlighterProps {
-  children: React.ReactNode;
+  children: ReactNode;
   language?: string;
   className?: string;
   [key: string]: unknown;
