@@ -22,24 +22,39 @@ import {
   InvalidThumbnailMetadataException,
   ThumbnailOwnershipException,
   MemberNotFoundException,
+  RepositoryQueryRequiredException,
+  InvalidRepositoryUrlException,
+  GithubApiRequestFailedException,
 } from './exception/project.exception';
 import { ViewService } from 'src/view/view.service';
+import { JwtService } from '@nestjs/jwt';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class ProjectService {
   private readonly s3: S3Client;
   private readonly endpoint: string;
   private readonly bucket: string;
+  private readonly githubAppId: string;
+  private readonly githubAppPrivateKey: string;
+  private readonly githubApiBase = 'https://api.github.com';
 
   constructor(
     private readonly projectRepository: ProjectRepository,
     private readonly authRepository: AuthRepository,
     private readonly config: ConfigService,
     private readonly viewService: ViewService,
+    private readonly jwtService: JwtService,
+    private readonly http: HttpService,
     @Inject(REDIS) private readonly redis: Redis,
   ) {
     this.endpoint = this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_ENDPOINT');
     this.bucket = this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_BUCKET');
+    this.githubAppId = this.config.getOrThrow<string>('GITHUB_APP_ID');
+    this.githubAppPrivateKey = this.config
+      .getOrThrow<string>('GITHUB_APP_PRIVATE_KEY')
+      .replace(/\\n/g, '\n');
 
     this.s3 = new S3Client({
       region: this.config.getOrThrow<string>('NCP_OBJECT_STORAGE_REGION'),
@@ -54,6 +69,108 @@ export class ProjectService {
       // true : Path style -> NCP 는 path style 권장
       // https://kr.object.ncloudstorage.com/버킷이름/파일경로
     });
+  }
+
+  /**
+   * JWT 생성에 사용하는 base64url 인코딩을 수행합니다.
+   * @param input Buffer 또는 string
+   * @returns base64url 인코딩 문자열
+   */
+  private _base64Url(input: Buffer | string) {
+    return Buffer.from(input)
+      .toString('base64')
+      .replace(/=/g, '')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_');
+  }
+
+  /**
+   * GitHub App 인증용 JWT를 생성합니다.
+   * @returns GitHub App JWT
+   */
+  private _createGithubAppJwt(): string {
+    const now = Math.floor(Date.now() / 1000);
+    return this.jwtService.sign(
+      { iat: now - 60, exp: now + 9 * 60, iss: this.githubAppId },
+      {
+        algorithm: 'RS256',
+        privateKey: this.githubAppPrivateKey,
+        header: { alg: 'RS256', typ: 'JWT' },
+      },
+    );
+  }
+
+  /**
+   * repository URL에서 owner/repo를 파싱합니다.
+   * @param repositoryUrl GitHub 레포 URL 또는 slug
+   * @returns { owner, repo }
+   */
+  private _parseRepositorySlug(repositoryUrl: string) {
+    const raw = repositoryUrl.trim();
+    let path = raw;
+
+    try {
+      if (raw.startsWith('http://') || raw.startsWith('https://')) {
+        path = new URL(raw).pathname;
+      } else if (raw.includes('github.com/')) {
+        path = new URL(`https://${raw}`).pathname;
+      }
+    } catch {
+      // URL 파싱 실패는 아래에서 검증
+    }
+
+    const cleaned = path.replace(/^\/+/, '').replace(/\.git$/, '');
+    const [owner, repo] = cleaned.split('/').filter(Boolean);
+
+    if (!owner || !repo) {
+      throw new InvalidRepositoryUrlException();
+    }
+
+    return { owner, repo };
+  }
+
+  /**
+   * GitHub API에 요청하고 JSON을 파싱합니다.
+   * @param url 요청 URL
+   * @param init fetch 옵션
+   * @returns 파싱된 JSON 응답
+   */
+  private async _githubFetch<T>(
+    url: string,
+    init?: {
+      method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+      headers?: Record<string, string>;
+      body?: string;
+    },
+  ): Promise<T> {
+    try {
+      const res = await firstValueFrom(
+        this.http.request<T>({
+          url,
+          method: init?.method ?? 'GET',
+          headers: init?.headers,
+          data: init?.body,
+        }),
+      );
+
+      return res.data;
+    } catch (e: unknown) {
+      if (e && typeof e === 'object' && 'response' in e) {
+        const err = e as {
+          response?: { status?: number; statusText?: string; data?: unknown };
+        };
+
+        throw new GithubApiRequestFailedException(
+          err.response?.status ?? 500,
+          err.response?.statusText ?? 'Unknown',
+          typeof err.response?.data === 'string'
+            ? err.response.data
+            : JSON.stringify(err.response?.data),
+        );
+      }
+
+      throw e;
+    }
   }
 
   async uploadTempThumbnail(file: Express.Multer.File, memberId: string) {
@@ -205,6 +322,58 @@ export class ProjectService {
     }
 
     return `${this.endpoint}/${this.bucket}/${key}`;
+  }
+
+  /**
+   * GitHub 레포의 collaborator 목록을 조회합니다.
+   * @param repositoryUrl GitHub 레포 URL 또는 slug
+   * @returns collaborator 목록 (githubId, avatarUrl)
+   */
+  async getRepoCollaborators(repositoryUrl: string) {
+    if (!repositoryUrl) {
+      throw new RepositoryQueryRequiredException();
+    }
+
+    const { owner, repo } = this._parseRepositorySlug(repositoryUrl);
+    const appJwt = this._createGithubAppJwt();
+
+    const installation = await this._githubFetch<{ id: number }>(
+      `${this.githubApiBase}/repos/${owner}/${repo}/installation`,
+      {
+        headers: {
+          Authorization: `Bearer ${appJwt}`,
+          Accept: 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    );
+
+    const accessToken = await this._githubFetch<{ token: string }>(
+      `${this.githubApiBase}/app/installations/${installation.id}/access_tokens`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${appJwt}`,
+          Accept: 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    );
+
+    const collaborators = await this._githubFetch<
+      Array<{ login: string; avatar_url: string | null }>
+    >(`${this.githubApiBase}/repos/${owner}/${repo}/collaborators?affiliation=direct`, {
+      headers: {
+        Authorization: `Bearer ${accessToken.token}`,
+        Accept: 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+    });
+
+    return collaborators.map((collaborator) => ({
+      githubId: collaborator.login,
+      avatarUrl: collaborator.avatar_url ?? null,
+    }));
   }
 
   async findAll(query: ProjectListQueryDto) {
