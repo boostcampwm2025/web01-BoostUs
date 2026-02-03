@@ -1,10 +1,25 @@
 import ProjectMainBoard from '@/widgets/Project/ProjectMainBoard';
-import { Suspense } from 'react';
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from '@tanstack/react-query';
+import {
+  fetchProjects,
+  PROJECT_KEYS,
+} from '@/features/project/api/getProjects';
 
-export default function ProjectPage() {
+export default async function ProjectPage() {
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery({
+    queryKey: PROJECT_KEYS.all,
+    queryFn: fetchProjects,
+  });
+
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <HydrationBoundary state={dehydrate(queryClient)}>
       <ProjectMainBoard />
-    </Suspense>
+    </HydrationBoundary>
   );
 }

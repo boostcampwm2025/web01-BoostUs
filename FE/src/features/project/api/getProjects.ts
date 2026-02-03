@@ -1,5 +1,9 @@
 import { customFetch } from '@/shared/utils/fetcher';
 
+export const PROJECT_KEYS = {
+  all: ['projects'] as const,
+};
+
 export type SortOrder = 'TEAM_NUM' | 'VIEW_COUNT';
 
 export interface Project {

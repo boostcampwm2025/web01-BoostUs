@@ -2,18 +2,25 @@ import { useState, useEffect, DragEvent } from 'react';
 import { useForm } from 'react-hook-form';
 import { ProjectFormValues } from '@/features/project/model/projectSchema';
 import { registerProject } from '@/features/project/api/registerProject';
-import { updateProject } from '@/features/project/api/updateProject';
+import {
+  updateProject,
+  UpdateProjectBody,
+} from '@/features/project/api/updateProject';
 import { fetchProjectDetail } from '@/entities/projectDetail/api/projectDetailAPI';
 import { useRouter } from 'next/navigation';
 import { uploadThumbnail } from '../api/uploadThumbnail';
 import formatLocalDate from '@/shared/utils/formatLocalDate';
 import { toast } from '@/shared/utils/toast';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { PROJECT_KEYS } from '@/features/project/api/getProjects';
 
 export const useProjectRegister = (
   editProjectId?: number,
   onClose?: () => void
 ) => {
   const router = useRouter();
+  const queryClient = useQueryClient();
+
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [techStack, setTechStack] = useState<string[]>([]);
   const [participants, setParticipants] = useState<string[]>([]);
@@ -41,6 +48,29 @@ export const useProjectRegister = (
   const { watch, setValue, handleSubmit, getValues } = formMethods;
   // eslint-disable-next-line react-hooks/incompatible-library
   const thumbnailList = watch('thumbnail');
+
+  // 프로젝트 추가 Mutation
+  const createMutation = useMutation({
+    mutationFn: registerProject,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.all });
+      toast.success('프로젝트가 등록되었습니다.');
+      router.push('/project');
+      if (onClose) onClose();
+    },
+  });
+
+  // 프로젝트 수정 Mutation
+  const updateMutation = useMutation({
+    mutationFn: ({ id, body }: { id: number; body: UpdateProjectBody }) =>
+      updateProject(id, body),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.all });
+      toast.success('프로젝트 정보가 수정되었습니다.');
+      router.push('/project');
+      if (onClose) onClose();
+    },
+  });
 
   // 1. 데이터 로드
   useEffect(() => {
@@ -208,22 +238,20 @@ export const useProjectRegister = (
       };
 
       if (editProjectId) {
-        await updateProject(editProjectId, {
-          ...baseData,
-          participants: participants,
-          demoUrl: baseData.demoUrl ?? '',
+        await updateMutation.mutateAsync({
+          id: editProjectId,
+          body: {
+            ...baseData,
+            participants: participants,
+            demoUrl: baseData.demoUrl ?? '',
+          },
         });
-        toast.success('프로젝트 정보가 수정되었습니다.');
-        router.push('/project');
       } else {
-        await registerProject({
+        await createMutation.mutateAsync({
           ...baseData,
           participants: participants.map((id) => ({ githubId: id })),
         });
-        toast.success('프로젝트가 등록되었습니다.');
-        router.push('/project');
       }
-      if (onClose) onClose();
     } catch (error: unknown) {
       toast.error(error);
     }

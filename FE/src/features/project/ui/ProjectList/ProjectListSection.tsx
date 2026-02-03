@@ -1,11 +1,14 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import ProjectListCard from '@/features/project/ui/ProjectList/ProjectListCard';
 import { useSearchParams } from 'next/navigation';
-import { fetchProjects, Project } from '@/features/project/api/getProjects';
+import {
+  fetchProjects,
+  PROJECT_KEYS,
+} from '@/features/project/api/getProjects';
 import { motion } from 'framer-motion';
-import { toast } from '@/shared/utils/toast';
+import { useQuery } from '@tanstack/react-query';
 
 const SORT_ORDER = {
   TEAM_NUM: '팀 번호 순',
@@ -22,28 +25,17 @@ interface SortOption {
 }
 
 const ProjectListSection = () => {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: response, isLoading } = useQuery({
+    queryKey: PROJECT_KEYS.all,
+    queryFn: fetchProjects,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const projects = response?.items ?? [];
+
   const [sortOrder, setSortOrder] = useState<SortOrderType>(
     SORT_ORDER.TEAM_NUM
   );
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setIsLoading(true);
-        const data = await fetchProjects();
-        setProjects(data.items); // 받아온 데이터의 items를 state에 저장
-      } catch (error) {
-        toast.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    void loadData();
-  }, []); // 빈 배열: 마운트 시 1회만 실행
-
   const searchParams = useSearchParams();
   const field = searchParams.get('field') ?? '전체';
   const cohort = searchParams.get('cohort') ?? '전체';
@@ -68,6 +60,7 @@ const ProjectListSection = () => {
       }
     });
 
+  // TODO: 스켈레톤 UI 구현하기, Hydration 되니까 사실상 거의 안보일 수도
   if (isLoading) return <div>Loading...</div>;
 
   return (

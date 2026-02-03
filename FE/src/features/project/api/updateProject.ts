@@ -1,6 +1,6 @@
 import { customFetch } from '@/shared/utils/fetcher';
 
-interface UpdateProjectBody {
+export interface UpdateProjectBody {
   title: string;
   repoUrl: string;
   thumbnailUploadId: string | null;

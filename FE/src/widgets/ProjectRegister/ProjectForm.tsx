@@ -24,6 +24,7 @@ import {
   ParticipantManager,
 } from '@/features/project/ui/register/utils/FunctionalComponents';
 import { toast } from '@/shared/utils/toast';
+import Button from '@/shared/ui/Button/Button';
 
 // 데이터 정규화 함수
 const normalizeStacks = (data: unknown): TechStackResponse => {
@@ -217,24 +218,16 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
           </div>
 
           <div className="flex justify-end gap-2 mt-8">
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="rounded-lg bg-brand-surface-weak border border-neutral-border-default px-4 py-2 text-string-16"
-            >
+            <Button buttonStyle="outlined" onClick={() => router.back()}>
               취소
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="rounded-lg bg-brand-surface-default px-4 py-2 text-string-16 text-brand-text-on-default disabled:opacity-50"
-            >
+            </Button>
+            <Button disabled={isSubmitting} type="submit">
               {isSubmitting
                 ? '처리 중...'
                 : isEditMode
                   ? '수정 완료'
                   : '등록하기'}
-            </button>
+            </Button>
           </div>
         </form>
       </div>
