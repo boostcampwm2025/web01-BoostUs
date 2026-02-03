@@ -21,8 +21,10 @@ export default function QuestionRegisterPage() {
           if (res?.id) {
             toast.success('질문이 등록되었습니다.');
             router.push(`/questions/${res.id}`);
+            return res;
           }
-          return res;
+          toast.error('질문 등록에 실패했습니다. 다시 시도해주세요.');
+          return undefined;
         } catch (error) {
           toast.error(error);
           return undefined;

@@ -77,7 +77,6 @@ const AnswerCard = ({ answer, question, hasAcceptedAnswer }: Props) => {
     } catch (error) {
       toast.error(error);
       setIsAccepted(previousState);
-      alert('답변 채택에 실패했습니다.');
     }
   };
 

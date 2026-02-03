@@ -97,7 +97,7 @@ export default function RecommendProjectSection() {
               className={`w-full h-full ${slide.color} ${slide.id !== -1 ? 'cursor-pointer' : ''}`}
               onClick={() => {
                 if (slide.id !== -1)
-                  router.push(`project/${slide.id.toString()}`);
+                  router.push(`/project/${slide.id.toString()}`);
               }}
             >
               <Image
