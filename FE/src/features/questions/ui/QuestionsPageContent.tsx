@@ -13,6 +13,9 @@ import { useQuestionPagination } from '@/features/questions/model/useQuestionsPa
 import PageHeader from '@/shared/ui/PageHeader';
 import Button from '@/shared/ui/Button/Button';
 import Link from 'next/link';
+import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
+import { useAuth } from '@/features/login/model/auth.store';
+import { useRouter } from 'next/navigation';
 
 interface QuestionsPageContentProps {
   initialQuestions: Question[];
@@ -25,6 +28,8 @@ const QuestionsPageContent = ({
   meta: initialMeta,
   counts,
 }: QuestionsPageContentProps) => {
+  const router = useRouter();
+
   const {
     questions,
     isLoading,
@@ -35,6 +40,8 @@ const QuestionsPageContent = ({
     handlePrev,
   } = useQuestionPagination({ initialQuestions, initialMeta });
 
+  const { member } = useAuth();
+
   return (
     <QuestionsProvider>
       <div className="flex flex-col w-full font-sans max-w-270">
@@ -44,9 +51,28 @@ const QuestionsPageContent = ({
         />
         <div className="flex flex-row gap-4 mt-8">
           <QuestionsSearchBar />
-          <Link href="/questions/register">
-            <Button>질문하기</Button>
-          </Link>
+          {!member ? (
+            <CustomTooltip
+              content="로그인 후 질문을 등록할 수 있어요"
+              contentClassName="bg-brand-surface-default text-brand-text-on-default"
+            >
+              <Button
+                onClick={() => {
+                  const { pathname, search, hash } = window.location;
+                  const currentPath = `${pathname}${search}${hash}`;
+                  router.push(
+                    `/login?redirect=${encodeURIComponent(currentPath)}`
+                  );
+                }}
+              >
+                질문하기
+              </Button>
+            </CustomTooltip>
+          ) : (
+            <Link href="/questions/register/">
+              <Button>질문하기</Button>
+            </Link>
+          )}
         </div>
         <div
           className={`transition-opacity duration-200 ${isLoading ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}

@@ -14,7 +14,7 @@ const Footer = () => {
       />
       <div className="flex flex-col gap-1">
         <span className="text-body-12 text-neutral-text-weak">
-          © 2026 BoostUs. All rights reserved.
+          © 2026 boostus. All rights reserved.
         </span>
         <span className="text-body-12 text-neutral-text-weak">
           Made by Team{' '}

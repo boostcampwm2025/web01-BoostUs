@@ -73,6 +73,7 @@ export class StoryService {
             sort: StorySortBy.LIKES,
             v: lastStory.likeCount,
             id: lastStory.id.toString(),
+            publishedAt: lastStory.publishedAt.toISOString(),
           };
           break;
         case StorySortBy.VIEWS:
@@ -80,6 +81,7 @@ export class StoryService {
             sort: StorySortBy.VIEWS,
             v: lastStory.viewCount,
             id: lastStory.id.toString(),
+            publishedAt: lastStory.publishedAt.toISOString(),
           };
           break;
       }

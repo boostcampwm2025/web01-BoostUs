@@ -11,6 +11,9 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { incrementQuestionView } from '../../api/questions.api';
 import Button from '@/shared/ui/Button/Button';
+import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
+import { MetaInfoItem } from '@/shared/ui/MetaInfoItem/MetaInfoItem';
+import Link from 'next/link';
 
 const QuestionDetail = ({
   data,
@@ -37,15 +40,6 @@ const QuestionDetail = ({
     void incrementView();
   }, [question.id]);
 
-  const handleSubmit = () => {
-    if (!member) {
-      alert('로그인이 필요해요.');
-      return;
-    }
-
-    router.push(`/questions/${question.id}/answers`);
-  };
-
   return (
     <article className="mx-auto flex w-full max-w-270 flex-col items-start justify-center">
       <BackButton url="/questions" />
@@ -55,26 +49,35 @@ const QuestionDetail = ({
       <div className="flex items-center justify-between w-full">
         <div className="flex flex-row gap-4 mt-3">
           <QuestionStatus status={question.isResolved} />
-          <div className="flex flex-row items-center justify-center gap-1">
-            <MessageCircle
-              className="text-neutral-text-weak"
-              strokeWidth={2}
-              size={14}
-            />
-            <span className="text-neutral-text-weak text-body-12">
-              {question.answerCount}
-            </span>
-          </div>
-          <div className="flex flex-row items-center justify-center gap-1">
-            <Eye className="text-neutral-text-weak" strokeWidth={2} size={14} />
-            <span className="text-neutral-text-weak text-body-12">
-              {viewCount}
-            </span>
-          </div>
+          <MetaInfoItem icon={MessageCircle} iconClassName="w-3.5 h-3.5">
+            {question.answerCount}
+          </MetaInfoItem>
+          <MetaInfoItem icon={Eye} iconClassName="w-3.5 h-3.5">
+            {viewCount}
+          </MetaInfoItem>
         </div>
-        <Button buttonStyle="primary" onClick={handleSubmit} disabled={!member}>
-          답변하기
-        </Button>
+        {!member ? (
+          <CustomTooltip
+            content="로그인 후 답변을 등록할 수 있어요"
+            contentClassName="bg-brand-surface-default text-brand-text-on-default"
+          >
+            <Button
+              onClick={() => {
+                const { pathname, search, hash } = window.location;
+                const currentPath = `${pathname}${search}${hash}`;
+                router.push(
+                  `/login?redirect=${encodeURIComponent(currentPath)}`
+                );
+              }}
+            >
+              답변하기
+            </Button>
+          </CustomTooltip>
+        ) : (
+          <Link href={`/questions/${question.id}/answers/`}>
+            <Button>답변하기</Button>
+          </Link>
+        )}
       </div>
       <QuestionCard question={question} hasAcceptedAnswer={hasAcceptedAnswer} />
       {answers.length > 0 ? (
