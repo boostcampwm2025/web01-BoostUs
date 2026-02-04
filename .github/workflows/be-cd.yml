@@ -45,8 +45,6 @@ jobs:
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.BE_IMAGE_NAME }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          secrets: |
-            DB_URL=${{ secrets.DB_URL }}
 
       - name: Deploy BE via SSH
         uses: appleboy/ssh-action@v1.0.3
