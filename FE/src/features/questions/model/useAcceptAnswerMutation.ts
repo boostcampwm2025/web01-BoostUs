@@ -48,7 +48,7 @@ export const useAcceptAnswerMutation = (questionId: string) => {
     },
 
     // 2. 에러 발생 시 롤백
-    onError: (err, newTodo, context) => {
+    onError: (err, _answerId, context) => {
       if (context?.previousData) {
         queryClient.setQueryData(queryKey, context.previousData);
       }
