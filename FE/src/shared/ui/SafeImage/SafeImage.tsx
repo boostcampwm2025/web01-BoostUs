@@ -12,7 +12,6 @@ interface SafeImageProps extends Omit<ImageProps, 'src' | 'priority'> {
   priority?: boolean;
 }
 
-// 1. 내부 로직을 담당하는 컴포넌트 (상태 관리)
 const InnerSafeImage = ({
   src,
   fallbackSrc = DEFAULT_THUMBNAIL,
@@ -20,18 +19,14 @@ const InnerSafeImage = ({
   fill,
   priority = false,
   loading,
-  ...props
+  className,
+  style,
+  ...rest // 나머지 모든 props (onClick, aria-*, 등)
 }: SafeImageProps) => {
   const [isError, setIsError] = useState(false);
 
-  // 렌더링할 최종 소스 결정
   const currentSrc = isError ? fallbackSrc : (src ?? fallbackSrc);
 
-  const handleError = () => {
-    if (!isError) setIsError(true);
-  };
-
-  // 도메인 체크 로직
   const isOptimizable = (url: string) => {
     try {
       if (!url.startsWith('http')) return true;
@@ -44,30 +39,37 @@ const InnerSafeImage = ({
     }
   };
 
-  // Case A: Next/Image 사용 (최적화 가능 도메인)
+  const handleError = () => {
+    if (!isError) setIsError(true);
+  };
+
+  // 공통 속성 정리
+  const commonProps = {
+    src: currentSrc,
+    alt,
+    onError: handleError,
+    className,
+    ...rest,
+  };
+
+  // Case A: Next/Image 사용
   if (isOptimizable(currentSrc)) {
     return (
       <Image
-        src={currentSrc}
-        alt={alt || '이미지'}
+        {...commonProps}
         fill={fill}
         priority={priority}
         loading={priority ? undefined : loading}
-        onError={handleError}
-        {...props}
       />
     );
   }
 
-  // Case B: 일반 img 태그 사용 (미허용 도메인)
+  // Case B: 일반 img 태그 사용
   return (
     <img
-      src={currentSrc}
-      alt={alt || '이미지'}
-      onError={handleError}
+      {...commonProps}
       referrerPolicy="no-referrer"
       loading={priority ? 'eager' : (loading ?? 'lazy')}
-      className={props.className}
       style={
         fill
           ? {
@@ -76,12 +78,15 @@ const InnerSafeImage = ({
               width: '100%',
               inset: 0,
               objectFit: 'cover',
+              ...style,
             }
           : {
-              width: props.width,
-              height: props.height,
+              width: rest.width,
+              height: rest.height,
+              ...style,
             }
       }
+      alt={alt || '이미지'}
     />
   );
 };
