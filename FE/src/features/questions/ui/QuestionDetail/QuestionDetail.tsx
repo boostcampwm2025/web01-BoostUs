@@ -7,7 +7,6 @@ import QuestionStatus from '@/features/questions/ui/Status/Status';
 import BackButton from '@/shared/ui/BackButton';
 import { Eye, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import Button from '@/shared/ui/Button/Button';
 import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
 import { MetaInfoItem } from '@/shared/ui/MetaInfoItem/MetaInfoItem';
@@ -16,9 +15,9 @@ import { toast } from '@/shared/utils/toast';
 import { useQuery } from '@tanstack/react-query';
 import {
   getQuestionById,
-  incrementQuestionView,
   QUESTIONS_KEY,
 } from '@/features/questions/api/questions.api';
+import { useViewCount } from '@/features/questions/model/useViewCount';
 
 interface QuestionDetailProps {
   questionId: string;
@@ -28,6 +27,8 @@ const QuestionDetail = ({ questionId }: QuestionDetailProps) => {
   const { member } = useAuth();
   const router = useRouter();
 
+  useViewCount(questionId); // 조회수 증가, 마운트 시 1회 실행
+
   const { data } = useQuery({
     queryKey: QUESTIONS_KEY.detail(questionId),
     queryFn: () => getQuestionById(questionId),
@@ -35,31 +36,6 @@ const QuestionDetail = ({ questionId }: QuestionDetailProps) => {
 
   const question = data?.question;
   const answers = data?.answers ?? [];
-
-  const [viewCount, setViewCount] = useState(question?.viewCount ?? 0);
-
-  // React Query 데이터가 로드/업데이트되면 viewCount 동기화
-  // (Hydration 시점 차이로 초기값이 0일 수 있으므로 필요)
-  useEffect(() => {
-    if (question?.viewCount !== undefined) {
-      setViewCount(question.viewCount);
-    }
-  }, [question?.viewCount]);
-
-  // 조회수 증가 로직 (서버 요청 후 +1)
-  useEffect(() => {
-    const incrementView = async () => {
-      try {
-        await incrementQuestionView(questionId);
-        // 이미 위 useEffect에서 서버 값으로 동기화되었을 수 있으므로
-        // 안전하게 현재 상태 기반으로 +1
-        setViewCount((prev) => prev + 1);
-      } catch (error) {
-        toast.error(error);
-      }
-    };
-    void incrementView();
-  }, [questionId]);
 
   if (!question) return null; // TODO: 스켈레톤
 
@@ -78,7 +54,7 @@ const QuestionDetail = ({ questionId }: QuestionDetailProps) => {
             {question.answerCount}
           </MetaInfoItem>
           <MetaInfoItem icon={Eye} iconClassName="w-3.5 h-3.5">
-            {viewCount}
+            {question.viewCount}
           </MetaInfoItem>
         </div>
         {!member ? (
