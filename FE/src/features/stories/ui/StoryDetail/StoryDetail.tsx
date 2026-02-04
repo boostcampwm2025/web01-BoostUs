@@ -33,7 +33,11 @@ const StoryDetail = ({ storyId }: StoryDetailProps) => {
   const { toggleLike } = useStoryLike(storyId);
 
   // 스토리 상세 데이터 구독
-  const { data: story } = useQuery({
+  const {
+    data: story,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: STORIES_KEY.detail(storyId),
     queryFn: async () => {
       const res = await getStoryById(storyId);
@@ -49,6 +53,20 @@ const StoryDetail = ({ storyId }: StoryDetailProps) => {
     initialData: false,
   });
 
+  if (isLoading) {
+    return (
+      <div className="py-10 text-center text-neutral-text-weak text-body-16">
+        로딩 중...
+      </div>
+    );
+  }
+  if (isError) {
+    return (
+      <div className="py-10 text-center text-neutral-text-weak text-body-16">
+        글을 불러오지 못했어요.
+      </div>
+    );
+  }
   if (!story) return null; // TODO: 스켈레톤
 
   const handleLikeClick = () => {
