@@ -8,6 +8,7 @@ import { getAnswerById } from '@/features/questions/api/questions.api';
 import PostEditorForm, {
   PostFormValues,
 } from '@/features/questions/ui/Form/PostEditorForm';
+import { toast } from '@/shared/utils/toast';
 
 export default function AnswerEditPage() {
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function AnswerEditPage() {
       try {
         const a = await getAnswerById(answerId);
         if (member.member.id !== a.member.id) {
-          alert('수정 권한이 없어요.');
+          toast.error('답변을 수정 할 권한이 없어요.');
           router.replace(`/questions/${questionId}`);
           return;
         }
@@ -40,10 +41,8 @@ export default function AnswerEditPage() {
           contents: a.contents,
         });
       } catch (error) {
-        if (error instanceof Error) {
-          alert('답변을 불러오는데 실패했습니다.');
-          router.replace(`/questions/${questionId}`);
-        }
+        toast.error(error);
+        router.replace(`/questions/${questionId}`);
       }
     })();
   }, [questionId, answerId, member, router]);
@@ -56,9 +55,14 @@ export default function AnswerEditPage() {
       variant="edit"
       initialValues={initialValues}
       onSubmit={async (values) => {
-        await editAnswer(answerId, { contents: values.contents });
-        router.push(`/questions/${questionId}`);
-        router.refresh();
+        try {
+          await editAnswer(answerId, { contents: values.contents });
+          toast.success('답변이 수정되었습니다.');
+          router.push(`/questions/${questionId}`);
+          router.refresh();
+        } catch (error) {
+          toast.error(error);
+        }
         return undefined;
       }}
     />

@@ -14,7 +14,7 @@ import Button from '@/shared/ui/Button/Button';
 import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
 import { MetaInfoItem } from '@/shared/ui/MetaInfoItem/MetaInfoItem';
 import Link from 'next/link';
-import { toast } from 'sonner';
+import { toast } from '@/shared/utils/toast';
 
 const QuestionDetail = ({
   data,
@@ -34,8 +34,8 @@ const QuestionDetail = ({
       try {
         await incrementQuestionView(question.id);
         setViewCount((prev) => prev + 1);
-      } catch {
-        // 조회수 증가 실패 시 무시
+      } catch (error) {
+        toast.error(error);
       }
     };
     void incrementView();
@@ -66,7 +66,7 @@ const QuestionDetail = ({
               onClick={() => {
                 const { pathname, search, hash } = window.location;
                 const currentPath = `${pathname}${search}${hash}`;
-                toast.info('로그인이 필요한 기능입니다.');
+                toast.warning('로그인이 필요한 기능입니다.');
                 router.push(
                   `/login?redirect=${encodeURIComponent(currentPath)}`
                 );

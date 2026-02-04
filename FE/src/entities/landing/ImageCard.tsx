@@ -28,7 +28,8 @@ const ImageCard = ({
           alt={`${subtitle} 소개 이미지`}
           fill
           className="object-contain" // 이미지 비율 유지
-          sizes="(max-width: 768px) 100vw, 486px"
+          sizes="(max-width: 768px) 90vw, 486px"
+          loading="lazy"
           unoptimized
         />
       </div>

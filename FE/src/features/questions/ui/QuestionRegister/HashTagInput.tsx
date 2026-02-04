@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { X } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/shared/utils/toast';
 
 const MAX_Hash_TAG = 10;
 const MAX_Hash_TAG_LENGTH = 30;
@@ -45,14 +45,14 @@ export default function HashTagInput({
     if (next.length > maxLength) {
       const msg = `태그는 최대 ${maxLength.toString()}자까지 입력할 수 있어요.`;
       setLocalError(msg);
-      toast.error(msg);
+      toast.warning(msg);
       return;
     }
 
     if (hashTags.length >= maxCount) {
       const msg = `태그는 최대 ${maxCount.toString()}개까지 추가할 수 있어요.`;
       setLocalError(msg);
-      toast.error(msg);
+      toast.warning(msg);
       return;
     }
 

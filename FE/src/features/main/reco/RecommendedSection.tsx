@@ -1,4 +1,4 @@
-import RecommendedProjectSection from '@/features/main/reco/ui/RecoProejctSection';
+import RecommendedProjectSection from '@/features/main/reco/ui/RecoProjectSection';
 import RecommendStorySection from '@/features/main/reco/ui/RecoStorySection';
 
 const RecommendedSection = () => {
