@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { ResponseInterceptor } from './common/interceptor/response.interceptor';
+import { ValidationFailedException } from './common/exception/validation.exception';
 
 // BigInt 전역 설정 (JSON.stringify 시 문자열로 변환)
 (BigInt.prototype as unknown as { toJSON: () => string }).toJSON = function (this: bigint) {
@@ -38,6 +39,20 @@ async function bootstrap() {
       whitelist: true,
       forbidNonWhitelisted: true,
       disableErrorMessages: false,
+      exceptionFactory: (errors) => {
+        const details = errors.map((error) => {
+          const constraints = error.constraints ? Object.values(error.constraints) : [];
+          return {
+            field: error.property,
+            constraints,
+            value: error.value,
+          };
+        });
+
+        return new ValidationFailedException({
+          errors: details,
+        });
+      },
     }),
   );
 
