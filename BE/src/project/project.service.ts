@@ -27,13 +27,10 @@ import {
   GithubApiRequestFailedException,
 } from './exception/project.exception';
 import { ViewService } from 'src/view/view.service';
-<<<<<<< feat/321-add-admin-role
 import { Role } from 'src/generated/prisma/enums';
-=======
 import { JwtService } from '@nestjs/jwt';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
->>>>>>> dev
 
 @Injectable()
 export class ProjectService {
