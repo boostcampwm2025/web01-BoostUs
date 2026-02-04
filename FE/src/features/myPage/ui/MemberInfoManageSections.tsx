@@ -11,9 +11,13 @@ import AlertCircleIcon from '@/components/ui/AlertCircleIcon';
 import { useAuth } from '@/features/login/model/auth.store';
 import { UsersIcon } from '@/components/ui/users';
 import { FolderGit2Icon } from '@/components/ui/folder-git-2';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { createOrUpdateFeed } from '@/features/feed/api/feed.api';
+import {
+  createOrUpdateFeed,
+  deleteFeed,
+  getMyFeed,
+} from '@/features/feed/api/feed.api';
 import {
   convertBlogUrlToRss,
   detectPlatformFromBlogUrl,
@@ -37,6 +41,7 @@ export default function MemberInfoManageSections() {
   // 피드백 메세지
   const [serverError, setServerError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   // 닉네임 수정 상태
   const [isEditingNickname, setIsEditingNickname] = useState<boolean>(false);
@@ -87,12 +92,47 @@ export default function MemberInfoManageSections() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitting }, // 로딩 상태
   } = useForm<RssFormValues>({
     defaultValues: {
       blogUrl: feed?.feedUrl ?? '', // 기존 값이 있으면 보여줌
     },
   });
+
+  useEffect(() => {
+    if (!member) return;
+    if (feed?.id !== undefined) return;
+
+    let isMounted = true;
+    const fetchFeed = async () => {
+      try {
+        const response = await getMyFeed();
+        const fetchedFeed = response.data;
+
+        if (!isMounted) return;
+
+        setAuthState((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            feed: fetchedFeed
+              ? { id: fetchedFeed.id, feedUrl: fetchedFeed.feedUrl }
+              : null,
+          };
+        });
+
+        reset({ blogUrl: fetchedFeed?.feedUrl ?? '' });
+      } catch {
+        // 피드가 없거나 요청 실패는 조용히 무시
+      }
+    };
+
+    void fetchFeed();
+    return () => {
+      isMounted = false;
+    };
+  }, [member, feed?.id, reset, setAuthState]);
 
   // 폼 제출 핸들러
   const onSubmit = async (data: RssFormValues) => {
@@ -131,6 +171,36 @@ export default function MemberInfoManageSections() {
       setServerError('등록에 실패했습니다. 다시 시도해 주세요.');
       toast.error(error);
       console.error(error);
+    }
+  };
+
+  const handleDeleteFeed = async () => {
+    if (!feed?.id) return;
+
+    setServerError(null);
+    setSuccessMessage(null);
+    setIsDeleting(true);
+
+    try {
+      await deleteFeed(feed.id);
+
+      setAuthState((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          feed: null,
+        };
+      });
+
+      reset({ blogUrl: '' });
+      setSuccessMessage('블로그 RSS 연동이 삭제되었습니다.');
+      toast.success('블로그 RSS 연동이 삭제되었습니다.');
+    } catch (error) {
+      setServerError('삭제에 실패했습니다. 다시 시도해 주세요.');
+      toast.error(error);
+      console.error(error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -276,20 +346,32 @@ export default function MemberInfoManageSections() {
                 },
               })}
               type="text"
-              disabled={isSubmitting} // 제출 중엔 비활성화
+              disabled={isSubmitting || isDeleting} // 제출/삭제 중엔 비활성화
               placeholder="https://velog.io/@id 또는 티스토리 주소"
               className="flex-1 border border-neutral-border-default rounded-lg px-4 py-2 text-body-14 focus:outline-none focus:border-brand-border-default transition-colors placeholder:text-neutral-text-weak disabled:bg-neutral-50"
             />
             <button
               type="submit"
-              disabled={isSubmitting} // 제출 중엔 비활성화
+              disabled={isSubmitting || isDeleting} // 제출/삭제 중엔 비활성화
               className={`bg-brand-surface-default text-brand-text-on-default text-string-16 rounded-lg px-4 py-2 text-sm transition-colors whitespace-nowrap ${
-                isSubmitting
+                isSubmitting || isDeleting
                   ? 'opacity-70 cursor-not-allowed'
                   : 'hover:bg-brand-surface-strong'
               }`}
             >
               {isSubmitting ? '등록 중...' : '등록하기'}
+            </button>
+            <button
+              type="button"
+              onClick={handleDeleteFeed}
+              disabled={isSubmitting || isDeleting || !feed?.id}
+              className={`bg-neutral-surface-default text-neutral-text-strong text-string-16 rounded-lg px-4 py-2 text-sm transition-colors whitespace-nowrap border border-neutral-border-default ${
+                isSubmitting || isDeleting || !feed?.id
+                  ? 'opacity-70 cursor-not-allowed'
+                  : 'hover:bg-neutral-surface-strong'
+              }`}
+            >
+              {isDeleting ? '삭제 중...' : '삭제하기'}
             </button>
           </form>
 
