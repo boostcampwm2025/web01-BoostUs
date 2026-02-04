@@ -11,11 +11,12 @@ import { Card } from '@/shared/ui/Card';
 interface StoriesCardProps {
   id: string;
   story: Story;
+  priority?: boolean;
 }
 
 const DEFAULT_THUMBNAIL = '/assets/NoImage.png';
 
-const StoriesCard = ({ id, story }: StoriesCardProps) => {
+const StoriesCard = ({ id, story, priority = false }: StoriesCardProps) => {
   const { isError, setIsError } = useImageError(story.thumbnailUrl);
 
   const currentSrc = isError
@@ -33,7 +34,7 @@ const StoriesCard = ({ id, story }: StoriesCardProps) => {
           alt={`${story.title} 글의 썸네일 이미지`}
           fill
           className="object-cover"
-          priority
+          priority={priority}
           onError={() => setIsError(true)}
         />
       </Card.ImageContainer>
