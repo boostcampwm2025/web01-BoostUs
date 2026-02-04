@@ -1,6 +1,8 @@
 import { StoriesPageContent, StoriesSortOption } from '@/features/stories';
 import { fetchStories } from '@/features/stories/api/stories.api';
 
+export const revalidate = 3600;
+
 interface StoriesPageProps {
   searchParams: Promise<{
     sortBy?: StoriesSortOption['sortBy'];
