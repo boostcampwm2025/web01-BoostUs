@@ -23,8 +23,9 @@ const Toaster = ({ ...props }: ToasterProps) => {
         classNames: {
           toast:
             'group toast group-[.toaster]:bg-neutral-surface-bold group-[.toaster]:text-neutral-text-default group-[.toaster]:shadow-hover text-string-16 sonner-progress-bar',
-          title: 'text-string-16 text-neutral-text-default',
-          description: 'group-[.toast]:text-neutral-text-weak text-body-14',
+          title: 'text-string-16 text-neutral-text-default font-sans',
+          description:
+            'group-[.toast]:text-neutral-text-weak text-body-14 font-sans',
           actionButton:
             'group-[.toast]:bg-brand-solid-default group-[.toast]:text-brand-text-inverse',
           cancelButton:
