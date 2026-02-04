@@ -11,7 +11,6 @@ import MarkdownViewer from '@/shared/ui/MarkdownViewer';
 import UserProfile from '@/shared/ui/UserProfile';
 import extractDate from '@/shared/utils/extractDate';
 import { Calendar, Eye } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import StorySidebar from './StorySidebar';
 import { useRouter } from 'next/navigation';
@@ -19,6 +18,7 @@ import { useStoryViewCount } from '@/features/stories/model/useStoryViewCount';
 import { useStoryLike } from '@/features/stories/model/useStoryLike';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from '@/shared/utils/toast';
+import SafeImage from '@/shared/ui/SafeImage/SafeImage';
 
 interface StoryDetailProps {
   storyId: string;
@@ -112,14 +112,13 @@ const StoryDetail = ({ storyId }: StoryDetailProps) => {
               </span>
             </Link>
           </div>
-          <div className="my-8 w-full">
-            <Image
+          <div className="my-8 w-full relative h-108">
+            <SafeImage
               src={story.thumbnailUrl}
               alt={`${story.title} 글의 썸네일 이미지`}
-              width={768}
-              height={432}
-              className="w-full object-cover"
-              priority
+              fill
+              className="object-cover"
+              priority={true}
             />
           </div>
 
