@@ -15,6 +15,8 @@ import { randomUUID } from 'node:crypto';
 import type Redis from 'ioredis';
 import { REDIS } from '../redis/redis.provider';
 import { ThumbnailMeta } from './type/upload-image-meta.type';
+import { GithubRepoReadmeResponse } from './type/github-repo-readme.type';
+import { GithubRepoCollaboratorResponse } from './type/github-repo-collaborator.type';
 import {
   ProjectNotFoundException,
   ProjectForbiddenException,
@@ -171,6 +173,41 @@ export class ProjectService {
 
       throw e;
     }
+  }
+
+  /**
+   * 지정한 repository의 installation access token을 발급받습니다.
+   * @param owner GitHub owner
+   * @param repo GitHub repo
+   * @returns installation access token
+   */
+  private async _getInstallationAccessToken(owner: string, repo: string): Promise<string> {
+    const appJwt = this._createGithubAppJwt();
+
+    const installation = await this._githubFetch<{ id: number }>(
+      `${this.githubApiBase}/repos/${owner}/${repo}/installation`,
+      {
+        headers: {
+          Authorization: `Bearer ${appJwt}`,
+          Accept: 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    );
+
+    const accessToken = await this._githubFetch<{ token: string }>(
+      `${this.githubApiBase}/app/installations/${installation.id}/access_tokens`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${appJwt}`,
+          Accept: 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    );
+
+    return accessToken.token;
   }
 
   async uploadTempThumbnail(file: Express.Multer.File, memberId: string) {
@@ -335,45 +372,62 @@ export class ProjectService {
     }
 
     const { owner, repo } = this._parseRepositorySlug(repositoryUrl);
-    const appJwt = this._createGithubAppJwt();
+    const installationAccessToken = await this._getInstallationAccessToken(owner, repo);
 
-    const installation = await this._githubFetch<{ id: number }>(
-      `${this.githubApiBase}/repos/${owner}/${repo}/installation`,
+    const collaborators = await this._githubFetch<GithubRepoCollaboratorResponse[]>(
+      `${this.githubApiBase}/repos/${owner}/${repo}/collaborators?affiliation=direct`,
       {
         headers: {
-          Authorization: `Bearer ${appJwt}`,
+          Authorization: `Bearer ${installationAccessToken}`,
           Accept: 'application/vnd.github+json',
           'X-GitHub-Api-Version': '2022-11-28',
         },
       },
     );
-
-    const accessToken = await this._githubFetch<{ token: string }>(
-      `${this.githubApiBase}/app/installations/${installation.id}/access_tokens`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${appJwt}`,
-          Accept: 'application/vnd.github+json',
-          'X-GitHub-Api-Version': '2022-11-28',
-        },
-      },
-    );
-
-    const collaborators = await this._githubFetch<
-      Array<{ login: string; avatar_url: string | null }>
-    >(`${this.githubApiBase}/repos/${owner}/${repo}/collaborators?affiliation=direct`, {
-      headers: {
-        Authorization: `Bearer ${accessToken.token}`,
-        Accept: 'application/vnd.github+json',
-        'X-GitHub-Api-Version': '2022-11-28',
-      },
-    });
 
     return collaborators.map((collaborator) => ({
       githubId: collaborator.login,
       avatarUrl: collaborator.avatar_url ?? null,
     }));
+  }
+
+  /**
+   * GitHub 레포의 README를 조회합니다.
+   * @param repositoryUrl GitHub 레포 URL 또는 slug
+   * @returns README 메타 및 본문
+   */
+  async getRepoReadme(repositoryUrl: string) {
+    if (!repositoryUrl) {
+      throw new RepositoryQueryRequiredException();
+    }
+
+    const { owner, repo } = this._parseRepositorySlug(repositoryUrl);
+    const installationAccessToken = await this._getInstallationAccessToken(owner, repo);
+
+    const readme = await this._githubFetch<GithubRepoReadmeResponse>(
+      `${this.githubApiBase}/repos/${owner}/${repo}/readme`,
+      {
+        headers: {
+          Authorization: `Bearer ${installationAccessToken}`,
+          Accept: 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    );
+
+    const decodedContent =
+      readme.encoding === 'base64'
+        ? Buffer.from(readme.content, 'base64').toString('utf-8')
+        : readme.content;
+
+    return {
+      name: readme.name,
+      path: readme.path,
+      htmlUrl: readme.html_url,
+      downloadUrl: readme.download_url,
+      encoding: 'utf-8',
+      content: decodedContent,
+    };
   }
 
   async findAll(query: ProjectListQueryDto) {
