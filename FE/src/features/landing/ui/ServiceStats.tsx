@@ -1,19 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useCountUp } from '@/features/landing/model/useCountup';
-import { getLandingCount } from '../api/landing.api';
-import { LandingData } from '../model/landing.type';
+import { useQuery } from '@tanstack/react-query';
+import {
+  getLandingCount,
+  LANDING_STATS_KEY,
+} from '@/features/landing/api/landing.api';
 
 const ServiceStats = () => {
-  const [data, setData] = useState<LandingData | null>(null);
-
-  useEffect(() => {
-    void (async () => {
-      const res = await getLandingCount();
-      setData(res);
-    })();
-  }, []);
+  const { data } = useQuery({
+    queryKey: LANDING_STATS_KEY,
+    queryFn: () => getLandingCount(),
+    staleTime: 1000 * 60 * 60,
+    gcTime: 1000 * 60 * 60 * 24,
+  });
 
   if (!data) return null; // or skeleton
 

@@ -39,6 +39,7 @@ const LandingPageContent = () => {
             sizes="(max-width: 768px) 100vw, 760px"
             className="object-contain"
             priority
+            unoptimized
           />
         </div>
 

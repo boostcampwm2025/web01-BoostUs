@@ -1,5 +1,9 @@
 import { customFetch } from '@/shared/utils/fetcher';
 
+export const PROJECT_KEYS = {
+  all: ['projects'] as const,
+};
+
 export type SortOrder = 'TEAM_NUM' | 'VIEW_COUNT';
 
 export interface Project {
@@ -30,13 +34,15 @@ export interface ProjectsData {
   meta: ProjectsMeta;
 }
 
-export async function fetchProjects(): Promise<ProjectsData> {
+export async function fetchProjects(params?: {
+  skipStore?: boolean;
+}): Promise<ProjectsData> {
   const json = await customFetch<{
     success: boolean;
     message: string;
     error: unknown;
     data: ProjectsData;
-  }>('/api/projects');
+  }>('/api/projects', { skipStore: params?.skipStore });
 
   return {
     ...json.data,

@@ -10,25 +10,7 @@ type CodeComponentProps = ComponentPropsWithRef<'code'> & {
   node?: unknown; // react-markdown이 주입하는 메타데이터 (사용하지 않음)
 };
 
-/**
- * 티스토리/카카오 스타일의 이미지 치환자를 표준 HTML img 태그로 변환합니다.
- * 입력 예시: [##Image|kage@...|CDM|1.3|{"style":"alignCenter"}##]
- */
-const transformCustomImageSyntax = (content: string): string => {
-  const regex = /\[##Image\|([^|]+)\|([^|]+)\|.*?##]/g;
-
-  return content.replace(regex, (_match: string, path: string, alt: string) => {
-    const imageSrc = path.startsWith('http')
-      ? path
-      : `https://blog.kakaocdn.net/dn/${path}`;
-
-    return `<img src="${imageSrc}" alt="${alt}" class="custom-legacy-image" />`;
-  });
-};
-
 export const MarkdownViewer = ({ content }: { content: string }) => {
-  const processedContent = transformCustomImageSyntax(content);
-
   return (
     <div className="w-full wrap-break-word overflow-x-hidden **:max-w-full **:wrap-break-word [&_pre]:overflow-x-auto [&_code]:wrap-break-word">
       <ReactMarkdown
@@ -50,6 +32,8 @@ export const MarkdownViewer = ({ content }: { content: string }) => {
                   'width',
                   'height',
                   'align',
+                  'className',
+                  'alt',
                 ],
                 // 중요: code 태그에서 className을 허용해야 언어 감지가 가능합니다.
                 code: [...(defaultSchema.attributes?.code ?? []), 'className'],
@@ -89,7 +73,7 @@ export const MarkdownViewer = ({ content }: { content: string }) => {
 
           // 본문 텍스트 (p) 스타일
           p: ({ ...props }) => (
-            <p
+            <div
               className="text-body-16 text-neutral-text-default mb-4 leading-relaxed wrap-break-word"
               {...props}
             />
@@ -130,11 +114,7 @@ export const MarkdownViewer = ({ content }: { content: string }) => {
 
           // 이미지 (img) 스타일
           img: (props) => (
-            <img
-              className="mx-auto my-8 block h-auto max-w-full"
-              {...props}
-              alt=""
-            />
+            <img className="mx-auto my-8 block h-auto max-w-full" {...props} />
           ),
 
           // 인라인 코드 (`code`) 및 코드 블록 스타일
@@ -148,8 +128,12 @@ export const MarkdownViewer = ({ content }: { content: string }) => {
             // 1. 언어 감지 (기존 로직)
             const match = /language-(\w+)/.exec(className ?? '');
 
+            const isStringContent = typeof children === 'string';
+
             // 2. [추가] 내용에 줄바꿈이 있는지 확인
-            const hasNewLine = (children as string).includes('\n');
+            const hasNewLine = isStringContent
+              ? children.includes('\n')
+              : false;
 
             // 3. [수정] 언어 클래스가 있거나, 줄바꿈이 있으면 '블록'으로 간주
             const isBlock = match ?? hasNewLine;
@@ -164,7 +148,7 @@ export const MarkdownViewer = ({ content }: { content: string }) => {
                 PreTag="div"
                 className="rounded-lg my-4 text-body-14"
               >
-                {(children as string).replace(/\n$/, '')}
+                {isStringContent ? children.replace(/\n$/, '') : ''}
               </SyntaxHighlighter>
             ) : (
               // 인라인 코드 (기존 스타일)
@@ -219,7 +203,7 @@ export const MarkdownViewer = ({ content }: { content: string }) => {
           ),
         }}
       >
-        {processedContent}
+        {content}
       </ReactMarkdown>
     </div>
   );

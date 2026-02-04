@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import { IsDateString, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 /**
@@ -5,6 +6,7 @@ import { IsDateString, IsNotEmpty, IsOptional, IsString } from 'class-validator'
  */
 export class CreateStoryRequestDto {
   @IsNotEmpty()
+  @Transform(({ value }: { value: string }) => BigInt(value))
   feedId: bigint;
 
   @IsNotEmpty()

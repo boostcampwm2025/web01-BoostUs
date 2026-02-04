@@ -2,45 +2,32 @@
 
 import StoriesCard from '@/features/stories/ui/Card/Card';
 import FeedHeader from '@/features/main/feed/FeedHeader';
-import { useEffect, useState } from 'react';
-import { fetchRecoStory } from '@/features/main/reco/api/fetchRecoStory';
-import { Story } from '@/features/stories/model/stories.type';
+import {
+  FEED_PARAMS,
+  FEED_QUERY_KEY,
+  fetchRecoStory,
+} from '@/features/main/reco/api/fetchRecoStory';
+import { useQuery } from '@tanstack/react-query';
 
 const FeedSection = () => {
-  const [Stories, setStories] = useState<Story[] | null>(null);
+  const { data: response } = useQuery({
+    queryKey: FEED_QUERY_KEY,
+    queryFn: () => fetchRecoStory(FEED_PARAMS),
+    staleTime: 1000 * 60 * 60,
+  });
 
-  useEffect(() => {
-    const loadStories = async () => {
-      try {
-        const response = await fetchRecoStory({
-          sortBy: 'views',
-          period: 'all',
-          size: 8,
-        });
-
-        if (response?.data?.items && response.data.items.length > 0) {
-          setStories(response.data.items);
-        }
-      } catch (error) {
-        console.error('추천 스토리 로딩 실패:', error);
-      }
-    };
-
-    void loadStories();
-  }, []);
+  const stories = response?.data?.items ?? [];
 
   return (
     <>
       <FeedHeader />
-      <section className="gap-8 md:columns-3 lg:columns-4 mt-4 mb-8 w-full">
-        {Stories?.map((story) => (
-          <div key={story.id} className={'mb-8'}>
-            <StoriesCard id={story.id} key={story.id} story={story} />
-          </div>
+      <section className="grid w-full grid-cols-1 gap-8 mt-4 mb-12 md:grid-cols-3 lg:grid-cols-4">
+        {stories?.map((story) => (
+          <StoriesCard id={story.id} key={story.id} story={story} />
         ))}
       </section>
 
-      {/*boostAd seciton*/}
+      {/*boostAd section*/}
       <div data-boostad-zone style={{ width: '100%', height: '100%' }}></div>
     </>
   );

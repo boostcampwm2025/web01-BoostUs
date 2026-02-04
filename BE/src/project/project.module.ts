@@ -2,14 +2,16 @@ import { Module } from '@nestjs/common';
 import { ProjectController } from './project.controller';
 import { ProjectService } from './project.service';
 import { ViewService } from 'src/view/view.service';
+import { JwtService } from '@nestjs/jwt';
 import { ProjectRepository } from './project.repository';
 import { AuthRepository } from 'src/auth/auth.repository';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { RedisModule } from 'src/redis/redis.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [PrismaModule, RedisModule],
+  imports: [PrismaModule, RedisModule, HttpModule],
   controllers: [ProjectController],
-  providers: [ProjectService, ViewService, ProjectRepository, AuthRepository],
+  providers: [ProjectService, ViewService, ProjectRepository, AuthRepository, JwtService],
 })
 export class ProjectModule {}
