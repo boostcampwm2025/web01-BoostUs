@@ -45,7 +45,7 @@ async function bootstrap() {
           return {
             field: error.property,
             constraints,
-            value: error.value,
+            value: error.value as unknown,
           };
         });
 
