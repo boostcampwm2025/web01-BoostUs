@@ -220,7 +220,6 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
             isDragging={isDragging}
             dragHandlers={dragHandlers}
             register={register('thumbnail', {
-              // ... 기존 유효성 검사 로직 동일
               validate: {
                 fileType: (files) => {
                   const file = files?.[0];
@@ -283,7 +282,14 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
                   type="url"
                   label="깃허브 Repository"
                   placeholder="URL 입력"
-                  register={register('repoUrl')}
+                  register={register('repoUrl', {
+                    required: 'Repository URL은 필수입니다.',
+                    pattern: {
+                      value: /^https:\/\/github\.com\//,
+                      message:
+                        'https://github.com/ 으로 시작하는 올바른 주소를 입력해주세요.',
+                    },
+                  })}
                   error={errors.repoUrl}
                 />
               </div>
@@ -313,7 +319,13 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
             id="title"
             label="프로젝트 제목"
             placeholder="제목"
-            register={register('title')}
+            register={register('title', {
+              required: '프로젝트 제목을 입력해주세요.',
+              maxLength: {
+                value: 50,
+                message: '제목은 50자 이내로 입력해주세요.',
+              },
+            })}
             error={errors.title}
           />
           <FormInput
