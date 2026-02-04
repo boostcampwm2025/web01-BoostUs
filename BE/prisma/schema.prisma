@@ -42,6 +42,11 @@ enum TechStackCategory {
   ETC
 }
 
+enum Role {
+  MEMBER
+  ADMIN
+}
+
 /**
  * 사용자
  * - 깃허브 고유 식별자 id [UQ]  -> githubUniqueId
@@ -53,8 +58,9 @@ model Member {
   nickname        String  @unique
   avatarUrl       String? @db.VarChar(768) @map("avatar_url")
   cohort          Int?    @db.TinyInt
-  state           State   @default(ACTIVE) @map("state")
+  state           State   @default(ACTIVE)
   githubLogin     String? @map("github_login") // ERD의 '깃허브id' 용도(로그인 아이디)로 보관
+  role            Role    @default(MEMBER)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
@@ -97,7 +103,7 @@ model Project {
 
   contents String? @db.Text @map("contents") // 마크다운
   viewCount Int    @default(0) @map("view_count")
-  state     ContentState @default(PUBLISHED) @map("state")
+  state     ContentState @default(PUBLISHED)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
@@ -166,7 +172,7 @@ model Feed {
   id       BigInt @id @default(autoincrement())
   memberId BigInt @unique @map("member_id")
   feedUrl   String @db.VarChar(512) @unique @map("feed_url")
-  state    State  @default(ACTIVE) @map("state")
+  state    State  @default(ACTIVE)
 
   createdAt DateTime @default(now()) @map("created_at")
   lastFetchedAt DateTime @default(now()) @map("last_fetched_at")
@@ -196,7 +202,7 @@ model Story {
   likeCount Int @default(0) @map("like_count")
   viewCount Int @default(0) @map("view_count")
 
-  state ContentState @default(PUBLISHED) @map("state")
+  state ContentState @default(PUBLISHED)
   publishedAt DateTime @map("published_at")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
@@ -244,7 +250,7 @@ model Question {
   downCount    Int @default(0) @map("down_count")
 
   isResolved   Boolean @default(false) @map("is_resolved")
-  state        ContentState @default(PUBLISHED) @map("state")
+  state        ContentState @default(PUBLISHED)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
@@ -292,7 +298,7 @@ model Answer {
   upCount    Int @default(0) @map("up_count")
   downCount  Int @default(0) @map("down_count")
 
-  state      ContentState @default(PUBLISHED) @map("state")
+  state      ContentState @default(PUBLISHED)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")

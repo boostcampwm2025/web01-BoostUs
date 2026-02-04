@@ -29,6 +29,7 @@ import {
   GithubApiRequestFailedException,
 } from './exception/project.exception';
 import { ViewService } from 'src/view/view.service';
+import { Role } from 'src/generated/prisma/enums';
 import { JwtService } from '@nestjs/jwt';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
@@ -504,13 +505,11 @@ export class ProjectService {
       throw new MemberNotFoundException();
     }
 
-    // member.github_login 이 project_participants 조회 결과 들어있는지 확인
-    const canUpdate = await this.projectRepository.canMemberUpdateProject(
-      projectId,
-      member.githubLogin,
-    );
+    // ADMIN이거나 project_participants에 포함된 경우 수정 가능
+    const canUpdate =
+      member.role === Role.ADMIN ||
+      (await this.projectRepository.canMemberUpdateProject(projectId, member.githubLogin));
 
-    // 없으면 throw
     if (!canUpdate) {
       throw new ProjectForbiddenException('이 프로젝트를 수정할 권한이 없습니다.');
     }
@@ -539,11 +538,10 @@ export class ProjectService {
       throw new MemberNotFoundException();
     }
 
-    // member.github_login 이 project_participants에 조회 결과 들어있는지 확인
-    const canDelete = await this.projectRepository.canMemberUpdateProject(
-      projectId,
-      member.githubLogin,
-    );
+    // ADMIN이거나 project_participants에 포함된 경우 삭제 가능
+    const canDelete =
+      member.role === Role.ADMIN ||
+      (await this.projectRepository.canMemberUpdateProject(projectId, member.githubLogin));
 
     if (!canDelete) {
       throw new ProjectForbiddenException('이 프로젝트를 삭제할 권한이 없습니다.');

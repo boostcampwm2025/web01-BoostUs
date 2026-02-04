@@ -32,6 +32,7 @@ export class AuthRepository {
         avatarUrl: true,
         cohort: true,
         state: true,
+        role: true,
       },
     });
   }
@@ -45,6 +46,7 @@ export class AuthRepository {
         avatarUrl: true,
         cohort: true,
         githubLogin: true,
+        role: true,
       },
     });
   }

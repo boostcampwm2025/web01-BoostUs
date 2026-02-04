@@ -33,6 +33,8 @@ export default function ProjectDetail() {
     (m) => m.githubId === member?.member?.githubLogin
   )?.githubId;
 
+  const canEdit = isMember ?? member?.member?.role === 'ADMIN';
+
   useEffect(() => {
     if (!isValidId) return;
 
@@ -178,7 +180,7 @@ export default function ProjectDetail() {
             </div>
           </div>
         )}
-        {isMember && (
+        {canEdit && (
           <div className="mt-8 flex justify-center">
             <a
               href={`/project/edit/${id.toString()}`}

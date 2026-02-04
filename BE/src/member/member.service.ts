@@ -31,6 +31,7 @@ export class MemberService {
         githubLogin: profile.githubLogin,
         nickname: profile.nickname,
         cohort: profile.cohort,
+        role: profile.role,
       },
       latestProject: profile.latestProject,
       feed: profile.feed ? { feedUrl: profile.feed.feedUrl } : null,
@@ -63,6 +64,7 @@ export class MemberService {
           githubLogin: updated.githubLogin,
           nickname: updated.nickname,
           cohort: updated.cohort,
+          role: profile.role,
         },
         latestProject: profile.latestProject, // 기존 정보 재사용
         feed: profile.feed ? { feedUrl: profile.feed.feedUrl } : null, // 기존 정보 재사용
