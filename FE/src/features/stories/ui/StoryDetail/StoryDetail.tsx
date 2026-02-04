@@ -69,7 +69,6 @@ const StoryDetail = ({ storyId }: StoryDetailProps) => {
         <aside className="hidden lg:block">
           <div className="sticky top-24 h-fit mt-50">
             <StorySidebar
-              storyId={storyId}
               isLiked={isLiked}
               likeCount={story.likeCount}
               onLikeClick={handleLikeClick}

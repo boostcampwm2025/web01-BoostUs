@@ -50,7 +50,7 @@ export const useStoryLike = (storyId: string) => {
       if (context?.prevStatus !== undefined) {
         queryClient.setQueryData(statusKey, context.prevStatus);
       }
-      toast.error('좋아요 처리에 실패했습니다.');
+      toast.error(err);
     },
 
     onSettled: () => {

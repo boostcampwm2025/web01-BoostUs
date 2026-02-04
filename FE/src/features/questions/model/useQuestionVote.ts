@@ -13,13 +13,6 @@ import {
   QUESTIONS_KEY,
 } from '@/features/questions/api/questions.api';
 
-interface VoteTarget {
-  id: string;
-  upCount: number;
-  downCount: number;
-  reaction: Reaction;
-}
-
 interface QuestionData {
   question: QuestionDetail;
   answers: Answer[];
@@ -86,39 +79,6 @@ export const useQuestionVote = (questionId: string) => {
         question: newTarget as QuestionDetail,
       };
     }
-  };
-
-  // ✅ 공통 Mutation 생성 함수
-  const createVoteMutation = (
-    apiFn: (id: string) => Promise<unknown>,
-    isAnswer: boolean
-  ) => {
-    return useMutation({
-      mutationFn: apiFn,
-      onMutate: async (targetId: string) => {
-        // 1. 진행 중인 쿼리 취소
-        await queryClient.cancelQueries({ queryKey });
-
-        // 2. 이전 상태 스냅샷 저장
-        const previousData = queryClient.getQueryData<QuestionData>(queryKey);
-
-        // 3. 어떤 버튼을 눌렀는지 추론 (API 함수에 따라 다름)
-        // 여기서는 편의상 apiFn 이름이나 컨텍스트로 판단해야 하지만,
-        // 훅 사용처에서 type을 넘겨주는 방식으로 개선
-        return { previousData };
-      },
-      onError: (err, _, context) => {
-        // 4. 에러 시 롤백
-        if (context?.previousData) {
-          queryClient.setQueryData(queryKey, context.previousData);
-        }
-        toast.error('투표 처리에 실패했습니다.');
-      },
-      onSettled: () => {
-        // 5. 서버와 동기화 (선택 사항: 사용자 경험을 위해 생략 가능)
-        // queryClient.invalidateQueries({ queryKey });
-      },
-    });
   };
 
   // 실제 Mutation들 (여기서 캐시 업데이트 로직을 setQueryData에 직접 넣음)
