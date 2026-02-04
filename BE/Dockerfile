@@ -35,5 +35,9 @@ RUN npm ci --omit=dev
 
 COPY --from=build /app/dist ./dist
 
+# prisma migration을 위해 schema.prisma 및 migrations 폴더 복사
+COPY --from=build /app/prisma/schema.prisma ./prisma/schema.prisma
+COPY --from=build /app/prisma/migrations ./prisma/migrations
+
 EXPOSE 3000
 CMD ["node", "dist/main.js"]    

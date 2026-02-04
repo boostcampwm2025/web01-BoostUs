@@ -81,10 +81,15 @@ jobs:
               echo "⚠️ Image pull failed, attempting to use cached image..."
             fi
 
+            echo "📦 Running Prisma migrations..."
+            docker compose -f docker-compose.prod.yml \
+              --env-file .env.prod \
+              run --rm backend npx prisma migrate deploy
+
             echo "🚀 Deploying BE..."
             docker compose -f docker-compose.prod.yml \
               --env-file .env.prod \
               up -d backend --no-deps
               
             echo "🔄 Pruning unused Docker images..."
-            docker image prune -f
+            docker image prune -af
