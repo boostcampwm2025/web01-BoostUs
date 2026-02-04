@@ -81,7 +81,7 @@ const StoriesList = () => {
             <div className="flex items-center gap-2 text-status-danger">
               <AlertCircle size={20} className="text-danger-text-default" />
               <span className="text-body-14 font-medium">
-                스토리를 불러오는 데 실패했습니다.
+                글을 불러오는 데 실패했습니다.
               </span>
             </div>
             <Button
