@@ -27,3 +27,14 @@ export const createOrUpdateFeed = async (body: { feedUrl: string }) => {
 
   return response.data;
 };
+
+export const deleteFeed = async (id: number) => {
+  const response = await customFetch<ApiResponse<null>>(
+    `/api/feeds/${id.toString()}`,
+    {
+      method: 'DELETE',
+    }
+  );
+
+  return response.data;
+};
