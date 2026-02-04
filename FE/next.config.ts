@@ -40,6 +40,11 @@ const nextConfig: NextConfig = {
         hostname: '*.githubusercontent.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'kr.object.ncloudstorage.com',
+        pathname: '/**',
+      },
     ],
   },
 };

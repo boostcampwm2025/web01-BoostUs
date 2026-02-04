@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useOptimisticVote } from '@/features/questions/model/useOptimisticVote';
 import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
-import { toast } from 'sonner';
+import { toast } from '@/shared/utils/toast';
 
 interface Props {
   answer: Answer;
@@ -75,9 +75,8 @@ const AnswerCard = ({ answer, question, hasAcceptedAnswer }: Props) => {
 
       router.refresh();
     } catch (error) {
-      console.error('Error accepting answer:', error);
+      toast.error(error);
       setIsAccepted(previousState);
-      alert('답변 채택에 실패했습니다.');
     }
   };
 

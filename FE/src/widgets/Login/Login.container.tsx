@@ -20,7 +20,6 @@ export default function LoginContainer() {
     }
   }, [isAuthenticated, isLoading, router, redirect]);
 
-  // UI 렌더링 (이전과 동일)
   if (isLoading || isAuthenticated) return null;
 
   return (

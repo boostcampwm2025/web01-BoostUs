@@ -15,6 +15,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import StorySidebar from './StorySidebar';
+import { toast } from '@/shared/utils/toast';
 
 const StoryDetail = ({ story }: { story: StoryDetail }) => {
   const { isAuthenticated } = useAuth();
@@ -36,8 +37,8 @@ const StoryDetail = ({ story }: { story: StoryDetail }) => {
       try {
         await incrementStoryView(story.id);
         setViewCount((prev) => prev + 1);
-      } catch {
-        // 조회수 증가 실패 시 무시
+      } catch (error) {
+        toast.error(error);
       }
     };
     void incrementView();
@@ -53,7 +54,7 @@ const StoryDetail = ({ story }: { story: StoryDetail }) => {
           setIsLiked(liked);
         } catch (error) {
           // 에러 발생 시 초기값 유지 (로그인하지 않은 상태로 처리)
-          console.error('좋아요 상태 확인 실패:', error);
+          toast.error(error);
           setIsLiked(false);
         }
       } else {
