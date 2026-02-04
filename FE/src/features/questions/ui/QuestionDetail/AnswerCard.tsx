@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { useQuestionVote } from '@/features/questions/model/useQuestionVote';
 import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
 import { toast } from '@/shared/utils/toast';
+import { revalidateMultiplePageCaches } from '@/shared/actions/revalidate';
 
 interface Props {
   answer: Answer;
@@ -56,8 +57,11 @@ const AnswerCard = ({ answer, question, hasAcceptedAnswer }: Props) => {
 
     try {
       await acceptAnswer(question.id, answer.id);
-
-      router.refresh();
+      await revalidateMultiplePageCaches([
+        '/questions',
+        `/questions/${question.id}`,
+      ]);
+      toast.success('답변이 채택되었습니다.');
     } catch (error) {
       toast.error(error);
       setIsAccepted(previousState);

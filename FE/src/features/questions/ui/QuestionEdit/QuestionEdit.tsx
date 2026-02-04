@@ -13,6 +13,7 @@ import PostEditorForm, {
 } from '@/features/questions/ui/Form/PostEditorForm';
 import { toast } from '@/shared/utils/toast';
 import { useQueryClient } from '@tanstack/react-query';
+import { revalidateMultiplePageCaches } from '@/shared/actions/revalidate';
 
 export default function QuestionEditPage() {
   const { questionId } = useParams<{ questionId: string }>();
@@ -66,6 +67,10 @@ export default function QuestionEditPage() {
             hashtags: values.hashtags,
           });
           await queryClient.invalidateQueries({ queryKey: QUESTIONS_KEY.all });
+          await revalidateMultiplePageCaches([
+            '/questions',
+            `/questions/${questionId}`,
+          ]);
           toast.success('질문이 수정되었습니다.');
           router.push(`/questions/${questionId}`);
         } catch (error) {
