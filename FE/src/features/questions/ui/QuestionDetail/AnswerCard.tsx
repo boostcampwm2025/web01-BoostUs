@@ -1,19 +1,13 @@
-'use client';
-
 import { Answer, Question } from '@/features/questions/model/questions.type';
 import VoteButtons from '@/features/questions/ui/QuestionDetail/VoteButtons';
 import { CircleCheck } from 'lucide-react';
-import {
-  likeAnswer,
-  dislikeAnswer,
-  acceptAnswer,
-} from '../../api/questions.api';
+import { acceptAnswer } from '../../api/questions.api';
 import { useAuth } from '@/features/login/model/auth.store';
 import MarkdownViewer from '@/shared/ui/MarkdownViewer';
 import CardHeader from './CardHeader';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useOptimisticVote } from '@/features/questions/model/useOptimisticVote';
+import { useQuestionVote } from '@/features/questions/model/useQuestionVote';
 import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
 import { toast } from '@/shared/utils/toast';
 
@@ -28,17 +22,7 @@ const TOOLTIP_MESSAGE = '답변을 채택하면 수정이나 삭제가 불가능
 const AnswerCard = ({ answer, question, hasAcceptedAnswer }: Props) => {
   const { member } = useAuth();
   const router = useRouter();
-
-  const { stats, handleVote } = useOptimisticVote({
-    id: answer.id,
-    upCount: answer.upCount,
-    downCount: answer.downCount,
-    reaction: answer.reaction,
-    api: {
-      voteUp: likeAnswer,
-      voteDown: dislikeAnswer,
-    },
-  });
+  const { voteAnswer } = useQuestionVote(question.id);
 
   const onVoteClick = (type: 'LIKE' | 'DISLIKE') => {
     if (!member) {
@@ -47,7 +31,7 @@ const AnswerCard = ({ answer, question, hasAcceptedAnswer }: Props) => {
       toast.info('로그인이 필요한 기능입니다.');
       return;
     }
-    void handleVote(type);
+    voteAnswer.mutate({ id: answer.id, type });
   };
 
   const [isAccepted, setIsAccepted] = useState(answer.isAccepted);
@@ -95,8 +79,8 @@ const AnswerCard = ({ answer, question, hasAcceptedAnswer }: Props) => {
 
       <div className="flex flex-row gap-6 w-full px-4 py-4 rounded-b-2xl">
         <VoteButtons
-          upCount={stats.upCount}
-          reaction={stats.reaction}
+          upCount={answer.upCount}
+          reaction={answer.reaction}
           onUpvote={() => onVoteClick('LIKE')}
           onDownvote={() => onVoteClick('DISLIKE')}
           isLoggedIn={!!member}

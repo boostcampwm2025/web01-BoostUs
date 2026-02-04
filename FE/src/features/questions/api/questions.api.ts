@@ -10,6 +10,13 @@ import { ApiResponse } from '@/shared/types/ApiResponseType';
 import { Meta } from '@/shared/types/PaginationType';
 import { customFetch } from '@/shared/utils/fetcher';
 
+export const QUESTIONS_KEY = {
+  all: ['questions'] as const,
+  detail: (id: string) => [...QUESTIONS_KEY.all, 'detail', id] as const,
+  answers: (questionId: string) =>
+    [...QUESTIONS_KEY.detail(questionId), 'answers'] as const,
+};
+
 /**
  * 초기 질문 목록 조회
  */
