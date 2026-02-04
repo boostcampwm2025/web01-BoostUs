@@ -110,21 +110,23 @@ export const BlogRegistrationButton = () => {
                   }`}
                   disabled={isLoading || isSubmitting || isDeleting}
                 />
-                <Button
-                  type="button"
-                  buttonStyle="outlined"
-                  className="w-fit border-danger-border-default text-danger-text-default hover:text-danger-text-strong"
-                  onClick={handlers.handleDeleteFeed}
-                  disabled={
-                    isLoading ||
-                    isSubmitting ||
-                    isDeleting ||
-                    !feedId ||
-                    !hasRssFeed
-                  }
-                >
-                  {isDeleting ? '삭제 중...' : '삭제'}
-                </Button>
+                {blogUrl && (
+                  <Button
+                    type="button"
+                    buttonStyle="outlined"
+                    className="w-fit border-danger-border-default text-danger-text-default hover:text-danger-text-strong"
+                    onClick={handlers.handleDeleteFeed}
+                    disabled={
+                      isLoading ||
+                      isSubmitting ||
+                      isDeleting ||
+                      !feedId ||
+                      !hasRssFeed
+                    }
+                  >
+                    {isDeleting ? '삭제 중...' : '삭제'}
+                  </Button>
+                )}
               </div>
             </div>
             <div className="flex flex-col gap-1 mb-2">
