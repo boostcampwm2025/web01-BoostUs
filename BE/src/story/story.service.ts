@@ -176,11 +176,9 @@ export class StoryService {
    * 캠퍼들의 이야기 좋아요 등록
    * @param storyId bigint
    * @param memberId string
-   * @returns string (storyId)
+   * @returns bigint (storyId)
    */
-  async likeStory(storyId: bigint, memberId: string): Promise<string> {
-    const memberIdBigInt = BigInt(memberId);
-
+  async likeStory(storyId: bigint, memberId: bigint): Promise<bigint> {
     // Story 존재 여부 확인
     const storyExists = await this.storyRepository.checkStoryExists(storyId);
     if (!storyExists) {
@@ -188,26 +186,24 @@ export class StoryService {
     }
 
     // 이미 좋아요한 경우 확인
-    const alreadyLiked = await this.storyRepository.checkStoryLikeExists(storyId, memberIdBigInt);
+    const alreadyLiked = await this.storyRepository.checkStoryLikeExists(storyId, memberId);
     if (alreadyLiked) {
       throw new StoryAlreadyLikedException(storyId);
     }
 
     // 좋아요 등록
-    await this.storyRepository.likeStory(storyId, memberIdBigInt);
+    await this.storyRepository.likeStory(storyId, memberId);
 
-    return storyId.toString();
+    return storyId;
   }
 
   /**
    * 캠퍼들의 이야기 좋아요 취소
    * @param storyId bigint
-   * @param memberId string
-   * @returns string (storyId)
+   * @param memberId bigint
+   * @returns bigint (storyId)
    */
-  async unlikeStory(storyId: bigint, memberId: string): Promise<string> {
-    const memberIdBigInt = BigInt(memberId);
-
+  async unlikeStory(storyId: bigint, memberId: bigint): Promise<bigint> {
     // Story 존재 여부 확인
     const storyExists = await this.storyRepository.checkStoryExists(storyId);
     if (!storyExists) {
@@ -215,26 +211,24 @@ export class StoryService {
     }
 
     // 좋아요하지 않은 경우 확인
-    const notLiked = !(await this.storyRepository.checkStoryLikeExists(storyId, memberIdBigInt));
+    const notLiked = !(await this.storyRepository.checkStoryLikeExists(storyId, memberId));
     if (notLiked) {
       throw new StoryNotLikedException(storyId);
     }
 
     // 좋아요 취소
-    await this.storyRepository.unlikeStory(storyId, memberIdBigInt);
+    await this.storyRepository.unlikeStory(storyId, memberId);
 
-    return storyId.toString();
+    return storyId;
   }
 
   /**
    * 캠퍼들의 이야기 좋아요 상태 확인
    * @param storyId bigint
-   * @param memberId string
+   * @param memberId bigint
    * @returns boolean
    */
-  async checkStoryLikeStatus(storyId: bigint, memberId: string): Promise<boolean> {
-    const memberIdBigInt = BigInt(memberId);
-
+  async checkStoryLikeStatus(storyId: bigint, memberId: bigint): Promise<boolean> {
     // Story 존재 여부 확인
     const storyExists = await this.storyRepository.checkStoryExists(storyId);
     if (!storyExists) {
@@ -242,6 +236,6 @@ export class StoryService {
     }
 
     // 좋아요 상태 확인
-    return await this.storyRepository.checkStoryLikeExists(storyId, memberIdBigInt);
+    return await this.storyRepository.checkStoryLikeExists(storyId, memberId);
   }
 }
