@@ -35,7 +35,7 @@ export interface AuthResponse {
     field: string;
   } | null;
   feed: {
-    id: number;
+    id: string;
     feedUrl: string;
   } | null;
 }
