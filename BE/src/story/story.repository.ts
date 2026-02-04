@@ -350,4 +350,17 @@ export class StoryRepository {
       });
     });
   }
+
+  /**
+   * 특정 멤버의 Story를 소프트 삭제
+   * @param memberId bigint
+   * @returns 삭제된 row 수
+   */
+  async softDeleteByMemberId(memberId: bigint): Promise<number> {
+    const result = await this.prisma.story.updateMany({
+      where: { memberId },
+      data: { state: ContentState.DELETED },
+    });
+    return result.count;
+  }
 }

@@ -16,6 +16,7 @@ import {
 import { FeedValidatorService } from './feed-validator.service';
 import { FeedRepository } from './feed.repository';
 import { MemberRepository } from '../member/member.repository';
+import { StoryRepository } from '../story/story.repository';
 
 @Injectable()
 export class FeedService {
@@ -23,6 +24,7 @@ export class FeedService {
     private readonly feedRepository: FeedRepository,
     private readonly feedValidatorService: FeedValidatorService,
     private readonly memberRepository: MemberRepository,
+    private readonly storyRepository: StoryRepository,
   ) {}
 
   /**
@@ -154,5 +156,8 @@ export class FeedService {
 
     // state를 INACTIVE로 변경 (soft delete)
     await this.feedRepository.updateState(feedId, State.INACTIVE);
+
+    // 해당 멤버의 stories 소프트 삭제
+    await this.storyRepository.softDeleteByMemberId(memberId);
   }
 }
