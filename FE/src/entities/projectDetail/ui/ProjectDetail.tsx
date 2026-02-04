@@ -44,8 +44,8 @@ export default function ProjectDetail() {
     e.preventDefault();
 
     try {
-      router.back();
       await deleteProject(id);
+      router.back();
     } catch {
       alert('프로젝트 삭제에 실패했습니다.');
     }
