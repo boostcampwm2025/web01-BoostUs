@@ -27,10 +27,15 @@ export const QUESTIONS_KEY = {
 /**
  * 초기 질문 목록 조회
  */
-export const getInitialQuestions = async (params?: {
-  status?: QuestionsStatusFilter;
-  sort?: QuestionsSortBy;
-}) => {
+export const getInitialQuestions = async (
+  params?: {
+    status?: QuestionsStatusFilter;
+    sort?: QuestionsSortBy;
+  },
+  options?: {
+    skipStore?: boolean;
+  }
+) => {
   const status = params?.status === 'all' ? undefined : params?.status;
 
   return await customFetch<
@@ -39,6 +44,7 @@ export const getInitialQuestions = async (params?: {
       meta: Meta;
     }>
   >('/api/questions', {
+    ...options,
     params: {
       status,
       sort: params?.sort,

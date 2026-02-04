@@ -25,13 +25,18 @@ interface FetchStoriesParams {
 /**
  * 블로그 글 목록 조회
  */
-export const fetchStories = async (params?: FetchStoriesParams) => {
+export const fetchStories = async (
+  params?: FetchStoriesParams,
+  options?: {
+    skipStore?: boolean;
+  }
+) => {
   return await customFetch<
     ApiResponse<{
       items: Story[];
       meta: Meta;
     }>
-  >('/api/stories', { params: { ...params } });
+  >('/api/stories', { ...options, params: { ...params } });
 };
 
 /**
