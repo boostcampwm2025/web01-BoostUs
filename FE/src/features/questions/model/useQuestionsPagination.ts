@@ -28,19 +28,10 @@ export const useQuestionPagination = ({
   // 커서 히스토리 관리 (페이지네이션 UI 유지를 위해 필요)
   const [cursorHistory, setCursorHistory] = useState<(string | null)[]>([null]);
 
-  // 이전 파라미터 추적용 상태
-  const [prevParams, setPrevParams] = useState({ status, sort, query });
-
-  // 렌더링 도중 조건부 상태 업데이트 (Render-time update)
-  // 파라미터가 변경되면 즉시 히스토리를 초기화하고 리렌더링을 트리거합니다.
-  if (
-    prevParams.status !== status ||
-    prevParams.sort !== sort ||
-    prevParams.query !== query
-  ) {
-    setPrevParams({ status, sort, query });
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCursorHistory([null]);
-  }
+  }, [status, sort, query]);
 
   // 현재 페이지의 커서 (배열의 마지막 요소)
   const currentCursor = cursorHistory[cursorHistory.length - 1];
