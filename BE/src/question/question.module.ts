@@ -4,10 +4,11 @@ import { QuestionController } from './question.controller';
 import { QuestionRepository } from './question.repository';
 import { RedisModule } from 'src/redis/redis.module';
 import { ViewService } from 'src/view/view.service';
+import { AuthRepository } from 'src/auth/auth.repository';
 
 @Module({
   imports: [RedisModule],
   controllers: [QuestionController],
-  providers: [QuestionService, ViewService, QuestionRepository],
+  providers: [QuestionService, ViewService, QuestionRepository, AuthRepository],
 })
 export class QuestionModule {}

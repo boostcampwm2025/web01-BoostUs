@@ -16,6 +16,8 @@ import { QuestionNotFoundException } from './exception/question.exception';
 import { QuestionCursorResponseDto } from './dto/res/all/question-list.dto';
 import { Reaction } from 'src/enum/reaction';
 import { QuestionDetailItemDto } from './dto/res/detail/question-detail-item.dto';
+import { AuthRepository } from 'src/auth/auth.repository';
+import { Role } from 'src/generated/prisma/enums';
 
 const toHashtagsStringOrNull = (hashtags?: string[]): string | null =>
   hashtags && hashtags.length ? hashtags.join(',') : null;
@@ -25,6 +27,7 @@ export class QuestionService {
   constructor(
     private readonly questionRepo: QuestionRepository,
     private readonly viewService: ViewService,
+    private readonly authRepository: AuthRepository,
   ) {}
   //응답 dto 없음
   async create(memberIdStr: string, dto: CreateQuestionDto) {
@@ -330,7 +333,11 @@ export class QuestionService {
     const ownerId = await this.questionRepo.findOwnerIdByQuestionId(id);
     if (!ownerId) throw new NotFoundException('질문의 주인이 없소');
 
-    if (ownerId !== memberId) {
+    // ADMIN 권한 확인
+    const member = await this.authRepository.findById(memberIdStr);
+    const canDelete = ownerId === memberId || member?.role === Role.ADMIN;
+
+    if (!canDelete) {
       throw new ForbiddenException('삭제권한이 없소');
     }
 

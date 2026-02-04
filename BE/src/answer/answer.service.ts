@@ -3,9 +3,15 @@ import { CreateAnswerDto } from './dto/req/create-answer.dto';
 import { AnswerRepository } from './answer.repository';
 import { AnswerResponseDto } from './dto/res/answer-response.dto';
 import { UpdateAnswerDto } from './dto/req/update-answer.dto';
+import { AuthRepository } from 'src/auth/auth.repository';
+import { Role } from 'src/generated/prisma/enums';
+
 @Injectable()
 export class AnswerService {
-  constructor(private readonly answerRepo: AnswerRepository) {}
+  constructor(
+    private readonly answerRepo: AnswerRepository,
+    private readonly authRepository: AuthRepository,
+  ) { }
 
   async findOne(id: string) {
     const answer = await this.answerRepo.findOnePublished(id); // repo로 빼는 게 깔끔
@@ -88,7 +94,11 @@ export class AnswerService {
     const ownerId = await this.answerRepo.findOwnerIdByAnswerId(id);
     if (!ownerId) throw new NotFoundException('답변의 주인이 없소');
 
-    if (ownerId !== memberId) {
+    // ADMIN 권한 확인
+    const member = await this.authRepository.findById(memberIdStr);
+    const canDelete = ownerId === memberId || member?.role === Role.ADMIN;
+
+    if (!canDelete) {
       throw new ForbiddenException('삭제권한이 없소');
     }
 
