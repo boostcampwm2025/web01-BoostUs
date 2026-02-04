@@ -140,7 +140,7 @@ export class AuthService {
         secret,
       });
 
-      if (payload.type !== 'refresh') {
+      if (!payload || payload.type !== 'refresh') {
         throw new InvalidRefreshTokenException();
       }
 
