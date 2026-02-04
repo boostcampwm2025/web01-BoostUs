@@ -78,6 +78,7 @@ interface FormTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> 
   error?: FieldError;
   register: UseFormRegisterReturn;
   watchValue: string;
+  autoResize?: boolean;
 }
 
 export const FormTextarea = ({
@@ -85,6 +86,7 @@ export const FormTextarea = ({
   error,
   register,
   watchValue,
+  autoResize = true,
   ...props
 }: FormTextareaProps) => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -101,6 +103,8 @@ export const FormTextarea = ({
   };
 
   useEffect(() => {
+    if (!autoResize) return;
+
     const rafId = requestAnimationFrame(() => {
       adjustHeight();
     });
@@ -118,7 +122,7 @@ export const FormTextarea = ({
       clearTimeout(timer1);
       clearTimeout(timer2);
     };
-  }, [watchValue]);
+  }, [watchValue, autoResize]);
 
   return (
     <div className="flex-1">
@@ -136,8 +140,8 @@ export const FormTextarea = ({
           registerRef(e);
           textareaRef.current = e;
         }}
-        onInput={adjustHeight}
-        className={`mt-1 block w-full resize-none overflow-hidden rounded-lg border p-2 focus:ring-brand-border-default ${
+        onInput={autoResize ? adjustHeight : undefined}
+        className={`mt-1 block w-full resize-none rounded-lg border p-2 focus:ring-brand-border-default ${
           error
             ? 'border-danger-border-default'
             : 'border-neutral-border-default focus:border-neutral-border-active'

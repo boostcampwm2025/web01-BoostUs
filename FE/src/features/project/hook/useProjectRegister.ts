@@ -265,7 +265,7 @@ export const useProjectRegister = (
       } else {
         await createMutation.mutateAsync({
           ...baseData,
-          participants: participants.map((id) => ({ githubId: id })),
+          participants: participants,
         });
       }
     } catch (error: unknown) {
@@ -287,6 +287,7 @@ export const useProjectRegister = (
     participants,
     addParticipant: handleParticipantsAdd,
     removeParticipant: handleParticipantsRemove,
+    setParticipants,
     techStack,
     setTechStack,
   };
