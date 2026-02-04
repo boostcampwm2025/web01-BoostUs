@@ -13,7 +13,10 @@ import formatLocalDate from '@/shared/utils/formatLocalDate';
 import { toast } from '@/shared/utils/toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { PROJECT_KEYS } from '@/features/project/api/getProjects';
-import { revalidatePageCache } from '@/shared/actions/revalidate';
+import {
+  revalidateMultiplePageCaches,
+  revalidatePageCache,
+} from '@/shared/actions/revalidate';
 
 export const useProjectRegister = (
   editProjectId?: number,
@@ -78,7 +81,12 @@ export const useProjectRegister = (
 
       // ISR 캐시 무효화 (Server Action 사용)
       try {
-        await revalidatePageCache('/project');
+        const pathsToRevalidate = ['/project'];
+        if (editProjectId) {
+          pathsToRevalidate.push(`/project/${editProjectId.toString()}`);
+        }
+
+        await revalidateMultiplePageCaches(pathsToRevalidate);
       } catch (error) {
         console.error('ISR revalidation failed:', error);
       }
