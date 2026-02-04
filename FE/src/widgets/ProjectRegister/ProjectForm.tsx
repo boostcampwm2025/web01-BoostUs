@@ -29,6 +29,8 @@ import Button from '@/shared/ui/Button/Button';
 import { getProjectReadme } from '@/features/project/api/getProjectReadme';
 import { getProjectCollaborators } from '@/features/project/api/getProjectCollaborators';
 
+import { FormMarkdownEditor } from '@/features/project/ui/register/utils/FormMarkdownEditor';
+
 const normalizeStacks = (data: unknown): TechStackResponse => {
   const empty: TechStackResponse = {
     FRONTEND: [],
@@ -275,7 +277,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
           </div>
 
           <div className="flex flex-row gap-4">
-            <div className="flex-1 flex gap-2 items-end">
+            <div className="flex-1 flex gap-2">
               <div className="flex-1">
                 <FormInput
                   id="repoUrl"
@@ -293,14 +295,22 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
                   error={errors.repoUrl}
                 />
               </div>
-              {/* 버튼 클릭 시 handleLoadBtnClick 실행 */}
-              <Button
-                type="button"
-                onClick={handleLoadBtnClick}
-                disabled={isFetchingRepo}
-              >
-                {isFetchingRepo ? '로딩 중...' : '불러오기'}
-              </Button>
+
+              {/* 높이 맞춤용 가짜 라벨 */}
+              <div className="flex flex-col">
+                <span className="block text-string-16 text-transparent select-none">
+                  &nbsp;
+                </span>
+                <div className="mt-1">
+                  <Button
+                    type="button"
+                    onClick={handleLoadBtnClick}
+                    disabled={isFetchingRepo}
+                  >
+                    {isFetchingRepo ? '로딩 중...' : '불러오기'}
+                  </Button>
+                </div>
+              </div>
             </div>
 
             <div className="flex-1">
@@ -336,14 +346,12 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
             error={errors.description}
           />
 
-          <FormTextarea
+          <FormMarkdownEditor
             id="contents"
             label="상세 내용"
-            placeholder="내용 입력"
+            placeholder="마크다운으로 내용을 작성해보세요."
             register={register('contents')}
-            watchValue={(contentsValue as unknown as string) ?? ''}
-            autoResize={false}
-            rows={6}
+            watchValue={(contentsValue as unknown as string) ?? ''} // watch값 전달 필수
             error={errors.contents}
             className="min-h-37.5"
           />
