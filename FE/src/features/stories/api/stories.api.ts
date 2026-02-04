@@ -7,6 +7,13 @@ import { ApiResponse } from '@/shared/types/ApiResponseType';
 import { Meta } from '@/shared/types/PaginationType';
 import { customFetch } from '@/shared/utils/fetcher';
 
+export const STORIES_KEY = {
+  all: ['stories'] as const,
+  detail: (id: string) => [...STORIES_KEY.all, 'detail', id] as const,
+  likeStatus: (id: string) =>
+    [...STORIES_KEY.detail(id), 'likeStatus'] as const,
+};
+
 interface FetchStoriesParams {
   sortBy?: StoriesSortOption['sortBy'];
   period?: StoriesSortOption['period'];

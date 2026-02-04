@@ -1,5 +1,10 @@
-import { getStoryById } from '@/features/stories/api/stories.api';
+import { getStoryById, STORIES_KEY } from '@/features/stories/api/stories.api';
 import StoryDetail from '@/features/stories/ui/StoryDetail/StoryDetail';
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from '@tanstack/react-query';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -7,10 +12,18 @@ interface Props {
 
 const StoryDetailPage = async ({ params }: Props) => {
   const { id } = await params;
-  const response = await getStoryById(id);
-  const story = response.data;
+  const queryClient = new QueryClient();
 
-  return <StoryDetail story={story} />;
+  await queryClient.prefetchQuery({
+    queryKey: STORIES_KEY.detail(id),
+    queryFn: () => getStoryById(id).then((res) => res.data),
+  });
+
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <StoryDetail storyId={id} />
+    </HydrationBoundary>
+  );
 };
 
 export default StoryDetailPage;

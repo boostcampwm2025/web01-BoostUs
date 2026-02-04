@@ -3,9 +3,9 @@
 import { useAuth } from '@/features/login/model/auth.store';
 import {
   checkStoryLikeStatus,
-  incrementStoryView,
+  getStoryById,
+  STORIES_KEY,
 } from '@/features/stories/api/stories.api';
-import type { StoryDetail } from '@/features/stories/model/stories.type';
 import BackButton from '@/shared/ui/BackButton';
 import MarkdownViewer from '@/shared/ui/MarkdownViewer';
 import UserProfile from '@/shared/ui/UserProfile';
@@ -13,75 +13,67 @@ import extractDate from '@/shared/utils/extractDate';
 import { Calendar, Eye } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import StorySidebar from './StorySidebar';
+import { useRouter } from 'next/navigation';
+import { useStoryViewCount } from '@/features/stories/model/useStoryViewCount';
+import { useStoryLike } from '@/features/stories/model/useStoryLike';
+import { useQuery } from '@tanstack/react-query';
 import { toast } from '@/shared/utils/toast';
 
-const StoryDetail = ({ story }: { story: StoryDetail }) => {
+interface StoryDetailProps {
+  storyId: string;
+}
+
+const StoryDetail = ({ storyId }: StoryDetailProps) => {
   const { isAuthenticated } = useAuth();
-  const [likeCount, setLikeCount] = useState(story.likeCount);
-  const [isLiked, setIsLiked] = useState(false);
-  const [viewCount, setViewCount] = useState(story.viewCount);
+  const router = useRouter();
 
-  // story prop이 변경될 때 상태 업데이트
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setLikeCount(story.likeCount);
-    setIsLiked(false);
-    setViewCount(story.viewCount);
-  }, [story.id, story.likeCount, story.viewCount]);
+  useStoryViewCount(storyId);
 
-  // 스토리 상세 진입 시 조회수 증가 (bid 쿠키로 중복 방지)
-  useEffect(() => {
-    const incrementView = async () => {
-      try {
-        await incrementStoryView(story.id);
-        setViewCount((prev) => prev + 1);
-      } catch (error) {
-        toast.error(error);
-      }
-    };
-    void incrementView();
-  }, [story.id]);
+  const { toggleLike } = useStoryLike(storyId);
 
-  // 클라이언트 사이드에서 좋아요 상태 확인
-  useEffect(() => {
-    const fetchLikeStatus = async () => {
-      // 로그인 상태일 때만 API 호출
-      if (isAuthenticated) {
-        try {
-          const liked = await checkStoryLikeStatus(story.id);
-          setIsLiked(liked);
-        } catch (error) {
-          // 에러 발생 시 초기값 유지 (로그인하지 않은 상태로 처리)
-          toast.error(error);
-          setIsLiked(false);
-        }
-      } else {
-        // 로그인하지 않은 경우 false로 설정
-        setIsLiked(false);
-      }
-    };
+  // 스토리 상세 데이터 구독
+  const { data: story } = useQuery({
+    queryKey: STORIES_KEY.detail(storyId),
+    queryFn: async () => {
+      const res = await getStoryById(storyId);
+      return res.data; // ApiResponse 구조에 따라 .data 반환
+    },
+  });
 
-    void fetchLikeStatus();
-  }, [story.id, isAuthenticated]);
+  // 좋아요 상태 구독 (로그인 시에만)
+  const { data: isLiked } = useQuery({
+    queryKey: STORIES_KEY.likeStatus(storyId),
+    queryFn: () => checkStoryLikeStatus(storyId),
+    enabled: isAuthenticated, // 로그인 안돼있으면 쿼리 실행 안 함
+    initialData: false,
+  });
 
-  const handleLikeChange = (newIsLiked: boolean, newLikeCount: number) => {
-    setIsLiked(newIsLiked);
-    setLikeCount(newLikeCount);
+  if (!story) return null; // TODO: 스켈레톤
+
+  const handleLikeClick = () => {
+    if (!isAuthenticated) {
+      const { pathname, search, hash } = window.location;
+      const currentPath = `${pathname}${search}${hash}`;
+      toast.warning('로그인이 필요한 기능입니다.');
+      router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
+      return;
+    }
+    // 현재 상태를 넘겨주면 Hook이 반전시켜서 처리
+    toggleLike(isLiked);
   };
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4">
       <div className="flex justify-center gap-16 -ml-20">
-        {/* 좌측 사이드바 */}
         <aside className="hidden lg:block">
           <div className="sticky top-24 h-fit mt-50">
             <StorySidebar
-              storyId={story.id}
-              initialIsLiked={isLiked}
-              initialLikeCount={likeCount}
-              onLikeChange={handleLikeChange}
+              storyId={storyId}
+              isLiked={isLiked}
+              likeCount={story.likeCount}
+              onLikeClick={handleLikeClick}
+              isAuthenticated={isAuthenticated}
             />
           </div>
         </aside>
@@ -101,7 +93,7 @@ const StoryDetail = ({ story }: { story: StoryDetail }) => {
             <div className="flex flex-row items-center gap-1">
               <Eye className="text-neutral-text-weak h-3 w-3" />
               <span className="text-body-12 text-neutral-text-weak">
-                {viewCount}
+                {story.viewCount}
               </span>
             </div>
             <div className="flex flex-row items-center gap-1">
@@ -139,10 +131,10 @@ const StoryDetail = ({ story }: { story: StoryDetail }) => {
       {/* 모바일용 하단 고정 사이드바 */}
       <div className="lg:hidden fixed bottom-6 right-6 z-50 drop-shadow-lg">
         <StorySidebar
-          storyId={story.id}
-          initialIsLiked={isLiked}
-          initialLikeCount={likeCount}
-          onLikeChange={handleLikeChange}
+          isLiked={isLiked}
+          likeCount={story.likeCount}
+          onLikeClick={handleLikeClick}
+          isAuthenticated={isAuthenticated}
         />
       </div>
     </div>
