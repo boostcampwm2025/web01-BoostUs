@@ -9,7 +9,7 @@ export class ValidationFailedException extends BaseException {
     super(
       'VALIDATION_FAILED',
       '요청 데이터 유효성 검증에 실패했습니다.',
-      HttpStatus.INTERNAL_SERVER_ERROR,
+      HttpStatus.BAD_REQUEST,
       details,
     );
   }
