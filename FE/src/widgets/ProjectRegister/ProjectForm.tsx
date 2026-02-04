@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { FieldError } from 'react-hook-form';
 
 import ModalOverlay from '@/shared/ui/ModalOverlay';
+import Modal from '@/widgets/Modal/Modal';
+
 import { useProjectRegister } from '@/features/project/hook/useProjectRegister';
 import { fetchStacks } from '@/entities/TechStackSelector/api/getTechStack';
 import TechStackSelector from '@/entities/TechStackSelector/ui/TechStackSelector';
@@ -13,7 +15,6 @@ import {
   TechStackItem,
 } from '@/entities/TechStackSelector/model/types';
 
-// 부품
 import {
   FormInput,
   FormSelect,
@@ -28,7 +29,6 @@ import Button from '@/shared/ui/Button/Button';
 import { getProjectReadme } from '@/features/project/api/getProjectReadme';
 import { getProjectCollaborators } from '@/features/project/api/getProjectCollaborators';
 
-// 데이터 정규화 함수
 const normalizeStacks = (data: unknown): TechStackResponse => {
   const empty: TechStackResponse = {
     FRONTEND: [],
@@ -50,10 +50,10 @@ const FIELD_OPTIONS = [
 ] as const;
 
 interface ProjectFormProps {
-  projectId?: number; // 이 값이 있으면 수정 모드
+  projectId?: number;
 }
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES = new Set(['image/png', 'image/jpeg', 'image/gif']);
 
 export default function ProjectForm({ projectId }: ProjectFormProps) {
@@ -64,7 +64,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
     register,
     watch,
     setValue,
-    getValues, // 현재 입력값을 가져오기 위해 추가
+    getValues,
     formState: { errors, isSubmitting },
     previewUrl,
     isDragging,
@@ -78,14 +78,14 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
     setTechStack,
   } = useProjectRegister(projectId, () => {
     router.refresh();
-    router.push('/project'); // 완료 후 이동
+    router.push('/project');
   });
 
   const [stackData, setStackData] = useState<TechStackResponse | null>(null);
   const [isComposing, setIsComposing] = useState(false);
-
-  // Repo 로딩 상태 관리
   const [isFetchingRepo, setIsFetchingRepo] = useState(false);
+
+  const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false);
 
   const contentsValue = watch('contents');
 
@@ -102,26 +102,21 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
     value: `${(i + 1).toString()}기`,
   }));
 
-  // [변경] 입력된 Repo URL을 기반으로 데이터를 가져오는 핸들러
-  const handleLoadRepoData = async () => {
-    // 폼에 입력된 값을 가져옴
-    const repositoryUrl = getValues('repoUrl');
+  // 실제 데이터를 가져오는 비동기 함수
+  const executeRepoFetch = async () => {
+    setIsOverwriteModalOpen(false); // 모달 닫기
 
-    if (!repositoryUrl) {
-      toast.error('Repository URL을 입력해주세요.');
-      return;
-    }
+    const repositoryUrl = getValues('repoUrl');
+    if (!repositoryUrl) return;
 
     setIsFetchingRepo(true);
 
     try {
-      // README와 Collaborators 병렬 요청
       const [readmeResult, collaboratorsResult] = await Promise.allSettled([
         getProjectReadme(repositoryUrl),
         getProjectCollaborators(repositoryUrl),
       ]);
 
-      // README 처리
       if (readmeResult.status === 'fulfilled') {
         setValue('contents', readmeResult.value.content ?? '', {
           shouldDirty: true,
@@ -132,7 +127,6 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
         toast.error('README를 불러오지 못했습니다. URL을 확인해주세요.');
       }
 
-      // Collaborators 처리
       if (collaboratorsResult.status === 'fulfilled') {
         const newParticipants = collaboratorsResult.value
           .map((c) => c.githubId)
@@ -155,6 +149,30 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
     }
   };
 
+  // 버튼 클릭 핸들러 (내용 유무 확인)
+  const handleLoadBtnClick = () => {
+    const repositoryUrl = getValues('repoUrl');
+
+    if (!repositoryUrl) {
+      toast.error('Repository URL을 입력해주세요.');
+      return;
+    }
+
+    // 현재 에디터에 내용이 있는지 확인
+    const currentContent = getValues('contents');
+
+    // 내용이 존재하면(공백 제외) 모달 띄움
+    if (
+      typeof currentContent === 'string' &&
+      currentContent.trim().length > 0
+    ) {
+      setIsOverwriteModalOpen(true);
+    } else {
+      // 내용이 없거나 문자열이 아니거나, 빈 문자열이면 바로 실행
+      void executeRepoFetch();
+    }
+  };
+
   return (
     <ModalOverlay>
       <div className="w-full rounded-2xl bg-neutral-surface-default">
@@ -162,7 +180,39 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
           {isEditMode ? '프로젝트 수정' : '프로젝트 등록'}
         </h2>
 
-        {/* Modal 관련 JSX 제거됨 */}
+        {/*  덮어쓰기 확인 모달 */}
+        <Modal
+          isOpen={isOverwriteModalOpen}
+          onClose={() => setIsOverwriteModalOpen(false)}
+        >
+          <div className="flex flex-col gap-4">
+            <div>
+              <h3 className="text-display-18 text-neutral-text-strong">
+                덮어쓰기 확인
+              </h3>
+              <p className="mt-2 text-body-14 text-neutral-text-default">
+                상세 내용이 이미 존재합니다.
+                <br />
+                Repository의 README 내용으로 덮어쓰시겠습니까?
+              </p>
+              <p className="mt-1 text-string-12 text-danger-text-default">
+                * 기존 작성 내용은 사라집니다.
+              </p>
+            </div>
+            <div className="flex justify-end gap-2 mt-2">
+              <button
+                type="button"
+                onClick={() => setIsOverwriteModalOpen(false)}
+                className="rounded-lg border border-neutral-border-default px-4 py-2 text-string-16 text-neutral-text-default hover:bg-neutral-surface-alt transition-colors"
+              >
+                취소
+              </button>
+              <Button type="button" onClick={executeRepoFetch}>
+                덮어쓰기
+              </Button>
+            </div>
+          </div>
+        </Modal>
 
         <form onSubmit={(e) => void onSubmit(e)} className="space-y-6">
           <ThumbnailUploader
@@ -170,6 +220,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
             isDragging={isDragging}
             dragHandlers={dragHandlers}
             register={register('thumbnail', {
+              // ... 기존 유효성 검사 로직 동일
               validate: {
                 fileType: (files) => {
                   const file = files?.[0];
@@ -236,9 +287,10 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
                   error={errors.repoUrl}
                 />
               </div>
+              {/* 버튼 클릭 시 handleLoadBtnClick 실행 */}
               <Button
                 type="button"
-                onClick={handleLoadRepoData}
+                onClick={handleLoadBtnClick}
                 disabled={isFetchingRepo}
               >
                 {isFetchingRepo ? '로딩 중...' : '불러오기'}
