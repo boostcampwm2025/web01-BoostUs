@@ -4,8 +4,9 @@ import { useRouter } from 'next/navigation';
 import {
   getCurrentMember,
   logout as logoutApi,
-} from '@/features/login/api/auth.api'; // 기존 API 그대로 사용
-import type { AuthResponse } from './auth.types'; // 기존 타입 그대로 사용
+} from '@/features/login/api/auth.api';
+import type { AuthResponse } from './auth.types';
+import { toast } from '@/shared/utils/toast';
 
 // 상태 정의 memberAtom: 로그인한 사용자 정보 (초기값 null)
 export const memberAtom = atom<AuthResponse | null>(null);
@@ -29,9 +30,17 @@ export const useAuth = () => {
       const memberData = await getCurrentMember();
       setMember(memberData);
     } catch (error) {
-      // TODO: 401 등 에러 발생 시 로그인 안 된 상태로 처리
-      console.log('API 오류 발생:', error);
-      setMember(null);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+
+      if (errorMessage === 'UNAUTHORIZED') {
+        // 1. 비로그인 상태 (401): 에러 아님. 조용히 null 처리하고 끝냄.
+        setMember(null);
+      } else {
+        // 2. 진짜 에러 (500, 네트워크 오류 등): 사용자에게 알림.
+        toast.error(error);
+        setMember(null);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -42,7 +51,7 @@ export const useAuth = () => {
     try {
       await logoutApi();
     } catch (error) {
-      console.error('로그아웃 실패:', error);
+      toast.error(error);
     } finally {
       setMember(null);
       router.push('/'); // 로그아웃 후 메인으로 이동

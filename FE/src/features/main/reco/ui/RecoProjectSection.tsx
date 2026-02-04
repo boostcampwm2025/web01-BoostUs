@@ -1,15 +1,19 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperClass } from 'swiper/types';
 import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import { useRouter } from 'next/navigation';
 import { Pause, Play } from 'lucide-react';
-import { fetchRecoProject } from '../api/fetchRecoProject';
+import { useQuery } from '@tanstack/react-query';
+import {
+  fetchRecoProject,
+  RECO_PROJECT_QUERY_KEY,
+} from '@/features/main/reco/api/fetchRecoProject';
+import Image from 'next/image';
 
-// ✅ 지금 응답 형태에 맞춘 최소 타입
 interface RecoProject {
   id: number;
   thumbnailUrl: string | null;
@@ -27,32 +31,28 @@ export default function RecommendProjectSection() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // ✅ 추가: 추천 프로젝트 state
-  const [projects, setProjects] = useState<RecoProject[]>([]);
+  const {
+    data: response,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: RECO_PROJECT_QUERY_KEY,
+    queryFn: () => fetchRecoProject(),
+  });
 
-  // ✅ 추가: 데이터 가져오기
-  useEffect(() => {
-    void (async () => {
-      try {
-        const res = await fetchRecoProject(); // ApiResponse<Project[]>
-        setProjects(res.data as RecoProject[]);
-      } catch (e) {
-        console.error(e);
-        setProjects([]);
-      }
-    })();
-  }, []);
-
-  // ✅ 기존 slides를 실데이터로 교체
   const slides = useMemo(() => {
-    if (projects.length === 0) {
+    const projects = (response?.data as RecoProject[]) ?? [];
+
+    if (isLoading || isError || projects.length === 0) {
       return [
         {
-          id: 1,
+          id: -1,
           image: '/api/placeholder/800/600',
           category: '프로젝트',
-          title: '추천 프로젝트를 불러오는 중…',
-          description: '',
+          title: isLoading
+            ? '추천 프로젝트를 불러오는 중…'
+            : '추천 프로젝트가 없습니다.',
+          description: isError ? '데이터를 불러오는데 실패했습니다.' : '',
           color: 'bg-slate-800',
         },
       ];
@@ -66,7 +66,7 @@ export default function RecommendProjectSection() {
       description: p.description ?? '',
       color: ['bg-slate-800', 'bg-amber-800', 'bg-emerald-800'][idx % 3],
     }));
-  }, [projects]);
+  }, [response, isLoading, isError]);
 
   const handleSlideChange = (index: number) => {
     swiperInstance?.slideToLoop(index);
@@ -80,7 +80,7 @@ export default function RecommendProjectSection() {
   };
 
   return (
-    <div className="relative w-full h-[500px] overflow-hidden rounded-xl bg-gray-900 text-white">
+    <div className="relative w-full h-125 overflow-hidden rounded-xl bg-gray-900 text-white">
       <Swiper
         modules={[Autoplay]}
         spaceBetween={0}
@@ -91,17 +91,25 @@ export default function RecommendProjectSection() {
         onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
         className="w-full h-full"
       >
-        {slides.map((slide) => (
+        {slides.map((slide, index) => (
           <SwiperSlide key={slide.id}>
             <div
-              className={`w-full h-full ${slide.color} cursor-pointer`}
-              onClick={() => router.push(`project/${slide.id.toString()}`)}
-              style={{
-                backgroundImage: `url(${slide.image})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
+              className={`w-full h-full ${slide.color} ${slide.id !== -1 ? 'cursor-pointer' : ''}`}
+              onClick={() => {
+                if (slide.id !== -1)
+                  router.push(`/project/${slide.id.toString()}`);
               }}
-            />
+            >
+              <Image
+                src={slide.image}
+                alt={slide.title}
+                fill
+                className="object-cover opacity-60"
+                sizes="(max-width: 768px) 100vw, 1200px"
+                quality={80}
+                priority={index === 0}
+              />
+            </div>
           </SwiperSlide>
         ))}
       </Swiper>
@@ -138,7 +146,7 @@ export default function RecommendProjectSection() {
             ))}
           </div>
 
-          <div className="w-[1px] h-4 bg-gray-600"></div>
+          <div className="w-px h-4 bg-gray-600"></div>
 
           <button
             onClick={toggleAutoplay}

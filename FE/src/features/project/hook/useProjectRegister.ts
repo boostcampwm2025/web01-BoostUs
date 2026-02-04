@@ -2,28 +2,25 @@ import { useState, useEffect, DragEvent } from 'react';
 import { useForm } from 'react-hook-form';
 import { ProjectFormValues } from '@/features/project/model/projectSchema';
 import { registerProject } from '@/features/project/api/registerProject';
-import { updateProject } from '@/features/project/api/updateProject';
+import {
+  updateProject,
+  UpdateProjectBody,
+} from '@/features/project/api/updateProject';
 import { fetchProjectDetail } from '@/entities/projectDetail/api/projectDetailAPI';
 import { useRouter } from 'next/navigation';
 import { uploadThumbnail } from '../api/uploadThumbnail';
-import { toast } from 'sonner';
 import formatLocalDate from '@/shared/utils/formatLocalDate';
-
-const getErrorMessage = (err: unknown): string => {
-  if (err instanceof Error) return err.message;
-  if (typeof err === 'string') return err;
-  try {
-    return JSON.stringify(err);
-  } catch {
-    return '알 수 없는 오류';
-  }
-};
+import { toast } from '@/shared/utils/toast';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { PROJECT_KEYS } from '@/features/project/api/getProjects';
 
 export const useProjectRegister = (
   editProjectId?: number,
   onClose?: () => void
 ) => {
   const router = useRouter();
+  const queryClient = useQueryClient();
+
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [techStack, setTechStack] = useState<string[]>([]);
   const [participants, setParticipants] = useState<string[]>([]);
@@ -51,6 +48,45 @@ export const useProjectRegister = (
   const { watch, setValue, handleSubmit, getValues } = formMethods;
   // eslint-disable-next-line react-hooks/incompatible-library
   const thumbnailList = watch('thumbnail');
+
+  // 프로젝트 추가 Mutation
+  const createMutation = useMutation({
+    mutationFn: registerProject,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.all });
+
+      // ISR 캐시 무효화 (POST 메서드 사용)
+      try {
+        await fetch('/api/revalidate?path=/project', { method: 'POST' });
+      } catch (error) {
+        console.error('ISR revalidation failed:', error);
+      }
+
+      toast.success('프로젝트가 등록되었습니다.');
+      router.push('/project');
+      if (onClose) onClose();
+    },
+  });
+
+  // 프로젝트 수정 Mutation
+  const updateMutation = useMutation({
+    mutationFn: ({ id, body }: { id: number; body: UpdateProjectBody }) =>
+      updateProject(id, body),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.all });
+
+      // ISR 캐시 무효화 (POST 메서드 사용)
+      try {
+        await fetch('/api/revalidate?path=/project', { method: 'POST' });
+      } catch (error) {
+        console.error('ISR revalidation failed:', error);
+      }
+
+      toast.success('프로젝트 정보가 수정되었습니다.');
+      router.push('/project');
+      if (onClose) onClose();
+    },
+  });
 
   // 1. 데이터 로드
   useEffect(() => {
@@ -105,7 +141,7 @@ export const useProjectRegister = (
           : [];
         setParticipants(loadedParticipants);
       } catch (err) {
-        console.error('데이터 로드 실패:', err);
+        toast.error(err);
       }
     };
     void loadData();
@@ -218,25 +254,22 @@ export const useProjectRegister = (
       };
 
       if (editProjectId) {
-        await updateProject(editProjectId, {
-          ...baseData,
-          participants: participants,
-          demoUrl: baseData.demoUrl ?? '',
+        await updateMutation.mutateAsync({
+          id: editProjectId,
+          body: {
+            ...baseData,
+            participants: participants,
+            demoUrl: baseData.demoUrl ?? '',
+          },
         });
-        toast.success('프로젝트 정보가 수정되었습니다.');
-        router.push('/project');
       } else {
-        await registerProject({
+        await createMutation.mutateAsync({
           ...baseData,
           participants: participants,
         });
-        toast.success('프로젝트가 등록되었습니다.');
-        router.push('/project');
       }
-      if (onClose) onClose();
     } catch (error: unknown) {
-      console.error(error);
-      toast.error(`처리 실패: ${getErrorMessage(error)}`);
+      toast.error(error);
     }
   };
 

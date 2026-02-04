@@ -24,6 +24,8 @@ import {
   ThumbnailUploader,
   ParticipantManager,
 } from '@/features/project/ui/register/utils/FunctionalComponents';
+import { toast } from '@/shared/utils/toast';
+import Button from '@/shared/ui/Button/Button';
 import { getProjectReadme } from '@/features/project/api/getProjectReadme';
 import { getProjectCollaborators } from '@/features/project/api/getProjectCollaborators';
 
@@ -51,6 +53,9 @@ const FIELD_OPTIONS = [
 interface ProjectFormProps {
   projectId?: number; // 이 값이 있으면 수정 모드
 }
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_TYPES = new Set(['image/png', 'image/jpeg', 'image/gif']);
 
 export default function ProjectForm({ projectId }: ProjectFormProps) {
   const router = useRouter();
@@ -96,7 +101,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
     fetchStacks()
       .then((res) => setStackData(normalizeStacks(res.data)))
       .catch((e: unknown) => {
-        console.error(e);
+        toast.error(e);
       });
   }, []);
 
@@ -264,7 +269,26 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
             previewUrl={previewUrl}
             isDragging={isDragging}
             dragHandlers={dragHandlers}
-            register={register('thumbnail')}
+            register={register('thumbnail', {
+              validate: {
+                fileType: (files) => {
+                  const file = files?.[0];
+                  if (!file) return true;
+                  return (
+                    ALLOWED_TYPES.has(file.type) ||
+                    'PNG, JPG, JPEG, GIF만 업로드 가능해요.'
+                  );
+                },
+                fileSize: (files) => {
+                  const file = files?.[0];
+                  if (!file) return true;
+                  return (
+                    file.size <= MAX_FILE_SIZE ||
+                    '이미지 크기는 최대 5MB까지 가능해요.'
+                  );
+                },
+              },
+            })}
             error={errors.thumbnail}
           />
 
@@ -343,7 +367,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
             autoResize={false}
             rows={6}
             error={errors.contents}
-            className="h-[500px] min-h-[500px] overflow-y-auto"
+            className="min-h-37.5"
           />
 
           <ParticipantManager
@@ -381,24 +405,16 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
           </div>
 
           <div className="flex justify-end gap-2 mt-8">
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="rounded-lg bg-brand-surface-weak border border-neutral-border-default px-4 py-2 text-string-16"
-            >
+            <Button buttonStyle="outlined" onClick={() => router.back()}>
               취소
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="rounded-lg bg-brand-surface-default px-4 py-2 text-string-16 text-brand-text-on-default disabled:opacity-50"
-            >
+            </Button>
+            <Button disabled={isSubmitting} type="submit">
               {isSubmitting
                 ? '처리 중...'
                 : isEditMode
                   ? '수정 완료'
                   : '등록하기'}
-            </button>
+            </Button>
           </div>
         </form>
       </div>
