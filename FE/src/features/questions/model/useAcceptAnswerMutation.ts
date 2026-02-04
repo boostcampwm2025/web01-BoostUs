@@ -55,16 +55,18 @@ export const useAcceptAnswerMutation = (questionId: string) => {
       toast.error(err);
     },
 
-    // 3. 성공/실패 여부와 상관없이 최신화
-    onSettled: async () => {
-      await queryClient.invalidateQueries({ queryKey });
-
+    // 3. 성공 시 처리
+    onSuccess: async () => {
       await revalidateMultiplePageCaches([
         '/questions',
         `/questions/${questionId}`,
       ]);
-
       toast.success('답변이 채택되었습니다.');
+    },
+
+    // 4. 성공/실패 여부와 상관없이 최신화
+    onSettled: async () => {
+      await queryClient.invalidateQueries({ queryKey });
     },
   });
 };
