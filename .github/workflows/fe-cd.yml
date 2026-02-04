@@ -68,11 +68,19 @@ jobs:
 
             SHA="${{ github.sha }}"
             FE_IMAGE="${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.FE_IMAGE_NAME }}:${SHA}"
+            
+            REVALIDATE_SECRET="${{ secrets.REVALIDATE_SECRET }}"
 
             if grep -q '^FE_IMAGE=' .env.prod; then
               sed -i "s|^FE_IMAGE=.*|FE_IMAGE=${FE_IMAGE}|" .env.prod
             else
               echo "FE_IMAGE=${FE_IMAGE}" >> .env.prod
+            fi
+            
+            if grep -q '^REVALIDATE_SECRET=' .env.prod; then
+              sed -i "s|^REVALIDATE_SECRET=.*|REVALIDATE_SECRET=${REVALIDATE_SECRET}|" .env.prod
+            else
+              echo "REVALIDATE_SECRET=${REVALIDATE_SECRET}" >> .env.prod
             fi
 
             if ! docker pull "$FE_IMAGE"; then
