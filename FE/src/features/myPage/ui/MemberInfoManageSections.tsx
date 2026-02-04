@@ -25,6 +25,7 @@ import {
 import { CheckIcon } from '@/components/ui/check';
 import { updateNickname } from '@/features/myPage/api/updateNickname';
 import { toast } from '@/shared/utils/toast';
+import Button from '@/shared/ui/Button/Button';
 
 // 폼 데이터 타입 정의
 interface RssFormValues {
@@ -336,10 +337,10 @@ export default function MemberInfoManageSections() {
         <section>
           <div className="mb-4">
             <h3 className="text-display-20 text-neutral-text-strong mb-1">
-              블로그 주소 관리
+              RSS 연동 관리
             </h3>
             <p className="text-body-14 text-neutral-text-weak">
-              블로그 주소를 입력하면 자동으로 RSS를 찾아 등록해요.
+              내 블로그 주소를 입력하면 자동으로 RSS를 찾아 등록해요.
             </p>
           </div>
 
@@ -354,33 +355,41 @@ export default function MemberInfoManageSections() {
                 },
               })}
               type="text"
-              disabled={isSubmitting || isDeleting} // 제출/삭제 중엔 비활성화
-              placeholder="https://velog.io/@id 또는 티스토리 주소"
+              disabled={isSubmitting || isDeleting}
+              placeholder="https://velog.io/@id"
               className="flex-1 border border-neutral-border-default rounded-lg px-4 py-2 text-body-14 focus:outline-none focus:border-brand-border-default transition-colors placeholder:text-neutral-text-weak disabled:bg-neutral-50"
             />
-            <button
-              type="submit"
-              disabled={isSubmitting || isDeleting} // 제출/삭제 중엔 비활성화
-              className={`bg-brand-surface-default text-brand-text-on-default text-string-16 rounded-lg px-4 py-2 text-sm transition-colors whitespace-nowrap ${
-                isSubmitting || isDeleting
-                  ? 'opacity-70 cursor-not-allowed'
-                  : 'hover:bg-brand-surface-strong'
-              }`}
-            >
-              {isSubmitting ? '등록 중...' : '등록하기'}
-            </button>
-            <button
-              type="button"
-              onClick={handleDeleteFeed}
-              disabled={isSubmitting || isDeleting || !feed?.id}
-              className={`bg-neutral-surface-default text-neutral-text-strong text-string-16 rounded-lg px-4 py-2 text-sm transition-colors whitespace-nowrap border border-neutral-border-default ${
-                isSubmitting || isDeleting || !feed?.id
-                  ? 'opacity-70 cursor-not-allowed'
-                  : 'hover:bg-neutral-surface-strong'
-              }`}
-            >
-              {isDeleting ? '삭제 중...' : '삭제하기'}
-            </button>
+            {!feed?.id && (
+              <Button
+                type="submit"
+                buttonStyle="primary"
+                disabled={isSubmitting || isDeleting}
+                className={`bg-brand-surface-default text-brand-text-on-default text-string-16 rounded-lg px-4 py-2 text-sm transition-colors whitespace-nowrap`}
+              >
+                {isSubmitting ? '등록 중...' : '등록'}
+              </Button>
+            )}
+            {feed?.id && (
+              <>
+                <Button
+                  type="submit"
+                  buttonStyle="primary"
+                  disabled={isSubmitting || isDeleting}
+                  className={`bg-brand-surface-default text-brand-text-on-default text-string-16 rounded-lg px-4 py-2 text-sm transition-colors whitespace-nowrap`}
+                >
+                  {isSubmitting ? '수정 중...' : '수정'}
+                </Button>
+                <Button
+                  type="button"
+                  buttonStyle="outlined"
+                  onClick={handleDeleteFeed}
+                  disabled={isSubmitting || isDeleting}
+                  className={`w-fit border-danger-border-default text-danger-text-default hover:text-danger-text-strong`}
+                >
+                  {isDeleting ? '삭제 중...' : '삭제'}
+                </Button>
+              </>
+            )}
           </form>
 
           {/* 메시지 피드백 영역 */}
