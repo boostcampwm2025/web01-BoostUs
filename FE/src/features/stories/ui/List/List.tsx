@@ -30,7 +30,7 @@ const StoriesList = ({ initialStories }: StoriesListProps) => {
     isFetchingNextPage,
     status,
     isError,
-    error,
+    // error,
   } = useStoriesInfiniteQuery({
     sortBy,
     period: period ?? 'all',
