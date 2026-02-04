@@ -7,7 +7,7 @@ import {
 
 export const useStoryViewCount = (storyId: string) => {
   const queryClient = useQueryClient();
-  const isViewed = useRef(false);
+  const viewedIds = useRef<Set<string>>(new Set());
 
   const { mutate } = useMutation({
     mutationFn: incrementStoryView,
@@ -23,8 +23,8 @@ export const useStoryViewCount = (storyId: string) => {
   });
 
   useEffect(() => {
-    if (storyId && !isViewed.current) {
-      isViewed.current = true;
+    if (storyId && !viewedIds.current.has(storyId)) {
+      viewedIds.current.add(storyId);
       mutate(storyId);
     }
   }, [storyId, mutate]);
