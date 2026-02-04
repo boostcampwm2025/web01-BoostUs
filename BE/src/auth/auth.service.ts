@@ -59,7 +59,7 @@ export class AuthService {
     const refreshToken = this.generateRefreshToken(member.id);
 
     // 리프레시 토큰을 Redis에 저장
-    await this.saveRefreshTokenToRedis(member.id.toString(), refreshToken);
+    await this.saveRefreshTokenToRedis(member.id, refreshToken);
 
     return {
       accessToken,
@@ -86,7 +86,7 @@ export class AuthService {
     return this.jwtService.sign(payload, { expiresIn });
   }
 
-  async getCurrentMember(memberId: string) {
+  async getCurrentMember(memberId: bigint) {
     const member = await this.authRepository.findById(memberId);
 
     if (!member) {
@@ -112,8 +112,8 @@ export class AuthService {
    * @param memberId 멤버 ID
    * @param refreshToken 리프레시 토큰
    */
-  async saveRefreshTokenToRedis(memberId: string, refreshToken: string): Promise<void> {
-    const key = `refresh:${memberId}`;
+  async saveRefreshTokenToRedis(memberId: bigint, refreshToken: string): Promise<void> {
+    const key = `refresh:${memberId.toString()}`;
     const ttl = Number(this.configService.getOrThrow('JWT_REFRESH_EXPIRES_IN'));
 
     await this.redis.set(key, refreshToken, 'EX', ttl);
@@ -123,8 +123,8 @@ export class AuthService {
    * Redis에서 리프레시 토큰 삭제 (로그아웃 시 사용)
    * @param memberId 멤버 ID
    */
-  async deleteRefreshTokenFromRedis(memberId: string): Promise<void> {
-    const key = `refresh:${memberId}`;
+  async deleteRefreshTokenFromRedis(memberId: bigint): Promise<void> {
+    const key = `refresh:${memberId.toString()}`;
     await this.redis.del(key);
   }
 
@@ -133,7 +133,7 @@ export class AuthService {
    * @param token 리프레시 토큰
    * @returns 멤버 ID
    */
-  async verifyRefreshToken(token: string): Promise<{ memberId: string }> {
+  async verifyRefreshToken(token: string): Promise<{ memberId: bigint }> {
     try {
       const secret = this.configService.getOrThrow<string>('JWT_SECRET');
       const payload = await this.jwtService.verifyAsync<JwtPayload>(token, {
@@ -144,7 +144,7 @@ export class AuthService {
         throw new InvalidRefreshTokenException();
       }
 
-      return { memberId: payload.sub ?? '' };
+      return { memberId: BigInt(payload.sub ?? '') };
     } catch (error: unknown) {
       if (error instanceof Error && error.name === 'TokenExpiredError') {
         throw new RefreshTokenExpiredException();
