@@ -105,23 +105,23 @@
 <table>
   <tr>
     <td align="center">
-      <img src="https://avatars.githubusercontent.com/u/176555595?v=4" width="120"><br>
+      <img width="150px" src="https://github.com/user-attachments/assets/2dbf6861-672e-491f-9218-1fa55c521a26" /><br>
       <b>Rooney</b>
     </td>
     <td align="center">
-      <img src="https://avatars.githubusercontent.com/u/141974597?v=4" width="120"><br>
+      <img width="150" src="https://github.com/user-attachments/assets/f47a30a8-2726-4494-96d7-847beb67dad8"><br>
       <b>Jack</b>
     </td>
     <td align="center">
-      <img src="https://avatars.githubusercontent.com/u/29221823?v=4" width="120"><br>
+      <img width="150" src="https://github.com/user-attachments/assets/af05bace-b55a-4362-b2c0-b57b9911f889"><br>
       <b>Willy</b>
     </td>
     <td align="center">
-      <img src="https://avatars.githubusercontent.com/u/80333011?v=4" width="120"><br>
+      <img width="150" src="https://github.com/user-attachments/assets/c5466e04-e3f3-434e-8998-cd30c07155a9"><br>
       <b>June</b>
     </td>
     <td align="center">
-      <img src="https://avatars.githubusercontent.com/u/143408530?v=4" width="120"><br>
+      <img width="150" src="https://github.com/user-attachments/assets/e8b6a98d-fc55-48b9-b309-eabc1902b98e"><br>
       <b>Tom</b>
     </td>
   </tr>
@@ -136,13 +136,6 @@
 </table>
 
 <br>
-
-
-
-
-
-
-
 
 
 
