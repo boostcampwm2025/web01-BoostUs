@@ -8,9 +8,7 @@ import StoriesListDropdown from '@/features/stories/ui/ListDropdown/Dropdown';
 import StoriesSearchBar from '@/features/stories/ui/SearchBar/SearchBar';
 import StoriesRanking from '@/features/stories/ui/StoriesRanking/Ranking';
 import PageHeader from '@/shared/ui/PageHeader';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useState } from 'react';
 import { BlogRegistrationButton } from '@/features/stories/ui/Button/BlogRegistrationButton';
 
 interface StoriesPageContentProps {
@@ -70,24 +68,10 @@ const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
 };
 
 const StoriesPageContent = ({ initialStories }: StoriesPageContentProps) => {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            refetchOnWindowFocus: false,
-            staleTime: 60 * 1000,
-          },
-        },
-      })
-  );
-
   return (
-    <QueryClientProvider client={queryClient}>
-      <StoriesProvider>
-        <StoriesLayout initialStories={initialStories} />
-      </StoriesProvider>
-    </QueryClientProvider>
+    <StoriesProvider>
+      <StoriesLayout initialStories={initialStories} />
+    </StoriesProvider>
   );
 };
 
