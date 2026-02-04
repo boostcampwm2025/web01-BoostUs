@@ -157,8 +157,16 @@ export default function MemberInfoManageSections() {
 
     // 2. API 호출
     try {
-      await createOrUpdateFeed({ feedUrl: finalRssUrl });
+      const created = await createOrUpdateFeed({ feedUrl: finalRssUrl });
+      setAuthState((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          feed: { id: created.id, feedUrl: created.feedUrl },
+        };
+      });
 
+      reset({ blogUrl: created.feedUrl });
       // 성공 처리
       if (finalRssUrl !== inputUrl) {
         setSuccessMessage(`RSS로 자동 변환되어 등록되었어요! (${finalRssUrl})`);
