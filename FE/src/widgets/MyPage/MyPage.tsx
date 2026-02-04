@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/features/login/model/auth.store';
-import MemberInfoMangeSections from '@/features/myPage/ui/MemberInfoMangeSections';
+import MemberInfoManageSections from '@/features/myPage/ui/MemberInfoManageSections';
 import ActivityGraph from '@/features/myPage/ui/ActivityGraph';
 import MyBadge from '@/features/myPage/ui/MyBadge';
 import MyViews from '@/features/myPage/ui/MyViews';
@@ -23,7 +23,7 @@ export default function MyPage() {
   return (
     <div className="w-full max-w-7xl mx-auto p-4 flex flex-col md:flex-row items-start gap-6">
       <div className="w-full md:w-95 flex flex-col gap-6 shrink-0">
-        <MemberInfoMangeSections />
+        <MemberInfoManageSections />
         <MyBadge />
       </div>
 

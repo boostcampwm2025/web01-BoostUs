@@ -7,9 +7,9 @@ import VoteButtons from '@/features/questions/ui/QuestionDetail/VoteButtons';
 import { likeQuestion, dislikeQuestion } from '../../api/questions.api';
 import { MarkdownViewer } from '@/shared/ui/MarkdownViewer/MarkdownViewer';
 import { useOptimisticVote } from '@/features/questions/model/useOptimisticVote';
-import { toast } from 'sonner';
 import { useAuth } from '@/features/login/model/auth.store';
 import { useRouter } from 'next/navigation';
+import { toast } from '@/shared/utils/toast';
 
 const QuestionCard = ({
   question,
@@ -36,7 +36,7 @@ const QuestionCard = ({
     if (!member) {
       const currentPath = window.location.pathname;
       router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
-      toast.info('로그인이 필요한 기능입니다.');
+      toast.warning('로그인이 필요한 기능입니다.');
       return;
     }
     void handleVote(type);
