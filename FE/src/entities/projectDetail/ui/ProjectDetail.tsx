@@ -46,7 +46,7 @@ export default function ProjectDetail() {
     try {
       router.back();
       await deleteProject(id);
-    } catch (error) {
+    } catch {
       alert('프로젝트 삭제에 실패했습니다.');
     }
   };

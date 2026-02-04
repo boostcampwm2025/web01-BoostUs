@@ -11,7 +11,7 @@ export class AnswerService {
   constructor(
     private readonly answerRepo: AnswerRepository,
     private readonly authRepository: AuthRepository,
-  ) { }
+  ) {}
 
   async findOne(id: string) {
     const answer = await this.answerRepo.findOnePublished(id); // repo로 빼는 게 깔끔

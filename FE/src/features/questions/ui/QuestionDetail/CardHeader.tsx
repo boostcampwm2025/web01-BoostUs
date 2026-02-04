@@ -28,7 +28,7 @@ const CardHeader = ({
 
   const isAuthor = member && target.member.id === member.member.id;
   const isAdmin = member?.member?.role === 'ADMIN';
-  const canDelete = isAuthor || isAdmin;
+  const canDelete = !!isAuthor || isAdmin;
   const TOOLTIP_MESSAGE = '답변이 채택되면 수정이나 삭제가 불가능해요';
 
   // 답변이 채택되지 않았을 때 툴팁 표시
@@ -87,7 +87,7 @@ const CardHeader = ({
         </MetaInfoItem>
       </div>
 
-      {(isAuthor || isAdmin) && (
+      {(!!isAuthor || isAdmin) && (
         <div className="ml-auto flex flex-row items-center justify-center gap-2">
           {question && !hasAcceptedAnswer && (
             <CustomTooltip
