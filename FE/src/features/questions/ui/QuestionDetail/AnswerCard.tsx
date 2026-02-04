@@ -1,16 +1,14 @@
 import { Answer, Question } from '@/features/questions/model/questions.type';
 import VoteButtons from '@/features/questions/ui/QuestionDetail/VoteButtons';
 import { CircleCheck } from 'lucide-react';
-import { acceptAnswer } from '../../api/questions.api';
 import { useAuth } from '@/features/login/model/auth.store';
 import MarkdownViewer from '@/shared/ui/MarkdownViewer';
 import CardHeader from './CardHeader';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import { useQuestionVote } from '@/features/questions/model/useQuestionVote';
 import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
 import { toast } from '@/shared/utils/toast';
-import { revalidateMultiplePageCaches } from '@/shared/actions/revalidate';
+import { useAcceptAnswerMutation } from '@/features/questions/model/useAcceptAnswerMutation';
 
 interface Props {
   answer: Answer;
@@ -24,6 +22,7 @@ const AnswerCard = ({ answer, question, hasAcceptedAnswer }: Props) => {
   const { member } = useAuth();
   const router = useRouter();
   const { voteAnswer } = useQuestionVote(question.id);
+  const { mutate: acceptMutate } = useAcceptAnswerMutation(question.id);
 
   const onVoteClick = (type: 'LIKE' | 'DISLIKE') => {
     if (!member) {
@@ -35,37 +34,17 @@ const AnswerCard = ({ answer, question, hasAcceptedAnswer }: Props) => {
     voteAnswer.mutate({ id: answer.id, type });
   };
 
-  const [isAccepted, setIsAccepted] = useState(answer.isAccepted);
-
-  useEffect(() => {
-    if (answer.isAccepted !== isAccepted) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setIsAccepted(answer.isAccepted);
-    }
-  }, [answer.isAccepted, isAccepted]);
-
   const isQuestionAuthor = member?.member?.id === question.member.id;
   const isMyAnswer = member?.member?.id === answer.member.id;
   const showAcceptButton =
-    isQuestionAuthor && !question.isResolved && !isAccepted && !isMyAnswer;
+    isQuestionAuthor &&
+    !question.isResolved &&
+    !answer.isAccepted &&
+    !isMyAnswer;
 
-  const handleAccept = async () => {
+  const handleAccept = () => {
     if (question.isResolved) return;
-
-    const previousState = isAccepted; // 롤백용 이전 상태 저장
-    setIsAccepted(true);
-
-    try {
-      await acceptAnswer(question.id, answer.id);
-      await revalidateMultiplePageCaches([
-        '/questions',
-        `/questions/${question.id}`,
-      ]);
-      toast.success('답변이 채택되었습니다.');
-    } catch (error) {
-      toast.error(error);
-      setIsAccepted(previousState);
-    }
+    acceptMutate(answer.id);
   };
 
   return (
@@ -73,7 +52,7 @@ const AnswerCard = ({ answer, question, hasAcceptedAnswer }: Props) => {
       className={`
     mt-6 w-full rounded-2xl border
     ${
-      isAccepted
+      answer.isAccepted
         ? 'border-green-500 bg-green-50'
         : 'border-neutral-border-default bg-neutral-surface-bold'
     }
