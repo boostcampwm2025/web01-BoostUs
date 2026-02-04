@@ -2,6 +2,19 @@
 
 import { revalidatePath } from 'next/cache';
 
+const ALLOWED_PATHS = new Set([
+  '/project',
+  '/stories',
+  '/questions',
+  '/mypage',
+]);
+
+function checkisAllowedPath(path: string): void {
+  if (!ALLOWED_PATHS.has(path)) {
+    throw new Error(`Unsupported path: ${path}`);
+  }
+}
+
 /**
  * Server Action: 특정 경로의 ISR 캐시를 무효화합니다.
  * 클라이언트에서 안전하게 호출할 수 있습니다.
@@ -11,6 +24,7 @@ import { revalidatePath } from 'next/cache';
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function revalidatePageCache(path: string): Promise<void> {
   try {
+    checkisAllowedPath(path);
     revalidatePath(path);
   } catch (error) {
     console.error(`Failed to revalidate path "${path}":`, error);
@@ -28,6 +42,7 @@ export async function revalidateMultiplePageCaches(
   paths: string[]
 ): Promise<void> {
   try {
+    paths.forEach(checkisAllowedPath);
     paths.forEach((path) => {
       revalidatePath(path);
     });

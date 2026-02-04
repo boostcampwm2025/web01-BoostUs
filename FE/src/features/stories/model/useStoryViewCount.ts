@@ -11,10 +11,10 @@ export const useStoryViewCount = (storyId: string) => {
 
   const { mutate } = useMutation({
     mutationFn: incrementStoryView,
-    onSuccess: () => {
+    onSuccess: (_data, viewedId) => {
       // 조회수 증가 성공 -> 상세 데이터(viewCount 포함) 갱신
       void queryClient.invalidateQueries({
-        queryKey: STORIES_KEY.detail(storyId),
+        queryKey: STORIES_KEY.detail(viewedId),
       });
     },
     onError: (error) => {

@@ -46,7 +46,11 @@ const StoryDetail = ({ storyId }: StoryDetailProps) => {
   });
 
   // 좋아요 상태 구독 (로그인 시에만)
-  const { data: isLiked } = useQuery({
+  const {
+    data: isLiked,
+    isPending: likeLoading,
+    isError: likeError,
+  } = useQuery({
     queryKey: STORIES_KEY.likeStatus(storyId),
     queryFn: () => checkStoryLikeStatus(storyId),
     enabled: isAuthenticated, // 로그인 안돼있으면 쿼리 실행 안 함
@@ -70,6 +74,10 @@ const StoryDetail = ({ storyId }: StoryDetailProps) => {
   if (!story) return null; // TODO: 스켈레톤
 
   const handleLikeClick = () => {
+    if (likeLoading || likeError) {
+      toast.info('좋아요 상태를 불러오는 중입니다.');
+      return;
+    }
     if (!isAuthenticated) {
       const { pathname, search, hash } = window.location;
       const currentPath = `${pathname}${search}${hash}`;

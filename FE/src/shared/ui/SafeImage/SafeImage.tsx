@@ -31,8 +31,8 @@ const InnerSafeImage = ({
     try {
       if (!url.startsWith('http')) return true;
       const hostname = new URL(url).hostname;
-      return OPTIMIZED_IMAGE_DOMAINS.some((domain) =>
-        hostname.endsWith(domain)
+      return OPTIMIZED_IMAGE_DOMAINS.some(
+        (domain) => hostname === domain || hostname.endsWith(`.${domain}`)
       );
     } catch {
       return false;
