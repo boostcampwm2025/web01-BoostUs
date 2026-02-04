@@ -24,6 +24,9 @@ export default ts.config(
       'next-env.d.ts',
       'public/**',
       'dist/**',
+      'playwright-report/**',
+      'test-results/**',
+      'e2e/**', // E2E 테스트 파일도 린트 검사에서 빼고 싶다면 추가 (보통은 냅두지만 너무 느리면 뺍니다)
     ],
   },
 
