@@ -1,6 +1,7 @@
 import { StoriesPageContent, StoriesSortOption } from '@/features/stories';
 import { fetchStories } from '@/features/stories/api/stories.api';
 
+// 크롤러가 긁어오는 데이터는 사용자가 제어 불가능 -> 굳이 On-demand 안해도 됨
 export const revalidate = 3600;
 
 interface StoriesPageProps {

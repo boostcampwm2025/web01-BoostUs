@@ -1,11 +1,14 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { createAnswer } from '../../api/questions.api';
+import { createAnswer, QUESTIONS_KEY } from '../../api/questions.api';
 import PostEditorForm from '@/features/questions/ui/Form/PostEditorForm';
+import { useQueryClient } from '@tanstack/react-query';
+import { revalidateMultiplePageCaches } from '@/shared/actions/revalidate';
 
 export default function AnswerRegister({ questionId }: { questionId: string }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   return (
     <PostEditorForm
@@ -15,6 +18,14 @@ export default function AnswerRegister({ questionId }: { questionId: string }) {
         await createAnswer(questionId, {
           contents: values.contents,
         });
+
+        await queryClient.invalidateQueries({
+          queryKey: QUESTIONS_KEY.detail(questionId),
+        });
+        await revalidateMultiplePageCaches([
+          '/questions',
+          `/questions/${questionId}`,
+        ]);
 
         router.push(`/questions/${questionId}`);
         router.refresh();

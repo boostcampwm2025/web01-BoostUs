@@ -4,11 +4,18 @@ import UserProfile from '@/shared/ui/UserProfile';
 import extractDate from '@/shared/utils/extractDate';
 import { useAuth } from '@/features/login/model/auth.store';
 import { useRouter } from 'next/navigation';
-import { deleteAnswer, deleteQuestion } from '../../api/questions.api';
+import {
+  deleteAnswer,
+  deleteQuestion,
+  QUESTIONS_KEY,
+} from '../../api/questions.api';
 import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
 import { MetaInfoItem } from '@/shared/ui/MetaInfoItem/MetaInfoItem';
 import { FormEvent } from 'react';
 import CustomDialog from '@/shared/ui/Dialog/CustomDialog';
+import { useQueryClient } from '@tanstack/react-query';
+import { revalidateMultiplePageCaches } from '@/shared/actions/revalidate';
+import { toast } from '@/shared/utils/toast';
 
 const ActionButtons = ({
   onCorrection,
@@ -53,6 +60,7 @@ const CardHeader = ({
 }) => {
   const { member } = useAuth();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const target = question ?? answer;
   if (!target) return null;
@@ -86,9 +94,25 @@ const CardHeader = ({
     try {
       if (question) {
         await deleteQuestion(question.id);
+        await queryClient.invalidateQueries({
+          queryKey: QUESTIONS_KEY.lists(),
+        });
+        await revalidateMultiplePageCaches([
+          '/questions',
+          `/questions/${question.id}`,
+        ]);
+        toast.success('질문이 삭제되었습니다.');
         router.push('/questions');
       } else if (answer) {
         await deleteAnswer(answer.id);
+        await queryClient.invalidateQueries({
+          queryKey: QUESTIONS_KEY.lists(),
+        });
+        await revalidateMultiplePageCaches([
+          '/questions',
+          `/questions/${answer.id}`,
+        ]);
+        toast.success('답변이 삭제되었습니다.');
         router.refresh();
       }
     } catch (error) {

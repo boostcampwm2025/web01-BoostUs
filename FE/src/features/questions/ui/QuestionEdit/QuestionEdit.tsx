@@ -1,18 +1,24 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getQuestionById, editQuestion } from '../../api/questions.api';
+import {
+  getQuestionById,
+  editQuestion,
+  QUESTIONS_KEY,
+} from '../../api/questions.api';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/features/login/model/auth.store';
 import PostEditorForm, {
   PostFormValues,
 } from '@/features/questions/ui/Form/PostEditorForm';
 import { toast } from '@/shared/utils/toast';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function QuestionEditPage() {
   const { questionId } = useParams<{ questionId: string }>();
   const router = useRouter();
   const { member, isLoading } = useAuth();
+  const queryClient = useQueryClient();
 
   const [initialValues, setInitialValues] = useState<PostFormValues | null>(
     null
@@ -59,6 +65,7 @@ export default function QuestionEditPage() {
             contents: values.contents,
             hashtags: values.hashtags,
           });
+          await queryClient.invalidateQueries({ queryKey: QUESTIONS_KEY.all });
           toast.success('질문이 수정되었습니다.');
           router.push(`/questions/${questionId}`);
         } catch (error) {

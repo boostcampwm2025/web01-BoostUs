@@ -9,6 +9,7 @@ import PostEditorForm, {
   PostFormValues,
 } from '@/features/questions/ui/Form/PostEditorForm';
 import { toast } from '@/shared/utils/toast';
+import { revalidateMultiplePageCaches } from '@/shared/actions/revalidate';
 
 export default function AnswerEditPage() {
   const router = useRouter();
@@ -57,9 +58,13 @@ export default function AnswerEditPage() {
       onSubmit={async (values) => {
         try {
           await editAnswer(answerId, { contents: values.contents });
+          await revalidateMultiplePageCaches([
+            '/questions',
+            `/questions/${questionId}`,
+          ]);
+
           toast.success('답변이 수정되었습니다.');
           router.push(`/questions/${questionId}`);
-          router.refresh();
         } catch (error) {
           toast.error(error);
         }

@@ -1,7 +1,12 @@
-import { fetchQuestionsByCursor } from '@/features/questions/api/questions.api';
+import {
+  fetchQuestionsByCursor,
+  QUESTIONS_KEY,
+} from '@/features/questions/api/questions.api';
 import { Question } from '@/features/questions/model';
 import { Meta } from '@/shared/types/PaginationType';
 import { useEffect, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useSearchParams } from 'next/navigation';
 
 interface UseQuestionPaginationProps {
   initialQuestions: Question[];
@@ -12,58 +17,67 @@ export const useQuestionPagination = ({
   initialQuestions,
   initialMeta,
 }: UseQuestionPaginationProps) => {
-  const [questions, setQuestions] = useState<Question[]>(initialQuestions);
-  const [meta, setMeta] = useState<Meta>(initialMeta);
-  const [isLoading, setIsLoading] = useState(false);
+  const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
 
-  const [cursorHistory, setCursorHistory] = useState<
-    (Base64URLString | null)[]
-  >([null]);
+  // URL 쿼리 파라미터 추출
+  const status = searchParams.get('status') ?? 'all';
+  const sort = searchParams.get('sort') ?? 'latest';
+  const query = searchParams.get('query') ?? '';
 
+  // 커서 히스토리 관리 (페이지네이션 UI 유지를 위해 필요)
+  const [cursorHistory, setCursorHistory] = useState<(string | null)[]>([null]);
+
+  // 현재 페이지의 커서 (배열의 마지막 요소)
+  const currentCursor = cursorHistory[cursorHistory.length - 1];
+
+  const { data, isLoading } = useQuery({
+    queryKey: QUESTIONS_KEY.list({
+      status,
+      sort,
+      query,
+      cursor: currentCursor,
+    }),
+    queryFn: () =>
+      fetchQuestionsByCursor({ status, sort, query, cursor: currentCursor }),
+    // 첫 페이지(cursor가 null)일 때만 초기 데이터(ISR/SSR 데이터) 사용
+    initialData:
+      currentCursor === null
+        ? { items: initialQuestions, meta: initialMeta }
+        : undefined,
+    // 이전 데이터 유지 (깜빡임 방지)
+    placeholderData: (prev) => prev,
+    staleTime: 1000 * 60,
+  });
+
+  const questions = data?.items ?? [];
+  const meta = data?.meta ?? { hasNext: false, nextCursor: null, count: 0 };
+
+  // 필터(status, sort, query)가 바뀌면 커서 초기화
   useEffect(() => {
-    setQuestions(initialQuestions);
-    setMeta(initialMeta);
     setCursorHistory([null]);
-  }, [initialQuestions, initialMeta]);
+  }, [status, sort, query]);
 
-  const handleNext = async () => {
-    if (!meta.hasNext || isLoading) return;
+  // 다음 페이지 미리 가져오기 (Prefetching) - UX 향상
+  useEffect(() => {
+    if (meta.hasNext && meta.nextCursor) {
+      const nextParams = { status, sort, query, cursor: meta.nextCursor };
+      void queryClient.prefetchQuery({
+        queryKey: QUESTIONS_KEY.list(nextParams),
+        queryFn: () => fetchQuestionsByCursor(nextParams),
+      });
+    }
+  }, [meta.hasNext, meta.nextCursor, status, sort, query, queryClient]);
 
-    try {
-      setIsLoading(true);
-      const nextCursor = meta.nextCursor;
-
-      const data = await fetchQuestionsByCursor(nextCursor);
-
-      setQuestions(data.items);
-      setMeta(data.meta);
-      setCursorHistory((prev) => [...prev, nextCursor]);
-    } catch (error) {
-      if (error instanceof Error)
-        Error('Failed to fetch next questions:', error);
-    } finally {
-      setIsLoading(false);
+  const handleNext = () => {
+    if (meta.hasNext && meta.nextCursor) {
+      setCursorHistory((prev) => [...prev, meta.nextCursor]);
     }
   };
 
-  const handlePrev = async () => {
-    if (cursorHistory.length <= 1 || isLoading) return;
-
-    try {
-      setIsLoading(true);
-
-      const prevCursorToLoad = cursorHistory[cursorHistory.length - 2];
-
-      const data = await fetchQuestionsByCursor(prevCursorToLoad);
-
-      setQuestions(data.items);
-      setMeta(data.meta);
+  const handlePrev = () => {
+    if (cursorHistory.length > 1) {
       setCursorHistory((prev) => prev.slice(0, -1));
-    } catch (error) {
-      if (error instanceof Error)
-        Error('Failed to fetch previous questions:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
