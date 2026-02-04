@@ -34,7 +34,7 @@ export class ProjectController {
   @Post('uploads/thumbnails')
   @UseInterceptors(FileInterceptor('file'))
   async uploadTempThumbnail(
-    @CurrentMember() memberId: string,
+    @CurrentMember() memberId: bigint,
     @UploadedFile() file: Express.Multer.File,
   ) {
     return this.projectService.uploadTempThumbnail(file, memberId);
@@ -54,35 +54,6 @@ export class ProjectController {
   })
   async getCollaborators(@Query('repository') repositoryUrl: string) {
     return this.projectService.getRepoCollaborators(repositoryUrl);
-  }
-
-  @Public()
-  @Get('/readme')
-  @ApiOperation({
-    summary: '레포지토리 README 조회',
-    description: 'repository 쿼리 파라미터로 전달된 GitHub 레포지토리의 README 본문을 가져옵니다.',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'README 조회 성공',
-    schema: {
-      type: 'object',
-      properties: {
-        name: { type: 'string', example: 'README.md' },
-        path: { type: 'string', example: 'README.md' },
-        htmlUrl: { type: 'string', example: 'https://github.com/org/repo/blob/main/README.md' },
-        downloadUrl: {
-          type: 'string',
-          example: 'https://raw.githubusercontent.com/org/repo/main/README.md',
-          nullable: true,
-        },
-        encoding: { type: 'string', example: 'utf-8' },
-        content: { type: 'string', description: 'README 본문 문자열' },
-      },
-    },
-  })
-  async getReadme(@Query('repository') repositoryUrl: string) {
-    return this.projectService.getRepoReadme(repositoryUrl);
   }
 
   @Public()
@@ -143,7 +114,7 @@ export class ProjectController {
     status: 400,
     description: '잘못된 요청',
   })
-  create(@CurrentMember() memberId: string, @Body() dto: CreateProjectDto) {
+  create(@CurrentMember() memberId: bigint, @Body() dto: CreateProjectDto) {
     return this.projectService.create(memberId, dto);
   }
 
@@ -173,7 +144,7 @@ export class ProjectController {
     description: '프로젝트를 찾을 수 없음',
   })
   update(
-    @CurrentMember() memberId: string,
+    @CurrentMember() memberId: bigint,
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateProjectDto,
   ) {
@@ -199,7 +170,7 @@ export class ProjectController {
     status: 404,
     description: '프로젝트를 찾을 수 없음',
   })
-  delete(@CurrentMember() memberId: string, @Param('id', ParseIntPipe) id: number) {
+  delete(@CurrentMember() memberId: bigint, @Param('id', ParseIntPipe) id: number) {
     return this.projectService.delete(id, memberId);
   }
 }
