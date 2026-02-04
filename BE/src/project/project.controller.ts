@@ -57,6 +57,35 @@ export class ProjectController {
   }
 
   @Public()
+  @Get('/readme')
+  @ApiOperation({
+    summary: '레포지토리 README 조회',
+    description: 'repository 쿼리 파라미터로 전달된 GitHub 레포지토리의 README 본문을 가져옵니다.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'README 조회 성공',
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string', example: 'README.md' },
+        path: { type: 'string', example: 'README.md' },
+        htmlUrl: { type: 'string', example: 'https://github.com/org/repo/blob/main/README.md' },
+        downloadUrl: {
+          type: 'string',
+          example: 'https://raw.githubusercontent.com/org/repo/main/README.md',
+          nullable: true,
+        },
+        encoding: { type: 'string', example: 'utf-8' },
+        content: { type: 'string', description: 'README 본문 문자열' },
+      },
+    },
+  })
+  async getReadme(@Query('repository') repositoryUrl: string) {
+    return this.projectService.getRepoReadme(repositoryUrl);
+  }
+
+  @Public()
   @Get()
   @ApiOperation({
     summary: '프로젝트 목록 조회',
