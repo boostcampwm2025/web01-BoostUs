@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { FieldError } from 'react-hook-form';
 
 import ModalOverlay from '@/shared/ui/ModalOverlay';
-import Modal from '@/widgets/Modal/Modal';
 import { useProjectRegister } from '@/features/project/hook/useProjectRegister';
 import { fetchStacks } from '@/entities/TechStackSelector/api/getTechStack';
 import TechStackSelector from '@/entities/TechStackSelector/ui/TechStackSelector';
@@ -14,7 +13,7 @@ import {
   TechStackItem,
 } from '@/entities/TechStackSelector/model/types';
 
-// 위에서 만든 부품들 import
+// 부품
 import {
   FormInput,
   FormSelect,
@@ -65,6 +64,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
     register,
     watch,
     setValue,
+    getValues, // 현재 입력값을 가져오기 위해 추가
     formState: { errors, isSubmitting },
     previewUrl,
     isDragging,
@@ -83,19 +83,11 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
 
   const [stackData, setStackData] = useState<TechStackResponse | null>(null);
   const [isComposing, setIsComposing] = useState(false);
-  const [isRepoModalOpen, setIsRepoModalOpen] = useState(!isEditMode);
-  const [repoUrlInput, setRepoUrlInput] = useState('');
-  const [repoLoading, setRepoLoading] = useState(false);
-  const [repoError, setRepoError] = useState<{
-    repository?: string;
-    readme?: string;
-    collaborators?: string;
-  }>({});
-  const [hasPrefilled, setHasPrefilled] = useState(false);
+
+  // Repo 로딩 상태 관리
+  const [isFetchingRepo, setIsFetchingRepo] = useState(false);
+
   const contentsValue = watch('contents');
-  const repoUrlValue = watch('repoUrl');
-  const hasRepoError =
-    repoError.readme !== undefined || repoError.collaborators !== undefined;
 
   useEffect(() => {
     fetchStacks()
@@ -110,79 +102,57 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
     value: `${(i + 1).toString()}기`,
   }));
 
-  const openRepoModal = () => {
-    setRepoError({});
-    setRepoUrlInput(repoUrlValue ?? '');
-    setIsRepoModalOpen(true);
-  };
+  // [변경] 입력된 Repo URL을 기반으로 데이터를 가져오는 핸들러
+  const handleLoadRepoData = async () => {
+    // 폼에 입력된 값을 가져옴
+    const repositoryUrl = getValues('repoUrl');
 
-  const closeRepoModal = () => {
-    if (repoLoading) return;
-    setIsRepoModalOpen(false);
-  };
-
-  const handleConfirmRepo = async () => {
-    const repositoryUrl = repoUrlInput.trim();
     if (!repositoryUrl) {
-      setRepoError({ repository: 'Repository URL을 입력해주세요.' });
+      toast.error('Repository URL을 입력해주세요.');
       return;
     }
 
-    setRepoLoading(true);
-    setRepoError({});
+    setIsFetchingRepo(true);
 
-    const [readmeResult, collaboratorsResult] = await Promise.allSettled([
-      getProjectReadme(repositoryUrl),
-      getProjectCollaborators(repositoryUrl),
-    ]);
+    try {
+      // README와 Collaborators 병렬 요청
+      const [readmeResult, collaboratorsResult] = await Promise.allSettled([
+        getProjectReadme(repositoryUrl),
+        getProjectCollaborators(repositoryUrl),
+      ]);
 
-    const nextError: {
-      repository?: string;
-      readme?: string;
-      collaborators?: string;
-    } = {};
-
-    if (readmeResult.status === 'rejected') {
-      nextError.readme = 'README를 불러오지 못했습니다.';
-    }
-
-    if (collaboratorsResult.status === 'rejected') {
-      nextError.collaborators = 'Collaborators를 불러오지 못했습니다.';
-    }
-
-    if (readmeResult.status === 'fulfilled') {
-      setValue('contents', readmeResult.value.content ?? '', {
-        shouldDirty: true,
-        shouldValidate: true,
-      });
-    }
-
-    if (collaboratorsResult.status === 'fulfilled') {
-      setParticipants(
-        collaboratorsResult.value.map((c) => c.githubId).filter(Boolean)
-      );
-    }
-
-    if (Object.keys(nextError).length > 0) {
-      setRepoError(nextError);
-      setRepoLoading(false);
-      return;
-    }
-
-    setValue('repoUrl', repositoryUrl, {
-      shouldDirty: true,
-      shouldValidate: true,
-    });
-    setHasPrefilled(true);
-    setRepoLoading(false);
-    setIsRepoModalOpen(false);
-
-    setTimeout(() => {
-      const contentsEl = document.getElementById('contents');
-      if (contentsEl instanceof HTMLTextAreaElement) {
-        contentsEl.focus();
+      // README 처리
+      if (readmeResult.status === 'fulfilled') {
+        setValue('contents', readmeResult.value.content ?? '', {
+          shouldDirty: true,
+          shouldValidate: true,
+        });
+        toast.success('README를 성공적으로 불러왔습니다.');
+      } else {
+        toast.error('README를 불러오지 못했습니다. URL을 확인해주세요.');
       }
-    }, 0);
+
+      // Collaborators 처리
+      if (collaboratorsResult.status === 'fulfilled') {
+        const newParticipants = collaboratorsResult.value
+          .map((c) => c.githubId)
+          .filter(Boolean);
+
+        if (newParticipants.length > 0) {
+          setParticipants(newParticipants);
+          toast.success('참여자 정보를 업데이트했습니다.');
+        } else {
+          toast.info('가져올 참여자 정보가 없습니다.');
+        }
+      } else {
+        toast.error('참여자 정보를 불러오지 못했습니다.');
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('데이터를 불러오는 중 오류가 발생했습니다.');
+    } finally {
+      setIsFetchingRepo(false);
+    }
   };
 
   return (
@@ -192,79 +162,9 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
           {isEditMode ? '프로젝트 수정' : '프로젝트 등록'}
         </h2>
 
-        <Modal isOpen={isRepoModalOpen} onClose={closeRepoModal}>
-          <div className="flex flex-col gap-4">
-            <div>
-              <h3 className="text-display-18 text-neutral-text-strong">
-                Repository URL 입력
-              </h3>
-              <p className="mt-1 text-body-14 text-neutral-text-weak">
-                README와 Collaborators를 자동으로 불러옵니다.
-              </p>
-            </div>
+        {/* Modal 관련 JSX 제거됨 */}
 
-            <div>
-              <label
-                htmlFor="repoUrlInput"
-                className="block text-string-16 text-neutral-text-default"
-              >
-                GitHub Repository URL
-              </label>
-              <input
-                id="repoUrlInput"
-                type="url"
-                value={repoUrlInput}
-                onChange={(e) => setRepoUrlInput(e.target.value)}
-                className="mt-1 block w-full rounded-lg border border-neutral-border-default p-2"
-                placeholder="https://github.com/org/repo"
-                disabled={repoLoading}
-              />
-              {repoError.repository && (
-                <p className="mt-1 text-string-12 text-danger-text-default">
-                  {repoError.repository}
-                </p>
-              )}
-            </div>
-
-            {hasRepoError && (
-              <div className="rounded-lg bg-danger-surface-default p-3 text-string-12 text-danger-text-default">
-                {repoError.readme && <p>{repoError.readme}</p>}
-                {repoError.collaborators && <p>{repoError.collaborators}</p>}
-              </div>
-            )}
-
-            <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={closeRepoModal}
-                className="rounded-lg border border-neutral-border-default px-4 py-2 text-string-16"
-                disabled={repoLoading}
-              >
-                취소
-              </button>
-              <button
-                type="button"
-                onClick={handleConfirmRepo}
-                className="rounded-lg bg-brand-surface-default px-4 py-2 text-string-16 text-brand-text-on-default disabled:opacity-50"
-                disabled={repoLoading}
-              >
-                {repoLoading ? '불러오는 중...' : '확인'}
-              </button>
-            </div>
-          </div>
-        </Modal>
-
-        <form
-          onSubmit={(e) => {
-            if (!isEditMode && !hasPrefilled) {
-              e.preventDefault();
-              openRepoModal();
-              return;
-            }
-            void onSubmit(e);
-          }}
-          className="space-y-6"
-        >
+        <form onSubmit={(e) => void onSubmit(e)} className="space-y-6">
           <ThumbnailUploader
             previewUrl={previewUrl}
             isDragging={isDragging}
@@ -325,22 +225,36 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
           </div>
 
           <div className="flex flex-row gap-4">
-            <FormInput
-              id="repoUrl"
-              type="url"
-              label="깃허브 Repository"
-              placeholder="URL"
-              register={register('repoUrl')}
-              error={errors.repoUrl}
-            />
-            <FormInput
-              id="demoUrl"
-              type="url"
-              label="데모 URL"
-              placeholder="URL"
-              register={register('demoUrl')}
-              error={errors.demoUrl}
-            />
+            <div className="flex-1 flex gap-2 items-end">
+              <div className="flex-1">
+                <FormInput
+                  id="repoUrl"
+                  type="url"
+                  label="깃허브 Repository"
+                  placeholder="URL 입력"
+                  register={register('repoUrl')}
+                  error={errors.repoUrl}
+                />
+              </div>
+              <Button
+                type="button"
+                onClick={handleLoadRepoData}
+                disabled={isFetchingRepo}
+              >
+                {isFetchingRepo ? '로딩 중...' : '불러오기'}
+              </Button>
+            </div>
+
+            <div className="flex-1">
+              <FormInput
+                id="demoUrl"
+                type="url"
+                label="데모 URL"
+                placeholder="URL"
+                register={register('demoUrl')}
+                error={errors.demoUrl}
+              />
+            </div>
           </div>
 
           <FormInput
