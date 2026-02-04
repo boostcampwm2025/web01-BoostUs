@@ -1,7 +1,6 @@
 'use client';
 
 import { StoriesProvider, useStoriesContext } from '@/features/stories/model';
-import { Story } from '@/features/stories/model/stories.type';
 import { useRankingButtonVisibility } from '@/features/stories/model/useRankingButtonVisibility';
 import StoriesList from '@/features/stories/ui/List/List';
 import StoriesListDropdown from '@/features/stories/ui/ListDropdown/Dropdown';
@@ -11,11 +10,7 @@ import PageHeader from '@/shared/ui/PageHeader';
 import { AnimatePresence, motion } from 'framer-motion';
 import { BlogRegistrationButton } from '@/features/stories/ui/Button/BlogRegistrationButton';
 
-interface StoriesPageContentProps {
-  initialStories: Story[];
-}
-
-const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
+const StoriesLayout = () => {
   const { isRankingOpen, toggleRanking } = useStoriesContext();
 
   const isRankingButtonHidden: boolean =
@@ -39,7 +34,7 @@ const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
             <StoriesListDropdown />
             <BlogRegistrationButton />
           </div>
-          <StoriesList initialStories={initialStories} />
+          <StoriesList />
         </div>
         <AnimatePresence mode="popLayout">
           {isRankingOpen && <StoriesRanking />}
@@ -67,10 +62,10 @@ const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
   );
 };
 
-const StoriesPageContent = ({ initialStories }: StoriesPageContentProps) => {
+const StoriesPageContent = () => {
   return (
     <StoriesProvider>
-      <StoriesLayout initialStories={initialStories} />
+      <StoriesLayout />
     </StoriesProvider>
   );
 };

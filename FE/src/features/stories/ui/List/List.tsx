@@ -3,18 +3,13 @@
 import StoriesCard from '@/features/stories/ui/Card/Card';
 import { useStoriesContext } from '@/features/stories/model';
 import { useEffect } from 'react';
-import { Story } from '@/features/stories/model/stories.type';
 import { useInView } from 'react-intersection-observer';
 import { useStoriesInfiniteQuery } from '@/features/stories/model/useStoriesInfiniteQuery';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, Loader2, RefreshCw } from 'lucide-react';
 import Button from '@/shared/ui/Button/Button';
 
-interface StoriesListProps {
-  initialStories: Story[]; // SSR로 받아온 초기 데이터 (Hydration 용)
-}
-
-const StoriesList = ({ initialStories }: StoriesListProps) => {
+const StoriesList = () => {
   const { isRankingOpen, searchQuery, sortBy, period } = useStoriesContext();
 
   // 화면에 요소가 보이는지 감지하는 훅
@@ -38,10 +33,7 @@ const StoriesList = ({ initialStories }: StoriesListProps) => {
   });
 
   // 데이터 플래트닝 (Pages 배열 -> 하나의 Story 배열로 변환)
-  // 클라이언트 상태(data)가 없으면 초기 데이터(initialStories) 사용
-  const stories = data
-    ? data.pages.flatMap((page) => page.data.items)
-    : initialStories;
+  const stories = data?.pages.flatMap((page) => page.data.items) ?? [];
 
   // 무한 스크롤 트리거
   useEffect(() => {
