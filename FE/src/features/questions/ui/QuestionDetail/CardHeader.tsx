@@ -110,7 +110,7 @@ const CardHeader = ({
         });
         await revalidateMultiplePageCaches([
           '/questions',
-          `/questions/${answer.id}`,
+          `/questions/${answer.questionId}`,
         ]);
         toast.success('답변이 삭제되었습니다.');
         router.refresh();

@@ -21,6 +21,10 @@ import {
 import { CheckIcon } from '@/components/ui/check';
 import { updateNickname } from '@/features/myPage/api/updateNickname';
 import { toast } from '@/shared/utils/toast';
+import { useQueryClient } from '@tanstack/react-query';
+import { STORIES_KEY } from '@/features/stories/api/stories.api';
+import { PROJECT_KEYS } from '@/features/project/api/getProjects';
+import { revalidateUserProfileUpdate } from '@/shared/actions/revalidate';
 
 // 폼 데이터 타입 정의
 interface RssFormValues {
@@ -33,6 +37,7 @@ export default function MemberInfoManageSections() {
   const latestProject = authState?.latestProject;
   const feed = authState?.feed;
   const { logout } = useAuth();
+  const queryClient = useQueryClient();
 
   // 피드백 메세지
   const [serverError, setServerError] = useState<string | null>(null);
@@ -68,7 +73,12 @@ export default function MemberInfoManageSections() {
           };
         });
 
+        await queryClient.invalidateQueries({ queryKey: STORIES_KEY.all });
+        await queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.all });
+        void revalidateUserProfileUpdate();
+
         setIsEditingNickname(false);
+        toast.success('닉네임이 변경되었습니다.');
       } catch (e) {
         toast.error(e);
       }
@@ -118,6 +128,9 @@ export default function MemberInfoManageSections() {
     // 2. API 호출
     try {
       await createOrUpdateFeed({ feedUrl: finalRssUrl });
+
+      await queryClient.invalidateQueries({ queryKey: STORIES_KEY.all });
+      void revalidateUserProfileUpdate();
 
       // 성공 처리
       if (finalRssUrl !== inputUrl) {
