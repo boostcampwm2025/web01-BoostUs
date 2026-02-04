@@ -54,5 +54,6 @@ export async function revalidateUserProfileUpdate(): Promise<void> {
     revalidatePath('/mypage');
   } catch (error) {
     console.error('Failed to revalidate user profile paths:', error);
+    throw new Error('Revalidation failed for user profile paths');
   }
 }

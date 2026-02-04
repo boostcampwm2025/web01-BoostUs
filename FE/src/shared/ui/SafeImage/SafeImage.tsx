@@ -63,7 +63,7 @@ const InnerSafeImage = ({
   return (
     <img
       src={currentSrc}
-      alt={alt}
+      alt={alt || '이미지'}
       onError={handleError}
       referrerPolicy="no-referrer"
       loading={priority ? 'eager' : (loading ?? 'lazy')}
