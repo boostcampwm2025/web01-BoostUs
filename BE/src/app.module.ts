@@ -15,6 +15,7 @@ import { TechStackModule } from './tech-stack/tech-stack.module';
 import { MemberModule } from './member/member.module';
 import { LandingModule } from './landing/landing.module';
 import { RecommendModule } from './recommend/recommend.module';
+import { InternalRequestGuard } from './common/guard/internal-request.guard';
 
 @Module({
   imports: [
@@ -36,6 +37,11 @@ import { RecommendModule } from './recommend/recommend.module';
   providers: [
     Logger,
     // 전역 가드 등록
+    {
+      provide: APP_GUARD,
+      useClass: InternalRequestGuard,
+    },
+
     {
       provide: APP_GUARD,
       useClass: AuthGuard,

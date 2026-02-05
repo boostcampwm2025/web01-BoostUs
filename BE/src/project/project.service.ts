@@ -211,7 +211,7 @@ export class ProjectService {
     return accessToken.token;
   }
 
-  async uploadTempThumbnail(file: Express.Multer.File, memberId: string) {
+  async uploadTempThumbnail(file: Express.Multer.File, memberId: bigint) {
     const uploadId = randomUUID();
     const ext = (file.originalname.split('.').pop() || 'png').toLocaleLowerCase();
     const tempKey = `temp/projects/thumbnail/${uploadId}.${ext}`;
@@ -239,7 +239,7 @@ export class ProjectService {
    */
   private async finalizeThumbnailOrThrow(
     uploadId: string | undefined,
-    memberId: string,
+    memberId: bigint,
   ): Promise<string> {
     const redisKey = `upload:thumbnail:${uploadId}`;
 
@@ -480,18 +480,17 @@ export class ProjectService {
     return plainToInstance(ProjectDetailItemDto, project, { excludeExtraneousValues: true });
   }
 
-  async create(memberId: string, dto: CreateProjectDto) {
+  async create(memberId: bigint, dto: CreateProjectDto) {
     const finalKey = dto.thumbnailUploadId
       ? await this.finalizeThumbnailOrThrow(dto.thumbnailUploadId, memberId)
       : undefined;
 
-    const memberIdBigint = BigInt(memberId);
-    const project = await this.projectRepository.create(memberIdBigint, dto, finalKey);
+    const project = await this.projectRepository.create(memberId, dto, finalKey);
 
     return plainToInstance(ProjectDetailItemDto, project, { excludeExtraneousValues: true });
   }
 
-  async update(id: number, memberId: string, dto: UpdateProjectDto) {
+  async update(id: number, memberId: bigint, dto: UpdateProjectDto) {
     const projectId = BigInt(id);
 
     const exists = await this.projectRepository.exists(projectId);
@@ -523,7 +522,7 @@ export class ProjectService {
     return plainToInstance(ProjectDetailItemDto, updated, { excludeExtraneousValues: true });
   }
 
-  async delete(id: number, memberId: string) {
+  async delete(id: number, memberId: bigint) {
     const projectId = BigInt(id);
 
     // 프로젝트 존재 여부 확인

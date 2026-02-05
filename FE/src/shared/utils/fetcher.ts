@@ -55,6 +55,7 @@ export const customFetch = async <T>(
 
   const headers = new Headers(fetchOptions.headers);
   const isServer = typeof window === 'undefined';
+  headers.set('x-proxied-by', 'next');
 
   if (isServer && !skipStore) {
     try {
@@ -103,6 +104,7 @@ export const customFetch = async <T>(
           const refreshResponse = await fetch('/api/auth/refresh', {
             method: 'POST',
             credentials: 'include',
+            headers: { 'x-proxied-by': 'next' },
           });
 
           if (refreshResponse.ok) {

@@ -34,7 +34,7 @@ export class ProjectController {
   @Post('uploads/thumbnails')
   @UseInterceptors(FileInterceptor('file'))
   async uploadTempThumbnail(
-    @CurrentMember() memberId: string,
+    @CurrentMember() memberId: bigint,
     @UploadedFile() file: Express.Multer.File,
   ) {
     return this.projectService.uploadTempThumbnail(file, memberId);
@@ -143,7 +143,7 @@ export class ProjectController {
     status: 400,
     description: '잘못된 요청',
   })
-  create(@CurrentMember() memberId: string, @Body() dto: CreateProjectDto) {
+  create(@CurrentMember() memberId: bigint, @Body() dto: CreateProjectDto) {
     return this.projectService.create(memberId, dto);
   }
 
@@ -173,7 +173,7 @@ export class ProjectController {
     description: '프로젝트를 찾을 수 없음',
   })
   update(
-    @CurrentMember() memberId: string,
+    @CurrentMember() memberId: bigint,
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateProjectDto,
   ) {
@@ -199,7 +199,7 @@ export class ProjectController {
     status: 404,
     description: '프로젝트를 찾을 수 없음',
   })
-  delete(@CurrentMember() memberId: string, @Param('id', ParseIntPipe) id: number) {
+  delete(@CurrentMember() memberId: bigint, @Param('id', ParseIntPipe) id: number) {
     return this.projectService.delete(id, memberId);
   }
 }

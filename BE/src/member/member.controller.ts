@@ -20,7 +20,7 @@ export class MemberController {
     description: '마이페이지 정보 조회 성공',
     type: MemberProfileResponseDto,
   })
-  async getMyProfile(@CurrentMember() memberId: string): Promise<MemberProfileResponseDto> {
+  async getMyProfile(@CurrentMember() memberId: bigint): Promise<MemberProfileResponseDto> {
     return this.memberService.getProfile(memberId);
   }
 
@@ -36,7 +36,7 @@ export class MemberController {
     type: MemberProfileResponseDto,
   })
   async updateMyNickname(
-    @CurrentMember() memberId: string,
+    @CurrentMember() memberId: bigint,
     @Body() dto: UpdateNicknameDto,
   ): Promise<MemberProfileResponseDto> {
     return this.memberService.updateMyNickname(memberId, dto);
