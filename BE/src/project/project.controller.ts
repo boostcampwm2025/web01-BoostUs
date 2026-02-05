@@ -180,7 +180,6 @@ export class ProjectController {
     return this.projectService.update(id, memberId, dto);
   }
 
-  @Public()
   @Delete(':id')
   @ApiOperation({
     summary: '프로젝트 삭제',

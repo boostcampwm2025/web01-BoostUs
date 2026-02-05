@@ -2,24 +2,29 @@
 
 import Image from 'next/image';
 import { fetchProjectDetail } from '@/entities/projectDetail/api/projectDetailAPI';
-import { Github, ExternalLink, Users, Pencil, Calendar1 } from 'lucide-react';
-import { useParams } from 'next/navigation';
+import {
+  Github,
+  ExternalLink,
+  Users,
+  Pencil,
+  Calendar1,
+  Trash2,
+} from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
 import { Participant, ProjectData } from '@/entities/projectDetail/model/types';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, FormEvent } from 'react';
 import paint from 'public/assets/NoImage.png';
 import MarkdownViewer from '@/shared/ui/MarkdownViewer';
 import extractDate from '@/shared/utils/extractDate';
-
-// interface Props {
-//   projectId: number;
-//   onEditClick?: () => void;
-// }
-
 import { useAuth } from '@/features/login/model/auth.store';
+import CustomDialog from '@/shared/ui/Dialog/CustomDialog';
+import { deleteProject } from '@/features/project/api/deleteProject';
+import Button from '@/shared/ui/Button/Button';
 
 export default function ProjectDetail() {
   const params = useParams<{ id: string }>();
   const rawId = params?.id;
+  const router = useRouter();
 
   const id = typeof rawId === 'string' ? Number(rawId) : NaN;
   const isValidId = Number.isFinite(id);
@@ -34,6 +39,18 @@ export default function ProjectDetail() {
   )?.githubId;
 
   const canEdit = isMember ?? member?.member?.role === 'ADMIN';
+  const canDelete = member?.member?.role === 'ADMIN';
+
+  const handleDelete = async (e: FormEvent) => {
+    e.preventDefault();
+
+    try {
+      await deleteProject(id);
+      router.back();
+    } catch {
+      alert('프로젝트 삭제에 실패했습니다.');
+    }
+  };
 
   useEffect(() => {
     if (!isValidId) return;
@@ -180,8 +197,8 @@ export default function ProjectDetail() {
             </div>
           </div>
         )}
-        {canEdit && (
-          <div className="mt-8 flex justify-center">
+        <div className="mt-8 flex justify-center gap-4">
+          {canEdit && (
             <a
               href={`/project/edit/${id.toString()}`}
               className="flex items-center gap-1 text-string-16 text-neutral-text-weak hover:text-neutral-text-strong transition-colors duration-150"
@@ -189,8 +206,24 @@ export default function ProjectDetail() {
               <Pencil size={16} />
               수정하기
             </a>
-          </div>
-        )}
+          )}
+
+          {canDelete && (
+            <CustomDialog
+              dialogTrigger={
+                <Button buttonStyle="text" className="gap-1">
+                  <Trash2 size={16} />
+                  삭제하기
+                </Button>
+              }
+              dialogTitle="프로젝트 삭제 확인"
+              dialogDescription="정말 삭제하시겠어요? 삭제된 프로젝트는 복구할 수 없습니다."
+              onSubmit={handleDelete}
+              cancelLabel="취소"
+              submitLabel="삭제"
+            />
+          )}
+        </div>
       </div>
     </div>
   );
