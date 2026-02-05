@@ -42,9 +42,15 @@ export const fetchStories = async (
 /**
  * 특정 블로그 글 상세 조회
  * @param id 블로그 글 ID
+ * @param options 옵션
  * **/
-export const getStoryById = async (id: string) => {
-  return await customFetch<ApiResponse<StoryDetail>>(`/api/stories/${id}`);
+export const getStoryById = async (
+  id: string,
+  options?: { skipStore?: boolean }
+) => {
+  return await customFetch<ApiResponse<StoryDetail>>(`/api/stories/${id}`, {
+    skipStore: options?.skipStore,
+  });
 };
 
 /**
