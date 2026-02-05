@@ -363,4 +363,20 @@ export class StoryRepository {
     });
     return result.count;
   }
+
+  /**
+   * 특정 멤버의 DELETED 상태 Story를 PUBLISHED로 복구
+   * @param memberId bigint
+   * @returns 복구된 row 수
+   */
+  async restoreByMemberId(memberId: bigint): Promise<number> {
+    const result = await this.prisma.story.updateMany({
+      where: {
+        memberId,
+        state: ContentState.DELETED,
+      },
+      data: { state: ContentState.PUBLISHED },
+    });
+    return result.count;
+  }
 }
