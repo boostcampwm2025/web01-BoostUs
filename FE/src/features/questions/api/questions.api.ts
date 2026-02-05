@@ -65,7 +65,10 @@ export const incrementQuestionView = async (questionId: string) => {
 /**
  * 특정 질문 상세 조회
  */
-export const getQuestionById = async (id: string) => {
+export const getQuestionById = async (
+  id: string,
+  options?: { skipStore?: boolean }
+) => {
   const data = await customFetch<
     ApiResponse<{
       question: QuestionDetail;
@@ -73,6 +76,7 @@ export const getQuestionById = async (id: string) => {
     }>
   >(`/api/questions/${id}`, {
     tags: ['questions', `question-detail-${id}`],
+    skipStore: options?.skipStore,
   });
 
   return data.data;

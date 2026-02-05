@@ -50,7 +50,8 @@ const StoryDetailPage = async ({ params }: Props) => {
 
   await queryClient.prefetchQuery({
     queryKey: STORIES_KEY.detail(id),
-    queryFn: () => getStoryById(id).then((res) => res.data),
+    queryFn: () =>
+      getStoryById(id, { skipStore: true }).then((res) => res.data),
   });
 
   return (

@@ -60,7 +60,7 @@ const QuestionsDetailPage = async ({ params }: Props) => {
 
   await queryClient.prefetchQuery({
     queryKey: QUESTIONS_KEY.detail(questionId),
-    queryFn: () => getQuestionById(questionId),
+    queryFn: () => getQuestionById(questionId, { skipStore: true }),
   });
 
   return (

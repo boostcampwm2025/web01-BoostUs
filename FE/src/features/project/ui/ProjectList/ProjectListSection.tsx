@@ -28,7 +28,7 @@ const ProjectListSection = () => {
   const { data: response, isLoading } = useQuery({
     queryKey: PROJECT_KEYS.all,
     queryFn: () => fetchProjects(),
-    staleTime: 1000 * 60 * 60,
+    staleTime: 1000 * 60 * 5,
   });
 
   const projects = response?.items ?? [];
