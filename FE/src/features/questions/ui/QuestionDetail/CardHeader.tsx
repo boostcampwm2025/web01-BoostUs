@@ -14,7 +14,7 @@ import { MetaInfoItem } from '@/shared/ui/MetaInfoItem/MetaInfoItem';
 import { FormEvent } from 'react';
 import CustomDialog from '@/shared/ui/Dialog/CustomDialog';
 import { useQueryClient } from '@tanstack/react-query';
-import { revalidateMultiplePageCaches } from '@/shared/actions/revalidate';
+import { revalidateByTag } from '@/shared/actions/revalidate';
 import { toast } from '@/shared/utils/toast';
 
 const ActionButtons = ({
@@ -97,21 +97,18 @@ const CardHeader = ({
         await queryClient.invalidateQueries({
           queryKey: QUESTIONS_KEY.lists(),
         });
-        await revalidateMultiplePageCaches([
-          '/questions',
-          `/questions/${question.id}`,
-        ]);
+        await revalidateByTag('questions');
         toast.success('질문이 삭제되었습니다.');
         router.push('/questions');
       } else if (answer) {
         await deleteAnswer(answer.id);
         await queryClient.invalidateQueries({
+          queryKey: QUESTIONS_KEY.detail(answer.questionId),
+        });
+        await queryClient.invalidateQueries({
           queryKey: QUESTIONS_KEY.lists(),
         });
-        await revalidateMultiplePageCaches([
-          '/questions',
-          `/questions/${answer.questionId}`,
-        ]);
+        await revalidateByTag('questions');
         toast.success('답변이 삭제되었습니다.');
         router.refresh();
       }

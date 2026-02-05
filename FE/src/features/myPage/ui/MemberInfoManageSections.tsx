@@ -11,7 +11,7 @@ import AlertCircleIcon from '@/components/ui/AlertCircleIcon';
 import { useAuth } from '@/features/login/model/auth.store';
 import { UsersIcon } from '@/components/ui/users';
 import { FolderGit2Icon } from '@/components/ui/folder-git-2';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   createOrUpdateFeed,

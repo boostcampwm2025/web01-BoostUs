@@ -4,7 +4,7 @@ import {
   QUESTIONS_KEY,
 } from '@/features/questions/api/questions.api';
 import { toast } from '@/shared/utils/toast';
-import { revalidateMultiplePageCaches } from '@/shared/actions/revalidate';
+import { revalidateByTag } from '@/shared/actions/revalidate';
 import { QuestionDetail, Answer } from './questions.type';
 
 export const useAcceptAnswerMutation = (questionId: string) => {
@@ -57,10 +57,7 @@ export const useAcceptAnswerMutation = (questionId: string) => {
 
     // 3. 성공 시 처리
     onSuccess: async () => {
-      await revalidateMultiplePageCaches([
-        '/questions',
-        `/questions/${questionId}`,
-      ]);
+      await revalidateByTag('questions');
       toast.success('답변이 채택되었습니다.');
     },
 
