@@ -537,12 +537,8 @@ export class ProjectService {
       throw new MemberNotFoundException();
     }
 
-    // ADMIN이거나 project_participants에 포함된 경우 삭제 가능
-    const canDelete =
-      member.role === Role.ADMIN ||
-      (await this.projectRepository.canMemberUpdateProject(projectId, member.githubLogin));
-
-    if (!canDelete) {
+    // ADMIN만 삭제 가능
+    if (member.role !== Role.ADMIN) {
       throw new ProjectForbiddenException('이 프로젝트를 삭제할 권한이 없습니다.');
     }
 

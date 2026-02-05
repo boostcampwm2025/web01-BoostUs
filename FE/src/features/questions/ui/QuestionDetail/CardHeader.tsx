@@ -13,41 +13,42 @@ import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
 import { MetaInfoItem } from '@/shared/ui/MetaInfoItem/MetaInfoItem';
 import { FormEvent } from 'react';
 import CustomDialog from '@/shared/ui/Dialog/CustomDialog';
+import Button from '@/shared/ui/Button/Button';
 import { useQueryClient } from '@tanstack/react-query';
 import { revalidateByTag } from '@/shared/actions/revalidate';
 import { toast } from '@/shared/utils/toast';
 
-const ActionButtons = ({
-  onCorrection,
-  onDelete,
-}: {
-  onCorrection: () => void;
-  onDelete: (e: FormEvent) => void;
-}) => {
-  return (
-    <>
-      <button
-        className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150"
-        onClick={onCorrection}
-      >
-        수정
-      </button>
-      <CustomDialog
-        dialogTrigger={
-          <button className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150">
-            삭제
-          </button>
-        }
-        dialogTitle="삭제 확인"
-        dialogDescription="정말 삭제하시겠어요? 삭제된 내용은 복구할 수 없습니다."
-        onSubmit={onDelete}
-        cancelLabel="취소"
-        submitLabel="삭제"
-        footerClassName="mt-4"
-      />
-    </>
-  );
-};
+// const ActionButtons = ({
+//   onCorrection,
+//   onDelete,
+// }: {
+//   onCorrection: () => void;
+//   onDelete: (e: FormEvent) => void;
+// }) => {
+//   return (
+//     <>
+//       <button
+//         className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150"
+//         onClick={onCorrection}
+//       >
+//         수정
+//       </button>
+//       <CustomDialog
+//         dialogTrigger={
+//           <button className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150">
+//             삭제
+//           </button>
+//         }
+//         dialogTitle="삭제 확인"
+//         dialogDescription="정말 삭제하시겠어요? 삭제된 내용은 복구할 수 없습니다."
+//         onSubmit={onDelete}
+//         cancelLabel="취소"
+//         submitLabel="삭제"
+//         footerClassName="mt-4"
+//       />
+//     </>
+//   );
+// };
 
 const CardHeader = ({
   question,
@@ -66,6 +67,8 @@ const CardHeader = ({
   if (!target) return null;
 
   const isAuthor = member && target.member.id === member.member.id;
+  const isAdmin = member?.member?.role === 'ADMIN';
+  const canDelete = !!isAuthor || isAdmin;
   const TOOLTIP_MESSAGE = '답변이 채택되면 수정이나 삭제가 불가능해요';
 
   // 답변이 채택되지 않았을 때 툴팁 표시
@@ -131,7 +134,7 @@ const CardHeader = ({
         </MetaInfoItem>
       </div>
 
-      {isAuthor && (
+      {(!!isAuthor || isAdmin) && (
         <div className="ml-auto flex flex-row items-center justify-center gap-2">
           {question && !hasAcceptedAnswer && (
             <CustomTooltip
@@ -139,10 +142,22 @@ const CardHeader = ({
               contentClassName="bg-brand-surface-default text-brand-text-on-default"
             >
               <div className="flex gap-2">
-                <ActionButtons
-                  onCorrection={handleCorrection}
-                  onDelete={handleDelete}
-                />
+                {isAuthor && (
+                  <Button buttonStyle="text" onClick={handleCorrection}>
+                    수정
+                  </Button>
+                )}
+                {canDelete && (
+                  <CustomDialog
+                    dialogTrigger={<Button buttonStyle="text">삭제</Button>}
+                    dialogTitle="삭제 확인"
+                    dialogDescription="정말 삭제하시겠어요? 삭제된 내용은 복구할 수 없습니다."
+                    onSubmit={handleDelete}
+                    cancelLabel="취소"
+                    submitLabel="삭제"
+                    footerClassName="mt-4"
+                  />
+                )}
               </div>
             </CustomTooltip>
           )}
@@ -155,17 +170,50 @@ const CardHeader = ({
                 contentClassName="bg-brand-surface-default text-brand-text-on-default"
               >
                 <div className="flex gap-2">
-                  <ActionButtons
-                    onCorrection={handleCorrection}
-                    onDelete={handleDelete}
-                  />
+                  {isAuthor && (
+                    <button
+                      className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150"
+                      onClick={handleCorrection}
+                    >
+                      수정
+                    </button>
+                  )}
+                  {canDelete && (
+                    <CustomDialog
+                      dialogTrigger={
+                        <button className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150">
+                          삭제
+                        </button>
+                      }
+                      dialogTitle="삭제 확인"
+                      dialogDescription="정말 삭제하시겠어요? 삭제된 내용은 복구할 수 없습니다."
+                      onSubmit={handleDelete}
+                      cancelLabel="취소"
+                      submitLabel="삭제"
+                      footerClassName="mt-4"
+                    />
+                  )}
                 </div>
               </CustomTooltip>
             ) : (
-              <ActionButtons
-                onCorrection={handleCorrection}
-                onDelete={handleDelete}
-              />
+              <div className="flex gap-2">
+                {isAuthor && (
+                  <Button buttonStyle="text" onClick={handleCorrection}>
+                    수정
+                  </Button>
+                )}
+                {canDelete && (
+                  <CustomDialog
+                    dialogTrigger={<Button buttonStyle="text">삭제</Button>}
+                    dialogTitle="삭제 확인"
+                    dialogDescription="정말 삭제하시겠어요? 삭제된 내용은 복구할 수 없습니다."
+                    onSubmit={handleDelete}
+                    cancelLabel="취소"
+                    submitLabel="삭제"
+                    footerClassName="mt-4"
+                  />
+                )}
+              </div>
             ))}
         </div>
       )}
