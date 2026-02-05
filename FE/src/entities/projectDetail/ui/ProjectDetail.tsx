@@ -39,6 +39,7 @@ export default function ProjectDetail() {
   )?.githubId;
 
   const canEdit = isMember ?? member?.member?.role === 'ADMIN';
+  const canDelete = member?.member?.role === 'ADMIN';
 
   const handleDelete = async (e: FormEvent) => {
     e.preventDefault();
@@ -196,8 +197,8 @@ export default function ProjectDetail() {
             </div>
           </div>
         )}
-        {canEdit && (
-          <div className="mt-8 flex justify-center gap-4">
+        <div className="mt-8 flex justify-center gap-4">
+          {canEdit && (
             <a
               href={`/project/edit/${id.toString()}`}
               className="flex items-center gap-1 text-string-16 text-neutral-text-weak hover:text-neutral-text-strong transition-colors duration-150"
@@ -205,7 +206,9 @@ export default function ProjectDetail() {
               <Pencil size={16} />
               수정하기
             </a>
+          )}
 
+          {canDelete && (
             <CustomDialog
               dialogTrigger={
                 <Button buttonStyle="text" className="gap-1">
@@ -219,8 +222,8 @@ export default function ProjectDetail() {
               cancelLabel="취소"
               submitLabel="삭제"
             />
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
