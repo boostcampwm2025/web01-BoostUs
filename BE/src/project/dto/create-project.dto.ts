@@ -68,7 +68,7 @@ export class CreateProjectDto {
     example: 'https://project-demo.com',
   })
   @IsOptional()
-  @Transform(({ value }: { value: unknown }) => (value === '' ? undefined : value))
+  @Transform(({ value }: { value: unknown }) => (value === '' ? null : value))
   @IsUrl()
   demoUrl?: string;
 
