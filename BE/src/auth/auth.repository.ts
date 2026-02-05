@@ -37,9 +37,9 @@ export class AuthRepository {
     });
   }
 
-  async findById(id: string) {
+  async findById(id: bigint) {
     return this.prisma.member.findUnique({
-      where: { id: BigInt(id) },
+      where: { id },
       select: {
         id: true,
         nickname: true,

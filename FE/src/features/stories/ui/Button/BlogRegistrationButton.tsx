@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import React, { forwardRef } from 'react';
 import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
 import { useBlogRegistration } from '@/features/stories/model/useBlogRegistration';
+import Button from '@/shared/ui/Button/Button';
 
 interface LinkButtonProps extends HTMLMotionProps<'button'> {
   shouldHighlight?: boolean;
@@ -38,11 +39,11 @@ LinkButton.displayName = 'LinkButton';
 export const BlogRegistrationButton = () => {
   const router = useRouter();
 
-  const { member, formState, status, messages, handlers } =
+  const { member, formState, status, messages, handlers, feedId } =
     useBlogRegistration();
 
   const { blogUrl, setBlogUrl, rssUrl } = formState;
-  const { isLoading, isSubmitting, hasRssFeed, hasError } = status;
+  const { isLoading, isSubmitting, isDeleting, hasRssFeed, hasError } = status;
   const { serverError, successMessage, conversionError } = messages;
 
   const shouldHighlight = !member || (member && !hasRssFeed);
@@ -95,24 +96,43 @@ export const BlogRegistrationButton = () => {
               >
                 내 블로그 주소
               </label>
-              <input
-                id="blog-url"
-                type="text"
-                value={blogUrl}
-                onChange={(e) => setBlogUrl(e.target.value)}
-                placeholder="https://myblog.tistory.com"
-                className={`w-full rounded-lg border px-4 py-2 duration-150 transition-colors focus:outline-none ${
-                  hasError
-                    ? 'border-danger-border-default'
-                    : 'focus:border-brand-surface-default'
-                }`}
-                disabled={isLoading || isSubmitting}
-              />
+              <div className="flex items-center gap-2">
+                <input
+                  id="blog-url"
+                  type="text"
+                  value={blogUrl}
+                  onChange={(e) => setBlogUrl(e.target.value)}
+                  placeholder="https://myblog.tistory.com"
+                  className={`w-full rounded-lg border px-4 py-2 duration-150 transition-colors focus:outline-none ${
+                    hasError
+                      ? 'border-danger-border-default'
+                      : 'focus:border-brand-surface-default'
+                  }`}
+                  disabled={isLoading || isSubmitting || isDeleting}
+                />
+                {blogUrl && (
+                  <Button
+                    type="button"
+                    buttonStyle="outlined"
+                    className="w-fit border-danger-border-default text-danger-text-default hover:text-danger-text-strong"
+                    onClick={handlers.handleDeleteFeed}
+                    disabled={
+                      isLoading ||
+                      isSubmitting ||
+                      isDeleting ||
+                      !feedId ||
+                      !hasRssFeed
+                    }
+                  >
+                    {isDeleting ? '삭제 중...' : '삭제'}
+                  </Button>
+                )}
+              </div>
             </div>
             <div className="flex flex-col gap-1 mb-2">
               {blogUrl && !conversionError && rssUrl && (
                 <p className="text-body-12 text-neutral-text-weak">
-                  내 블로그 RSS 주소: {rssUrl}
+                  RSS 변환 주소: {rssUrl}
                 </p>
               )}
               {conversionError && (

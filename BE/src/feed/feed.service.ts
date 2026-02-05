@@ -16,6 +16,7 @@ import {
 import { FeedValidatorService } from './feed-validator.service';
 import { FeedRepository } from './feed.repository';
 import { MemberRepository } from '../member/member.repository';
+import { StoryRepository } from '../story/story.repository';
 
 @Injectable()
 export class FeedService {
@@ -23,6 +24,7 @@ export class FeedService {
     private readonly feedRepository: FeedRepository,
     private readonly feedValidatorService: FeedValidatorService,
     private readonly memberRepository: MemberRepository,
+    private readonly storyRepository: StoryRepository,
   ) {}
 
   /**
@@ -49,15 +51,13 @@ export class FeedService {
 
   /**
    * RSS 피드 생성 (기존 피드가 있으면 대체)
-   * @param memberIdStr string
+   * @param memberId bigint
    * @param dto CreateFeedDto
    * @returns FeedDetailDto
    */
-  async create(memberIdStr: string, dto: CreateFeedDto): Promise<FeedDetailDto> {
-    const memberId = BigInt(memberIdStr);
-
+  async create(memberId: bigint, dto: CreateFeedDto): Promise<FeedDetailDto> {
     // 캠퍼 인증 확인 (cohort가 있어야 함)
-    const member = await this.memberRepository.findProfileById(memberIdStr);
+    const member = await this.memberRepository.findProfileById(memberId);
     if (!member || !member.cohort) {
       throw new UnauthorizedCohortException();
     }
@@ -65,8 +65,8 @@ export class FeedService {
     // RSS URL 유효성 검증
     await this.feedValidatorService.validateFeedUrl(dto.feedUrl);
 
-    // 기존 Feed 조회
-    const existingFeed = await this.feedRepository.findByMemberId(memberId);
+    // 기존 Feed 조회 (ACTIVE/INACTIVE 상관 없이 조회)
+    const existingFeed = await this.feedRepository.findByMemberIdAnyState(memberId);
 
     let feed: Feed;
     if (existingFeed) {
@@ -86,12 +86,11 @@ export class FeedService {
   }
 
   /**
-   * memberId로 피드 조회
-   * @param memberIdStr string
+   * memberId로 피드 조회 (ACTIVE 인 피드만 반환합니다)
+   * @param memberId bigint
    * @returns FeedDetailDto | null
    */
-  async findByMemberId(memberIdStr: string): Promise<FeedDetailDto | null> {
-    const memberId = BigInt(memberIdStr);
+  async findByMemberId(memberId: bigint): Promise<FeedDetailDto | null> {
     const feed = await this.feedRepository.findByMemberId(memberId);
 
     if (!feed) {
@@ -106,13 +105,12 @@ export class FeedService {
   /**
    * RSS 피드 수정
    * @param id number
-   * @param memberIdStr string
+   * @param memberId bigint
    * @param dto UpdateFeedDto
    * @returns FeedDetailDto
    */
-  async update(id: number, memberIdStr: string, dto: UpdateFeedDto): Promise<FeedDetailDto> {
+  async update(id: number, memberId: bigint, dto: UpdateFeedDto): Promise<FeedDetailDto> {
     const feedId = BigInt(id);
-    const memberId = BigInt(memberIdStr);
 
     // Feed 존재 여부 확인
     const feed = await this.feedRepository.findFeedById(feedId);
@@ -139,12 +137,11 @@ export class FeedService {
   /**
    * RSS 피드 삭제 (state를 INACTIVE로 변경)
    * @param id number
-   * @param memberIdStr string
+   * @param memberId bigint
    * @returns void
    */
-  async delete(id: number, memberIdStr: string): Promise<void> {
+  async delete(id: number, memberId: bigint): Promise<void> {
     const feedId = BigInt(id);
-    const memberId = BigInt(memberIdStr);
 
     // Feed 존재 여부 확인
     const feed = await this.feedRepository.findFeedById(feedId);
@@ -159,5 +156,8 @@ export class FeedService {
 
     // state를 INACTIVE로 변경 (soft delete)
     await this.feedRepository.updateState(feedId, State.INACTIVE);
+
+    // 해당 멤버의 stories 소프트 삭제
+    await this.storyRepository.softDeleteByMemberId(memberId);
   }
 }

@@ -73,7 +73,7 @@ export class AuthController {
     status: 401,
     description: '인증 실패 (토큰 없음, 만료, 위조)',
   })
-  async getCurrentMember(@CurrentMember() memberId: string) {
+  async getCurrentMember(@CurrentMember() memberId: bigint) {
     return await this.authService.getCurrentMember(memberId);
   }
 
