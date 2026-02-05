@@ -5,10 +5,7 @@ const INTERNAL_HEADER_NAME = 'x-proxied-by';
 const INTERNAL_HEADER_VALUE = 'next';
 
 // 외부 접근을 허용해야 하는 경로들 (OAuth 콜백 등)
-const EXTERNAL_ACCESS_PATHS = [
-  '/api/auth/github/callback',
-  '/api/auth/login',
-];
+const EXTERNAL_ACCESS_PATHS = ['/api/auth/github/callback', '/api/auth/login'];
 
 const isExternalAccessPath = (path: string) => {
   return EXTERNAL_ACCESS_PATHS.some((allowedPath) => path.startsWith(allowedPath));

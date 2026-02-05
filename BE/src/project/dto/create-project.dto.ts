@@ -43,7 +43,7 @@ export class CreateProjectDto {
     example: 'temp/projects/thumbnail/cc67be56-9026-4600-8444-b9c1fe399cf0.png',
   })
   @IsOptional()
-  @Transform(({ value }) => (value === '' ? undefined : value))
+  @Transform(({ value }: { value: unknown }) => (value === '' ? undefined : value))
   @IsUrl()
   thumbnailUrl?: string;
 
@@ -68,7 +68,7 @@ export class CreateProjectDto {
     example: 'https://project-demo.com',
   })
   @IsOptional()
-  @Transform(({ value }) => (value === '' ? undefined : value))
+  @Transform(({ value }: { value: unknown }) => (value === '' ? undefined : value))
   @IsUrl()
   demoUrl?: string;
 
