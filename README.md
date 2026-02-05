@@ -26,7 +26,7 @@
   &nbsp;&nbsp;|&nbsp;&nbsp;
   <a href="https://www.figma.com/board/AZlRmfD1liRtDK41pwLJeK/%ED%8F%B4-%ED%8F%AC%EC%A7%80%EC%85%98-%ED%8C%80-BoostUs-%F0%9F%9A%80?node-id=0-1&t=VDqpRXD7pJhBLJk6-1"><b>🎨 피그잼</b></a>
   &nbsp;&nbsp;|&nbsp;&nbsp;
-  <a href="http://boostus.kro.kr/"><b>⭐️ 데모 사이트</b></a>
+  <a href="https://boostus.site/"><b>⭐️ 데모 사이트</b></a>
 </p>
 
 <br>
@@ -136,6 +136,7 @@
 </table>
 
 <br>
+
 
 
 

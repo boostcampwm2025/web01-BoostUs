@@ -47,12 +47,23 @@ export class FeedRepository {
   }
 
   /**
-   * memberId로 피드 조회
+   * memberId로 피드 조회 (ACTIVE 인 피드만 반환합니다)
    * @param memberId bigint
    * @returns Feed | null
    */
   async findByMemberId(memberId: bigint): Promise<Feed | null> {
-    return this.prisma.feed.findUnique({
+    return this.prisma.feed.findFirst({
+      where: { memberId, state: State.ACTIVE },
+    });
+  }
+
+  /**
+   * memberId로 피드 조회 (ACTIVE/INACTIVE 인 피드 모두 반환합니다)
+   * @param memberId bigint
+   * @returns Feed | null
+   */
+  async findByMemberIdAnyState(memberId: bigint): Promise<Feed | null> {
+    return this.prisma.feed.findFirst({
       where: { memberId },
     });
   }

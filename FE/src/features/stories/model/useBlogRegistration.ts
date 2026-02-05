@@ -1,7 +1,11 @@
 'use client';
 
 import { useState, useEffect, FormEvent } from 'react';
-import { createOrUpdateFeed, getMyFeed } from '@/features/feed/api/feed.api';
+import {
+  createOrUpdateFeed,
+  deleteFeed,
+  getMyFeed,
+} from '@/features/feed/api/feed.api';
 import {
   convertBlogUrlToRss,
   detectPlatformFromBlogUrl,
@@ -15,8 +19,10 @@ export const useBlogRegistration = () => {
   // 상태 관리
   const [blogUrl, setBlogUrl] = useState('');
   const [rssUrl, setRssUrl] = useState('');
+  const [feedId, setFeedId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // 에러 및 메시지 상태
   const [serverError, setServerError] = useState<string | null>(null);
@@ -43,6 +49,7 @@ export const useBlogRegistration = () => {
         const extractedBlogUrl = extractBlogUrlFromRss(feed.feedUrl);
         setBlogUrl(extractedBlogUrl ?? feed.feedUrl);
         setRssUrl(feed.feedUrl);
+        setFeedId(feed.id);
       } catch {
         // 조용한 실패 처리 (기존 로직 유지)
       } finally {
@@ -113,12 +120,34 @@ export const useBlogRegistration = () => {
     }
 
     try {
-      await createOrUpdateFeed({ feedUrl: finalRssUrl });
+      const created = await createOrUpdateFeed({ feedUrl: finalRssUrl });
+      setFeedId(created.id);
+      setRssUrl(created.feedUrl);
       setSuccessMessage('RSS URL이 등록/수정되었어요.');
     } catch {
       setServerError('등록 실패. 주소를 확인해주세요.');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteFeed = async () => {
+    if (!feedId) return;
+
+    setIsDeleting(true);
+    setServerError(null);
+    setSuccessMessage(null);
+
+    try {
+      await deleteFeed(feedId);
+      setFeedId(null);
+      setBlogUrl('');
+      setRssUrl('');
+      setSuccessMessage('RSS 연동이 삭제되었습니다.');
+    } catch {
+      setServerError('삭제 실패. 다시 시도해주세요.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -132,6 +161,7 @@ export const useBlogRegistration = () => {
     status: {
       isLoading,
       isSubmitting,
+      isDeleting,
       hasRssFeed,
       hasError,
     },
@@ -142,6 +172,8 @@ export const useBlogRegistration = () => {
     },
     handlers: {
       handleSubmitRss,
+      handleDeleteFeed,
     },
+    feedId,
   };
 };
