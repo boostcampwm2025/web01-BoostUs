@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Feed, State } from '../generated/prisma/client';
+import { ContentState, Feed, State } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -121,5 +121,42 @@ export class FeedRepository {
       select: { id: true },
     });
     return feed !== null;
+  }
+
+  /**
+   * INACTIVE 피드를 ACTIVE로 재활성화 + stories 복구 + URL 업데이트 (트랜잭션)
+   * @param feedId bigint
+   * @param memberId bigint
+   * @param feedUrl string
+   * @returns Feed
+   */
+  async reactivateAndRestore(
+    feedId: bigint,
+    memberId: bigint,
+    feedUrl: string,
+  ): Promise<Feed> {
+    return this.prisma.$transaction(async (tx) => {
+      // 1. Feed 상태를 ACTIVE로 변경 + URL 업데이트
+      const feed = await tx.feed.update({
+        where: { id: feedId },
+        data: {
+          state: State.ACTIVE,
+          feedUrl,
+        },
+      });
+
+      // 2. 해당 멤버의 DELETED 상태 stories를 PUBLISHED로 복구
+      await tx.story.updateMany({
+        where: {
+          memberId,
+          state: ContentState.DELETED,
+        },
+        data: {
+          state: ContentState.PUBLISHED,
+        },
+      });
+
+      return feed;
+    });
   }
 }

@@ -74,7 +74,7 @@ const LandingPageContent = () => {
           description="본인의 지식과 경험이 담긴 기술 블로그가 있나요? RSS URL 하나만 입력하면 블로그의 글이 BoostUs에도 올라와요."
         />
         <ImageCard
-          imageSrc="assets/QuestionsImage.svg"
+          imageSrc="assets/QnaImage.svg"
           subtitle="질문 & 답변"
           title="집단지성의 힘으로 더 빠르게 성장하기"
           description="부스트캠프와 기술, 커리어 등 궁금한 모든 것들을 해결하고, 많은 사람들과 함께 성장해요."
