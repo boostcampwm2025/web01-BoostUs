@@ -25,7 +25,7 @@ export class FeedService {
     private readonly feedValidatorService: FeedValidatorService,
     private readonly memberRepository: MemberRepository,
     private readonly storyRepository: StoryRepository,
-  ) {}
+  ) { }
 
   /**
    * 활성 상태의 모든 피드 목록 조회
@@ -68,24 +68,24 @@ export class FeedService {
     // 기존 Feed 조회 (ACTIVE/INACTIVE 상관 없이 조회)
     const existingFeed = await this.feedRepository.findByMemberIdAnyState(memberId);
 
-  let feed: Feed;
-  if (existingFeed) {
-    // 기존 Feed가 있으면 feedUrl 업데이트 (대체)
-    if (existingFeed.state === State.INACTIVE) {
-      // 상태 변경 + 스토리 복구 + URL 업데이트를 트랜잭션으로 처리
-      feed = await this.feedRepository.reactivateAndRestore(
-        existingFeed.id,
-        memberId,
-        dto.feedUrl,
-      );
+    let feed: Feed;
+    if (existingFeed) {
+      // 기존 Feed가 있으면 feedUrl 업데이트 (대체)
+      if (existingFeed.state === State.INACTIVE) {
+        // 상태 변경 + 스토리 복구 + URL 업데이트를 트랜잭션으로 처리
+        feed = await this.feedRepository.reactivateAndRestore(
+          existingFeed.id,
+          memberId,
+          dto.feedUrl,
+        );
+      } else {
+        // ACTIVE 상태면 URL만 업데이트
+        feed = await this.feedRepository.updateFeedUrl(existingFeed.id, dto.feedUrl);
+      }
     } else {
-      // ACTIVE 상태면 URL만 업데이트
-      feed = await this.feedRepository.updateFeedUrl(existingFeed.id, dto.feedUrl);
+      // 없으면 새로 생성
+      feed = await this.feedRepository.create(memberId, dto.feedUrl);
     }
-  } else {
-    // 없으면 새로 생성
-    feed = await this.feedRepository.create(memberId, dto.feedUrl);
-  }
 
     return plainToInstance(FeedDetailDto, feed, {
       excludeExtraneousValues: true,
