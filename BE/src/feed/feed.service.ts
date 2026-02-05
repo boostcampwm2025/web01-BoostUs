@@ -72,12 +72,16 @@ export class FeedService {
   if (existingFeed) {
     // 기존 Feed가 있으면 feedUrl 업데이트 (대체)
     if (existingFeed.state === State.INACTIVE) {
-      await this.feedRepository.updateState(existingFeed.id, State.ACTIVE);
-      
-      // INACTIVE -> ACTIVE 전환 시 기존 DELETED 상태의 stories를 PUBLISHED로 복구
-      await this.storyRepository.restoreByMemberId(memberId);
+      // 상태 변경 + 스토리 복구 + URL 업데이트를 트랜잭션으로 처리
+      feed = await this.feedRepository.reactivateAndRestore(
+        existingFeed.id,
+        memberId,
+        dto.feedUrl,
+      );
+    } else {
+      // ACTIVE 상태면 URL만 업데이트
+      feed = await this.feedRepository.updateFeedUrl(existingFeed.id, dto.feedUrl);
     }
-    feed = await this.feedRepository.updateFeedUrl(existingFeed.id, dto.feedUrl);
   } else {
     // 없으면 새로 생성
     feed = await this.feedRepository.create(memberId, dto.feedUrl);
