@@ -42,7 +42,7 @@ export async function fetchProjects(params?: {
     message: string;
     error: unknown;
     data: ProjectsData;
-  }>('/api/projects', { skipStore: params?.skipStore });
+  }>('/api/projects', { skipStore: params?.skipStore, tags: ['projects'] });
 
   return {
     ...json.data,
