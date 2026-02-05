@@ -111,7 +111,7 @@
 
 1. **의존성 설치**
 ```bash
-npm install // 로컬
+npm install // 최상단 폴더
 pnpm install // FE 폴더에서
 npm install // BE 폴더에서
 
@@ -213,6 +213,7 @@ pnpm db:studio
 </table>
 
 <br>
+
 
 
 
