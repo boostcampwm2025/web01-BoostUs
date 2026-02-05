@@ -1,23 +1,16 @@
 'use client';
 
 import { StoriesProvider, useStoriesContext } from '@/features/stories/model';
-import { Story } from '@/features/stories/model/stories.type';
 import { useRankingButtonVisibility } from '@/features/stories/model/useRankingButtonVisibility';
 import StoriesList from '@/features/stories/ui/List/List';
 import StoriesListDropdown from '@/features/stories/ui/ListDropdown/Dropdown';
 import StoriesSearchBar from '@/features/stories/ui/SearchBar/SearchBar';
 import StoriesRanking from '@/features/stories/ui/StoriesRanking/Ranking';
 import PageHeader from '@/shared/ui/PageHeader';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useState } from 'react';
 import { BlogRegistrationButton } from '@/features/stories/ui/Button/BlogRegistrationButton';
 
-interface StoriesPageContentProps {
-  initialStories: Story[];
-}
-
-const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
+const StoriesLayout = () => {
   const { isRankingOpen, toggleRanking } = useStoriesContext();
 
   const isRankingButtonHidden: boolean =
@@ -41,7 +34,7 @@ const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
             <StoriesListDropdown />
             <BlogRegistrationButton />
           </div>
-          <StoriesList initialStories={initialStories} />
+          <StoriesList />
         </div>
         <AnimatePresence mode="popLayout">
           {isRankingOpen && <StoriesRanking />}
@@ -69,25 +62,11 @@ const StoriesLayout = ({ initialStories }: StoriesPageContentProps) => {
   );
 };
 
-const StoriesPageContent = ({ initialStories }: StoriesPageContentProps) => {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            refetchOnWindowFocus: false,
-            staleTime: 60 * 1000,
-          },
-        },
-      })
-  );
-
+const StoriesPageContent = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <StoriesProvider>
-        <StoriesLayout initialStories={initialStories} />
-      </StoriesProvider>
-    </QueryClientProvider>
+    <StoriesProvider>
+      <StoriesLayout />
+    </StoriesProvider>
   );
 };
 

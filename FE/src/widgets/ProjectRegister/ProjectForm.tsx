@@ -18,7 +18,6 @@ import {
 import {
   FormInput,
   FormSelect,
-  FormTextarea,
 } from '@/features/project/ui/register/utils/FormFields';
 import {
   ThumbnailUploader,

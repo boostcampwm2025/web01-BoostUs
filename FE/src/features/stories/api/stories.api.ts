@@ -7,6 +7,13 @@ import { ApiResponse } from '@/shared/types/ApiResponseType';
 import { Meta } from '@/shared/types/PaginationType';
 import { customFetch } from '@/shared/utils/fetcher';
 
+export const STORIES_KEY = {
+  all: ['stories'] as const,
+  detail: (id: string) => [...STORIES_KEY.all, 'detail', id] as const,
+  likeStatus: (id: string) =>
+    [...STORIES_KEY.detail(id), 'likeStatus'] as const,
+};
+
 interface FetchStoriesParams {
   sortBy?: StoriesSortOption['sortBy'];
   period?: StoriesSortOption['period'];
@@ -18,13 +25,18 @@ interface FetchStoriesParams {
 /**
  * 블로그 글 목록 조회
  */
-export const fetchStories = async (params?: FetchStoriesParams) => {
+export const fetchStories = async (
+  params?: FetchStoriesParams,
+  options?: {
+    skipStore?: boolean;
+  }
+) => {
   return await customFetch<
     ApiResponse<{
       items: Story[];
       meta: Meta;
     }>
-  >('/api/stories', { params: { ...params } });
+  >('/api/stories', { ...options, params: { ...params } });
 };
 
 /**

@@ -7,6 +7,7 @@ type FetchOptions = RequestInit & {
   params?: Record<string, QueryParamValue>;
   _retry?: boolean; // 내부적으로 재시도 여부를 판단하기 위한 플래그
   skipStore?: boolean; // 쿠키 헤더 설정을 건너뛸지 여부
+  tags?: string[]; // Next.js 캐시 태그
 };
 
 const getBaseUrl = () => {
@@ -33,7 +34,7 @@ export const customFetch = async <T>(
   path: string,
   options?: FetchOptions
 ): Promise<T> => {
-  const { params, _retry, skipStore, ...fetchOptions } = options ?? {};
+  const { params, _retry, skipStore, tags, ...fetchOptions } = options ?? {};
   const baseUrl = getBaseUrl();
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
   const url = new URL(normalizedPath, baseUrl || window.location.origin);
@@ -73,6 +74,7 @@ export const customFetch = async <T>(
   const response = await fetch(url.toString(), {
     ...fetchOptions,
     headers,
+    next: { tags: tags },
   });
 
   if (!response.ok) {

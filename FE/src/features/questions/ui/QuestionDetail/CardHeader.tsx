@@ -4,12 +4,51 @@ import UserProfile from '@/shared/ui/UserProfile';
 import extractDate from '@/shared/utils/extractDate';
 import { useAuth } from '@/features/login/model/auth.store';
 import { useRouter } from 'next/navigation';
-import { deleteAnswer, deleteQuestion } from '../../api/questions.api';
+import {
+  deleteAnswer,
+  deleteQuestion,
+  QUESTIONS_KEY,
+} from '../../api/questions.api';
 import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
 import { MetaInfoItem } from '@/shared/ui/MetaInfoItem/MetaInfoItem';
 import { FormEvent } from 'react';
 import CustomDialog from '@/shared/ui/Dialog/CustomDialog';
 import Button from '@/shared/ui/Button/Button';
+import { useQueryClient } from '@tanstack/react-query';
+import { revalidateByTag } from '@/shared/actions/revalidate';
+import { toast } from '@/shared/utils/toast';
+
+// const ActionButtons = ({
+//   onCorrection,
+//   onDelete,
+// }: {
+//   onCorrection: () => void;
+//   onDelete: (e: FormEvent) => void;
+// }) => {
+//   return (
+//     <>
+//       <button
+//         className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150"
+//         onClick={onCorrection}
+//       >
+//         수정
+//       </button>
+//       <CustomDialog
+//         dialogTrigger={
+//           <button className="text-neutral-text-weak cursor-pointer hover:text-neutral-text-strong text-string-16 transition-colors duration-150">
+//             삭제
+//           </button>
+//         }
+//         dialogTitle="삭제 확인"
+//         dialogDescription="정말 삭제하시겠어요? 삭제된 내용은 복구할 수 없습니다."
+//         onSubmit={onDelete}
+//         cancelLabel="취소"
+//         submitLabel="삭제"
+//         footerClassName="mt-4"
+//       />
+//     </>
+//   );
+// };
 
 const CardHeader = ({
   question,
@@ -22,6 +61,7 @@ const CardHeader = ({
 }) => {
   const { member } = useAuth();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const target = question ?? answer;
   if (!target) return null;
@@ -54,19 +94,26 @@ const CardHeader = ({
       return;
     }
 
-    // 낙관적 업데이트: 즉시 UI 업데이트
-    if (question) {
-      router.push('/questions');
-    } else if (answer) {
-      router.refresh();
-    }
-
-    // 백그라운드에서 삭제 API 호출
     try {
       if (question) {
         await deleteQuestion(question.id);
+        await queryClient.invalidateQueries({
+          queryKey: QUESTIONS_KEY.lists(),
+        });
+        await revalidateByTag('questions');
+        toast.success('질문이 삭제되었습니다.');
+        router.push('/questions');
       } else if (answer) {
         await deleteAnswer(answer.id);
+        await queryClient.invalidateQueries({
+          queryKey: QUESTIONS_KEY.detail(answer.questionId),
+        });
+        await queryClient.invalidateQueries({
+          queryKey: QUESTIONS_KEY.lists(),
+        });
+        await revalidateByTag('questions');
+        toast.success('답변이 삭제되었습니다.');
+        router.refresh();
       }
     } catch (error) {
       if (error instanceof Error) alert('삭제에 실패했습니다.');

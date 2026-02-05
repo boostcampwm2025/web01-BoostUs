@@ -1,45 +1,45 @@
 'use client';
 
 import { useAuth } from '@/features/login/model/auth.store';
-import type { Answer, QuestionDetail } from '@/features/questions/model';
 import AnswerCard from '@/features/questions/ui/QuestionDetail/AnswerCard';
 import QuestionCard from '@/features/questions/ui/QuestionDetail/QuestionCard';
 import QuestionStatus from '@/features/questions/ui/Status/Status';
 import BackButton from '@/shared/ui/BackButton';
 import { Eye, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { incrementQuestionView } from '../../api/questions.api';
 import Button from '@/shared/ui/Button/Button';
 import CustomTooltip from '@/shared/ui/Tooltip/CustomTooltip';
 import { MetaInfoItem } from '@/shared/ui/MetaInfoItem/MetaInfoItem';
 import Link from 'next/link';
 import { toast } from '@/shared/utils/toast';
+import { useQuery } from '@tanstack/react-query';
+import {
+  getQuestionById,
+  QUESTIONS_KEY,
+} from '@/features/questions/api/questions.api';
+import { useViewCount } from '@/features/questions/model/useViewCount';
 
-const QuestionDetail = ({
-  data,
-}: {
-  data: { question: QuestionDetail; answers: Answer[] };
-}) => {
-  const { question, answers } = data;
+interface QuestionDetailProps {
+  questionId: string;
+}
+
+const QuestionDetail = ({ questionId }: QuestionDetailProps) => {
   const { member } = useAuth();
   const router = useRouter();
-  const [viewCount, setViewCount] = useState(question.viewCount);
+
+  useViewCount(questionId); // 조회수 증가, 마운트 시 1회 실행
+
+  const { data } = useQuery({
+    queryKey: QUESTIONS_KEY.detail(questionId),
+    queryFn: () => getQuestionById(questionId),
+  });
+
+  const question = data?.question;
+  const answers = data?.answers ?? [];
+
+  if (!question) return null; // TODO: 스켈레톤
 
   const hasAcceptedAnswer = answers.some((answer) => answer.isAccepted);
-
-  // 질문 상세 진입 시 조회수 증가
-  useEffect(() => {
-    const incrementView = async () => {
-      try {
-        await incrementQuestionView(question.id);
-        setViewCount((prev) => prev + 1);
-      } catch (error) {
-        toast.error(error);
-      }
-    };
-    void incrementView();
-  }, [question.id]);
 
   return (
     <article className="mx-auto flex w-full max-w-270 flex-col items-start justify-center">
@@ -54,7 +54,7 @@ const QuestionDetail = ({
             {question.answerCount}
           </MetaInfoItem>
           <MetaInfoItem icon={Eye} iconClassName="w-3.5 h-3.5">
-            {viewCount}
+            {question.viewCount}
           </MetaInfoItem>
         </div>
         {!member ? (

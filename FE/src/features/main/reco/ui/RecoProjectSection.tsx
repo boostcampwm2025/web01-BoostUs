@@ -80,7 +80,7 @@ export default function RecommendProjectSection() {
   };
 
   return (
-    <div className="relative w-full h-125 overflow-hidden rounded-xl bg-gray-900 text-white">
+    <div className="relative w-full h-125 overflow-hidden rounded-xl border-neutral-border-default border text-white">
       <Swiper
         modules={[Autoplay]}
         spaceBetween={0}
@@ -94,7 +94,7 @@ export default function RecommendProjectSection() {
         {slides.map((slide, index) => (
           <SwiperSlide key={slide.id}>
             <div
-              className={`w-full h-full ${slide.color} ${slide.id !== -1 ? 'cursor-pointer' : ''}`}
+              className={`relative w-full h-full ${slide.id !== -1 ? 'cursor-pointer' : ''}`}
               onClick={() => {
                 if (slide.id !== -1)
                   router.push(`/project/${slide.id.toString()}`);
@@ -104,11 +104,12 @@ export default function RecommendProjectSection() {
                 src={slide.image}
                 alt={slide.title}
                 fill
-                className="object-cover opacity-60"
+                className="object-cover"
                 sizes="(max-width: 768px) 100vw, 1200px"
                 quality={80}
                 priority={index === 0}
               />
+              <div className="absolute inset-0  pointer-events-none" />
             </div>
           </SwiperSlide>
         ))}
