@@ -49,6 +49,7 @@ export const getInitialQuestions = async (
       status,
       sort: params?.sort,
     },
+    tags: ['questions'],
   });
 };
 
@@ -70,7 +71,9 @@ export const getQuestionById = async (id: string) => {
       question: QuestionDetail;
       answers: Answer[];
     }>
-  >(`/api/questions/${id}`);
+  >(`/api/questions/${id}`, {
+    tags: ['questions', `question-detail-${id}`],
+  });
 
   return data.data;
 };

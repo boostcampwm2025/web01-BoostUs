@@ -1,6 +1,6 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 
 const ALLOWED_PATHS = new Set([
   '/project',
@@ -70,5 +70,15 @@ export async function revalidateUserProfileUpdate(): Promise<void> {
   } catch (error) {
     console.error('Failed to revalidate user profile paths:', error);
     throw new Error('Revalidation failed for user profile paths');
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/require-await
+export async function revalidateByTag(tag: string): Promise<void> {
+  try {
+    revalidateTag(tag, { expire: 0 });
+  } catch (error) {
+    console.error(`Failed to revalidate tag "${tag}":`, error);
+    // 태그 기반은 실패 확률이 낮으므로 굳이 에러를 던져서 중단시킬 필요는 없음 (선택 사항)
   }
 }

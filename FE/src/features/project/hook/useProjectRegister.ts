@@ -13,7 +13,7 @@ import formatLocalDate from '@/shared/utils/formatLocalDate';
 import { toast } from '@/shared/utils/toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { PROJECT_KEYS } from '@/features/project/api/getProjects';
-import { revalidatePageCache } from '@/shared/actions/revalidate';
+import { revalidateByTag } from '@/shared/actions/revalidate';
 
 export const useProjectRegister = (
   editProjectId?: number,
@@ -57,11 +57,7 @@ export const useProjectRegister = (
       await queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.all });
 
       // ISR 캐시 무효화 (Server Action 사용)
-      try {
-        await revalidatePageCache('/project');
-      } catch (error) {
-        console.error('ISR revalidation failed:', error);
-      }
+      await revalidateByTag('projects');
 
       toast.success('프로젝트가 등록되었습니다.');
       router.push('/project');
@@ -76,12 +72,7 @@ export const useProjectRegister = (
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.all });
 
-      // ISR 캐시 무효화 (Server Action 사용)
-      try {
-        await revalidatePageCache('/project');
-      } catch (error) {
-        console.error('ISR revalidation failed:', error);
-      }
+      await revalidateByTag('projects');
 
       toast.success('프로젝트 정보가 수정되었습니다.');
       router.push('/project');
