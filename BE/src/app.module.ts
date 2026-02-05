@@ -37,10 +37,10 @@ import { InternalRequestGuard } from './common/guard/internal-request.guard';
   providers: [
     Logger,
     // 전역 가드 등록
-    {
-      provide: APP_GUARD,
-      useClass: InternalRequestGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: InternalRequestGuard,
+    // },
 
     {
       provide: APP_GUARD,
