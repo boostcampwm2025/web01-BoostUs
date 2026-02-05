@@ -98,78 +98,105 @@
 
 
 
-## 🚀 로컬에서 시작하기
+## 🟩 실행 방법
 
 ### 사전 요구사항
 
 * Node.js 22.x 
 * pnpm 9.x (FE)
-
-### 설치 및 실행
-
+* Docker (선택, 전체 앱 동시 실행 시)
 
 
-1. **의존성 설치**
+### 1️⃣ 저장소 클론
+
 ```bash
-npm install // 최상단 폴더
-pnpm install // FE 폴더에서
-npm install // BE 폴더에서
-
+https://github.com/boostcampwm2025/web01-BoostUs.git
+cd web01-BoostUs
 ```
 
+### 2️⃣ 개발 서버 실행
 
-2. **개발 서버 실행**
-서버가 실행되면 아래 주소로 접속할 수 있습니다:
-* **프론트엔드**: [http://localhost:5173](https://www.google.com/search?q=http://localhost:5173)
-* **백엔드**: [http://localhost:3000](https://www.google.com/search?q=http://localhost:3000)
+**방법 1) Docker로 전체 앱 실행 (권장)**
 
+> Docker를 사용하는 경우 로컬에 의존성 설치가 필요하지 않습니다.
 
 ```bash
-# 전체 앱 동시 실행
 docker compose -f docker-compose.dev.yml up --build
-
-# 프론트엔드만 실행 (Port: 5173)
-cd FE/ && pnpm run dev
-
-# 백엔드만 실행 (Port: 3000)
-cd BE/ && npm run start:dev
-
 ```
 
+**방법 2) 로컬에서 개별 실행**
 
-### 테스트 실행
+> 이 방식은 로컬 의존성 설치가 필요합니다.
 
+의존성 설치
 ```bash
-# 프론트엔드 eslint 테스트
-cd FE/ && pnpm exec eslint
+# 프론트엔드
+cd FE
+pnpm install
 
-# 프론트엔드 테스트 (Vitest)
-pnpm test
-
-# 프론트엔드 E2E 테스트 (Playwright)
-pnpm test:e2e (결과만 확인)
-pnpm test:e2e:ui (브라우저 모드)
-
-# 백엔드 테스트 (Jest)
-pnpm test:api
-
+# 백엔드
+cd ../BE
+npm install
 ```
 
-
-### 데이터베이스 설정 (백엔드)
+프론트엔드 (Port: 5173)
 
 ```bash
-cd BE/
+cd FE
+pnpm run dev
+```
 
-# Prisma 클라이언트 생성
-npm db:generate
+백엔드 (Port: 3000)
+
+```bash
+cd ../BE
+npm run start:dev
+```
+
+### 3️⃣ 접속 주소
+
+- 프론트엔드: http://localhost:5173
+- 백엔드: http://localhost:3000
+
+
+### 4️⃣ 데이터베이스 설정
+
+```bash
+cd BE
+
+# Prisma Client 생성
+npm run prisma:generate
 
 # 마이그레이션 실행
-pnpm db:migrate
+npm run prisma:migrate
 
 # Prisma Studio 실행 (DB GUI)
-pnpm db:studio
+npm run prisma:studio
+```
 
+### 🧪 테스트 실행 방법
+
+#### 프론트엔드
+```bash
+# ESLint
+cd FE
+pnpm exec eslint
+
+# 단위 테스트 (Vitest)
+pnpm test
+
+# E2E 테스트 (Playwright)
+pnpm test:e2e      # 결과만 확인
+pnpm test:e2e:ui   # 브라우저 UI 모드
+```
+
+#### 백엔드
+```bash
+cd BE
+
+# API 테스트 (Jest)
+npm run test
+npm run test:e2e
 ```
 
 ## 🟩 팀 소개
@@ -213,6 +240,7 @@ pnpm db:studio
 </table>
 
 <br>
+
 
 
 
