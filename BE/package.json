@@ -43,7 +43,8 @@
     "ioredis": "^5.9.2",
     "prisma": "^7.1.0",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "dotenv": "^17.2.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -57,7 +58,6 @@
     "@types/multer": "^2.0.0",
     "@types/node": "^22.19.3",
     "@types/supertest": "^6.0.2",
-    "dotenv": "^17.2.3",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",
