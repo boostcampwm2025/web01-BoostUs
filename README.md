@@ -95,6 +95,83 @@
 
 <br>
 
+
+
+
+## 🚀 로컬에서 시작하기
+
+### 사전 요구사항
+
+* Node.js 22.x 
+* pnpm 9.x (FE)
+
+### 설치 및 실행
+
+
+
+1. **의존성 설치**
+```bash
+npm install // 로컬
+pnpm install // FE 폴더에서
+npm install // BE 폴더에서
+
+```
+
+
+2. **개발 서버 실행**
+서버가 실행되면 아래 주소로 접속할 수 있습니다:
+* **프론트엔드**: [http://localhost:5173](https://www.google.com/search?q=http://localhost:5173)
+* **백엔드**: [http://localhost:3000](https://www.google.com/search?q=http://localhost:3000)
+
+
+```bash
+# 전체 앱 동시 실행
+docker compose -f docker-compose.dev.yml up --build
+
+# 프론트엔드만 실행 (Port: 5173)
+cd FE/ && pnpm run dev
+
+# 백엔드만 실행 (Port: 3000)
+cd BE/ && npm run start:dev
+
+```
+
+
+### 테스트 실행
+
+```bash
+# 프론트엔드 eslint 테스트
+cd FE/ && pnpm exec eslint
+
+# 프론트엔드 테스트 (Vitest)
+pnpm test
+
+# 프론트엔드 E2E 테스트 (Playwright)
+pnpm test:e2e (결과만 확인)
+pnpm test:e2e:ui (브라우저 모드)
+
+# 백엔드 테스트 (Jest)
+pnpm test:api
+
+```
+
+
+### 데이터베이스 설정 (백엔드)
+
+```bash
+cd BE/
+
+# Prisma 클라이언트 생성
+npm db:generate
+
+# 마이그레이션 실행
+pnpm db:migrate
+
+# Prisma Studio 실행 (DB GUI)
+pnpm db:studio
+
+```
+
 ## 🟩 팀 소개
 저희는 팀 **폴포지션** 🏁 입니다!
 
@@ -136,6 +213,7 @@
 </table>
 
 <br>
+
 
 
 
