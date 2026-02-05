@@ -44,7 +44,7 @@ export class FeedController {
   })
   async create(
     @Body() createFeedDto: CreateFeedDto,
-    @CurrentMember() memberId: string,
+    @CurrentMember() memberId: bigint,
   ): Promise<FeedDetailDto> {
     return await this.feedService.create(memberId, createFeedDto);
   }
@@ -59,7 +59,7 @@ export class FeedController {
     description: 'RSS 피드 조회 성공',
     type: FeedDetailDto,
   })
-  async getMyFeed(@CurrentMember() memberId: string): Promise<FeedDetailDto | null> {
+  async getMyFeed(@CurrentMember() memberId: bigint): Promise<FeedDetailDto | null> {
     return await this.feedService.findByMemberId(memberId);
   }
 
@@ -95,7 +95,7 @@ export class FeedController {
   })
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @CurrentMember() memberId: string,
+    @CurrentMember() memberId: bigint,
     @Body() updateFeedDto: UpdateFeedDto,
   ): Promise<FeedDetailDto> {
     return await this.feedService.update(id, memberId, updateFeedDto);
@@ -125,7 +125,7 @@ export class FeedController {
   })
   async delete(
     @Param('id', ParseIntPipe) id: number,
-    @CurrentMember() memberId: string,
+    @CurrentMember() memberId: bigint,
   ): Promise<void> {
     return await this.feedService.delete(id, memberId);
   }

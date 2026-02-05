@@ -10,9 +10,7 @@ export class MemberRepository {
    * - 멤버 기본 정보 + 프로젝트 목록 + 피드 URL
    * - 프로젝트는 project_participants에서 현재 사용자의 githubId와 일치하는 것만 조회
    */
-  async findProfileById(memberId: string) {
-    const id = BigInt(memberId);
-
+  async findProfileById(id: bigint) {
     // 먼저 member의 githubId를 가져옴
     const member = await this.prisma.member.findUnique({
       where: { id },
@@ -79,9 +77,7 @@ export class MemberRepository {
     };
   }
 
-  async updateNickname(memberId: string, nickname: string) {
-    const id = BigInt(memberId);
-
+  async updateNickname(id: bigint, nickname: string) {
     return this.prisma.member.update({
       where: { id },
       data: { nickname },
