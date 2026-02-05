@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { ContentState } from '../generated/prisma/enums';
 
 @Injectable()
 export class MemberRepository {
@@ -52,9 +53,10 @@ export class MemberRepository {
     const projectIds = participantProjects.map((p) => p.projectId);
 
     // 해당 프로젝트들 조회 (가장 최신 프로젝트 하나만)
-    const latestProject = await this.prisma.project.findFirst({
+    const latestProject = await this.prisma.project.findMany({
       where: {
         id: { in: projectIds },
+        state: ContentState.PUBLISHED,
       },
       select: {
         title: true,
@@ -73,7 +75,7 @@ export class MemberRepository {
       cohort: member.cohort,
       role: member.role,
       feed: member.feed,
-      latestProject,
+      latestProject: latestProject[0],
     };
   }
 
