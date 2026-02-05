@@ -12,6 +12,7 @@ export async function getCurrentMember(): Promise<AuthResponse> {
   const response = await fetch('/api/members/me/profile', {
     method: 'GET',
     credentials: 'include',
+    headers: { 'x-proxied-by': 'next' },
   });
 
   if (response.ok) {
@@ -34,6 +35,7 @@ export async function logout(): Promise<void> {
   const response = await fetch('/api/auth/logout', {
     method: 'POST',
     credentials: 'include',
+    headers: { 'x-proxied-by': 'next' },
   });
 
   if (!response.ok) {
