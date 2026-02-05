@@ -1,0 +1,31 @@
+import { useEffect, useRef } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  incrementStoryView,
+  STORIES_KEY,
+} from '@/features/stories/api/stories.api';
+
+export const useStoryViewCount = (storyId: string) => {
+  const queryClient = useQueryClient();
+  const viewedIds = useRef<Set<string>>(new Set());
+
+  const { mutate } = useMutation({
+    mutationFn: incrementStoryView,
+    onSuccess: (_data, viewedId) => {
+      // 조회수 증가 성공 -> 상세 데이터(viewCount 포함) 갱신
+      void queryClient.invalidateQueries({
+        queryKey: STORIES_KEY.detail(viewedId),
+      });
+    },
+    onError: (error) => {
+      console.error('Story view count failed', error);
+    },
+  });
+
+  useEffect(() => {
+    if (storyId && !viewedIds.current.has(storyId)) {
+      viewedIds.current.add(storyId);
+      mutate(storyId);
+    }
+  }, [storyId, mutate]);
+};

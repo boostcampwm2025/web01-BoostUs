@@ -2,17 +2,20 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { editAnswer } from '../../api/questions.api';
+import { editAnswer, QUESTIONS_KEY } from '../../api/questions.api';
 import { useAuth } from '@/features/login/model/auth.store';
 import { getAnswerById } from '@/features/questions/api/questions.api';
 import PostEditorForm, {
   PostFormValues,
 } from '@/features/questions/ui/Form/PostEditorForm';
 import { toast } from '@/shared/utils/toast';
+import { revalidateByTag } from '@/shared/actions/revalidate';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function AnswerEditPage() {
   const router = useRouter();
   const { member } = useAuth();
+  const queryClient = useQueryClient();
 
   // 예시 라우트: /questions/[questionId]/answers/[answerId]/edit
   const { questionId, answerId } = useParams<{
@@ -57,9 +60,16 @@ export default function AnswerEditPage() {
       onSubmit={async (values) => {
         try {
           await editAnswer(answerId, { contents: values.contents });
+
+          await queryClient.invalidateQueries({
+            queryKey: QUESTIONS_KEY.detail(questionId),
+          });
+
+          // 2. ✅ [수정] 태그 기반 ISR 캐시 무효화
+          await revalidateByTag('questions');
+
           toast.success('답변이 수정되었습니다.');
           router.push(`/questions/${questionId}`);
-          router.refresh();
         } catch (error) {
           toast.error(error);
         }

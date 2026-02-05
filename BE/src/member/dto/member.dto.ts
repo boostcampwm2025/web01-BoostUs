@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import { Role } from 'src/generated/prisma/enums';
 
 export class MemberDto {
   @ApiProperty({
@@ -32,4 +33,12 @@ export class MemberDto {
   })
   @Expose()
   cohort: number | null;
+
+  @ApiProperty({
+    description: '역할',
+    example: Role.MEMBER,
+    enum: Role,
+  })
+  @Expose()
+  role?: Role | null;
 }

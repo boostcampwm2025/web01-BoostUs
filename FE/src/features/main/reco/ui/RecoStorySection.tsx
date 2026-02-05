@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { Calendar1, Eye, Heart } from 'lucide-react';
 import {
   fetchRecoStory,
@@ -11,9 +10,7 @@ import UserProfile from '@/shared/ui/UserProfile';
 import extractDate from '@/shared/utils/extractDate';
 import { Card } from '@/shared/ui/Card';
 import { useQuery } from '@tanstack/react-query';
-import useImageError from '@/shared/model/useImageError';
-
-const DEFAULT_THUMBNAIL = '/assets/NoImage.png';
+import SafeImage from '@/shared/ui/SafeImage/SafeImage';
 
 const RecommendStorySection = () => {
   const {
@@ -27,9 +24,6 @@ const RecommendStorySection = () => {
   });
 
   const bestStory = response?.data?.items?.[0] ?? null;
-  const { isError: imageError, setIsError: setImageError } = useImageError(
-    bestStory?.thumbnailUrl
-  );
 
   if (isLoading) {
     return (
@@ -41,23 +35,18 @@ const RecommendStorySection = () => {
     return null; // TODO: 에러 UI 개선 필요
   }
 
-  const currentSrc = imageError
-    ? DEFAULT_THUMBNAIL
-    : (bestStory.thumbnailUrl ?? DEFAULT_THUMBNAIL);
-
   return (
     <Card.Root
       href={`/stories/${bestStory.id}`}
       className="grid w-full h-125 grid-rows-[4fr_6fr]"
     >
       <Card.ImageContainer className="h-full min-h-50">
-        <Image
-          src={currentSrc}
+        <SafeImage
+          src={bestStory.thumbnailUrl}
           alt={`${bestStory.title} 글의 썸네일 이미지`}
           fill
           className="object-cover"
           priority
-          onError={() => setImageError(true)}
         />
       </Card.ImageContainer>
 

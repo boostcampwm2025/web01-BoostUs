@@ -11,9 +11,13 @@ import AlertCircleIcon from '@/components/ui/AlertCircleIcon';
 import { useAuth } from '@/features/login/model/auth.store';
 import { UsersIcon } from '@/components/ui/users';
 import { FolderGit2Icon } from '@/components/ui/folder-git-2';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { createOrUpdateFeed } from '@/features/feed/api/feed.api';
+import {
+  createOrUpdateFeed,
+  deleteFeed,
+  getMyFeed,
+} from '@/features/feed/api/feed.api';
 import {
   convertBlogUrlToRss,
   detectPlatformFromBlogUrl,
@@ -21,6 +25,11 @@ import {
 import { CheckIcon } from '@/components/ui/check';
 import { updateNickname } from '@/features/myPage/api/updateNickname';
 import { toast } from '@/shared/utils/toast';
+import Button from '@/shared/ui/Button/Button';
+import { useQueryClient } from '@tanstack/react-query';
+import { STORIES_KEY } from '@/features/stories/api/stories.api';
+import { PROJECT_KEYS } from '@/features/project/api/getProjects';
+import { revalidateUserProfileUpdate } from '@/shared/actions/revalidate';
 
 // 폼 데이터 타입 정의
 interface RssFormValues {
@@ -33,10 +42,12 @@ export default function MemberInfoManageSections() {
   const latestProject = authState?.latestProject;
   const feed = authState?.feed;
   const { logout } = useAuth();
+  const queryClient = useQueryClient();
 
   // 피드백 메세지
   const [serverError, setServerError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   // 닉네임 수정 상태
   const [isEditingNickname, setIsEditingNickname] = useState<boolean>(false);
@@ -68,7 +79,12 @@ export default function MemberInfoManageSections() {
           };
         });
 
+        await queryClient.invalidateQueries({ queryKey: STORIES_KEY.all });
+        await queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.all });
+        void revalidateUserProfileUpdate();
+
         setIsEditingNickname(false);
+        toast.success('닉네임이 변경되었습니다.');
       } catch (e) {
         toast.error(e);
       }
@@ -87,12 +103,47 @@ export default function MemberInfoManageSections() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitting }, // 로딩 상태
   } = useForm<RssFormValues>({
     defaultValues: {
       blogUrl: feed?.feedUrl ?? '', // 기존 값이 있으면 보여줌
     },
   });
+
+  useEffect(() => {
+    if (!member) return;
+    if (feed?.id !== undefined) return;
+
+    let isMounted = true;
+    const fetchFeed = async () => {
+      try {
+        const response = await getMyFeed();
+        const fetchedFeed = response.data;
+
+        if (!isMounted) return;
+
+        setAuthState((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            feed: fetchedFeed
+              ? { id: fetchedFeed.id, feedUrl: fetchedFeed.feedUrl }
+              : null,
+          };
+        });
+
+        reset({ blogUrl: fetchedFeed?.feedUrl ?? '' });
+      } catch {
+        // 피드가 없거나 요청 실패는 조용히 무시
+      }
+    };
+
+    void fetchFeed();
+    return () => {
+      isMounted = false;
+    };
+  }, [member, feed?.id, reset, setAuthState]);
 
   // 폼 제출 핸들러
   const onSubmit = async (data: RssFormValues) => {
@@ -117,7 +168,18 @@ export default function MemberInfoManageSections() {
 
     // 2. API 호출
     try {
-      await createOrUpdateFeed({ feedUrl: finalRssUrl });
+      const created = await createOrUpdateFeed({ feedUrl: finalRssUrl });
+      setAuthState((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          feed: { id: created.id, feedUrl: created.feedUrl },
+        };
+      });
+
+      reset({ blogUrl: created.feedUrl });
+      await queryClient.invalidateQueries({ queryKey: STORIES_KEY.all });
+      void revalidateUserProfileUpdate();
 
       // 성공 처리
       if (finalRssUrl !== inputUrl) {
@@ -131,6 +193,36 @@ export default function MemberInfoManageSections() {
       setServerError('등록에 실패했습니다. 다시 시도해 주세요.');
       toast.error(error);
       console.error(error);
+    }
+  };
+
+  const handleDeleteFeed = async () => {
+    if (!feed?.id) return;
+
+    setServerError(null);
+    setSuccessMessage(null);
+    setIsDeleting(true);
+
+    try {
+      await deleteFeed(feed.id);
+
+      setAuthState((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          feed: null,
+        };
+      });
+
+      reset({ blogUrl: '' });
+      setSuccessMessage('블로그 RSS 연동이 삭제되었습니다.');
+      toast.success('블로그 RSS 연동이 삭제되었습니다.');
+    } catch (error) {
+      setServerError('삭제에 실패했습니다. 다시 시도해 주세요.');
+      toast.error(error);
+      console.error(error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -258,10 +350,10 @@ export default function MemberInfoManageSections() {
         <section>
           <div className="mb-4">
             <h3 className="text-display-20 text-neutral-text-strong mb-1">
-              블로그 주소 관리
+              RSS 연동 관리
             </h3>
             <p className="text-body-14 text-neutral-text-weak">
-              블로그 주소를 입력하면 자동으로 RSS를 찾아 등록해요.
+              내 블로그 주소를 입력하면 자동으로 RSS를 찾아 등록해요.
             </p>
           </div>
 
@@ -276,21 +368,41 @@ export default function MemberInfoManageSections() {
                 },
               })}
               type="text"
-              disabled={isSubmitting} // 제출 중엔 비활성화
-              placeholder="https://velog.io/@id 또는 티스토리 주소"
+              disabled={isSubmitting || isDeleting}
+              placeholder="https://velog.io/@id"
               className="flex-1 border border-neutral-border-default rounded-lg px-4 py-2 text-body-14 focus:outline-none focus:border-brand-border-default transition-colors placeholder:text-neutral-text-weak disabled:bg-neutral-50"
             />
-            <button
-              type="submit"
-              disabled={isSubmitting} // 제출 중엔 비활성화
-              className={`bg-brand-surface-default text-brand-text-on-default text-string-16 rounded-lg px-4 py-2 text-sm transition-colors whitespace-nowrap ${
-                isSubmitting
-                  ? 'opacity-70 cursor-not-allowed'
-                  : 'hover:bg-brand-surface-strong'
-              }`}
-            >
-              {isSubmitting ? '등록 중...' : '등록하기'}
-            </button>
+            {!feed?.id && (
+              <Button
+                type="submit"
+                buttonStyle="primary"
+                disabled={isSubmitting || isDeleting}
+                className={`bg-brand-surface-default text-brand-text-on-default text-string-16 rounded-lg px-4 py-2 text-sm transition-colors whitespace-nowrap`}
+              >
+                {isSubmitting ? '등록 중...' : '등록'}
+              </Button>
+            )}
+            {feed?.id && (
+              <>
+                <Button
+                  type="submit"
+                  buttonStyle="primary"
+                  disabled={isSubmitting || isDeleting}
+                  className={`bg-brand-surface-default text-brand-text-on-default text-string-16 rounded-lg px-4 py-2 text-sm transition-colors whitespace-nowrap`}
+                >
+                  {isSubmitting ? '수정 중...' : '수정'}
+                </Button>
+                <Button
+                  type="button"
+                  buttonStyle="outlined"
+                  onClick={handleDeleteFeed}
+                  disabled={isSubmitting || isDeleting}
+                  className={`w-fit border-danger-border-default text-danger-text-default hover:text-danger-text-strong`}
+                >
+                  {isDeleting ? '삭제 중...' : '삭제'}
+                </Button>
+              </>
+            )}
           </form>
 
           {/* 메시지 피드백 영역 */}

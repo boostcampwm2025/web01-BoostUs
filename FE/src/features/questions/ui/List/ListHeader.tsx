@@ -1,11 +1,11 @@
 'use client';
 
-import { useQuestionsContext } from '@/features/questions/model';
 import {
   QuestionCounts,
   QuestionsStatusFilter,
 } from '@/features/questions/model/questions.type';
 import Dropdown from '@/features/questions/ui/Dropdown/Dropdown';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 interface StatusButtonProps {
   label: string;
@@ -41,7 +41,28 @@ const StatusButton = ({
 };
 
 const ListHeader = ({ counts }: { counts: QuestionCounts }) => {
-  const { status, setStatus } = useQuestionsContext();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // URL에서 현재 상태 읽기
+  const currentStatus =
+    (searchParams.get('status') as QuestionsStatusFilter) || 'all';
+
+  const handleStatusChange = (newStatus: QuestionsStatusFilter) => {
+    // 기존 쿼리 파라미터 유지하면서 status만 변경
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (newStatus === 'all') {
+      params.delete('status');
+    } else {
+      params.set('status', newStatus);
+    }
+
+    // 필터 변경 시 커서(페이지) 초기화가 필요할 수 있으므로 cursor 삭제 권장
+    params.delete('cursor');
+
+    router.push(`/questions?${params.toString()}`);
+  };
 
   return (
     <div className="flex flex-row items-center justify-between w-full h-16 px-6 border-b border-neutral-border-default bg-neutral-surface-strong rounded-t-2xl">
@@ -49,29 +70,29 @@ const ListHeader = ({ counts }: { counts: QuestionCounts }) => {
         <StatusButton
           label="전체"
           value="all"
-          isActive={status === 'all'}
-          onClick={() => setStatus('all')}
+          isActive={currentStatus === 'all'}
+          onClick={() => handleStatusChange('all')}
           count={counts.total}
         />
         <StatusButton
           label="답변 없음"
           value="unanswered"
-          isActive={status === 'unanswered'}
-          onClick={() => setStatus('unanswered')}
+          isActive={currentStatus === 'unanswered'}
+          onClick={() => handleStatusChange('unanswered')}
           count={counts.noAnswer}
         />
         <StatusButton
           label="미해결"
           value="unsolved"
-          isActive={status === 'unsolved'}
-          onClick={() => setStatus('unsolved')}
+          isActive={currentStatus === 'unsolved'}
+          onClick={() => handleStatusChange('unsolved')}
           count={counts.unsolved}
         />
         <StatusButton
           label="해결됨"
           value="solved"
-          isActive={status === 'solved'}
-          onClick={() => setStatus('solved')}
+          isActive={currentStatus === 'solved'}
+          onClick={() => handleStatusChange('solved')}
           count={counts.solved}
         />
       </div>

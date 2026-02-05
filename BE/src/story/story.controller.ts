@@ -133,9 +133,10 @@ export class StoryController {
   })
   async likeStory(
     @Param('id', ParseBigIntPipe) id: bigint,
-    @CurrentMember() memberId: string,
-  ): Promise<{ storyId: string }> {
-    return { storyId: await this.storyService.likeStory(id, memberId) };
+    @CurrentMember() memberId: bigint,
+  ): Promise<{ storyId: bigint }> {
+    const storyId = await this.storyService.likeStory(id, memberId);
+    return { storyId };
   }
 
   @Delete(':id/like')
@@ -176,9 +177,10 @@ export class StoryController {
   })
   async unlikeStory(
     @Param('id', ParseBigIntPipe) id: bigint,
-    @CurrentMember() memberId: string,
-  ): Promise<{ storyId: string }> {
-    return { storyId: await this.storyService.unlikeStory(id, memberId) };
+    @CurrentMember() memberId: bigint,
+  ): Promise<{ storyId: bigint }> {
+    const storyId = await this.storyService.unlikeStory(id, memberId);
+    return { storyId };
   }
 
   @Get(':id/like/status')
@@ -215,7 +217,7 @@ export class StoryController {
   })
   async checkStoryLikeStatus(
     @Param('id', ParseBigIntPipe) id: bigint,
-    @CurrentMember() memberId: string,
+    @CurrentMember() memberId: bigint,
   ): Promise<{ isLiked: boolean }> {
     const isLiked = await this.storyService.checkStoryLikeStatus(id, memberId);
     return { isLiked };

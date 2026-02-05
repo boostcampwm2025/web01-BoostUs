@@ -1,12 +1,9 @@
-'use client';
-
 import ListCardChip from '@/features/questions/ui/ListCard/ListCardChip';
 import CardHeader from '@/features/questions/ui/QuestionDetail/CardHeader';
 import type { QuestionDetail as QuestionDetailType } from '@/features/questions/model/questions.type';
 import VoteButtons from '@/features/questions/ui/QuestionDetail/VoteButtons';
-import { likeQuestion, dislikeQuestion } from '../../api/questions.api';
 import { MarkdownViewer } from '@/shared/ui/MarkdownViewer/MarkdownViewer';
-import { useOptimisticVote } from '@/features/questions/model/useOptimisticVote';
+import { useQuestionVote } from '@/features/questions/model/useQuestionVote';
 import { useAuth } from '@/features/login/model/auth.store';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/shared/utils/toast';
@@ -20,17 +17,7 @@ const QuestionCard = ({
 }) => {
   const { member } = useAuth();
   const router = useRouter();
-
-  const { stats, handleVote } = useOptimisticVote({
-    id: question.id,
-    upCount: question.upCount,
-    downCount: question.downCount,
-    reaction: question.reaction,
-    api: {
-      voteUp: likeQuestion,
-      voteDown: dislikeQuestion,
-    },
-  });
+  const { voteQuestion } = useQuestionVote(question.id);
 
   const onVoteClick = (type: 'LIKE' | 'DISLIKE') => {
     if (!member) {
@@ -39,7 +26,7 @@ const QuestionCard = ({
       toast.warning('로그인이 필요한 기능입니다.');
       return;
     }
-    void handleVote(type);
+    voteQuestion.mutate({ type });
   };
 
   const handleShare = async () => {
@@ -64,8 +51,8 @@ const QuestionCard = ({
       <CardHeader question={question} hasAcceptedAnswer={hasAcceptedAnswer} />
       <div className="flex flex-row gap-6 w-full px-4 py-4 rounded-b-2xl">
         <VoteButtons
-          upCount={stats.upCount}
-          reaction={stats.reaction}
+          upCount={question.upCount}
+          reaction={question.reaction}
           onUpvote={() => onVoteClick('LIKE')}
           onDownvote={() => onVoteClick('DISLIKE')}
           isLoggedIn={!!member}

@@ -10,9 +10,9 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
       new QueryClient({
         defaultOptions: {
           queries: {
-            // staleTime: 데이터가 '상한(stale)' 상태로 간주되기 전까지의 시간 (60초)
+            // staleTime: 데이터가 '상한(stale)' 상태로 간주되기 전까지의 시간 (5분)
             // 이 시간 동안은 다시 fetch하지 않고 캐시된 데이터를 보여줍니다.
-            staleTime: 60 * 1000,
+            staleTime: 60 * 1000 * 5,
 
             // gcTime: 언마운트된 데이터가 메모리에 남아있는 시간 (5분)
             gcTime: 5 * 60 * 1000,

@@ -85,4 +85,4 @@ jobs:
               up -d frontend --no-deps
 
             echo "🔄 Pruning unused Docker images..."
-            docker image prune -f
+            docker image prune -af

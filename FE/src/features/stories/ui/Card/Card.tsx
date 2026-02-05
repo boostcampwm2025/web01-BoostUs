@@ -1,12 +1,11 @@
 'use client';
 
-import Image from 'next/image';
 import { Calendar1, Eye, Heart } from 'lucide-react';
 import type { Story } from '@/features/stories/model/stories.type';
-import useImageError from '@/shared/model/useImageError';
 import UserProfile from '@/shared/ui/UserProfile';
 import extractDate from '@/shared/utils/extractDate';
 import { Card } from '@/shared/ui/Card';
+import SafeImage from '@/shared/ui/SafeImage/SafeImage';
 
 interface StoriesCardProps {
   id: string;
@@ -14,28 +13,19 @@ interface StoriesCardProps {
   priority?: boolean;
 }
 
-const DEFAULT_THUMBNAIL = '/assets/NoImage.png';
-
 const StoriesCard = ({ id, story, priority = false }: StoriesCardProps) => {
-  const { isError, setIsError } = useImageError(story.thumbnailUrl);
-
-  const currentSrc = isError
-    ? DEFAULT_THUMBNAIL
-    : (story.thumbnailUrl ?? DEFAULT_THUMBNAIL);
-
   return (
     <Card.Root
       href={`/stories/${id}`}
       className="grid w-full grid-rows-[4fr_6fr]"
     >
       <Card.ImageContainer>
-        <Image
-          src={currentSrc}
+        <SafeImage
+          src={story.thumbnailUrl}
           alt={`${story.title} 글의 썸네일 이미지`}
           fill
-          className="object-cover"
+          className="object-cover transition-transform duration-300 hover:scale-105" // 줌인 효과 등 유지
           priority={priority}
-          onError={() => setIsError(true)}
         />
       </Card.ImageContainer>
       <Card.Content className="px-3 py-2 justify-between">

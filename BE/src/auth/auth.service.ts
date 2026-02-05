@@ -52,11 +52,14 @@ export class AuthService {
 
     const member = await this.authRepository.upsertByGithubProfile(upsertMemberDto);
 
-    const accessToken = this.generateAccessToken(member.id);
+    const accessToken = this.generateAccessToken({
+      id: member.id,
+      role: member.role,
+    });
     const refreshToken = this.generateRefreshToken(member.id);
 
     // 리프레시 토큰을 Redis에 저장
-    await this.saveRefreshTokenToRedis(member.id.toString(), refreshToken);
+    await this.saveRefreshTokenToRedis(member.id, refreshToken);
 
     return {
       accessToken,
@@ -64,10 +67,11 @@ export class AuthService {
     };
   }
 
-  private generateAccessToken(memberId: bigint): string {
+  private generateAccessToken(member: { id: bigint; role: string }): string {
     const payload = {
-      sub: memberId.toString(),
+      sub: member.id.toString(),
       type: 'access',
+      role: member.role,
     };
     const expiresIn = Number(this.configService.getOrThrow('JWT_ACCESS_EXPIRES_IN'));
     return this.jwtService.sign(payload, { expiresIn });
@@ -82,7 +86,7 @@ export class AuthService {
     return this.jwtService.sign(payload, { expiresIn });
   }
 
-  async getCurrentMember(memberId: string) {
+  async getCurrentMember(memberId: bigint) {
     const member = await this.authRepository.findById(memberId);
 
     if (!member) {
@@ -108,8 +112,8 @@ export class AuthService {
    * @param memberId 멤버 ID
    * @param refreshToken 리프레시 토큰
    */
-  async saveRefreshTokenToRedis(memberId: string, refreshToken: string): Promise<void> {
-    const key = `refresh:${memberId}`;
+  async saveRefreshTokenToRedis(memberId: bigint, refreshToken: string): Promise<void> {
+    const key = `refresh:${memberId.toString()}`;
     const ttl = Number(this.configService.getOrThrow('JWT_REFRESH_EXPIRES_IN'));
 
     await this.redis.set(key, refreshToken, 'EX', ttl);
@@ -119,8 +123,8 @@ export class AuthService {
    * Redis에서 리프레시 토큰 삭제 (로그아웃 시 사용)
    * @param memberId 멤버 ID
    */
-  async deleteRefreshTokenFromRedis(memberId: string): Promise<void> {
-    const key = `refresh:${memberId}`;
+  async deleteRefreshTokenFromRedis(memberId: bigint): Promise<void> {
+    const key = `refresh:${memberId.toString()}`;
     await this.redis.del(key);
   }
 
@@ -129,18 +133,18 @@ export class AuthService {
    * @param token 리프레시 토큰
    * @returns 멤버 ID
    */
-  async verifyRefreshToken(token: string): Promise<{ memberId: string }> {
+  async verifyRefreshToken(token: string): Promise<{ memberId: bigint }> {
     try {
       const secret = this.configService.getOrThrow<string>('JWT_SECRET');
       const payload = await this.jwtService.verifyAsync<JwtPayload>(token, {
         secret,
       });
 
-      if (payload.type !== 'refresh') {
+      if (!payload || payload.type !== 'refresh') {
         throw new InvalidRefreshTokenException();
       }
 
-      return { memberId: payload.sub ?? '' };
+      return { memberId: BigInt(payload.sub ?? '') };
     } catch (error: unknown) {
       if (error instanceof Error && error.name === 'TokenExpiredError') {
         throw new RefreshTokenExpiredException();
@@ -205,9 +209,17 @@ export class AuthService {
       throw new InvalidRefreshTokenException();
     }
 
-    // 4. 새로운 액세스 토큰과 리프레시 토큰 생성
-    const newAccessToken = this.generateAccessToken(BigInt(memberId));
-    const newRefreshToken = this.generateRefreshToken(BigInt(memberId));
+    // 4. 멤버 조회 후 role 포함하여 새 토큰 생성
+    const member = await this.authRepository.findById(memberId);
+    if (!member) {
+      throw new InvalidRefreshTokenException();
+    }
+
+    const newAccessToken = this.generateAccessToken({
+      id: member.id,
+      role: member.role,
+    });
+    const newRefreshToken = this.generateRefreshToken(member.id);
 
     // 5. 새 리프레시 토큰을 Redis에 저장
     await this.saveRefreshTokenToRedis(memberId, newRefreshToken);

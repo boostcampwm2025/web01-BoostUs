@@ -10,13 +10,32 @@ import { ApiResponse } from '@/shared/types/ApiResponseType';
 import { Meta } from '@/shared/types/PaginationType';
 import { customFetch } from '@/shared/utils/fetcher';
 
+export const QUESTIONS_KEY = {
+  all: ['questions'] as const,
+  lists: () => [...QUESTIONS_KEY.all, 'list'] as const,
+  list: (params: {
+    status?: string | null;
+    sort?: string | null;
+    cursor?: string | null;
+    query?: string | null;
+  }) => [...QUESTIONS_KEY.lists(), params] as const,
+  detail: (id: string) => [...QUESTIONS_KEY.all, 'detail', id] as const,
+  answers: (questionId: string) =>
+    [...QUESTIONS_KEY.detail(questionId), 'answers'] as const,
+};
+
 /**
  * 초기 질문 목록 조회
  */
-export const getInitialQuestions = async (params?: {
-  status?: QuestionsStatusFilter;
-  sort?: QuestionsSortBy;
-}) => {
+export const getInitialQuestions = async (
+  params?: {
+    status?: QuestionsStatusFilter;
+    sort?: QuestionsSortBy;
+  },
+  options?: {
+    skipStore?: boolean;
+  }
+) => {
   const status = params?.status === 'all' ? undefined : params?.status;
 
   return await customFetch<
@@ -25,10 +44,12 @@ export const getInitialQuestions = async (params?: {
       meta: Meta;
     }>
   >('/api/questions', {
+    ...options,
     params: {
       status,
       sort: params?.sort,
     },
+    tags: ['questions'],
   });
 };
 
@@ -50,7 +71,9 @@ export const getQuestionById = async (id: string) => {
       question: QuestionDetail;
       answers: Answer[];
     }>
-  >(`/api/questions/${id}`);
+  >(`/api/questions/${id}`, {
+    tags: ['questions', `question-detail-${id}`],
+  });
 
   return data.data;
 };
@@ -58,16 +81,19 @@ export const getQuestionById = async (id: string) => {
 /**
  * 커서 기반 질문 목록 조회
  */
-export const fetchQuestionsByCursor = async (
-  cursor: Base64URLString | null
-) => {
-  const searchParams = new URLSearchParams(window.location.search);
+export const fetchQuestionsByCursor = async (params: {
+  status?: string | null;
+  sort?: string | null;
+  query?: string | null;
+  cursor?: string | null;
+}) => {
+  const requestParams: Record<string, string | undefined> = {};
 
-  const params = Object.fromEntries(searchParams.entries());
-
-  if (params.status === 'all') delete params.status;
-  if (cursor) params.cursor = cursor;
-  else delete params.cursor;
+  if (params.status && params.status !== 'all')
+    requestParams.status = params.status;
+  if (params.sort) requestParams.sort = params.sort;
+  if (params.query) requestParams.query = params.query;
+  if (params.cursor) requestParams.cursor = params.cursor;
 
   const response = await customFetch<
     ApiResponse<{
@@ -75,7 +101,7 @@ export const fetchQuestionsByCursor = async (
       meta: Meta;
     }>
   >('/api/questions', {
-    params,
+    params: requestParams,
   });
 
   return response.data;

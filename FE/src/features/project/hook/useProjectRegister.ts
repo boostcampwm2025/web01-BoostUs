@@ -13,6 +13,7 @@ import formatLocalDate from '@/shared/utils/formatLocalDate';
 import { toast } from '@/shared/utils/toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { PROJECT_KEYS } from '@/features/project/api/getProjects';
+import { revalidateByTag } from '@/shared/actions/revalidate';
 
 export const useProjectRegister = (
   editProjectId?: number,
@@ -55,12 +56,8 @@ export const useProjectRegister = (
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.all });
 
-      // ISR 캐시 무효화 (POST 메서드 사용)
-      try {
-        await fetch('/api/revalidate?path=/project', { method: 'POST' });
-      } catch (error) {
-        console.error('ISR revalidation failed:', error);
-      }
+      // ISR 캐시 무효화 (Server Action 사용)
+      await revalidateByTag('projects');
 
       toast.success('프로젝트가 등록되었습니다.');
       router.push('/project');
@@ -75,12 +72,7 @@ export const useProjectRegister = (
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.all });
 
-      // ISR 캐시 무효화 (POST 메서드 사용)
-      try {
-        await fetch('/api/revalidate?path=/project', { method: 'POST' });
-      } catch (error) {
-        console.error('ISR revalidation failed:', error);
-      }
+      await revalidateByTag('projects');
 
       toast.success('프로젝트 정보가 수정되었습니다.');
       router.push('/project');
@@ -265,7 +257,7 @@ export const useProjectRegister = (
       } else {
         await createMutation.mutateAsync({
           ...baseData,
-          participants: participants.map((id) => ({ githubId: id })),
+          participants: participants,
         });
       }
     } catch (error: unknown) {
@@ -287,6 +279,7 @@ export const useProjectRegister = (
     participants,
     addParticipant: handleParticipantsAdd,
     removeParticipant: handleParticipantsRemove,
+    setParticipants,
     techStack,
     setTechStack,
   };

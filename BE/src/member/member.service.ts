@@ -17,7 +17,7 @@ export class MemberService {
   /**
    * 현재 로그인한 사용자의 마이페이지 프로필 조회
    */
-  async getProfile(memberId: string): Promise<MemberProfileResponseDto> {
+  async getProfile(memberId: bigint): Promise<MemberProfileResponseDto> {
     const profile = await this.memberRepository.findProfileById(memberId);
 
     if (!profile) {
@@ -31,6 +31,7 @@ export class MemberService {
         githubLogin: profile.githubLogin,
         nickname: profile.nickname,
         cohort: profile.cohort,
+        role: profile.role,
       },
       latestProject: profile.latestProject,
       feed: profile.feed ? { feedUrl: profile.feed.feedUrl } : null,
@@ -42,7 +43,7 @@ export class MemberService {
   }
 
   async updateMyNickname(
-    memberId: string,
+    memberId: bigint,
     dto: UpdateNicknameDto,
   ): Promise<MemberProfileResponseDto> {
     // 기존 프로필 정보 조회 (프로젝트, 피드 정보 유지용)
@@ -63,6 +64,7 @@ export class MemberService {
           githubLogin: updated.githubLogin,
           nickname: updated.nickname,
           cohort: updated.cohort,
+          role: profile.role,
         },
         latestProject: profile.latestProject, // 기존 정보 재사용
         feed: profile.feed ? { feedUrl: profile.feed.feedUrl } : null, // 기존 정보 재사용

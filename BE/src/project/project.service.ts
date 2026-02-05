@@ -15,6 +15,8 @@ import { randomUUID } from 'node:crypto';
 import type Redis from 'ioredis';
 import { REDIS } from '../redis/redis.provider';
 import { ThumbnailMeta } from './type/upload-image-meta.type';
+import { GithubRepoReadmeResponse } from './type/github-repo-readme.type';
+import { GithubRepoCollaboratorResponse } from './type/github-repo-collaborator.type';
 import {
   ProjectNotFoundException,
   ProjectForbiddenException,
@@ -27,6 +29,7 @@ import {
   GithubApiRequestFailedException,
 } from './exception/project.exception';
 import { ViewService } from 'src/view/view.service';
+import { Role } from 'src/generated/prisma/enums';
 import { JwtService } from '@nestjs/jwt';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
@@ -173,7 +176,42 @@ export class ProjectService {
     }
   }
 
-  async uploadTempThumbnail(file: Express.Multer.File, memberId: string) {
+  /**
+   * 지정한 repository의 installation access token을 발급받습니다.
+   * @param owner GitHub owner
+   * @param repo GitHub repo
+   * @returns installation access token
+   */
+  private async _getInstallationAccessToken(owner: string, repo: string): Promise<string> {
+    const appJwt = this._createGithubAppJwt();
+
+    const installation = await this._githubFetch<{ id: number }>(
+      `${this.githubApiBase}/repos/${owner}/${repo}/installation`,
+      {
+        headers: {
+          Authorization: `Bearer ${appJwt}`,
+          Accept: 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    );
+
+    const accessToken = await this._githubFetch<{ token: string }>(
+      `${this.githubApiBase}/app/installations/${installation.id}/access_tokens`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${appJwt}`,
+          Accept: 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    );
+
+    return accessToken.token;
+  }
+
+  async uploadTempThumbnail(file: Express.Multer.File, memberId: bigint) {
     const uploadId = randomUUID();
     const ext = (file.originalname.split('.').pop() || 'png').toLocaleLowerCase();
     const tempKey = `temp/projects/thumbnail/${uploadId}.${ext}`;
@@ -201,7 +239,7 @@ export class ProjectService {
    */
   private async finalizeThumbnailOrThrow(
     uploadId: string | undefined,
-    memberId: string,
+    memberId: bigint,
   ): Promise<string> {
     const redisKey = `upload:thumbnail:${uploadId}`;
 
@@ -335,45 +373,62 @@ export class ProjectService {
     }
 
     const { owner, repo } = this._parseRepositorySlug(repositoryUrl);
-    const appJwt = this._createGithubAppJwt();
+    const installationAccessToken = await this._getInstallationAccessToken(owner, repo);
 
-    const installation = await this._githubFetch<{ id: number }>(
-      `${this.githubApiBase}/repos/${owner}/${repo}/installation`,
+    const collaborators = await this._githubFetch<GithubRepoCollaboratorResponse[]>(
+      `${this.githubApiBase}/repos/${owner}/${repo}/collaborators?affiliation=direct`,
       {
         headers: {
-          Authorization: `Bearer ${appJwt}`,
+          Authorization: `Bearer ${installationAccessToken}`,
           Accept: 'application/vnd.github+json',
           'X-GitHub-Api-Version': '2022-11-28',
         },
       },
     );
-
-    const accessToken = await this._githubFetch<{ token: string }>(
-      `${this.githubApiBase}/app/installations/${installation.id}/access_tokens`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${appJwt}`,
-          Accept: 'application/vnd.github+json',
-          'X-GitHub-Api-Version': '2022-11-28',
-        },
-      },
-    );
-
-    const collaborators = await this._githubFetch<
-      Array<{ login: string; avatar_url: string | null }>
-    >(`${this.githubApiBase}/repos/${owner}/${repo}/collaborators?affiliation=direct`, {
-      headers: {
-        Authorization: `Bearer ${accessToken.token}`,
-        Accept: 'application/vnd.github+json',
-        'X-GitHub-Api-Version': '2022-11-28',
-      },
-    });
 
     return collaborators.map((collaborator) => ({
       githubId: collaborator.login,
       avatarUrl: collaborator.avatar_url ?? null,
     }));
+  }
+
+  /**
+   * GitHub 레포의 README를 조회합니다.
+   * @param repositoryUrl GitHub 레포 URL 또는 slug
+   * @returns README 메타 및 본문
+   */
+  async getRepoReadme(repositoryUrl: string) {
+    if (!repositoryUrl) {
+      throw new RepositoryQueryRequiredException();
+    }
+
+    const { owner, repo } = this._parseRepositorySlug(repositoryUrl);
+    const installationAccessToken = await this._getInstallationAccessToken(owner, repo);
+
+    const readme = await this._githubFetch<GithubRepoReadmeResponse>(
+      `${this.githubApiBase}/repos/${owner}/${repo}/readme`,
+      {
+        headers: {
+          Authorization: `Bearer ${installationAccessToken}`,
+          Accept: 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    );
+
+    const decodedContent =
+      readme.encoding === 'base64'
+        ? Buffer.from(readme.content, 'base64').toString('utf-8')
+        : readme.content;
+
+    return {
+      name: readme.name,
+      path: readme.path,
+      htmlUrl: readme.html_url,
+      downloadUrl: readme.download_url,
+      encoding: 'utf-8',
+      content: decodedContent,
+    };
   }
 
   async findAll(query: ProjectListQueryDto) {
@@ -425,18 +480,17 @@ export class ProjectService {
     return plainToInstance(ProjectDetailItemDto, project, { excludeExtraneousValues: true });
   }
 
-  async create(memberId: string, dto: CreateProjectDto) {
+  async create(memberId: bigint, dto: CreateProjectDto) {
     const finalKey = dto.thumbnailUploadId
       ? await this.finalizeThumbnailOrThrow(dto.thumbnailUploadId, memberId)
       : undefined;
 
-    const memberIdBigint = BigInt(memberId);
-    const project = await this.projectRepository.create(memberIdBigint, dto, finalKey);
+    const project = await this.projectRepository.create(memberId, dto, finalKey);
 
     return plainToInstance(ProjectDetailItemDto, project, { excludeExtraneousValues: true });
   }
 
-  async update(id: number, memberId: string, dto: UpdateProjectDto) {
+  async update(id: number, memberId: bigint, dto: UpdateProjectDto) {
     const projectId = BigInt(id);
 
     const exists = await this.projectRepository.exists(projectId);
@@ -450,13 +504,11 @@ export class ProjectService {
       throw new MemberNotFoundException();
     }
 
-    // member.github_login 이 project_participants 조회 결과 들어있는지 확인
-    const canUpdate = await this.projectRepository.canMemberUpdateProject(
-      projectId,
-      member.githubLogin,
-    );
+    // ADMIN이거나 project_participants에 포함된 경우 수정 가능
+    const canUpdate =
+      member.role === Role.ADMIN ||
+      (await this.projectRepository.canMemberUpdateProject(projectId, member.githubLogin));
 
-    // 없으면 throw
     if (!canUpdate) {
       throw new ProjectForbiddenException('이 프로젝트를 수정할 권한이 없습니다.');
     }
@@ -470,7 +522,7 @@ export class ProjectService {
     return plainToInstance(ProjectDetailItemDto, updated, { excludeExtraneousValues: true });
   }
 
-  async delete(id: number, memberId: string) {
+  async delete(id: number, memberId: bigint) {
     const projectId = BigInt(id);
 
     // 프로젝트 존재 여부 확인
@@ -485,13 +537,8 @@ export class ProjectService {
       throw new MemberNotFoundException();
     }
 
-    // member.github_login 이 project_participants에 조회 결과 들어있는지 확인
-    const canDelete = await this.projectRepository.canMemberUpdateProject(
-      projectId,
-      member.githubLogin,
-    );
-
-    if (!canDelete) {
+    // ADMIN만 삭제 가능
+    if (member.role !== Role.ADMIN) {
       throw new ProjectForbiddenException('이 프로젝트를 삭제할 권한이 없습니다.');
     }
 

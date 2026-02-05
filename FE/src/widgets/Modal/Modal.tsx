@@ -10,7 +10,10 @@ interface ModalProps {
 }
 
 const Modal = ({ isOpen, onClose, children }: ModalProps) => {
+  const isClient = typeof window !== 'undefined';
+
   useEffect(() => {
+    if (!isClient) return;
     if (isOpen) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -20,9 +23,9 @@ const Modal = ({ isOpen, onClose, children }: ModalProps) => {
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [isOpen]);
+  }, [isOpen, isClient]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !isClient) return null;
 
   return createPortal(
     <div

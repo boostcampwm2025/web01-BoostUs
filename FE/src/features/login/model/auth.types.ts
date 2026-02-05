@@ -8,6 +8,7 @@ export interface Member {
   avatarUrl: string | null;
   nickname: string;
   cohort: number | null;
+  role?: 'MEMBER' | 'ADMIN';
 }
 export interface latestProject {
   title: string;
@@ -34,6 +35,7 @@ export interface AuthResponse {
     field: string;
   } | null;
   feed: {
+    id: string;
     feedUrl: string;
   } | null;
 }

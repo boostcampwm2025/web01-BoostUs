@@ -8,28 +8,36 @@ import {
 } from '@/features/questions/model';
 import QuestionsPageContent from '@/features/questions/ui/QuestionsPageContent';
 
-const QuestionsPage = async ({
-  searchParams,
-}: {
-  searchParams: Promise<{ status?: string; sort?: string }>;
-}) => {
+export const revalidate = 600;
+
+interface QuestionsPageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+const QuestionsPage = async ({ searchParams }: QuestionsPageProps) => {
   const params = await searchParams;
-  const statusParam = params.status ?? 'all';
-  const sortParam = params.sort ?? 'latest';
+  const statusRaw = typeof params.status === 'string' ? params.status : 'all';
+  const sortRaw = typeof params.sort === 'string' ? params.sort : 'latest';
 
   const validStatus: QuestionsStatusFilter = [
     'all',
     'unanswered',
     'unsolved',
     'solved',
-  ].includes(statusParam)
-    ? (statusParam as QuestionsStatusFilter)
+  ].includes(statusRaw)
+    ? (statusRaw as QuestionsStatusFilter)
     : 'all';
+
+  const validSort = (
+    ['latest', 'views', 'votes'] as QuestionsSortBy[]
+  ).includes(sortRaw as QuestionsSortBy)
+    ? (sortRaw as QuestionsSortBy)
+    : 'latest';
 
   const [listResponse, counts] = await Promise.all([
     getInitialQuestions({
       status: validStatus,
-      sort: sortParam as QuestionsSortBy,
+      sort: validSort,
     }),
     getQuestionCounts(),
   ]);
@@ -40,13 +48,22 @@ const QuestionsPage = async ({
     nextCursor: null,
     prevCursor: null,
     hasNext: false,
+    count: 0,
+    page: 1,
+  };
+
+  const countData = counts ?? {
+    total: 0,
+    noAnswer: 0,
+    unsolved: 0,
+    solved: 0,
   };
 
   return (
     <QuestionsPageContent
       initialQuestions={initialQuestions}
       meta={meta}
-      counts={counts}
+      counts={countData}
     />
   );
 };
