@@ -11,7 +11,7 @@ const EXTERNAL_ACCESS_PATHS = [
 ];
 
 const isExternalAccessPath = (path: string) => {
-  return EXTERNAL_ACCESS_PATHS.some((allowedPath) => path === allowedPath);
+  return EXTERNAL_ACCESS_PATHS.some((allowedPath) => path.startsWith(allowedPath));
 };
 
 // const isSwaggerPath = (path: string) => {
