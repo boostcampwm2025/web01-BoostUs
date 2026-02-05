@@ -68,17 +68,20 @@ export class FeedService {
     // 기존 Feed 조회 (ACTIVE/INACTIVE 상관 없이 조회)
     const existingFeed = await this.feedRepository.findByMemberIdAnyState(memberId);
 
-    let feed: Feed;
-    if (existingFeed) {
-      // 기존 Feed가 있으면 feedUrl 업데이트 (대체)
-      if (existingFeed.state === State.INACTIVE) {
-        await this.feedRepository.updateState(existingFeed.id, State.ACTIVE);
-      }
-      feed = await this.feedRepository.updateFeedUrl(existingFeed.id, dto.feedUrl);
-    } else {
-      // 없으면 새로 생성
-      feed = await this.feedRepository.create(memberId, dto.feedUrl);
+  let feed: Feed;
+  if (existingFeed) {
+    // 기존 Feed가 있으면 feedUrl 업데이트 (대체)
+    if (existingFeed.state === State.INACTIVE) {
+      await this.feedRepository.updateState(existingFeed.id, State.ACTIVE);
+      
+      // INACTIVE -> ACTIVE 전환 시 기존 DELETED 상태의 stories를 PUBLISHED로 복구
+      await this.storyRepository.restoreByMemberId(memberId);
     }
+    feed = await this.feedRepository.updateFeedUrl(existingFeed.id, dto.feedUrl);
+  } else {
+    // 없으면 새로 생성
+    feed = await this.feedRepository.create(memberId, dto.feedUrl);
+  }
 
     return plainToInstance(FeedDetailDto, feed, {
       excludeExtraneousValues: true,
