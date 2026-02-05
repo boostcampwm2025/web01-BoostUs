@@ -334,7 +334,7 @@ export class QuestionService {
     if (!ownerId) throw new NotFoundException('질문의 주인이 없소');
 
     // ADMIN 권한 확인
-    const member = await this.authRepository.findById(memberIdStr);
+    const member = await this.authRepository.findById(memberId);
     const canDelete = ownerId === memberId || member?.role === Role.ADMIN;
 
     if (!canDelete) {

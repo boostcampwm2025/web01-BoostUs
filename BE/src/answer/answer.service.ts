@@ -11,7 +11,7 @@ export class AnswerService {
   constructor(
     private readonly answerRepo: AnswerRepository,
     private readonly authRepository: AuthRepository,
-  ) {}
+  ) { }
 
   async findOne(id: string) {
     const answer = await this.answerRepo.findOnePublished(id); // repo로 빼는 게 깔끔
@@ -94,8 +94,8 @@ export class AnswerService {
     const ownerId = await this.answerRepo.findOwnerIdByAnswerId(id);
     if (!ownerId) throw new NotFoundException('답변의 주인이 없소');
 
-    // ADMIN 권한 확인
-    const member = await this.authRepository.findById(memberIdStr);
+    // ADMIN 권한 확인  
+    const member = await this.authRepository.findById(memberId);
     const canDelete = ownerId === memberId || member?.role === Role.ADMIN;
 
     if (!canDelete) {
