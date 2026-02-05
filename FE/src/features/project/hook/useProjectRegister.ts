@@ -60,7 +60,7 @@ export const useProjectRegister = (
       await revalidateByTag('projects');
 
       toast.success('프로젝트가 등록되었습니다.');
-      router.push('/project');
+
       if (onClose) onClose();
     },
   });
@@ -75,7 +75,7 @@ export const useProjectRegister = (
       await revalidateByTag('projects');
 
       toast.success('프로젝트 정보가 수정되었습니다.');
-      router.push('/project');
+
       if (onClose) onClose();
     },
   });

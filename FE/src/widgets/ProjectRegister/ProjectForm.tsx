@@ -79,7 +79,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
     setTechStack,
   } = useProjectRegister(projectId, () => {
     router.refresh();
-    router.push('/project');
+    router.back();
   });
 
   const [stackData, setStackData] = useState<TechStackResponse | null>(null);

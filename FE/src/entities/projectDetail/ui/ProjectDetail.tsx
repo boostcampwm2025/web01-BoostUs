@@ -20,11 +20,16 @@ import { useAuth } from '@/features/login/model/auth.store';
 import CustomDialog from '@/shared/ui/Dialog/CustomDialog';
 import { deleteProject } from '@/features/project/api/deleteProject';
 import Button from '@/shared/ui/Button/Button';
+import { useQueryClient } from '@tanstack/react-query';
+import { revalidateByTag } from '@/shared/actions/revalidate';
+import { toast } from '@/shared/utils/toast';
+import { PROJECT_KEYS } from '@/features/project/api/getProjects';
 
 export default function ProjectDetail() {
   const params = useParams<{ id: string }>();
   const rawId = params?.id;
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const id = typeof rawId === 'string' ? Number(rawId) : NaN;
   const isValidId = Number.isFinite(id);
@@ -46,7 +51,10 @@ export default function ProjectDetail() {
 
     try {
       await deleteProject(id);
-      router.back();
+      await queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.all });
+      await revalidateByTag('projects');
+      toast.success('프로젝트가 성공적으로 삭제되었습니다.');
+      router.replace('/project');
     } catch {
       alert('프로젝트 삭제에 실패했습니다.');
     }
