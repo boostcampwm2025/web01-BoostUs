@@ -13,14 +13,12 @@ interface Props {
 
 export function AuthInitializer({ user, children }: Props) {
   // 1. [초기화] 서버 사이드 렌더링 시 값 주입 (HTML 생성 시점)
-  // 이 코드는 초기 로딩 시 깜빡임을 막아줍니다.
   useHydrateAtoms([
     [memberAtom, user],
     [authLoadingAtom, false],
   ]);
 
   // 2. [동기화] 클라이언트에서 props(user)가 바뀔 때마다 Atom 업데이트
-  // 로그아웃 하거나, 페이지 이동으로 user 정보가 갱신될 때 실행됩니다.
   const setMember = useSetAtom(memberAtom);
   const setLoading = useSetAtom(authLoadingAtom);
 
