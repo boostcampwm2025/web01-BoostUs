@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
-import { Scheduler } from './scheduler';
+import { Scheduler } from './scheduler/scheduler';
+import { ApiServer } from './api/server';
 
 // 환경 변수 로드
 dotenv.config();
@@ -19,6 +20,11 @@ async function main() {
       CRON_SCHEDULE: process.env.CRON_SCHEDULE ?? '0 * * * *',
       NODE_ENV: process.env.NODE_ENV,
     };
+
+    // API 서버 시작
+    const API_PORT = 5000;
+    const apiServer = new ApiServer(API_PORT);
+    apiServer.start();
 
     // 스케줄러 생성 및 시작
     const scheduler = new Scheduler(config.BE_API_URL, config.CRON_SCHEDULE);

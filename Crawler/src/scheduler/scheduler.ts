@@ -1,5 +1,5 @@
 import cron from 'node-cron';
-import { FeedManager } from './feed-manager';
+import { FeedManager } from '../crawler/feed-manager';
 
 /**
  * Scheduler

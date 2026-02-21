@@ -15,7 +15,6 @@ import { TechStackModule } from './tech-stack/tech-stack.module';
 import { MemberModule } from './member/member.module';
 import { LandingModule } from './landing/landing.module';
 import { RecommendModule } from './recommend/recommend.module';
-import { InternalRequestGuard } from './common/guard/internal-request.guard';
 
 @Module({
   imports: [
