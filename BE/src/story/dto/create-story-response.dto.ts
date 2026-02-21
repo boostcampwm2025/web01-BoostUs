@@ -1,4 +1,4 @@
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 
 /**
  * Story Operation 타입
@@ -45,8 +45,10 @@ export class StoryData {
  */
 export class CreateStoryResponseDto {
   @Expose()
+  @Type(() => StoryData)
   story: StoryData;
 
   @Expose()
+  @Type(() => StoryOperationMeta)
   meta: StoryOperationMeta;
 }

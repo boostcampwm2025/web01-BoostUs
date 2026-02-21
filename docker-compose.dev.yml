@@ -97,7 +97,7 @@ services:
       - boostus_network
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:12.3
     container_name: boostus_grafana
     restart: unless-stopped
     ports:

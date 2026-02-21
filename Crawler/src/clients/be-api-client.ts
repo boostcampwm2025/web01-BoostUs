@@ -5,6 +5,7 @@ import {
   Feed,
   FeedListResponse,
   StoryCreationResult,
+  StoryOperationType,
 } from '../types';
 
 /**
@@ -86,15 +87,17 @@ export class BeApiClient {
 
         // enum 기반으로 명확하게 구분
         switch (response.data.meta.operation) {
-          case 'created':
+          case StoryOperationType.CREATED:
             insertCount++;
             break;
-          case 'updated':
+          case StoryOperationType.UPDATED:
             updateCount++;
             break;
-          case 'unchanged':
+          case StoryOperationType.UNCHANGED:
             skipCount++;
             break;
+          default:
+            throw new Error(`Unknown operation type: ${response.data.meta.operation}`);
         }
       } catch (error) {
         errorCount++;
