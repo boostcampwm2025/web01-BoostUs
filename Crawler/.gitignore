@@ -11,6 +11,9 @@ dist/
 *.log
 npm-debug.log*
 
+# Performance Reports
+reports/
+
 # IDE
 .vscode/
 .idea/

@@ -23,7 +23,14 @@ export default [
 
       // 경고로 완화
       '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
 
       // 코드 스타일 (Prettier로 포맷팅, ESLint는 구조만 검사)
       semi: ['error', 'always'],

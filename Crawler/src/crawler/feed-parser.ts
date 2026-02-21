@@ -1,5 +1,5 @@
 import Parser from 'rss-parser';
-import { CreateStoryRequest, RssItem } from './types';
+import { CreateStoryRequest, RssItem } from '../types';
 
 /**
  * Feed Parser

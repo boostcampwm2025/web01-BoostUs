@@ -1,6 +1,9 @@
-import { BeApiClient } from './be-api-client';
+import axios from 'axios';
+import { BeApiClient } from '../clients/be-api-client';
 import { FeedDownloader } from './feed-downloader';
 import { FeedParser } from './feed-parser';
+import { PerformanceMetrics } from '../monitoring/performance-metrics';
+import { ErrorType } from '../types';
 
 /**
  * Feed Manager
@@ -18,6 +21,25 @@ export class FeedManager {
   }
 
   /**
+   * 에러 타입 분류
+   */
+  private classifyError(error: unknown): ErrorType {
+    if (axios.isAxiosError(error)) {
+      if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+        return 'timeout';
+      }
+      if (error.response?.status && error.response.status >= 400) {
+        return 'http_error';
+      }
+      return 'network_error';
+    }
+    if (error instanceof Error && error.message.toLowerCase().includes('parse')) {
+      return 'parse_error';
+    }
+    return 'unknown';
+  }
+
+  /**
    * 모든 피드를 수집하고 스토리를 생성합니다.
    */
   async collectAllFeeds(): Promise<void> {
@@ -25,8 +47,9 @@ export class FeedManager {
     console.log('🚀 Starting RSS feed collection...');
     console.log('========================================\n');
 
+    const metrics = new PerformanceMetrics();
+
     try {
-      // 1. BE API에서 활성 피드 목록 조회
       const feeds = await this.apiClient.getFeeds();
 
       if (feeds.length === 0) {
@@ -36,41 +59,50 @@ export class FeedManager {
 
       console.log(`\n📋 Processing ${feeds.length} feed(s)...\n`);
 
-      let totalStoriesCreated = 0;
-
-      // 2. 각 피드를 순차적으로 처리
       for (const feed of feeds) {
+        metrics.startFeed(feed.feedUrl);
+
         try {
           console.log(`\n--- Processing feed: ${feed.feedUrl} ---`);
 
-          // 2.1 RSS XML 다운로드
+          // 1. 피드 다운로드
+          const downloadStart = Date.now();
           const xmlContent = await this.downloader.download(feed.feedUrl);
+          metrics.recordDownload(Date.now() - downloadStart);
 
-          // 2.2 XML을 Story 객체로 파싱
+          // 2. 피드 파싱
+          const parseStart = Date.now();
           const stories = await this.parser.parse(xmlContent, feed.id);
+          metrics.recordParse(Date.now() - parseStart, stories.length);
 
-          // 2.3 BE API로 스토리 저장
+          // 3. 스토리 생성
           if (stories.length > 0) {
-            const createdCount = await this.apiClient.createStories(stories);
-            totalStoriesCreated += createdCount;
+            const createStart = Date.now();
+            const result = await this.apiClient.createStories(stories);
+            metrics.recordStoryCreation(Date.now() - createStart, result);
           } else {
             console.log('⚠️  No stories to create');
+            metrics.recordStoryCreation(0, { insert: 0, update: 0, skip: 0, total: 0 });
           }
 
           console.log(`✅ Finished processing feed: ${feed.feedUrl}\n`);
         } catch (error) {
+          const errorType = this.classifyError(error);
+          metrics.recordError(feed.feedUrl, error, errorType);
           console.error(`❌ Error processing feed ${feed.feedUrl}:`, error);
-          // 개별 피드 에러는 무시하고 다음 피드 계속 처리
-          continue;
         }
       }
 
       console.log('\n========================================');
-      console.log(`✅ Feed collection completed! Total stories created: ${totalStoriesCreated}`);
+      console.log('✅ Feed collection completed!');
       console.log('========================================\n');
     } catch (error) {
       console.error('\n❌ Fatal error during feed collection:', error);
       throw error;
+    } finally {
+      const reportPath = await metrics.saveToFile();
+      console.log(`📄 Performance report saved: ${reportPath}`);
+      metrics.printConsoleSummary();
     }
   }
 }

@@ -1,5 +1,11 @@
 import axios, { AxiosInstance } from 'axios';
-import { CreateStoryRequest, CreateStoryResponse, Feed, FeedListResponse } from './types';
+import {
+  CreateStoryRequest,
+  CreateStoryResponse,
+  Feed,
+  FeedListResponse,
+  StoryCreationResult,
+} from '../types';
 
 /**
  * BE API Client
@@ -64,25 +70,47 @@ export class BeApiClient {
   /**
    * 여러 Story를 순차적으로 생성
    * @param stories Story 생성 데이터 배열
-   * @returns 생성된 Story 수
+   * @returns Story 생성 결과 통계
    */
-  async createStories(stories: CreateStoryRequest[]): Promise<number> {
+  async createStories(stories: CreateStoryRequest[]): Promise<StoryCreationResult> {
     console.log(`📝 Creating ${stories.length} stories...`);
 
-    let successCount = 0;
+    let insertCount = 0;
+    let updateCount = 0;
+    let skipCount = 0;
     let errorCount = 0;
 
     for (const story of stories) {
       try {
-        await this.createStory(story);
-        successCount++;
+        const response = await this.createStory(story);
+
+        // enum 기반으로 명확하게 구분
+        switch (response.data.meta.operation) {
+          case 'created':
+            insertCount++;
+            break;
+          case 'updated':
+            updateCount++;
+            break;
+          case 'unchanged':
+            skipCount++;
+            break;
+        }
       } catch (error) {
         errorCount++;
         console.error(`Failed to create story: ${story.title}`, error);
       }
     }
 
-    console.log(`✅ Created ${successCount} stories, ${errorCount} errors`);
-    return successCount;
+    console.log(
+      `✅ Created ${insertCount} stories (${updateCount} updated, ${skipCount} skipped, ${errorCount} errors)`,
+    );
+
+    return {
+      insert: insertCount,
+      update: updateCount,
+      skip: skipCount,
+      total: insertCount + updateCount + skipCount,
+    };
   }
 }
