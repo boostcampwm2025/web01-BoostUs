@@ -78,7 +78,7 @@ services:
       - /app/node_modules
     command: sh -c "npm install && npm run dev"
     environment:
-      - BE_API_URL=http://backend:3000
+      - BE_API_URL=http://backend:3000/api
       - CRON_SCHEDULE=*/5 * * * *
     ports:
       - "5000:5000"
