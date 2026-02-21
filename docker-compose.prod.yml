@@ -81,9 +81,6 @@ services:
     restart: unless-stopped
     expose:
       - "5000"
-    environment:
-      - BE_API_URL=http://backend:3000
-      - CRON_SCHEDULE=${CRAWLER_CRON_SCHEDULE:-*/5 * * * *}
     env_file:
       - .env.prod
     networks:
