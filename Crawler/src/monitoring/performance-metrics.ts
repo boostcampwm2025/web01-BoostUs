@@ -89,6 +89,8 @@ export class PerformanceMetrics {
     this.dbWriteBreakdown.update += result.update;
     this.dbWriteBreakdown.skip += result.skip;
 
+    this.currentFeed.stories_failed = result.error ?? 0;
+
     this.finishCurrentFeed();
   }
 

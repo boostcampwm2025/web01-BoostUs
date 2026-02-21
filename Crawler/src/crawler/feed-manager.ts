@@ -82,7 +82,7 @@ export class FeedManager {
             metrics.recordStoryCreation(Date.now() - createStart, result);
           } else {
             console.log('⚠️  No stories to create');
-            metrics.recordStoryCreation(0, { insert: 0, update: 0, skip: 0, total: 0 });
+            metrics.recordStoryCreation(0, { insert: 0, update: 0, skip: 0, total: 0, error: 0 });
           }
 
           console.log(`✅ Finished processing feed: ${feed.feedUrl}\n`);

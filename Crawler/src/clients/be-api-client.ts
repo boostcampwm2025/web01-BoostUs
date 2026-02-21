@@ -114,6 +114,7 @@ export class BeApiClient {
       update: updateCount,
       skip: skipCount,
       total: insertCount + updateCount + skipCount,
+      error: errorCount,
     };
   }
 }

@@ -106,6 +106,7 @@ export interface StoryCreationResult {
   update: number;
   skip: number;
   total: number;
+  error: number;
 }
 
 /**
