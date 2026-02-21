@@ -121,14 +121,14 @@ export class ApiServer {
               case 'feed_success_rate':
                 value = (1 - report.feed_error_rate) * 100;
                 break;
-              case 'avg_download_s':
-                value = report.avg_download_s;
+              case 'stories_inserted':
+                value = report.db_write_breakdown.insert;
                 break;
-              case 'avg_parse_s':
-                value = report.avg_parse_s;
+              case 'stories_updated':
+                value = report.db_write_breakdown.update;
                 break;
-              case 'avg_create_s':
-                value = report.avg_create_s;
+              case 'stories_skipped':
+                value = report.db_write_breakdown.skip;
                 break;
               case 'p95_download_s':
                 value = report.p95_download_s;
@@ -141,24 +141,6 @@ export class ApiServer {
                 break;
               case 'p95_total_execution_s':
                 value = report.total_execution_time_s;
-                break;
-              case 'stories_created':
-                value = report.stories_created;
-                break;
-              case 'stories_inserted':
-                value = report.db_write_breakdown.insert;
-                break;
-              case 'stories_updated':
-                value = report.db_write_breakdown.update;
-                break;
-              case 'stories_skipped':
-                value = report.db_write_breakdown.skip;
-                break;
-              case 'feed_error_rate':
-                value = report.feed_error_rate * 100;
-                break;
-              case 'story_error_rate':
-                value = report.story_error_rate * 100;
                 break;
               default:
                 value = 0;
@@ -184,19 +166,13 @@ export class ApiServer {
     this.app.post('/search', (_req: Request, res: Response) => {
       const metrics = [
         'feed_success_rate',
-        'avg_download_s',
-        'avg_parse_s',
-        'avg_create_s',
+        'stories_inserted',
+        'stories_updated',
+        'stories_skipped',
         'p95_download_s',
         'p95_parse_s',
         'p95_create_s',
         'p95_total_execution_s',
-        'stories_created',
-        'stories_inserted',
-        'stories_updated',
-        'stories_skipped',
-        'feed_error_rate',
-        'story_error_rate',
       ];
       res.json(metrics);
     });
