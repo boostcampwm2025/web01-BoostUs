@@ -100,9 +100,12 @@ export class FeedManager {
       console.error('\n❌ Fatal error during feed collection:', error);
       throw error;
     } finally {
-      const reportPath = await metrics.saveToFile();
-      console.log(`📄 Performance report saved: ${reportPath}`);
-      metrics.printConsoleSummary();
+      try {
+        await metrics.saveToFile();
+        metrics.printConsoleSummary();
+      } catch (error) {
+        console.error('❌ Error saving performance report:', error);
+      }
     }
   }
 }

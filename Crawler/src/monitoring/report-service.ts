@@ -14,24 +14,6 @@ export class ReportService {
   }
 
   /**
-   * 모든 리포트 파일명 조회 (최신순)
-   */
-  async getReportFiles(limit?: number): Promise<string[]> {
-    try {
-      const files = await readdir(this.reportsDir);
-      const jsonFiles = files
-        .filter((f) => f.startsWith('report_') && f.endsWith('.json'))
-        .sort()
-        .reverse(); // 최신순 정렬
-
-      return limit ? jsonFiles.slice(0, limit) : jsonFiles;
-    } catch (error) {
-      console.error('Error reading reports directory:', error);
-      return [];
-    }
-  }
-
-  /**
    * 특정 리포트 파일 읽기
    */
   async getReport(filename: string): Promise<PerformanceReport | null> {
@@ -46,65 +28,60 @@ export class ReportService {
   }
 
   /**
-   * 최근 N개 리포트 조회
+   * 시간 범위 기반 리포트 조회
+   * @param fromTime 시작 시간
+   * @param toTime 종료 시간
+   * @param maxLimit 최대 조회 개수 (과도한 데이터 로드 방지)
    */
-  async getRecentReports(limit = 200): Promise<PerformanceReport[]> {
-    const files = await this.getReportFiles(limit);
-    const reports: PerformanceReport[] = [];
+  async getReportsByTimeRange(
+    fromTime: Date,
+    toTime: Date,
+    maxLimit = 1000,
+  ): Promise<PerformanceReport[]> {
+    try {
+      const files = await readdir(this.reportsDir);
+      const jsonFiles = files
+        .filter((f) => f.startsWith('report_') && f.endsWith('.json'))
+        .filter((filename) => {
+          const timestamp = this.extractTimestampFromFilename(filename);
+          if (!timestamp) return false;
+          return timestamp >= fromTime && timestamp <= toTime;
+        })
+        .sort()
+        .reverse()
+        .slice(0, maxLimit);
 
-    for (const file of files) {
-      const report = await this.getReport(file);
-      if (report) {
-        reports.push(report);
+      const reports: PerformanceReport[] = [];
+      for (const file of jsonFiles) {
+        const report = await this.getReport(file);
+        if (report) {
+          reports.push(report);
+        }
       }
-    }
 
-    return reports;
+      return reports;
+    } catch (error) {
+      console.error('Error getting reports by time range:', error);
+      return [];
+    }
   }
 
   /**
-   * 집계 통계 계산
+   * 파일명에서 타임스탬프 추출
+   * @param filename 예: report_2026-02-21T04-35-00.json
+   * @returns Date 객체 또는 null
    */
-  async getSummaryMetrics(limit = 200): Promise<{
-    total_runs: number;
-    avg_execution_time_s: number;
-    avg_feeds_processed: number;
-    avg_stories_created: number;
-    total_stories_created: number;
-    avg_feed_error_rate: number;
-    avg_story_error_rate: number;
-    recent_reports: PerformanceReport[];
-  }> {
-    const reports = await this.getRecentReports(limit);
+  private extractTimestampFromFilename(filename: string): Date | null {
+    const match = filename.match(/report_(.+)\.json/);
+    if (!match) return null;
 
-    if (reports.length === 0) {
-      return {
-        total_runs: 0,
-        avg_execution_time_s: 0,
-        avg_feeds_processed: 0,
-        avg_stories_created: 0,
-        total_stories_created: 0,
-        avg_feed_error_rate: 0,
-        avg_story_error_rate: 0,
-        recent_reports: [],
-      };
-    }
+    const timestampStr = match[1]
+      .replace(/T(\d{2})-(\d{2})-(\d{2})/, 'T$1:$2:$3');
 
-    const totalExecutionTime = reports.reduce((sum, r) => sum + r.total_execution_time_s, 0);
-    const totalFeedsProcessed = reports.reduce((sum, r) => sum + r.feeds_processed, 0);
-    const totalStoriesCreated = reports.reduce((sum, r) => sum + r.stories_created, 0);
-    const totalFeedErrorRate = reports.reduce((sum, r) => sum + r.feed_error_rate, 0);
-    const totalStoryErrorRate = reports.reduce((sum, r) => sum + r.story_error_rate, 0);
+    const date = new Date(timestampStr);
 
-    return {
-      total_runs: reports.length,
-      avg_execution_time_s: parseFloat((totalExecutionTime / reports.length).toFixed(2)),
-      avg_feeds_processed: parseFloat((totalFeedsProcessed / reports.length).toFixed(2)),
-      avg_stories_created: parseFloat((totalStoriesCreated / reports.length).toFixed(2)),
-      total_stories_created: totalStoriesCreated,
-      avg_feed_error_rate: parseFloat((totalFeedErrorRate / reports.length).toFixed(4)),
-      avg_story_error_rate: parseFloat((totalStoryErrorRate / reports.length).toFixed(4)),
-      recent_reports: reports,
-    };
+    if (isNaN(date.getTime())) return null;
+
+    return date;
   }
 }

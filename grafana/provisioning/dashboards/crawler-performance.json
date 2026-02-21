@@ -410,7 +410,7 @@
             "uid": "P97954F9D3906610D"
           },
           "refId": "D",
-          "target": "p95_total_execution_s"
+          "target": "total_execution_s"
         }
       ],
       "title": "P95 레이턴시 & 총 실행시간 (P95 Latency & Total Execution)",

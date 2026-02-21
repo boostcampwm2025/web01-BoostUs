@@ -134,7 +134,7 @@ export class PerformanceMetrics {
 
     const sorted = [...values].sort((a, b) => a - b);
     const p95Index = Math.floor(sorted.length * 0.95);
-    return sorted[p95Index] || sorted[sorted.length - 1];
+    return sorted[p95Index] ?? sorted[sorted.length - 1];
   }
 
   /**

@@ -3,6 +3,7 @@ apiVersion: 1
 datasources:
   - name: Crawler JSON API
     type: simpod-json-datasource
+    uid: P97954F9D3906610D # Grafana 대시보드에서 사용하는 고유 ID (없으면 자동으로 생성됨)
     access: proxy
     url: http://crawler:5000
     isDefault: true
