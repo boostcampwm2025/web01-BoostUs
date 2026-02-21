@@ -1,0 +1,11 @@
+apiVersion: 1
+
+datasources:
+  - name: Crawler JSON API
+    type: simpod-json-datasource
+    access: proxy
+    url: http://crawler:5000
+    isDefault: true
+    editable: true
+    jsonData:
+      httpMethod: GET

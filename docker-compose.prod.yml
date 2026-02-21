@@ -81,6 +81,9 @@ services:
     restart: unless-stopped
     expose:
       - "5000"
+    environment:
+      - BE_API_URL=http://backend:3000
+      - CRON_SCHEDULE=${CRAWLER_CRON_SCHEDULE:-*/5 * * * *}
     env_file:
       - .env.prod
     networks:
@@ -97,9 +100,33 @@ services:
     networks:
       - boostus_network
 
+  grafana:
+    image: grafana/grafana:latest
+    container_name: boostus_grafana
+    restart: unless-stopped
+    expose:
+      - "3001"
+    environment:
+      - GF_INSTALL_PLUGINS=simpod-json-datasource # JSON API를 사용하기 위해 필요
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD} # 관리자 비밀번호 (환경 변수로 관리)
+      - GF_USERS_ALLOW_SIGN_UP=false # 사용자 가입 금지
+      - GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL} # 루트 URL (nginx의 도메인과 일치해야 함)
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true # Sub-path(/grafana)에서 서비스 제공 활성화
+      - GF_SERVER_HTTP_PORT=3001 # Grafana가 리스닝할 포트 번호
+    env_file:
+      - .env.prod
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - grafana_data:/var/lib/grafana
+    networks:
+      - boostus_network
+    depends_on:
+      - crawler
+
 networks:
   boostus_network:
     driver: bridge
 
 volumes:
   db_data:
+  grafana_data:

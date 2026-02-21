@@ -77,8 +77,15 @@ services:
       - ./Crawler:/app
       - /app/node_modules
     command: sh -c "npm install && npm run dev"
+    environment:
+      - BE_API_URL=http://backend:3000
+      - CRON_SCHEDULE=*/5 * * * *
     ports:
       - "5000:5000"
+    networks:
+      - boostus_network
+    depends_on:
+      - backend
 
   redis:
     image: redis:7-alpine
@@ -89,8 +96,27 @@ services:
     networks:
       - boostus_network
 
+  grafana:
+    image: grafana/grafana:latest
+    container_name: boostus_grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_INSTALL_PLUGINS=simpod-json-datasource
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - grafana_data:/var/lib/grafana
+    networks:
+      - boostus_network
+    depends_on:
+      - crawler
+
 networks:
   boostus_network:
     driver: bridge
 volumes:
   db_data:
+  grafana_data:
