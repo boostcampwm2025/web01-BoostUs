@@ -1,9 +1,32 @@
 import { Expose } from 'class-transformer';
 
 /**
- * Story 생성 응답 DTO
+ * Story Operation 타입
  */
-export class CreateStoryResponseDto {
+export enum StoryOperationType {
+  CREATED = 'created',
+  UPDATED = 'updated',
+  UNCHANGED = 'unchanged',
+}
+
+/**
+ * Story Operation 메타데이터
+ */
+export class StoryOperationMeta {
+  @Expose()
+  operation: StoryOperationType;
+
+  @Expose()
+  isNewStory: boolean;
+
+  @Expose()
+  hasChanges: boolean;
+}
+
+/**
+ * Story 기본 데이터
+ */
+export class StoryData {
   @Expose()
   id: bigint;
 
@@ -15,4 +38,15 @@ export class CreateStoryResponseDto {
 
   @Expose()
   createdAt: Date;
+}
+
+/**
+ * Story 생성 응답 DTO
+ */
+export class CreateStoryResponseDto {
+  @Expose()
+  story: StoryData;
+
+  @Expose()
+  meta: StoryOperationMeta;
 }

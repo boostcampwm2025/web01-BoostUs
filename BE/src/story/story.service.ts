@@ -8,6 +8,7 @@ import { ViewService } from '../view/view.service';
 import {
   CreateStoryRequestDto,
   CreateStoryResponseDto,
+  StoryData,
   StoryListItemDto,
   StoryListRequestDto,
   StoryListResponseDto,
@@ -157,7 +158,7 @@ export class StoryService {
     }
 
     // Story upsert 및 Feed lastFetchedAt 업데이트 (트랜잭션)
-    const story = await this.storyRepository.upsertStoryWithFeedUpdate({
+    const result = await this.storyRepository.upsertStoryWithFeedUpdate({
       guid: dto.guid,
       memberId: feed.memberId,
       feedId: feed.id,
@@ -169,7 +170,14 @@ export class StoryService {
       publishedAt: dto.publishedAt,
     });
 
-    return plainToInstance(CreateStoryResponseDto, story, { excludeExtraneousValues: true });
+    return {
+      story: plainToInstance(StoryData, result.story, { excludeExtraneousValues: true }),
+      meta: {
+        operation: result.operation,
+        isNewStory: result.isNewStory,
+        hasChanges: result.hasChanges,
+      },
+    };
   }
 
   /**
