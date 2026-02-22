@@ -37,6 +37,7 @@ const completeMobileLogin = async (code: string): Promise<void> => {
   });
 
   if (!res.ok) {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     throw new Error(`mobile oauth complete failed: ${res.status}`);
   }
 };

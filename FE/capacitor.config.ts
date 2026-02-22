@@ -13,12 +13,7 @@ const config: CapacitorConfig = {
     url: process.env.CAP_SERVER_URL ?? 'http://localhost:5173',
     cleartext: true,
     // OAuth(깃허브) 왕복 과정이 Safari로 빠지지 않도록 WebView 내 네비게이션 허용 도메인을 명시합니다.
-    allowNavigation: [
-      'localhost',
-      '127.0.0.1',
-      'github.com',
-      '*.github.com',
-    ],
+    allowNavigation: ['localhost', '127.0.0.1', 'github.com', '*.github.com'],
   },
 };
 

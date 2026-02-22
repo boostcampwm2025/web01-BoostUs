@@ -2,8 +2,7 @@ import { Capacitor } from '@capacitor/core';
 
 export const navigateToGithubLogin = async (redirectPath?: string) => {
   const params = new URLSearchParams();
-  const safeRedirect =
-    redirectPath && redirectPath.startsWith('/') ? redirectPath : '/';
+  const safeRedirect = redirectPath?.startsWith('/') ? redirectPath : '/';
   params.set('redirect', safeRedirect);
 
   if (Capacitor.isNativePlatform()) {
