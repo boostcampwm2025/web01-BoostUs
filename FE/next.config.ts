@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/:path*', // 'auth'가 포함되지 않은 경로만 매칭
-        destination: 'http://backend:3000/api/:path*',
+        destination: `${process.env.INTERNAL_API_URL ?? 'http://localhost:3000'}/api/:path*`,
       },
     ];
   },

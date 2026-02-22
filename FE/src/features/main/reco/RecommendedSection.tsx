@@ -5,9 +5,11 @@ const RecommendedSection = () => {
   return (
     <>
       <h1 className="text-display-24 text-neutral-text-strong">오늘의 추천</h1>
-      <section className="flex flex-row gap-8 mt-4 w-full h-130">
-        <RecommendedProjectSection />
-        <div className="flex flex-col gap-4 w-[40%]">
+      <section className="mt-4 flex w-full flex-col gap-4 lg:h-130 lg:flex-row lg:gap-8">
+        <div className="w-full lg:flex-1">
+          <RecommendedProjectSection />
+        </div>
+        <div className="flex w-full flex-col gap-4 lg:w-[40%]">
           <RecommendStorySection />
         </div>
       </section>

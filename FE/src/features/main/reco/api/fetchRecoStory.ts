@@ -7,7 +7,7 @@ import { Meta } from '@/shared/types/PaginationType';
 import { customFetch } from '@/shared/utils/fetcher';
 
 export const FEED_QUERY_KEY = ['feed-stories'];
-export const FEED_PARAMS = { sortBy: 'views', period: 'all', size: 8 } as const;
+export const FEED_PARAMS = { sortBy: 'views', period: 'all', size: 9 } as const;
 
 export const RECO_STORY_QUERY_KEY = ['reco-story-best'];
 export const RECO_STORY_PARAMS = {

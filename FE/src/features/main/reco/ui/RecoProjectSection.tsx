@@ -80,7 +80,7 @@ export default function RecommendProjectSection() {
   };
 
   return (
-    <div className="relative w-full h-125 overflow-hidden rounded-xl border-neutral-border-default border text-white">
+    <div className="relative h-[22rem] w-full overflow-hidden rounded-xl border border-neutral-border-default text-white sm:h-125">
       <Swiper
         modules={[Autoplay]}
         spaceBetween={0}
@@ -117,29 +117,31 @@ export default function RecommendProjectSection() {
 
       <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent z-10 pointer-events-none" />
 
-      <div className="absolute bottom-0 left-0 w-full p-8 z-20 flex justify-between items-end">
-        <div className="flex flex-col gap-2">
+      <div className="absolute bottom-0 left-0 z-20 flex w-full flex-col gap-3 p-4 sm:flex-row sm:items-end sm:justify-between sm:p-8">
+        <div className="flex min-w-0 flex-col gap-2">
           <span className="bg-brand-surface-default text-string-14 font-bold px-3 py-1 rounded-full w-fit">
             {slides[activeIndex]?.category}
           </span>
-          <h1 className="text-display-24">{slides[activeIndex]?.title}</h1>
-          <p className="text-body-14 text-brand-text-on-default">
+          <h1 className="text-display-20 line-clamp-2 break-keep sm:text-display-24">
+            {slides[activeIndex]?.title}
+          </h1>
+          <p className="text-body-12 text-brand-text-on-default line-clamp-2 sm:text-body-14">
             {slides[activeIndex]?.description}
           </p>
         </div>
 
-        <div className="flex items-center gap-4 bg-black/30 backdrop-blur-md px-4 py-2 rounded-full border border-white/10">
+        <div className="flex items-center gap-3 self-start rounded-full border border-white/10 bg-black/30 px-3 py-1.5 backdrop-blur-md sm:self-auto sm:px-4 sm:py-2">
           <div className="flex gap-2">
             {slides.map((_, index) => (
               <button
                 key={index}
                 onClick={() => handleSlideChange(index)}
                 className={`
-                  h-2.5 rounded-full transition-all duration-300 ease-out 
+                  h-2 rounded-full transition-all duration-300 ease-out sm:h-2.5
                   ${
                     activeIndex === index
-                      ? 'w-8 bg-neutral-surface-bold'
-                      : 'w-2.5 bg-gray-600 hover:bg-gray-400'
+                      ? 'w-6 bg-neutral-surface-bold sm:w-8'
+                      : 'w-2 bg-gray-600 hover:bg-gray-400 sm:w-2.5'
                   }
                 `}
                 aria-label={`Go to slide ${(index + 1).toString()}`}

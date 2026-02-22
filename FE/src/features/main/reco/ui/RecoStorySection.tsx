@@ -38,7 +38,7 @@ const RecommendStorySection = () => {
   return (
     <Card.Root
       href={`/stories/${bestStory.id}`}
-      className="grid w-full h-125 grid-rows-[4fr_6fr]"
+      className="grid w-full min-h-[22rem] grid-rows-[4fr_5fr] sm:h-125 sm:grid-rows-[4fr_6fr]"
     >
       <Card.ImageContainer className="h-full min-h-50">
         <SafeImage
@@ -50,22 +50,22 @@ const RecommendStorySection = () => {
         />
       </Card.ImageContainer>
 
-      <Card.Content className="px-3 py-2 justify-between h-full">
+      <Card.Content className="h-full justify-between px-3 py-2">
         <div>
           <UserProfile
             imageSrc={bestStory.member.avatarUrl}
             nickname={bestStory.member.nickname}
             cohort={bestStory.member.cohort}
           />
-          <Card.Title className="mt-4 text-display-20">
+          <Card.Title className="mt-3 text-display-16 sm:mt-4 sm:text-display-20">
             {bestStory.title}
           </Card.Title>
-          <Card.Description className="mt-2 mb-2 leading-6 line-clamp-3">
+          <Card.Description className="mt-2 mb-2 line-clamp-2 leading-6 sm:line-clamp-3">
             {bestStory.summary}
           </Card.Description>
         </div>
 
-        <Card.Footer className="mt-3">
+        <Card.Footer className="mt-3 flex-wrap sm:flex-nowrap">
           <div className="flex flex-row items-center gap-1">
             <Heart className="text-neutral-text-weak h-3 w-3" />
             <span className="text-body-12 text-neutral-text-weak">

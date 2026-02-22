@@ -11,6 +11,9 @@ import Button from '@/shared/ui/Button/Button';
 
 const StoriesList = () => {
   const { isRankingOpen, searchQuery, sortBy, period } = useStoriesContext();
+  const gridColsClass = isRankingOpen
+    ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3'
+    : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
 
   // 화면에 요소가 보이는지 감지하는 훅
   const { ref, inView } = useInView({
@@ -45,9 +48,7 @@ const StoriesList = () => {
 
   return (
     <section className="flex w-full flex-col items-end gap-4">
-      <div
-        className={`grid w-full ${!isRankingOpen ? 'grid-cols-4' : 'grid-cols-3'} gap-4 lg:gap-8`}
-      >
+      <div className={`grid w-full gap-4 md:gap-6 ${gridColsClass}`}>
         <AnimatePresence mode="popLayout">
           {stories.length > 0 ? (
             stories.map((story) => (
