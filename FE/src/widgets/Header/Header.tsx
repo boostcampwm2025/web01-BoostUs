@@ -27,7 +27,7 @@ const Header = () => {
 
   return (
     <header
-      className={`fixed top-[calc(env(safe-area-inset-top)+52px)] z-50 flex h-20 w-full items-center justify-center px-4 transition-all duration-300 md:top-0 ${
+      className={`fixed top-[calc(env(safe-area-inset-top))] z-50 flex h-20 w-full items-center justify-center px-4 transition-all duration-300 md:top-0 ${
         isScrolled
           ? 'bg-neutral-surface-bold/80 shadow-lift backdrop-blur-sm'
           : 'bg-neutral-surface-default'
