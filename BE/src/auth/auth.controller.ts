@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Query, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, Res } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
@@ -8,37 +8,20 @@ import { MemberDto } from '../member/dto/member.dto';
 import { AuthService } from './auth.service';
 import { CurrentMember } from './decorator/current-member.decorator';
 import { GithubCallbackQueryDto } from './dto/github-callback-query.dto';
+import { MobileCompleteRequestDto } from './dto/mobile-complete-request.dto';
 
 @ApiTags('인증')
 @Controller('auth')
 export class AuthController {
+  private static readonly MOBILE_STATE_PREFIX = 'mobile:';
+  private static readonly DEFAULT_MOBILE_SCHEME = 'com.boostus.app';
+
   constructor(
     private readonly configService: ConfigService,
     private readonly authService: AuthService,
   ) {}
 
-  @Public()
-  @Get('login')
-  login(@Query('redirect') redirect: string | undefined, @Res() res: Response) {
-    const params = new URLSearchParams({
-      client_id: this.configService.getOrThrow('GITHUB_CLIENT_ID'),
-      redirect_uri: this.configService.getOrThrow('GITHUB_REDIRECT_URI'),
-      scope: 'read:org',
-    });
-
-    // redirect 파라미터가 있으면 state로 전달
-    if (redirect) {
-      params.append('state', redirect);
-    }
-
-    return res.redirect(`https://github.com/login/oauth/authorize?${params.toString()}`);
-  }
-
-  @Public()
-  @Get('github/callback')
-  async githubCallback(@Query() query: GithubCallbackQueryDto, @Res() res: Response) {
-    const { accessToken, refreshToken } = await this.authService.handleCallback(query.code);
-
+  private setAuthCookies(res: Response, accessToken: string, refreshToken: string) {
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
       secure: this.configService.getOrThrow('NODE_ENV') === 'production',
@@ -52,11 +35,100 @@ export class AuthController {
       sameSite: 'lax',
       maxAge: Number(this.configService.getOrThrow('JWT_REFRESH_EXPIRES_IN')) * 1000, // 초 -> 밀리초
     });
+  }
+
+  private normalizeRedirectPath(redirect: string | undefined): string {
+    if (!redirect) return '/';
+    const trimmed = redirect.trim();
+    if (!trimmed.startsWith('/')) return '/';
+    return trimmed;
+  }
+
+  private parseMobileRedirectPath(state: string | undefined): string | null {
+    if (!state?.startsWith(AuthController.MOBILE_STATE_PREFIX)) {
+      return null;
+    }
+
+    const encoded = state.slice(AuthController.MOBILE_STATE_PREFIX.length);
+    try {
+      return this.normalizeRedirectPath(decodeURIComponent(encoded));
+    } catch {
+      return '/';
+    }
+  }
+
+  private resolveMobileScheme(): string {
+    const raw = this.configService.get<string>('MOBILE_APP_SCHEME');
+    const candidate = raw?.trim();
+    if (!candidate) return AuthController.DEFAULT_MOBILE_SCHEME;
+
+    const validSchemePattern = /^[a-zA-Z][a-zA-Z0-9+.-]*$/;
+    if (!validSchemePattern.test(candidate)) {
+      return AuthController.DEFAULT_MOBILE_SCHEME;
+    }
+
+    return candidate;
+  }
+
+  @Public()
+  @Get('login')
+  login(
+    @Query('redirect') redirect: string | undefined,
+    @Query('mobile') mobile: string | undefined,
+    @Res() res: Response,
+  ) {
+    const params = new URLSearchParams({
+      client_id: this.configService.getOrThrow('GITHUB_CLIENT_ID'),
+      redirect_uri: this.configService.getOrThrow('GITHUB_REDIRECT_URI'),
+      scope: 'read:org',
+    });
+
+    const isMobileAuth = mobile === '1' || mobile === 'true';
+
+    if (isMobileAuth) {
+      const path = this.normalizeRedirectPath(redirect);
+      params.append(
+        'state',
+        `${AuthController.MOBILE_STATE_PREFIX}${encodeURIComponent(path)}`,
+      );
+    } else if (redirect) {
+      // redirect 파라미터가 있으면 state로 전달
+      params.append('state', redirect);
+    }
+
+    return res.redirect(`https://github.com/login/oauth/authorize?${params.toString()}`);
+  }
+
+  @Public()
+  @Get('github/callback')
+  async githubCallback(@Query() query: GithubCallbackQueryDto, @Res() res: Response) {
+    const mobileRedirectPath = this.parseMobileRedirectPath(query.state);
+    if (mobileRedirectPath !== null) {
+      const mobileScheme = this.resolveMobileScheme();
+      const deepLink =
+        `${mobileScheme}://auth/callback?code=${encodeURIComponent(query.code)}` +
+        `&redirect=${encodeURIComponent(mobileRedirectPath)}`;
+      return res.redirect(deepLink);
+    }
+
+    const { accessToken, refreshToken } = await this.authService.handleCallback(query.code);
+    this.setAuthCookies(res, accessToken, refreshToken);
 
     // state에 redirect 경로가 있으면 해당 경로로, 없으면 메인 페이지로
     const frontendUrl = this.configService.getOrThrow<string>('FRONTEND_URL');
     const redirectUrl: string = query.state ? `${frontendUrl}${query.state}` : frontendUrl;
     return res.redirect(redirectUrl);
+  }
+
+  @Public()
+  @Post('mobile/complete')
+  async mobileComplete(
+    @Body() body: MobileCompleteRequestDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { accessToken, refreshToken } = await this.authService.handleCallback(body.code);
+    this.setAuthCookies(res, accessToken, refreshToken);
+    return null;
   }
 
   @Get('me')
@@ -107,19 +179,7 @@ export class AuthController {
     const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
       await this.authService.refreshTokens(accessToken, refreshToken);
 
-    res.cookie('accessToken', newAccessToken, {
-      httpOnly: true,
-      secure: this.configService.getOrThrow('NODE_ENV') === 'production',
-      sameSite: 'lax',
-      maxAge: Number(this.configService.getOrThrow('JWT_ACCESS_EXPIRES_IN')) * 1000, // 초 -> 밀리초
-    });
-
-    res.cookie('refreshToken', newRefreshToken, {
-      httpOnly: true,
-      secure: this.configService.getOrThrow('NODE_ENV') === 'production',
-      sameSite: 'lax',
-      maxAge: Number(this.configService.getOrThrow('JWT_REFRESH_EXPIRES_IN')) * 1000, // 초 -> 밀리초
-    });
+    this.setAuthCookies(res, newAccessToken, newRefreshToken);
 
     return null;
   }

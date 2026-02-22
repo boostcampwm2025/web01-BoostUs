@@ -65,7 +65,7 @@ const ProjectListSection = () => {
 
   return (
     <section className="mt-8 mb-20 flex w-full flex-col gap-4">
-      <div className="flex justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <span className="text-string-16 text-neutral-text-default">
           총{' '}
           <span className="text-display-16 text-brand-text-default">
@@ -75,7 +75,7 @@ const ProjectListSection = () => {
         </span>
 
         {/* TODO: SlidingFilter로 리팩토링 필요 */}
-        <div className="flex flex-row flex-wrap gap-1 bg-neutral-surface-strong rounded-lg px-1 py-1">
+        <div className="flex w-fit flex-row flex-wrap gap-1 rounded-lg bg-neutral-surface-strong px-1 py-1">
           {sortOptions.map((option) => {
             const isSelected = sortOrder === option.key;
 
@@ -108,7 +108,7 @@ const ProjectListSection = () => {
         </div>
       </div>
 
-      <div className="grid w-full grid-cols-4 gap-4 lg:gap-8">
+      <div className="grid w-full grid-cols-2 gap-3 md:grid-cols-3 md:gap-6 xl:grid-cols-4">
         {filteredProjects.map((project) => (
           <ProjectListCard key={project.id} project={project} />
         ))}

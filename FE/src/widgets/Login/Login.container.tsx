@@ -29,7 +29,9 @@ export default function LoginContainer() {
         <button
           type="button"
           className="flex flex-row items-center gap-2 text-brand-text-on-default cursor-pointer bg-brand-surface-github rounded-lg px-4 py-2 text-string-16"
-          onClick={() => navigateToGithubLogin(redirect ?? undefined)}
+          onClick={() => {
+            void navigateToGithubLogin(redirect ?? undefined);
+          }}
         >
           <Github /> GitHub로 계속하기
         </button>

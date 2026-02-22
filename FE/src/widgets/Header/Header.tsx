@@ -27,14 +27,14 @@ const Header = () => {
 
   return (
     <header
-      className={`fixed top-0 z-50 flex h-20 w-full items-center justify-center px-4 transition-all duration-300 ${
+      className={`fixed top-[calc(env(safe-area-inset-top)+52px)] z-50 flex h-20 w-full items-center justify-center px-4 transition-all duration-300 md:top-0 ${
         isScrolled
           ? 'bg-neutral-surface-bold/80 shadow-lift backdrop-blur-sm'
           : 'bg-neutral-surface-default'
       }`}
     >
-      <div className="flex items-center justify-between w-full h-full max-w-7xl">
-        <div className="shrink-0 w-36">
+      <div className="flex h-full w-full max-w-7xl items-center gap-3">
+        <div className="w-28 shrink-0 md:w-36">
           <Link href="/">
             <Image
               src="/assets/Logo.svg"
@@ -46,12 +46,12 @@ const Header = () => {
             />
           </Link>
         </div>
-        <nav className="flex h-full gap-10 text-string-16 text-neutral-text-strong">
+        <nav className="scrollbar-hide flex h-full min-w-0 flex-1 items-center gap-4 overflow-x-auto text-string-16 text-neutral-text-strong md:justify-center md:gap-10">
           {NAV_ITEMS.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
-              className={`flex items-center text-string-16 h-full border-b-2 transition-colors text-neutral-text-default hover:text-brand-text-default ${
+              className={`flex h-full shrink-0 items-center whitespace-nowrap border-b-2 text-string-16 transition-colors text-neutral-text-default hover:text-brand-text-default ${
                 isActive(href)
                   ? 'border-brand-border-default'
                   : 'border-transparent'
@@ -62,7 +62,7 @@ const Header = () => {
             </Link>
           ))}
         </nav>
-        <div className="flex justify-end shrink-0 items-center w-36">
+        <div className="flex w-auto shrink-0 items-center justify-end md:w-36">
           {isLoading ? (
             <div className="w-9 h-9 rounded-full animate-pulse bg-neutral-surface-strong" />
           ) : (

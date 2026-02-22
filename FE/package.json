@@ -17,6 +17,8 @@
   "dependencies": {
     "@base-ui/react": "^1.1.0",
     "@capacitor/android": "^8.1.0",
+    "@capacitor/app": "^8.0.1",
+    "@capacitor/browser": "^8.0.1",
     "@capacitor/core": "^8.1.0",
     "@capacitor/ios": "^8.1.0",
     "@hookform/resolvers": "^5.2.2",

@@ -25,12 +25,14 @@ const StoriesLayout = () => {
       <motion.div
         layout
         layoutDependency={isRankingOpen}
-        className={`mt-8 grid items-start gap-8 ${isRankingOpen ? 'grid-cols-[7fr_3fr]' : 'grid-cols-1'}`}
+        className={`mt-8 grid items-start gap-6 ${isRankingOpen ? 'grid-cols-1 xl:grid-cols-[7fr_3fr]' : 'grid-cols-1'}`}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       >
         <div className="gap-10 flex flex-col">
-          <div className="flex flex-row items-center gap-4">
-            <StoriesSearchBar />
+          <div className="flex flex-wrap items-center gap-3 md:gap-4">
+            <div className="w-full md:flex-1">
+              <StoriesSearchBar />
+            </div>
             <StoriesListDropdown />
             <BlogRegistrationButton />
           </div>
@@ -50,7 +52,7 @@ const StoriesLayout = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={toggleRanking}
-            className="fixed right-0 top-30 w-10 h-20 bg-brand-surface-default hover:opacity-90 active:opacity-80 transition-opacity duration-150 cursor-pointer rounded-l-xl flex items-center justify-center font-sans text-sm z-50"
+            className="fixed right-0 top-30 z-50 hidden h-20 w-10 cursor-pointer items-center justify-center rounded-l-xl bg-brand-surface-default font-sans text-sm transition-opacity duration-150 hover:opacity-90 active:opacity-80 md:flex"
           >
             <span className="text-brand-text-on-default text-display-16 [writing-mode:vertical-rl] [text-orientation:upright]">
               랭킹
