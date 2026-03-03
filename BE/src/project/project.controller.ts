@@ -38,6 +38,19 @@ import {
 @Controller('projects')
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
+  @Public()
+  @Get('/collaborators')
+  @GetCollaboratorSwagger()
+  async getCollaborators(@Query('repository') repositoryUrl: string) {
+    return this.projectService.getRepoCollaborators(repositoryUrl);
+  }
+
+  @Public()
+  @Get('/readme')
+  @GetReadmeSwagger()
+  async getReadme(@Query('repository') repositoryUrl: string) {
+    return this.projectService.getRepoReadme(repositoryUrl);
+  }
 
   @Public()
   @Get()
@@ -84,19 +97,5 @@ export class ProjectController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     return this.projectService.uploadTempThumbnail(file, memberId);
-  }
-
-  @Public()
-  @Get('/collaborators')
-  @GetCollaboratorSwagger()
-  async getCollaborators(@Query('repository') repositoryUrl: string) {
-    return this.projectService.getRepoCollaborators(repositoryUrl);
-  }
-
-  @Public()
-  @Get('/readme')
-  @GetReadmeSwagger()
-  async getReadme(@Query('repository') repositoryUrl: string) {
-    return this.projectService.getRepoReadme(repositoryUrl);
   }
 }
