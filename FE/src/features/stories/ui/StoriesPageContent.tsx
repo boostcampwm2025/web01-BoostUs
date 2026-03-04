@@ -8,7 +8,7 @@ import StoriesSearchBar from '@/features/stories/ui/SearchBar/SearchBar';
 import StoriesRanking from '@/features/stories/ui/StoriesRanking/Ranking';
 import PageHeader from '@/shared/ui/PageHeader';
 import { AnimatePresence, motion } from 'framer-motion';
-import { BlogRegistrationButton } from '@/features/stories/ui/Button/BlogRegistrationButton';
+import { BlogRegistrationButton } from '@/features/feed/ui/BlogRegistrationButton';
 
 const StoriesLayout = () => {
   const { isRankingOpen, toggleRanking } = useStoriesContext();
