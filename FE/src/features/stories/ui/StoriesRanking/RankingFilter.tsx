@@ -1,6 +1,6 @@
 'use client';
 
-import { useStoriesContext } from '@/features/stories/model';
+import { useStoriesFilterContext } from '@/features/stories/model';
 import SlidingFilter from '@/widgets/SlidingFilter';
 
 const FILTER_OPTIONS = [
@@ -11,7 +11,7 @@ const FILTER_OPTIONS = [
 ] as const;
 
 const RankingFilter = () => {
-  const { rankingPeriod, setRankingPeriod } = useStoriesContext();
+  const { rankingPeriod, setRankingPeriod } = useStoriesFilterContext();
 
   const currentSelection = FILTER_OPTIONS.some(
     (opt) => opt.key === rankingPeriod

@@ -1,4 +1,4 @@
-import { fetchStories } from '@/features/stories/api/stories.api';
+import { fetchStories, STORIES_KEY } from '@/features/stories/api/stories.api';
 import { StoriesSortOption } from '@/features/stories/model/stories.type';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
@@ -15,7 +15,7 @@ export const useStoriesInfiniteQuery = ({
 }: UseStoriesInfiniteQueryParams) => {
   return useInfiniteQuery({
     // 이 키가 변하면 자동으로 데이터를 새로고침(refetch)
-    queryKey: ['stories', sortBy, period, searchQuery],
+    queryKey: STORIES_KEY.list(sortBy, period, searchQuery),
 
     // 실제 데이터를 가져오는 함수
     queryFn: ({ pageParam }) =>
