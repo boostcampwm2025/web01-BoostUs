@@ -1,6 +1,6 @@
 'use client';
 
-import { StoriesProvider, useStoriesContext } from '@/features/stories/model';
+import { StoriesProvider, useStoriesUIContext } from '@/features/stories/model';
 import { useRankingButtonVisibility } from '@/features/stories/model/useRankingButtonVisibility';
 import StoriesList from '@/features/stories/ui/List/List';
 import StoriesListDropdown from '@/features/stories/ui/ListDropdown/Dropdown';
@@ -11,7 +11,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { BlogRegistrationButton } from '@/features/feed/ui/BlogRegistrationButton';
 
 const StoriesLayout = () => {
-  const { isRankingOpen, toggleRanking } = useStoriesContext();
+  const { isRankingOpen, toggleRanking } = useStoriesUIContext();
 
   const isRankingButtonHidden: boolean =
     useRankingButtonVisibility(isRankingOpen);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useStoriesContext } from '@/features/stories/model/stories.context';
+import { useStoriesFilterContext } from '@/features/stories/model/stories.filter.context';
 import DropdownChip from '@/features/stories/ui/ListDropdown/DropdownChip';
 import { AnimatePresence, motion } from 'framer-motion';
 import SlidingFilter from '@/widgets/SlidingFilter';
@@ -24,7 +24,7 @@ const SORT_BY_OPTIONS = [
 ] as const;
 
 const StoriesListDropdown = () => {
-  const { sortBy, setSortBy, period, setPeriod } = useStoriesContext();
+  const { sortBy, setSortBy, period, setPeriod } = useStoriesFilterContext();
 
   const currentLabel =
     sortBy === 'latest'

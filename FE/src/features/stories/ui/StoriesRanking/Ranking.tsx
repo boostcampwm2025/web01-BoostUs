@@ -1,6 +1,6 @@
 'use client';
 
-import { useStoriesContext } from '@/features/stories/model';
+import { useStoriesUIContext } from '@/features/stories/model';
 import StoriesRankingHeader from '@/features/stories/ui/StoriesRanking/RankingHeader';
 import { Variants, motion } from 'framer-motion';
 
@@ -12,7 +12,7 @@ const rankingVariants: Variants = {
 };
 
 const StoriesRanking = () => {
-  const { isRankingOpen } = useStoriesContext();
+  const { isRankingOpen } = useStoriesUIContext();
 
   // TODO: 실제 랭킹 API 연결 후 랭킹 데이터 사용
 
