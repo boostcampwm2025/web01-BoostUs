@@ -7,23 +7,14 @@ import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import { useRouter } from 'next/navigation';
 import { Pause, Play } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import {
-  fetchRecoProject,
-  RECO_PROJECT_QUERY_KEY,
-} from '@/features/main/reco/api/fetchRecoProject';
 import Image from 'next/image';
+import type { Project } from '@/features/project/api/getProjects';
 
-interface RecoProject {
-  id: number;
-  thumbnailUrl: string | null;
-  title: string;
-  description: string | null;
-  field: string | null;
-  teamNumber: number;
-}
-
-export default function RecommendProjectSection() {
+export default function RecommendProjectSection({
+  projects,
+}: {
+  projects: Project[];
+}) {
   const router = useRouter();
   const [swiperInstance, setSwiperInstance] = useState<SwiperClass | null>(
     null
@@ -31,28 +22,15 @@ export default function RecommendProjectSection() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const {
-    data: response,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: RECO_PROJECT_QUERY_KEY,
-    queryFn: () => fetchRecoProject(),
-  });
-
   const slides = useMemo(() => {
-    const projects = (response?.data as RecoProject[]) ?? [];
-
-    if (isLoading || isError || projects.length === 0) {
+    if (projects.length === 0) {
       return [
         {
           id: -1,
-          image: '/api/placeholder/800/600',
+          image: '/assets/NoImage.png',
           category: '프로젝트',
-          title: isLoading
-            ? '추천 프로젝트를 불러오는 중…'
-            : '추천 프로젝트가 없습니다.',
-          description: isError ? '데이터를 불러오는데 실패했습니다.' : '',
+          title: '추천 프로젝트가 없습니다.',
+          description: '',
           color: 'bg-slate-800',
         },
       ];
@@ -60,13 +38,13 @@ export default function RecommendProjectSection() {
 
     return projects.slice(0, 3).map((p, idx) => ({
       id: p.id,
-      image: p.thumbnailUrl ?? '/api/placeholder/800/600',
+      image: p.thumbnailUrl ?? '/assets/NoImage.png',
       category: p.field ?? '프로젝트',
       title: p.title,
       description: p.description ?? '',
       color: ['bg-slate-800', 'bg-amber-800', 'bg-emerald-800'][idx % 3],
     }));
-  }, [response, isLoading, isError]);
+  }, [projects]);
 
   const handleSlideChange = (index: number) => {
     swiperInstance?.slideToLoop(index);

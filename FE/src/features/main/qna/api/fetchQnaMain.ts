@@ -10,6 +10,7 @@ export interface FetchQnaMainParams {
   status?: QuestionsStatusFilter; // 'all' | 'unanswered' | 'unsolved' | 'solved'
   size?: number;
   skipStore?: boolean;
+  revalidateSeconds?: number;
 }
 
 export const MAIN_QNA_KEY = ['main-qna'];
@@ -18,6 +19,7 @@ export const fetchQnaMain = async ({
   status = 'all',
   size = 3,
   skipStore,
+  revalidateSeconds,
 }: FetchQnaMainParams) => {
   const searchParams = new URLSearchParams();
 
@@ -43,5 +45,5 @@ export const fetchQnaMain = async ({
       items: Question[];
       meta: Meta;
     }>
-  >(path, { skipStore });
+  >(path, { skipStore, tags: ['questions'], revalidateSeconds });
 };

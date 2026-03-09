@@ -25,9 +25,12 @@ interface FetchStoriesParams {
 }
 
 export const fetchRecoStory = async (
-  params?: FetchStoriesParams & { skipStore?: boolean }
+  params?: FetchStoriesParams & {
+    skipStore?: boolean;
+    revalidateSeconds?: number;
+  }
 ) => {
-  const { skipStore, ...apiParams } = params ?? {};
+  const { skipStore, revalidateSeconds, ...apiParams } = params ?? {};
 
   return await customFetch<
     ApiResponse<{
@@ -41,5 +44,7 @@ export const fetchRecoStory = async (
       period: apiParams?.period?.toUpperCase(),
     },
     skipStore,
+    tags: ['stories'],
+    revalidateSeconds,
   });
 };

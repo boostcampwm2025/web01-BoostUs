@@ -1,0 +1,9 @@
+{
+	"appId": "com.boostus.app",
+	"appName": "BoostUs",
+	"webDir": "capacitor-shell",
+	"server": {
+		"url": "http://localhost:5173",
+		"cleartext": true
+	}
+}

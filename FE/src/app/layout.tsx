@@ -27,32 +27,32 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await getMeAction();
+  // const user = await getMeAction();
   return (
     <html lang="ko" className={pretendard.variable}>
       <body className="flex flex-col min-h-screen font-sans antialiased">
         <Providers>
-          <AuthInitializer user={user}>
-            <Header />
-            <main className="bg-neutral-surface-default flex w-full flex-1 flex-col items-center px-4 py-32">
-              {children}
-              <Script
-                src="https://kr.object.ncloudstorage.com/boostad-sdk-dev/sdk/sdk.js"
-                strategy="afterInteractive"
-                data-blog-key="d88f304b-6eae-4010-9f1a-2c5963085a9b"
-                data-context="개발"
-                data-auto="false"
-                async
-              />
-              <Script
-                src="https://utmate.me/sdk/utmate-sdk.iife.js"
-                strategy="lazyOnload"
-                async
-              />
-            </main>
-            <Toaster />
-            <Footer />
-          </AuthInitializer>
+          {/*<AuthInitializer user={user}>*/}
+          <Header />
+          <main className="bg-neutral-surface-default flex w-full flex-1 flex-col items-center px-4 py-32">
+            {children}
+            <Script
+              src="https://kr.object.ncloudstorage.com/boostad-sdk-dev/sdk/sdk.js"
+              strategy="afterInteractive"
+              data-blog-key="d88f304b-6eae-4010-9f1a-2c5963085a9b"
+              data-context="개발"
+              data-auto="false"
+              async
+            />
+            <Script
+              src="https://utmate.me/sdk/utmate-sdk.iife.js"
+              strategy="lazyOnload"
+              async
+            />
+          </main>
+          <Toaster />
+          <Footer />
+          {/*</AuthInitializer>*/}
         </Providers>
       </body>
     </html>

@@ -1,29 +1,74 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   fetchQnaMain,
-  MAIN_QNA_KEY,
 } from '@/features/main/qna/api/fetchQnaMain';
 import QnaCard from '@/features/main/qna/ui/QnaCard';
-import { useQuery } from '@tanstack/react-query';
+import type { Question } from '@/features/questions/model/questions.type';
 
 type TabType = 'ALL' | 'UNANSWERED';
 
-export default function MainQnaSection() {
+export default function MainQnaSection({
+  initialQuestions,
+}: {
+  initialQuestions: Question[];
+}) {
   const [activeTab, setActiveTab] = useState<TabType>('ALL');
-
-  const { data: response, isLoading } = useQuery({
-    queryKey: [MAIN_QNA_KEY, activeTab], // 탭 바뀔 때마다 키 변경 -> 자동 refetch
-    queryFn: () =>
-      fetchQnaMain({
-        status: activeTab === 'ALL' ? 'all' : 'unanswered',
-        size: 3,
-      }),
-    staleTime: 1000 * 60 * 60,
+  const [questionsByTab, setQuestionsByTab] = useState<
+    Record<TabType, Question[] | null>
+  >({
+    ALL: initialQuestions,
+    UNANSWERED: null,
   });
+  const [isLoading, setIsLoading] = useState(false);
 
-  const questions = response?.data?.items ?? [];
+  useEffect(() => {
+    if (activeTab === 'ALL' || questionsByTab[activeTab] !== null) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadQuestions = async () => {
+      setIsLoading(true);
+
+      try {
+        const response = await fetchQnaMain({
+          status: 'unanswered',
+          size: 3,
+        });
+
+        if (!cancelled) {
+          setQuestionsByTab((current) => ({
+            ...current,
+            UNANSWERED: response.data.items ?? [],
+          }));
+        }
+      } catch (error) {
+        console.error('Failed to load unanswered questions:', error);
+
+        if (!cancelled) {
+          setQuestionsByTab((current) => ({
+            ...current,
+            UNANSWERED: [],
+          }));
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void loadQuestions();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeTab, questionsByTab]);
+
+  const questions = questionsByTab[activeTab] ?? [];
 
   // TODO: 스켈레톤 UI 교체
   if (isLoading)

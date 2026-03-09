@@ -1,23 +1,8 @@
-'use client';
-
 import StoriesCard from '@/features/stories/ui/Card/Card';
 import FeedHeader from '@/features/main/feed/FeedHeader';
-import {
-  FEED_PARAMS,
-  FEED_QUERY_KEY,
-  fetchRecoStory,
-} from '@/features/main/reco/api/fetchRecoStory';
-import { useQuery } from '@tanstack/react-query';
+import type { Story } from '@/features/stories/model/stories.type';
 
-const FeedSection = () => {
-  const { data: response } = useQuery({
-    queryKey: FEED_QUERY_KEY,
-    queryFn: () => fetchRecoStory(FEED_PARAMS),
-    staleTime: 1000 * 60 * 60,
-  });
-
-  const stories = response?.data?.items ?? [];
-
+const FeedSection = ({ stories }: { stories: Story[] }) => {
   return (
     <>
       <FeedHeader />

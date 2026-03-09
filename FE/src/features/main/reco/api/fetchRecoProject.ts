@@ -6,8 +6,11 @@ export const RECO_PROJECT_QUERY_KEY = ['reco-projects'];
 
 export const fetchRecoProject = async (params?: {
   skipStore?: boolean;
+  revalidateSeconds?: number;
 }): Promise<ApiResponse<Project[]>> => {
   return customFetch<ApiResponse<Project[]>>(`/api/recommend`, {
     skipStore: params?.skipStore,
+    tags: ['projects'],
+    revalidateSeconds: params?.revalidateSeconds,
   });
 };

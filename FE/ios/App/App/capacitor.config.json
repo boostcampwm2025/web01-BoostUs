@@ -1,0 +1,22 @@
+{
+	"appId": "com.boostus.app",
+	"appName": "BoostUs",
+	"webDir": "capacitor-shell",
+	"ios": {
+		"contentInset": "always"
+	},
+	"server": {
+		"url": "http://localhost:5173",
+		"cleartext": true,
+		"allowNavigation": [
+			"localhost",
+			"127.0.0.1",
+			"github.com",
+			"*.github.com"
+		]
+	},
+	"packageClassList": [
+		"AppPlugin",
+		"CAPBrowserPlugin"
+	]
+}

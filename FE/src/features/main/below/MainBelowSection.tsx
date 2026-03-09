@@ -1,8 +1,13 @@
 import Link from 'next/link';
 import MainQnaSection from '@/features/main/qna/ui/MainQnaSection';
 import Contribute from '@/features/main/contribute/Contribute';
+import type { Question } from '@/features/questions/model/questions.type';
 
-export default function MainBelowSection() {
+export default function MainBelowSection({
+  initialQuestions,
+}: {
+  initialQuestions: Question[];
+}) {
   return (
     <section className="flex flex-col lg:flex-row gap-6 w-full">
       {/* 질문 & 답변 */}
@@ -18,7 +23,7 @@ export default function MainBelowSection() {
             더보기 &rarr;
           </Link>
         </div>
-        <MainQnaSection />
+        <MainQnaSection initialQuestions={initialQuestions} />
       </div>
 
       {/* 기여하기 50% */}
