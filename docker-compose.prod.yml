@@ -99,7 +99,7 @@ services:
 
 networks:
   boostus_network:
-    driver: bridge
+    external: true
 
 volumes:
   db_data:
