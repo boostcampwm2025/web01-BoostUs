@@ -30,7 +30,16 @@ services:
     networks:
       - boostus_network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}"]
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "127.0.0.1",
+          "-u${MYSQL_USER}",
+          "-p${MYSQL_PASSWORD}",
+        ]
       interval: 5s
       timeout: 3s
       retries: 20
@@ -99,7 +108,7 @@ services:
 
 networks:
   boostus_network:
-    driver: bridge
+    external: true
 
 volumes:
   db_data:
