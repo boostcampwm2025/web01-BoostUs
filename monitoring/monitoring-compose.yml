@@ -20,6 +20,9 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
     depends_on:
       - node-exporter
+    networks:
+      - default
+      - boostus_network
 
   grafana:
     image: grafana/grafana:latest
