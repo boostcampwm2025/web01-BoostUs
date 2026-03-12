@@ -1,6 +1,6 @@
 services:
   node-exporter:
-    image: quay.io/prometheus/node-exporter:latest
+    image: quay.io/prometheus/node-exporter:v1.8.1
     container_name: node-exporter
     restart: unless-stopped
     ports:
@@ -11,13 +11,17 @@ services:
       - "/:/host:ro"
 
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.51.2
     container_name: prometheus
     restart: unless-stopped
     ports:
       - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=30d"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
     depends_on:
       - node-exporter
     networks:
@@ -25,7 +29,7 @@ services:
       - boostus_network
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:10.4.2
     container_name: grafana
     restart: unless-stopped
     ports:
@@ -36,7 +40,7 @@ services:
       - prometheus
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:latest
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
     container_name: cadvisor
     restart: unless-stopped
     ports:
@@ -60,7 +64,7 @@ services:
       - default
 
   redis-exporter:
-    image: oliver006/redis_exporter:latest
+    image: oliver006/redis_exporter:v1.62.0
     container_name: redis-exporter
     restart: unless-stopped
     environment:
@@ -72,7 +76,7 @@ services:
       - boostus_network
 
   mysqld-exporter:
-    image: prom/mysqld-exporter:latest
+    image: prom/mysqld-exporter:v0.16.0
     container_name: mysqld-exporter
     restart: unless-stopped
     command:
@@ -86,10 +90,10 @@ services:
       - default
       - boostus_network
 
-
 networks:
   boostus_network:
     external: true
 
 volumes:
   grafana_data:
+  prometheus_data:
