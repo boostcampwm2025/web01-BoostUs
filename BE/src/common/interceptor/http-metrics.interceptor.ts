@@ -14,16 +14,17 @@ export class HttpMetricsInterceptor implements NestInterceptor {
   constructor(
     private readonly reflector: Reflector,
     @InjectMetric('http_requests_total')
-    private readonly requestCounter: Counter<HttpMetricLabels>,
+    private readonly requestCounter: Counter<HttpMetricLabels>, //계속 증가만 하는 메트릭
     @InjectMetric('http_request_duration_seconds')
-    private readonly requestDurationHistogram: Histogram<HttpMetricLabels>,
+    private readonly requestDurationHistogram: Histogram<HttpMetricLabels>, //히스토그램 타입 메트릭
   ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     if (context.getType() !== 'http') {
+      //http 요청일 때에만 메트릭 수집
       return next.handle();
     }
-
+    // 메트릭 수집 엔드포인트는 메트릭 수집 대상에 포함시키기 않기 위한 설정
     const shouldSkip = this.reflector.getAllAndOverride<boolean>(SKIP_HTTP_METRICS_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -36,7 +37,7 @@ export class HttpMetricsInterceptor implements NestInterceptor {
     const request = context.switchToHttp().getRequest<Request>();
     const response = context.switchToHttp().getResponse<Response>();
     const startedAt = process.hrtime.bigint();
-
+    //일반적인 상황에서 메트릭 기록 (요청처리가 끝난 경우에)
     return next.handle().pipe(
       finalize(() => {
         const durationInSeconds = Number(process.hrtime.bigint() - startedAt) / 1_000_000_000;
