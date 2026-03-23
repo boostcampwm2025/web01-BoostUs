@@ -14,7 +14,9 @@ services:
       - ./certbot-data/conf:/etc/letsencrypt:ro
       - ./certbot/www:/var/www/certbot:ro
     networks:
-      - boostus_network
+      - boostus_edge
+      - boostus_app
+      - boostus_monitoring
 
   db:
     image: mysql:8.0.44
@@ -28,7 +30,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     networks:
-      - boostus_network
+      - boostus_data
     healthcheck:
       test:
         [
@@ -67,7 +69,9 @@ services:
       redis:
         condition: service_started
     networks:
-      - boostus_network
+      - boostus_app
+      - boostus_data
+      - boostus_monitoring
 
   frontend:
     # CI에서 빌드한 프론트엔드 이미지 사용
@@ -81,7 +85,7 @@ services:
     depends_on:
       - backend
     networks:
-      - boostus_network
+      - boostus_app
 
   crawler:
     # CI에서 빌드한 크롤러 이미지 사용
@@ -93,7 +97,8 @@ services:
     env_file:
       - .env.prod
     networks:
-      - boostus_network
+      - boostus_app
+      - boostus_data
     depends_on:
       - backend
 
@@ -104,10 +109,16 @@ services:
     expose:
       - "6379"
     networks:
-      - boostus_network
+      - boostus_data
 
 networks:
-  boostus_network:
+  boostus_edge:
+    external: true
+  boostus_app:
+    external: true
+  boostus_data:
+    external: true
+  boostus_monitoring:
     external: true
 
 volumes:
