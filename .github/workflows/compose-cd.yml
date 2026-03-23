@@ -1,4 +1,4 @@
-name: CD - Compose
+name: CD - Infra
 
 on:
   push:
@@ -6,22 +6,39 @@ on:
     paths:
       - ".github/workflows/compose-cd.yml"
       - "docker-compose.prod.yml"
+      - "monitoring/monitoring-compose.yml"
+      - "monitoring/prometheus.yml"
   workflow_dispatch:
 
 jobs:
-  cd-compose:
+  cd-infra:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Copy docker-compose.prod.yml
+      - name: Copy infra compose files
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           port: ${{ secrets.DEPLOY_PORT }}
-          source: "docker-compose.prod.yml"
+          source: "docker-compose.prod.yml,monitoring/monitoring-compose.yml,monitoring/prometheus.yml"
           target: "${{ secrets.DEPLOY_DIR }}"
+
+      - name: Ensure external Docker networks
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          script: |
+            set -e
+
+            docker network create boostus_edge 2>/dev/null || true
+            docker network create boostus_app 2>/dev/null || true
+            docker network create boostus_data 2>/dev/null || true
+            docker network create boostus_monitoring 2>/dev/null || true
