@@ -25,7 +25,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, CommonResponse
       cls,
     ]);
 
-    const message = customMessage ?? '성공적으로 응답했습니다.';
+    const message = customMessage ?? '성공적으로 응답되었습니다.';
 
     return next.handle().pipe(
       map((data) => ({
