@@ -64,8 +64,6 @@ jobs:
 
             cd "$DEPLOY_DIR"
 
-            docker network create boostus_network 2>/dev/null || true
-
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ${{ env.REGISTRY }} -u "${{ secrets.GHCR_USERNAME }}" --password-stdin
 
             SHA="${{ github.sha }}"
