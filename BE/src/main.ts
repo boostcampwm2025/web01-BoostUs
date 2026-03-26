@@ -1,10 +1,11 @@
-import { ValidationPipe } from '@nestjs/common';
+import { RequestMethod, ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
-import { ResponseInterceptor } from './common/interceptor/response.interceptor';
 import { ValidationFailedException } from './common/exception/validation.exception';
+import { HttpMetricsInterceptor } from './common/interceptor/http-metrics.interceptor';
+import { ResponseInterceptor } from './common/interceptor/response.interceptor';
 
 // BigInt 전역 설정 (JSON.stringify 시 문자열로 변환)
 (BigInt.prototype as unknown as { toJSON: () => string }).toJSON = function (this: bigint) {
@@ -13,20 +14,24 @@ import { ValidationFailedException } from './common/exception/validation.excepti
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
   // 쿠키 파서 미들웨어 추가
   app.use(cookieParser());
 
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api', {
+    exclude: [{ path: 'metrics', method: RequestMethod.GET }],
+  });
 
   // CORS 설정
   app.enableCors({
     origin: [process.env.FRONTEND_URL || 'http://localhost:5173'],
     credentials: true,
   });
+
   const reflector = app.get(Reflector);
-  // 응답 인터셉터 적용
-  app.useGlobalInterceptors(new ResponseInterceptor(reflector));
+  // 응답 인터셉터 적용 + 메트릭 인터셉터 적용
+
+  const httpMetricsInterceptor = app.get(HttpMetricsInterceptor);
+  app.useGlobalInterceptors(httpMetricsInterceptor, new ResponseInterceptor(reflector));
 
   // 유효성 검사 파이프 적용
   // transform: true - 요청 데이터를 클래스 인스턴스로 자동 변환
@@ -42,6 +47,7 @@ async function bootstrap() {
       exceptionFactory: (errors) => {
         const details = errors.map((error) => {
           const constraints = error.constraints ? Object.values(error.constraints) : [];
+
           return {
             field: error.property,
             constraints,
@@ -55,8 +61,8 @@ async function bootstrap() {
       },
     }),
   );
-
   // 스웨거 설정
+
   const config = new DocumentBuilder()
     .setTitle('BoostUs API')
     .setDescription('BoostUs API Description')

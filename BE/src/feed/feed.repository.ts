@@ -130,11 +130,7 @@ export class FeedRepository {
    * @param feedUrl string
    * @returns Feed
    */
-  async reactivateAndRestore(
-    feedId: bigint,
-    memberId: bigint,
-    feedUrl: string,
-  ): Promise<Feed> {
+  async reactivateAndRestore(feedId: bigint, memberId: bigint, feedUrl: string): Promise<Feed> {
     return this.prisma.$transaction(async (tx) => {
       // 1. Feed 상태를 ACTIVE로 변경 + URL 업데이트
       const feed = await tx.feed.update({
