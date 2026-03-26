@@ -3,8 +3,10 @@ import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nes
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { CommonResponseDto } from '../dto/common-response.dto';
+import { RAW_RESPONSE_KEY } from '../decorator/raw-response.decorator';
 import { RESPONSE_MESSAGE_KEY } from '../decorator/response-message.decorator';
+import { CommonResponseDto } from '../dto/common-response.dto';
+
 @Injectable()
 export class ResponseInterceptor<T> implements NestInterceptor<T, CommonResponseDto<T>> {
   constructor(private readonly reflector: Reflector) {}
@@ -12,8 +14,12 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, CommonResponse
   intercept(context: ExecutionContext, next: CallHandler<T>): Observable<CommonResponseDto<T>> {
     const handler = context.getHandler();
     const cls = context.getClass();
+    const rawResponse = this.reflector.getAllAndOverride<boolean>(RAW_RESPONSE_KEY, [handler, cls]);
 
-    // 메서드 > 클래스 순으로 override
+    if (rawResponse) {
+      return next.handle() as Observable<CommonResponseDto<T>>;
+    }
+
     const customMessage = this.reflector.getAllAndOverride<string>(RESPONSE_MESSAGE_KEY, [
       handler,
       cls,
