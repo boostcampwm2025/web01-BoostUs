@@ -8,6 +8,7 @@ on:
       - "docker-compose.prod.yml"
       - "monitoring/monitoring-compose.yml"
       - "monitoring/prometheus.yml"
+      - "nginx/nginx.conf"
   workflow_dispatch:
 
 jobs:
@@ -25,7 +26,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           port: ${{ secrets.DEPLOY_PORT }}
-          source: "docker-compose.prod.yml,monitoring/monitoring-compose.yml,monitoring/prometheus.yml"
+          source: "docker-compose.prod.yml,monitoring/monitoring-compose.yml,monitoring/prometheus.yml,nginx/nginx.conf"
           target: "${{ secrets.DEPLOY_DIR }}"
 
       - name: Ensure external Docker networks
