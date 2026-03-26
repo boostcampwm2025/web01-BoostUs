@@ -1,23 +1,32 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { useAuth } from '@/features/login/model/auth.store';
+import { useHydrateAtoms } from 'jotai/utils';
+import { useSetAtom } from 'jotai'; // 👈 useSetAtom 추가
+import { memberAtom, authLoadingAtom } from '@/features/login/model/auth.store';
+import type { AuthResponse } from '@/features/login/model/auth.types';
+import { ReactNode, useEffect } from 'react'; // 👈 useEffect 추가
 
-/**
- * 앱 실행 시 최초 1회 사용자 인증 상태를 확인하는 컴포넌트
- * 화면에 아무것도 그리지 않습니다 (null 반환)
- */
-export function AuthInitializer() {
-  const { fetchCurrentMember } = useAuth();
-  const initialized = useRef(false);
+interface Props {
+  user: AuthResponse | null;
+  children: ReactNode;
+}
+
+export function AuthInitializer({ user, children }: Props) {
+  // 1. [초기화] 서버 사이드 렌더링 시 값 주입 (HTML 생성 시점)
+  useHydrateAtoms([
+    [memberAtom, user],
+    [authLoadingAtom, false],
+  ]);
+
+  // 2. [동기화] 클라이언트에서 props(user)가 바뀔 때마다 Atom 업데이트
+  const setMember = useSetAtom(memberAtom);
+  const setLoading = useSetAtom(authLoadingAtom);
 
   useEffect(() => {
-    // React.StrictMode 등에서 두 번 실행되는 것을 방지하기 위한 체크
-    if (!initialized.current) {
-      void fetchCurrentMember();
-      initialized.current = true;
-    }
-  }, [fetchCurrentMember]);
+    // 서버에서 받은 user 데이터가 변경되면(null <-> 데이터), Atom에 즉시 반영
+    setMember(user);
+    setLoading(false);
+  }, [user, setMember, setLoading]);
 
-  return null;
+  return <>{children}</>;
 }

@@ -64,5 +64,6 @@ export const useAuth = () => {
     isAuthenticated: member !== null,
     fetchCurrentMember,
     logout,
+    setAuth: setMember,
   };
 };
