@@ -16,12 +16,14 @@ const FeedSection = () => {
     staleTime: 1000 * 60 * 60,
   });
 
-  const stories = response?.data?.items ?? [];
+  const feedItems = response?.data?.items ?? [];
+  // 상단 추천 스토리(1개)와 중복되지 않도록 피드에서는 첫 항목을 제외합니다.
+  const stories = feedItems.slice(1, FEED_PARAMS.size);
 
   return (
     <>
       <FeedHeader />
-      <section className="grid w-full grid-cols-1 gap-8 mt-4 mb-12 md:grid-cols-3 lg:grid-cols-4">
+      <section className="mt-4 mb-12 grid w-full grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 xl:grid-cols-4">
         {stories?.map((story) => (
           <StoriesCard id={story.id} key={story.id} story={story} />
         ))}

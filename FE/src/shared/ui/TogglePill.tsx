@@ -13,6 +13,7 @@ export default function TogglePill({
         'flex items-center justify-center',
         'border-neutral-border-default border',
         'text-string-14',
+        'whitespace-nowrap',
         'cursor-pointer transition-colors duration-200',
 
         // 2. 선택 여부에 따른 색상 및 인터랙션 처리

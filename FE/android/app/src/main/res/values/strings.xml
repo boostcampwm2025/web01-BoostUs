@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">BoostUs</string>
+    <string name="title_activity_main">BoostUs</string>
+    <string name="package_name">com.boostus.app</string>
+    <string name="custom_url_scheme">com.boostus.app</string>
+</resources>

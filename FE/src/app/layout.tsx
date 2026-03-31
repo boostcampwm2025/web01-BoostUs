@@ -1,7 +1,7 @@
 import { AuthInitializer } from '@/features/login/AuthInitializer';
 import Footer from '@/widgets/Footer';
 import Header from '@/widgets/Header/Header';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 import Script from 'next/script';
 import './globals.css';
@@ -9,10 +9,16 @@ import { Toaster } from '@/components/ui/sonner';
 import React from 'react';
 import Providers from '@/app/providers';
 import { getMeAction } from '@/shared/actions/auth';
+import MobileOAuthBridge from '@/features/login/MobileOAuthBridge';
 
 export const metadata: Metadata = {
   title: 'boostus - 부스트캠퍼들이 함께 기록하고, 함께 성장하는 커뮤니티 🌱',
   description: '',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
 };
 
 const pretendard = localFont({
@@ -32,6 +38,7 @@ export default async function RootLayout({
     <html lang="ko" className={pretendard.variable}>
       <body className="flex flex-col min-h-screen font-sans antialiased">
         <Providers>
+          <MobileOAuthBridge />
           <AuthInitializer user={user}>
             <Header />
             <main className="bg-neutral-surface-default flex w-full flex-1 flex-col items-center px-4 py-32">
