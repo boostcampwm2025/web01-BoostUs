@@ -108,7 +108,7 @@ export class ProjectService {
    * @param repositoryUrl GitHub 레포 URL 또는 slug
    * @returns { owner, repo }
    */
-  private _parseRepositorySlug(repositoryUrl: string) {
+  private _parseRepositorySlug(repositoryUrl: string): { owner: string; repo: string } {
     const raw = repositoryUrl.trim();
     let path = raw;
 

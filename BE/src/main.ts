@@ -1,6 +1,6 @@
 import { RequestMethod, ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { setupSwagger } from './config/swagger/swagger.config';
 import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { ValidationFailedException } from './common/exception/validation.exception';
@@ -61,15 +61,8 @@ async function bootstrap() {
       },
     }),
   );
-  // 스웨거 설정
 
-  const config = new DocumentBuilder()
-    .setTitle('BoostUs API')
-    .setDescription('BoostUs API Description')
-    .setVersion('1.0')
-    .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+  setupSwagger(app);
 
   await app.listen(process.env.PORT ?? 3000);
 }
