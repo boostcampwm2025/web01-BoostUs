@@ -25,7 +25,7 @@ export class FeedService {
     private readonly feedValidatorService: FeedValidatorService,
     private readonly memberRepository: MemberRepository,
     private readonly storyRepository: StoryRepository,
-  ) { }
+  ) {}
 
   /**
    * 활성 상태의 모든 피드 목록 조회

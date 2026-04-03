@@ -7,15 +7,15 @@ import { AuthGuard } from './auth/guard/auth.guard';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import { UnknownExceptionFilter } from './common/filter/unknown-exception.filter';
 import { FeedModule } from './feed/feed.module';
+import { LandingModule } from './landing/landing.module';
+import { MemberModule } from './member/member.module';
+import { MetricsModule } from './metrics/metrics.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ProjectModule } from './project/project.module';
 import { QuestionModule } from './question/question.module';
+import { RecommendModule } from './recommend/recommend.module';
 import { StoryModule } from './story/story.module';
 import { TechStackModule } from './tech-stack/tech-stack.module';
-import { MemberModule } from './member/member.module';
-import { LandingModule } from './landing/landing.module';
-import { RecommendModule } from './recommend/recommend.module';
-import { InternalRequestGuard } from './common/guard/internal-request.guard';
 
 @Module({
   imports: [
@@ -33,15 +33,10 @@ import { InternalRequestGuard } from './common/guard/internal-request.guard';
     MemberModule,
     LandingModule,
     RecommendModule,
+    MetricsModule,
   ],
   providers: [
     Logger,
-    // 전역 가드 등록
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: InternalRequestGuard,
-    // },
-
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
