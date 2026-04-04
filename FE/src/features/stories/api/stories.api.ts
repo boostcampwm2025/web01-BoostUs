@@ -9,6 +9,11 @@ import { customFetch } from '@/shared/utils/fetcher';
 
 export const STORIES_KEY = {
   all: ['stories'] as const,
+  list: (
+    sortBy: StoriesSortOption['sortBy'],
+    period: StoriesSortOption['period'],
+    searchQuery?: string
+  ) => [...STORIES_KEY.all, sortBy, period, searchQuery ?? undefined] as const,
   detail: (id: string) => [...STORIES_KEY.all, 'detail', id] as const,
   likeStatus: (id: string) =>
     [...STORIES_KEY.detail(id), 'likeStatus'] as const,

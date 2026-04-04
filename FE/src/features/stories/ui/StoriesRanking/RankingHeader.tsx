@@ -1,11 +1,11 @@
 'use client';
 
-import { useStoriesContext } from '@/features/stories/model/stories.context';
+import { useStoriesUIContext } from '@/features/stories/model/stories.ui.context';
 import RankingFilter from '@/features/stories/ui/StoriesRanking/RankingFilter';
 import StoriesRankingToggle from '@/features/stories/ui/StoriesRanking/RankingToggle';
 
 const StoriesRankingHeader = () => {
-  const { isRankingOpen, toggleRanking } = useStoriesContext();
+  const { isRankingOpen, toggleRanking } = useStoriesUIContext();
 
   return (
     <header

@@ -1,7 +1,8 @@
 'use client';
 
 import StoriesCard from '@/features/stories/ui/Card/Card';
-import { useStoriesContext } from '@/features/stories/model';
+import { useStoriesUIContext } from '@/features/stories/model/stories.ui.context';
+import { useStoriesFilterContext } from '@/features/stories/model/stories.filter.context';
 import { useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { useStoriesInfiniteQuery } from '@/features/stories/model/useStoriesInfiniteQuery';
@@ -10,7 +11,8 @@ import { AlertCircle, Loader2, RefreshCw } from 'lucide-react';
 import Button from '@/shared/ui/Button/Button';
 
 const StoriesList = () => {
-  const { isRankingOpen, searchQuery, sortBy, period } = useStoriesContext();
+  const { isRankingOpen } = useStoriesUIContext();
+  const { searchQuery, sortBy, period } = useStoriesFilterContext();
 
   // 화면에 요소가 보이는지 감지하는 훅
   const { ref, inView } = useInView({

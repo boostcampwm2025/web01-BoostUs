@@ -1,11 +1,11 @@
 'use client';
 
-import { useStoriesContext } from '@/features/stories/model/stories.context';
+import { useStoriesFilterContext } from '@/features/stories/model/stories.filter.context';
 import { Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const StoriesSearchBar = () => {
-  const { searchQuery, setSearchQuery } = useStoriesContext();
+  const { searchQuery, setSearchQuery } = useStoriesFilterContext();
   const [inputValue, setInputValue] = useState(searchQuery);
 
   useEffect(() => {
