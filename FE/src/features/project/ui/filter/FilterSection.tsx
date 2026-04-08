@@ -113,9 +113,9 @@ const FilterSection = () => {
       </AnimatePresence>
 
       {/* 버튼 영역: 항상 존재, 패딩 고정 */}
-      <div className="relative z-10 flex flex-row justify-between bg-neutral-surface-bold p-4">
+      <div className="relative z-10 flex flex-col gap-3 bg-neutral-surface-bold p-4 sm:flex-row sm:items-center sm:justify-between">
         <button
-          className="text-neutral-text-weak text-string-16 flex flex-1 flex-row items-center gap-1 cursor-pointer hover:text-neutral-text-strong transition-colors duration-150"
+          className="text-neutral-text-weak text-string-16 flex w-full cursor-pointer flex-row items-center gap-1 transition-colors duration-150 hover:text-neutral-text-strong sm:flex-1"
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? (
@@ -134,7 +134,7 @@ const FilterSection = () => {
         </button>
         <Link
           href="/project/register"
-          className="bg-brand-surface-default text-string-16 self-end rounded-lg px-4 py-2 text-brand-text-on-default"
+          className="bg-brand-surface-default text-string-16 w-full rounded-lg px-4 py-2 text-center text-brand-text-on-default sm:w-auto"
         >
           등록하기
         </Link>

@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 const Footer = () => {
   return (
-    <footer className="border-t border-neutral-border-default gap-8 flex items-center justify-center bg-neutral-surface-default w-full min-w-360 h-20">
+    <footer className="border-t border-neutral-border-default flex w-full flex-col items-center justify-center gap-4 bg-neutral-surface-default px-4 py-4 sm:h-20 sm:flex-row sm:gap-8">
       <Image
         src="/assets/Logo.svg"
         alt="boostus 로고"
@@ -12,11 +12,11 @@ const Footer = () => {
         height={40}
         className="h-7 w-auto invert-48 sepia-4 saturate-324 hue-rotate-202 brightness-91 contrast-89"
       />
-      <div className="flex flex-col gap-1">
-        <span className="text-body-12 text-neutral-text-weak">
+      <div className="flex flex-col gap-1 text-center sm:text-left">
+        <span className="text-body-12 text-neutral-text-weak break-keep">
           © 2026 boostus. All rights reserved.
         </span>
-        <span className="text-body-12 text-neutral-text-weak">
+        <span className="text-body-12 text-neutral-text-weak break-keep">
           Made by Team{' '}
           <span className="text-brand-text-default text-body-12">
             Pole Position

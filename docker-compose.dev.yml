@@ -42,6 +42,7 @@ services:
       - JWT_ACCESS_EXPIRES_IN=3600
       - JWT_REFRESH_EXPIRES_IN=604800
       - FRONTEND_URL=http://localhost:5173
+      - MOBILE_APP_SCHEME=com.boostus.app
       - REDIS_HOST=redis
       - REDIS_PORT=6379
     depends_on:
