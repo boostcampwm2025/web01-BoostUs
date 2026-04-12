@@ -470,6 +470,11 @@ export class ProjectService {
   async findOneWithViewCount(id: number, viewerKey: string) {
     const projectId = BigInt(id);
 
+    const project = await this.projectRepository.findById(projectId);
+    if (!project) {
+      throw new ProjectNotFoundException(id);
+    }
+
     void this.viewService
       .shouldIncrementView('project', id, viewerKey)
       .then((firstView) => {
@@ -477,7 +482,6 @@ export class ProjectService {
       })
       .catch((err) => this.logger.error('[ViewCount] project 처리 실패', err));
 
-    const project = await this.projectRepository.findById(projectId);
     return plainToInstance(ProjectDetailItemDto, project, { excludeExtraneousValues: true });
   }
 

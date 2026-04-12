@@ -1,6 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import type Redis from 'ioredis';
 import { REDIS } from '../redis/redis.provider';
+import type { Resource } from './view-flush.service';
 
 export interface ViewCountResult<T> {
   data: T;
@@ -13,14 +14,14 @@ export class ViewService {
 
   /**
    * 조회수 증가 여부를 판단합니다.
-   * @param resource 리소스 타입 (예: 'project', 'story', 'qna')
+   * @param resource 리소스 타입 (`story` | `project` | `question`)
    * @param resourceId 리소스 ID
    * @param viewerKey 조회자 키
    * @param ttl TTL (초 단위, 기본 30분)
    * @returns 첫 조회 여부
    */
   async shouldIncrementView(
-    resource: string,
+    resource: Resource,
     resourceId: number | bigint,
     viewerKey: string,
     ttl: number = 60 * 30,
@@ -42,7 +43,7 @@ export class ViewService {
    * 여러 리소스의 조회 기록을 확인합니다.
    */
   async hasViewed(
-    resource: string,
+    resource: Resource,
     resourceId: number | bigint,
     viewerKey: string,
   ): Promise<boolean> {
@@ -55,7 +56,7 @@ export class ViewService {
    * 조회 기록을 삭제합니다 (관리자 기능 등에 활용)
    */
   async clearViewRecord(
-    resource: string,
+    resource: Resource,
     resourceId: number | bigint,
     viewerKey: string,
   ): Promise<void> {
@@ -66,7 +67,7 @@ export class ViewService {
   /**
    * 특정 리소스의 모든 조회 기록을 삭제합니다
    */
-  async clearAllViewRecords(resource: string, resourceId: number | bigint): Promise<void> {
+  async clearAllViewRecords(resource: Resource, resourceId: number | bigint): Promise<void> {
     const pattern = `view:${resource}:${resourceId}:*`;
     const keys = await this.redis.keys(pattern);
 
@@ -80,7 +81,7 @@ export class ViewService {
    * @param resource 리소스 타입 (예: 'story', 'project', 'question')
    * @param resourceId 리소스 ID
    */
-  async incrementViewCount(resource: string, resourceId: number | bigint): Promise<void> {
+  async incrementViewCount(resource: Resource, resourceId: number | bigint): Promise<void> {
     const countKey = `view:count:${resource}:${resourceId}`;
     const dirtyKey = `view:dirty:${resource}`;
 

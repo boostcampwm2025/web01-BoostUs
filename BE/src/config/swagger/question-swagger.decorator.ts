@@ -99,6 +99,11 @@ export function UpdateQuestionSwagger() {
       description: '질문 수정 성공',
       type: QuestionResponseDto,
     }),
+    ApiParam({
+      name: 'id',
+      description: '질문 ID',
+      example: '1',
+    }),
     ApiResponse({
       status: 404,
       description: '질문 찾기 실패',
@@ -111,6 +116,11 @@ export function DeleteQuestionSwagger() {
     ApiOperation({
       summary: '질문 삭제',
       description: '기존 질문을 삭제합니다.',
+    }),
+    ApiParam({
+      name: 'id',
+      description: '질문 ID',
+      example: '1',
     }),
     ApiResponse({
       status: 200,

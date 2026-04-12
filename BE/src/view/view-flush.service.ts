@@ -6,8 +6,8 @@ import { PrismaService } from '../prisma/prisma.service';
 
 const FLUSH_INTERVAL_MS = 5000;
 
-const RESOURCES = ['story', 'project', 'question'] as const;
-type Resource = (typeof RESOURCES)[number];
+export const RESOURCES = ['story', 'project', 'question'] as const;
+export type Resource = (typeof RESOURCES)[number];
 
 interface ViewDelta {
   id: bigint;
@@ -21,7 +21,7 @@ export class ViewFlushService {
   constructor(
     @Inject(REDIS) private readonly redis: Redis,
     private readonly prisma: PrismaService,
-  ) {}
+  ) { }
 
   @Interval(FLUSH_INTERVAL_MS)
   async flush(): Promise<void> {
@@ -39,7 +39,7 @@ export class ViewFlushService {
     // pipeline으로 각 id의 카운터를 atomic하게 가져오면서 키 삭제
     const pipeline = this.redis.pipeline();
     for (const id of ids) {
-      pipeline.getdel(`view:count:${resource}:${id}`);
+      pipeline.get(`view:count:${resource}:${id}`);
     }
     const results = await pipeline.exec();
 
@@ -68,11 +68,22 @@ export class ViewFlushService {
     }
 
     if (updates.length === 0) {
+      await this.redis.srem(dirtyKey, ...ids);
       return;
     }
 
     try {
+      // 먼저 DB 업데이트
       await this.batchUpdate(resource, updates);
+
+      // 카운터 키 삭제
+      const delPipeline = this.redis.pipeline();
+      for (const { id } of updates) {
+        delPipeline.del(`view:count:${resource}:${id}`);
+      }
+      await delPipeline.exec();
+
+      // dirty set 삭제
       await this.redis.srem(dirtyKey, ...ids);
     } catch (err) {
       this.logger.error(
