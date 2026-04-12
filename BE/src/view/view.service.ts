@@ -9,7 +9,7 @@ export interface ViewCountResult<T> {
 
 @Injectable()
 export class ViewService {
-  constructor(@Inject(REDIS) private readonly redis: Redis) {}
+  constructor(@Inject(REDIS) private readonly redis: Redis) { }
 
   /**
    * 조회수 증가 여부를 판단합니다.
@@ -73,5 +73,21 @@ export class ViewService {
     if (keys.length > 0) {
       await this.redis.del(...keys);
     }
+  }
+
+  /**
+   * Redis에 조회수 증가분을 누적합니다 (배치 flush용)
+   * @param resource 리소스 타입 (예: 'story', 'project', 'question')
+   * @param resourceId 리소스 ID
+   */
+  async incrementViewCount(resource: string, resourceId: number | bigint): Promise<void> {
+    const countKey = `view:count:${resource}:${resourceId}`;
+    const dirtyKey = `view:dirty:${resource}`;
+
+    await this.redis
+      .pipeline()
+      .incr(countKey)
+      .sadd(dirtyKey, String(resourceId))
+      .exec();
   }
 }

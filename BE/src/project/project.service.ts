@@ -472,8 +472,7 @@ export class ProjectService {
     const firstView = await this.viewService.shouldIncrementView('project', id, viewerKey);
 
     if (firstView) {
-      const project = await this.projectRepository.incrementViewCountAndFind(projectId);
-      return plainToInstance(ProjectDetailItemDto, project, { excludeExtraneousValues: true });
+      await this.viewService.incrementViewCount('project', projectId);
     }
 
     const project = await this.projectRepository.findById(projectId);

@@ -270,7 +270,7 @@ export class QuestionService {
       viewerKey,
     );
     if (shouldIncrement) {
-      await this.questionRepo.incrementViewCount(id);
+      await this.viewService.incrementViewCount('question', id);
     }
   }
 
