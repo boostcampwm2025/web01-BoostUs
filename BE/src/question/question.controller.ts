@@ -13,7 +13,6 @@ import { ApiTags } from '@nestjs/swagger';
 import { Public } from '../auth/decorator/public.decorator';
 import { CreateQuestionDto } from './dto/req/create-question.dto';
 import { QuestionQueryDto } from './dto/req/question-query.dto';
-import { QuestionResponseDto } from './dto/res/detail/question-response.dto';
 import { QuestionService } from './question.service';
 import { responseMessage } from '../common/decorator/response-message.decorator';
 import { UpdateQuestionDto } from './dto/req/update-question.dto';
@@ -21,8 +20,6 @@ import { CurrentMember } from 'src/auth/decorator/current-member.decorator';
 import { ViewerKeyGuard } from 'src/view/guard/view.guard';
 import { ViewerKey } from 'src/view/decorator/viewer-key.decorator';
 import { ParseBigIntPipe } from 'src/common/pipe/parse-bigint.pipe';
-import { QuestionCursorResponseDto } from './dto/res/all/question-list.dto';
-import { QuestionDetailItemDto } from './dto/res/detail/question-detail-item.dto';
 import {
   AcceptAnswerSwagger,
   CreateQuestionSwagger,
@@ -38,7 +35,7 @@ import {
 @ApiTags('질문')
 @Controller('questions')
 export class QuestionController {
-  constructor(private readonly questionService: QuestionService) { }
+  constructor(private readonly questionService: QuestionService) {}
 
   @Post()
   @CreateQuestionSwagger()
@@ -72,10 +69,10 @@ export class QuestionController {
   @Public()
   @Post(':id/view')
   @UseGuards(ViewerKeyGuard)
-  async incrementQuestionView(
+  incrementQuestionView(
     @Param('id', ParseBigIntPipe) id: bigint,
     @ViewerKey() viewerKey: string,
-  ): Promise<void> {
+  ): void {
     void this.questionService.incrementQuestionView(id, viewerKey);
   }
 

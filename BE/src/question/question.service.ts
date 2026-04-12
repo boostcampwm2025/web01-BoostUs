@@ -31,7 +31,7 @@ export class QuestionService {
     private readonly questionRepo: QuestionRepository,
     private readonly viewService: ViewService,
     private readonly authRepository: AuthRepository,
-  ) { }
+  ) {}
   //응답 dto 없음
   async create(memberIdStr: string, dto: CreateQuestionDto) {
     const memberId = BigInt(memberIdStr);

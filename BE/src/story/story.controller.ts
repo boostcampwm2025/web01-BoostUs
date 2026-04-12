@@ -26,7 +26,7 @@ import {
 @ApiTags('캠퍼들의 이야기')
 @Controller('stories')
 export class StoryController {
-  constructor(private readonly storyService: StoryService) { }
+  constructor(private readonly storyService: StoryService) {}
 
   @Public()
   @Get()
@@ -46,10 +46,10 @@ export class StoryController {
   @Post(':id/view')
   @UseGuards(ViewerKeyGuard)
   @IncrementStoryViewSwagger()
-  async incrementStoryView(
+  incrementStoryView(
     @Param('id', ParseBigIntPipe) id: bigint,
     @ViewerKey() viewerKey: string,
-  ): Promise<void> {
+  ): void {
     void this.storyService.incrementStoryView(id, viewerKey);
   }
 

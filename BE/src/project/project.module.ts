@@ -14,4 +14,4 @@ import { RedisModule } from 'src/redis/redis.module';
   controllers: [ProjectController],
   providers: [ProjectService, ProjectRepository, AuthRepository, JwtService],
 })
-export class ProjectModule { }
+export class ProjectModule {}

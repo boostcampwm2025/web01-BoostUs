@@ -21,7 +21,7 @@ export class ViewFlushService {
   constructor(
     @Inject(REDIS) private readonly redis: Redis,
     private readonly prisma: PrismaService,
-  ) { }
+  ) {}
 
   @Interval(FLUSH_INTERVAL_MS)
   async flush(): Promise<void> {
@@ -54,7 +54,13 @@ export class ViewFlushService {
         const [err, raw] = results[i] as [Error | null, unknown];
         if (err || raw === null || raw === undefined) continue;
 
-        const delta = parseInt(String(raw), 10);
+        let rawStr: string;
+        if (typeof raw === 'string') rawStr = raw;
+        else if (typeof raw === 'number' || typeof raw === 'bigint') rawStr = raw.toString();
+        else if (Buffer.isBuffer(raw)) rawStr = raw.toString('utf8');
+        else continue;
+
+        const delta = parseInt(rawStr, 10);
         if (delta > 0) {
           updates.push({ id: BigInt(ids[i]), delta });
         }

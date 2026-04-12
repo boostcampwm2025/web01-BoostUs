@@ -30,7 +30,7 @@ export class StoryService {
     private readonly storyRepository: StoryRepository,
     private readonly feedRepository: FeedRepository,
     private readonly viewService: ViewService,
-  ) { }
+  ) {}
 
   /**
    * 모든 공개된 캠퍼들의 이야기 목록 조회

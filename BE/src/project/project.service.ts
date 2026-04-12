@@ -470,11 +470,12 @@ export class ProjectService {
   async findOneWithViewCount(id: number, viewerKey: string) {
     const projectId = BigInt(id);
 
-    void this.viewService.shouldIncrementView('project', id, viewerKey)
-      .then(firstView => {
+    void this.viewService
+      .shouldIncrementView('project', id, viewerKey)
+      .then((firstView) => {
         if (firstView) return this.viewService.incrementViewCount('project', projectId);
       })
-      .catch(err => this.logger.error('[ViewCount] project 처리 실패', err));
+      .catch((err) => this.logger.error('[ViewCount] project 처리 실패', err));
 
     const project = await this.projectRepository.findById(projectId);
     return plainToInstance(ProjectDetailItemDto, project, { excludeExtraneousValues: true });
