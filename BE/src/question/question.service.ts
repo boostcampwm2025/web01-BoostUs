@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from 'src/generated/prisma/client';
@@ -24,11 +25,13 @@ const toHashtagsStringOrNull = (hashtags?: string[]): string | null =>
 
 @Injectable()
 export class QuestionService {
+  private readonly logger = new Logger(QuestionService.name);
+
   constructor(
     private readonly questionRepo: QuestionRepository,
     private readonly viewService: ViewService,
     private readonly authRepository: AuthRepository,
-  ) {}
+  ) { }
   //응답 dto 없음
   async create(memberIdStr: string, dto: CreateQuestionDto) {
     const memberId = BigInt(memberIdStr);
@@ -256,21 +259,23 @@ export class QuestionService {
     };
   }
 
-  async incrementStoryView(id: bigint, viewerKey: string): Promise<void> {
-    const questionId = BigInt(id);
+  async incrementQuestionView(id: bigint, viewerKey: string): Promise<void> {
+    try {
+      const questionId = BigInt(id);
 
-    const questionExists = await this.questionRepo.checkQuestionExists(questionId);
-    if (!questionExists) {
-      throw new QuestionNotFoundException(questionId);
-    }
+      const questionExists = await this.questionRepo.checkQuestionExists(questionId);
+      if (!questionExists) return;
 
-    const shouldIncrement = await this.viewService.shouldIncrementView(
-      'question',
-      questionId,
-      viewerKey,
-    );
-    if (shouldIncrement) {
-      await this.viewService.incrementViewCount('question', id);
+      const shouldIncrement = await this.viewService.shouldIncrementView(
+        'question',
+        questionId,
+        viewerKey,
+      );
+      if (shouldIncrement) {
+        await this.viewService.incrementViewCount('question', id);
+      }
+    } catch (error) {
+      this.logger.error(error);
     }
   }
 

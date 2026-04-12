@@ -20,9 +20,12 @@ import {
 } from './exception/story.exception';
 import { StoryRepository } from './story.repository';
 import { StorySortBy } from './type/story-query.type';
+import { Logger } from '@nestjs/common';
 
 @Injectable()
 export class StoryService {
+  private readonly logger = new Logger(StoryService.name);
+
   constructor(
     private readonly storyRepository: StoryRepository,
     private readonly feedRepository: FeedRepository,
@@ -128,19 +131,21 @@ export class StoryService {
    * @param viewerKey string (bid 쿠키 등)
    */
   async incrementStoryView(id: bigint, viewerKey: string): Promise<void> {
-    const storyExists = await this.storyRepository.checkStoryExists(id);
-    if (!storyExists) {
-      throw new StoryNotFoundException(id);
-    }
+    try {
+      const storyExists = await this.storyRepository.checkStoryExists(id);
+      if (!storyExists) return;
 
-    const shouldIncrement = await this.viewService.shouldIncrementView(
-      'story',
-      id,
-      viewerKey,
-      60 * 60,
-    );
-    if (shouldIncrement) {
-      await this.viewService.incrementViewCount('story', id);
+      const shouldIncrement = await this.viewService.shouldIncrementView(
+        'story',
+        id,
+        viewerKey,
+        60 * 60,
+      );
+      if (shouldIncrement) {
+        await this.viewService.incrementViewCount('story', id);
+      }
+    } catch (error) {
+      this.logger.error(error);
     }
   }
 

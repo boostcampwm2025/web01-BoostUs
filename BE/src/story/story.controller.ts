@@ -50,7 +50,7 @@ export class StoryController {
     @Param('id', ParseBigIntPipe) id: bigint,
     @ViewerKey() viewerKey: string,
   ): Promise<void> {
-    await this.storyService.incrementStoryView(id, viewerKey);
+    void this.storyService.incrementStoryView(id, viewerKey);
   }
 
   @Public()

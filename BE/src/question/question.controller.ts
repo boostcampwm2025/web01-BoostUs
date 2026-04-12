@@ -38,7 +38,7 @@ import {
 @ApiTags('질문')
 @Controller('questions')
 export class QuestionController {
-  constructor(private readonly questionService: QuestionService) {}
+  constructor(private readonly questionService: QuestionService) { }
 
   @Post()
   @CreateQuestionSwagger()
@@ -72,11 +72,11 @@ export class QuestionController {
   @Public()
   @Post(':id/view')
   @UseGuards(ViewerKeyGuard)
-  async incrementStoryView(
+  async incrementQuestionView(
     @Param('id', ParseBigIntPipe) id: bigint,
     @ViewerKey() viewerKey: string,
   ): Promise<void> {
-    await this.questionService.incrementStoryView(id, viewerKey);
+    void this.questionService.incrementQuestionView(id, viewerKey);
   }
 
   @Patch(':id')
