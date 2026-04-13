@@ -20,9 +20,12 @@ import {
 } from './exception/story.exception';
 import { StoryRepository } from './story.repository';
 import { StorySortBy } from './type/story-query.type';
+import { Logger } from '@nestjs/common';
 
 @Injectable()
 export class StoryService {
+  private readonly logger = new Logger(StoryService.name);
+
   constructor(
     private readonly storyRepository: StoryRepository,
     private readonly feedRepository: FeedRepository,
@@ -139,9 +142,12 @@ export class StoryService {
       viewerKey,
       60 * 60,
     );
-    if (shouldIncrement) {
-      await this.storyRepository.incrementViewCount(id);
+
+    if (!shouldIncrement) {
+      return;
     }
+
+    this.viewService.incrementViewCount('story', id);
   }
 
   /**

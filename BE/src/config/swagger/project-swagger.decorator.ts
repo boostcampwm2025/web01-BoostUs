@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
 import { applyDecorators } from '@nestjs/common';
 import {
   ApiBody,

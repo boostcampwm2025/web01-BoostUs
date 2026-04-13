@@ -48,6 +48,12 @@ export default tseslint.config(
           format: ['camelCase'],
         },
         {
+          // 데코레이터 팩토리 함수: PascalCase 허용 (NestJS 커스텀 데코레이터 컨벤션)
+          selector: 'function',
+          modifiers: ['exported'],
+          format: ['camelCase', 'PascalCase'],
+        },
+        {
           // 클래스: PascalCase
           selector: 'class',
           format: ['PascalCase'],

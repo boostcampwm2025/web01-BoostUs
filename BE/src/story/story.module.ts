@@ -1,15 +1,14 @@
 import { Module } from '@nestjs/common';
 import { FeedModule } from '../feed/feed.module';
 import { PrismaModule } from '../prisma/prisma.module';
-import { RedisModule } from '../redis/redis.module';
-import { ViewService } from '../view/view.service';
+import { ViewModule } from '../view/view.module';
 import { StoryController } from './story.controller';
 import { StoryRepository } from './story.repository';
 import { StoryService } from './story.service';
 
 @Module({
-  imports: [PrismaModule, FeedModule, RedisModule],
+  imports: [PrismaModule, FeedModule, ViewModule],
   controllers: [StoryController],
-  providers: [StoryService, StoryRepository, ViewService],
+  providers: [StoryService, StoryRepository],
 })
 export class StoryModule {}

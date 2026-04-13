@@ -1,14 +1,13 @@
 import { Module } from '@nestjs/common';
+import { ViewModule } from 'src/view/view.module';
+import { AuthRepository } from 'src/auth/auth.repository';
 import { QuestionService } from './question.service';
 import { QuestionController } from './question.controller';
 import { QuestionRepository } from './question.repository';
-import { RedisModule } from 'src/redis/redis.module';
-import { ViewService } from 'src/view/view.service';
-import { AuthRepository } from 'src/auth/auth.repository';
 
 @Module({
-  imports: [RedisModule],
+  imports: [ViewModule],
   controllers: [QuestionController],
-  providers: [QuestionService, ViewService, QuestionRepository, AuthRepository],
+  providers: [QuestionService, QuestionRepository, AuthRepository],
 })
 export class QuestionModule {}

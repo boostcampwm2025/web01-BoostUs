@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, Logger } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { Prisma } from '../generated/prisma/client';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -36,6 +36,7 @@ import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class ProjectService {
+  private readonly logger = new Logger(ProjectService.name);
   private readonly s3: S3Client;
   private readonly endpoint: string;
   private readonly bucket: string;
@@ -469,14 +470,18 @@ export class ProjectService {
   async findOneWithViewCount(id: number, viewerKey: string) {
     const projectId = BigInt(id);
 
-    const firstView = await this.viewService.shouldIncrementView('project', id, viewerKey);
-
-    if (firstView) {
-      const project = await this.projectRepository.incrementViewCountAndFind(projectId);
-      return plainToInstance(ProjectDetailItemDto, project, { excludeExtraneousValues: true });
+    const project = await this.projectRepository.findById(projectId);
+    if (!project) {
+      throw new ProjectNotFoundException(id);
     }
 
-    const project = await this.projectRepository.findById(projectId);
+    void this.viewService
+      .shouldIncrementView('project', id, viewerKey)
+      .then((firstView) => {
+        if (firstView) return this.viewService.incrementViewCount('project', projectId);
+      })
+      .catch((err) => this.logger.error('[ViewCount] project 처리 실패', err));
+
     return plainToInstance(ProjectDetailItemDto, project, { excludeExtraneousValues: true });
   }
 
