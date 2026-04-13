@@ -21,7 +21,7 @@ export class ViewFlushService {
   constructor(
     @Inject(REDIS) private readonly redis: Redis,
     private readonly prisma: PrismaService,
-  ) { }
+  ) {}
 
   @Interval(FLUSH_INTERVAL_MS)
   async flush(): Promise<void> {

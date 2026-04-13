@@ -131,22 +131,23 @@ export class StoryService {
    * @param viewerKey string (bid 쿠키 등)
    */
   async incrementStoryView(id: bigint, viewerKey: string): Promise<void> {
-    try {
-      const storyExists = await this.storyRepository.checkStoryExists(id);
-      if (!storyExists) return;
-
-      const shouldIncrement = await this.viewService.shouldIncrementView(
-        'story',
-        id,
-        viewerKey,
-        60 * 60,
-      );
-      if (shouldIncrement) {
-        await this.viewService.incrementViewCount('story', id);
-      }
-    } catch (error) {
-      this.logger.error(error);
+    const storyExists = await this.storyRepository.checkStoryExists(id);
+    if (!storyExists) {
+      throw new StoryNotFoundException(id);
     }
+
+    const shouldIncrement = await this.viewService.shouldIncrementView(
+      'story',
+      id,
+      viewerKey,
+      60 * 60,
+    );
+
+    if (!shouldIncrement) {
+      return;
+    }
+
+    this.viewService.incrementViewCount('story', id);
   }
 
   /**

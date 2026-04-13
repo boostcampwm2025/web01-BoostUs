@@ -46,11 +46,12 @@ export class StoryController {
   @Post(':id/view')
   @UseGuards(ViewerKeyGuard)
   @IncrementStoryViewSwagger()
-  incrementStoryView(
+  async incrementStoryView(
     @Param('id', ParseBigIntPipe) id: bigint,
     @ViewerKey() viewerKey: string,
-  ): void {
-    void this.storyService.incrementStoryView(id, viewerKey);
+  ): Promise<void> {
+    await this.storyService.incrementStoryView(id, viewerKey);
+    return;
   }
 
   @Public()
